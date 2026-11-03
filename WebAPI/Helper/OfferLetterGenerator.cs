@@ -209,7 +209,6 @@ namespace HRMSWebAPI.Helper
             var trTitle = pTitle.AppendText("LETTER OF APPOINTMENT / OFFER OF EMPLOYMENT\n\n");
             trTitle.CharacterFormat.FontSize = 13;
             trTitle.CharacterFormat.Bold = true;
-            trTitle.CharacterFormat.UnderlineStyle = UnderlineStyle.Single;
 
             // Ref No & Date
             var pMeta = section.AddParagraph();
