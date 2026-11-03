@@ -14,7 +14,7 @@ export interface BatchCandidateRow {
   email: string;
   gender: string;
   dateOfBirth: string;
-  aadhaarStatus?: 'idle' | 'checking' | 'verified' | 'duplicate';
+  aadhaarStatus?: 'idle' | 'checking' | 'verified' | 'duplicate' | 'bench';
   aadhaarMessage?: string;
 }
 
@@ -256,7 +256,12 @@ export class VendorAddCandidateComponent implements OnInit {
         const isDuplicate = res?.isDuplicate === true || res?.ExistsStatus === 1;
         const msg = res?.message || res?.Message || '';
 
-        if (!canProceed || isDuplicate) {
+        const dupType = res?.duplicateType || res?.DuplicateType;
+        if (dupType === 'TALENT_BENCH') {
+          row.aadhaarStatus = 'bench';
+          row.aadhaarMessage = msg || 'Candidate exists in Talent Bench and can be allocated directly.';
+          this.toastr.info(`Row [${row.candidateName || 'Candidate'}]: ${row.aadhaarMessage}`, 'Talent Bench Profile');
+        } else if (!canProceed || isDuplicate) {
           row.aadhaarStatus = 'duplicate';
           row.aadhaarMessage = msg || 'Aadhaar already registered in employee or candidate records.';
           this.toastr.error(`Row [${row.candidateName || 'Candidate'}]: ${row.aadhaarMessage}`, 'Duplicate Aadhaar Blocked');

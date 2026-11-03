@@ -456,7 +456,8 @@
                            class="form-control form-control-sm field-contrast mono-input shadow-none pe-4"
                            [ngClass]="{
                              'is-invalid': row.aadhaarStatus === 'duplicate',
-                             'is-valid': row.aadhaarStatus === 'verified'
+                             'is-valid': row.aadhaarStatus === 'verified',
+                             'border-info': row.aadhaarStatus === 'bench'
                            }"
                            [(ngModel)]="row.aadhaarNo"
                            (input)="onAadhaarInput(row)"
@@ -465,9 +466,13 @@
                            maxlength="12" />
                     <span *ngIf="row.aadhaarStatus === 'checking'" class="spinner-border spinner-border-sm text-primary position-absolute end-0 top-50 translate-middle-y me-2" style="width: 13px; height: 13px;"></span>
                     <i *ngIf="row.aadhaarStatus === 'verified'" class="fa-solid fa-circle-check text-success position-absolute end-0 top-50 translate-middle-y me-2" title="Aadhaar Verified & Unique"></i>
+                    <i *ngIf="row.aadhaarStatus === 'bench'" class="fa-solid fa-layer-group text-info position-absolute end-0 top-50 translate-middle-y me-2" [title]="row.aadhaarMessage || 'In Talent Bench'"></i>
                     <i *ngIf="row.aadhaarStatus === 'duplicate'" class="fa-solid fa-circle-exclamation text-danger position-absolute end-0 top-50 translate-middle-y me-2" [title]="row.aadhaarMessage || 'Duplicate Aadhaar'"></i>
                   </div>
                   <div *ngIf="row.aadhaarStatus === 'duplicate'" class="text-danger small mt-0.5" style="font-size: 10px; line-height: 1.2;">
+                    {{ row.aadhaarMessage }}
+                  </div>
+                  <div *ngIf="row.aadhaarStatus === 'bench'" class="text-info small mt-0.5" style="font-size: 10px; line-height: 1.2;">
                     {{ row.aadhaarMessage }}
                   </div>
                 </td>
