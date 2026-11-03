@@ -1,0 +1,38 @@
+# .NET
+bin/
+obj/
+*.user
+*.userosscache
+*.suo
+*.userprefs
+.vs/
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Angular
+.angular/
+dist/
+tmp/
+out-tsc/
+bazel-out/
+.sass-cache/
+connect.lock
+coverage/
+
+# Android build
+android/app/build/
+android/.gradle/
+android/build/
+android/captures/
+local.properties
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+*.swp
+*.bak
+*~
