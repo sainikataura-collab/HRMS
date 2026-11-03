@@ -50,8 +50,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 03-01: Integrate Aadhaar deduplication check into `vendor-portal.component.ts` statutory dossier form and save routine.
-- [ ] 03-02: Add Talent Bench detection and one-click re-allocation flow in recruitment candidate sourcing.
+- [ ] 03-01: Candidate Hire Deduplication, Clean UI Labels & Robust Employee Code Generation
+- [ ] 03-02: Talent Bench Aadhaar Detection & Seamless Re-Allocation Integration
 
 ---
 *Roadmap generated: 2026-11-03*
