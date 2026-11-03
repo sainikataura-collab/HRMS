@@ -1115,7 +1115,7 @@ export class CandidatePipelineComponent implements OnInit, OnDestroy {
       this.candidateRegAadhaarMessage = 'Checking Aadhaar uniqueness...';
       this.cdr.detectChanges();
 
-      this.atsService.verifyAadhaarUniqueness(clean).subscribe({
+      this.atsService.verifyAadhaarUniqueness({ aadhaarNo: clean, companyId: this.companyId }).subscribe({
         next: (res: any) => {
           const dupType = res?.duplicateType || res?.DuplicateType;
           if (dupType === 'TALENT_BENCH') {
@@ -2932,7 +2932,7 @@ export class CandidatePipelineComponent implements OnInit, OnDestroy {
       this.hireAadhaarMessage = 'Verifying Aadhaar uniqueness...';
       this.cdr.detectChanges();
 
-      this.atsService.verifyAadhaarUniqueness(clean, this.hireForm.appId).subscribe({
+      this.atsService.verifyAadhaarUniqueness({ aadhaarNo: clean, companyId: this.companyId, currentAppId: this.hireForm.appId }).subscribe({
         next: (res: any) => {
           if (res && res.isDuplicate) {
             this.hireAadhaarStatus = 'duplicate';

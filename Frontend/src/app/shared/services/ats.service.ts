@@ -580,12 +580,29 @@ export class AtsService {
     return this.http.get<any>(url, { headers });
   }
 
-  verifyAadhaarUniqueness(payload: { aadhaarNo: string; companyId?: string; currentAppId?: number }, qrToken?: string): Observable<any> {
+  verifyAadhaarUniqueness(
+    payloadOrAadhaar: string | { aadhaarNo: string; companyId?: string; currentAppId?: number },
+    companyIdOrCurrentAppId?: string | number,
+    currentAppId?: number,
+    qrToken?: string
+  ): Observable<any> {
+    let payload: { aadhaarNo: string; companyId?: string; currentAppId?: number };
+    let token = qrToken;
+
+    if (typeof payloadOrAadhaar === 'string') {
+      const compId = typeof companyIdOrCurrentAppId === 'string' ? companyIdOrCurrentAppId : undefined;
+      const appId = typeof companyIdOrCurrentAppId === 'number' ? companyIdOrCurrentAppId : currentAppId;
+      payload = { aadhaarNo: payloadOrAadhaar, companyId: compId, currentAppId: appId };
+    } else {
+      payload = payloadOrAadhaar;
+      token = (typeof companyIdOrCurrentAppId === 'string') ? companyIdOrCurrentAppId : qrToken;
+    }
+
     return this.checkCandidateAadhaarStatus({
       aadharNo: payload.aadhaarNo,
       companyId: payload.companyId,
       currentAppId: payload.currentAppId
-    }, qrToken);
+    }, token);
   }
 
   submitWalkInCandidate(payload: any, qrToken?: string): Observable<any> {
