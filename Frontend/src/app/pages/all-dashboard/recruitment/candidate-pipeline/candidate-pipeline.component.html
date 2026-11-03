@@ -4352,7 +4352,7 @@
                   </div>
                   <input type="text" class="form-control form-control-sm" [(ngModel)]="hireForm.aadhaarNo"
                     (input)="onHireAadhaarInput()"
-                    maxlength="14" placeholder="12-digit Aadhaar"
+                    maxlength="12" placeholder="12-digit Aadhaar"
                     [class.border-danger]="!hireForm.aadhaarNo || hireAadhaarStatus === 'duplicate'"
                     [class.border-success]="hireAadhaarStatus === 'verified'"
                     style="font-size: 11.5px;" />

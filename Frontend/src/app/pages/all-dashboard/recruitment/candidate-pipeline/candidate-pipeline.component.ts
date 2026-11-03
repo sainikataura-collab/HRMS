@@ -2928,7 +2928,7 @@ export class CandidatePipelineComponent implements OnInit, OnDestroy {
 
     if (clean.length < 12) {
       this.hireAadhaarStatus = 'idle';
-      this.hireAadhaarMessage = '';
+      this.hireAadhaarMessage = clean.length > 0 ? `${clean.length}/12 digits entered` : '';
       this.hireAadhaarDuplicateDetails = null;
       this.cdr.detectChanges();
       return;
@@ -2948,7 +2948,10 @@ export class CandidatePipelineComponent implements OnInit, OnDestroy {
                         res?.canProceed === false || 
                         res?.CanProceed === 0;
 
-          if (isDup) {
+          const existingAppId = res?.existingAppId || res?.ExistingAppId;
+          const isSelf = !!(this.hireForm.appId && existingAppId && (Number(existingAppId) === Number(this.hireForm.appId)));
+
+          if (isDup && !isSelf) {
             this.hireAadhaarStatus = 'duplicate';
             this.hireAadhaarMessage = res.message || res.Message || 'Duplicate Aadhaar found in records.';
             this.hireAadhaarDuplicateDetails = res.existingRecord || {
@@ -2959,7 +2962,7 @@ export class CandidatePipelineComponent implements OnInit, OnDestroy {
             };
           } else {
             this.hireAadhaarStatus = 'verified';
-            this.hireAadhaarMessage = 'Aadhaar is unique & verified.';
+            this.hireAadhaarMessage = isSelf ? 'Candidate registered Aadhaar verified.' : 'Aadhaar is unique & verified.';
             this.hireAadhaarDuplicateDetails = null;
           }
           this.cdr.detectChanges();

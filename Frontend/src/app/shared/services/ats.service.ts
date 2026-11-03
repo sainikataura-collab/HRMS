@@ -601,7 +601,9 @@ export class AtsService {
           candidateName: data?.candidateName || data?.CandidateName || '',
           currentStatus: data?.currentStatus || data?.CurrentStatus || '',
           jobTitle: data?.jobTitle || data?.JobTitle || '',
-          duplicateType: data?.duplicateType || data?.DuplicateType || (isDup ? 'ACTIVE_PIPELINE' : 'NONE')
+          duplicateType: data?.duplicateType || data?.DuplicateType || (isDup ? 'ACTIVE_PIPELINE' : 'NONE'),
+          existingAppId: data?.existingAppId || data?.ExistingAppId || null,
+          ExistingAppId: data?.ExistingAppId || data?.existingAppId || null
         };
       })
     );
