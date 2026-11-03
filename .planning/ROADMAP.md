@@ -6,7 +6,7 @@ This roadmap delivers end-to-end duplicate Aadhaar card prevention across HRBook
 
 ## Phases
 
-- [ ] **Phase 1: Centralized Backend Aadhaar Deduplication Engine** - Unified stored procedure, repository, and REST API validation service with server-side guards.
+- [x] **Phase 1: Centralized Backend Aadhaar Deduplication Engine** - Unified stored procedure, repository, and REST API validation service with server-side guards.
 - [ ] **Phase 2: Sourcing Surfaces Deduplication** - Real-time client feedback and submission blocks for Manpower Public Apply and Vendor Portal registration.
 - [ ] **Phase 3: Onboarding Dossier & Talent Pool Integration** - Statutory dossier uniqueness checks and Talent Bench re-allocation workflow.
 
@@ -23,8 +23,8 @@ This roadmap delivers end-to-end duplicate Aadhaar card prevention across HRBook
 **Plans**: 2 plans
 
 Plans:
-- [ ] 01-01: Create SQL Stored Procedure `dbo.usp_REC_ValidateAadhaarCard` and DTO response models.
-- [ ] 01-02: Implement repository methods, controller endpoints, and server-side batch submission guards in WebAPI.
+- [x] 01-01: Create SQL Stored Procedure `dbo.usp_REC_ValidateAadhaarCard` and DTO response models.
+- [x] 01-02: Implement repository methods, controller endpoints, and server-side batch submission guards in WebAPI.
 
 ### Phase 2: Sourcing Surfaces Deduplication
 **Goal**: Prevent duplicate Aadhaar submissions at the initial point of entry on Manpower Public Apply and Vendor Portal registration.
@@ -55,3 +55,4 @@ Plans:
 
 ---
 *Roadmap generated: 2026-11-03*
+
