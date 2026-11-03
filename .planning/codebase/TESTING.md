@@ -1,3 +1,7 @@
+---
+last_mapped_commit: b88e1fd8fbe340cd5ac4c6b5a413ec967fa15c2c
+last_mapped_at: 2026-11-03
+---
 # Testing Patterns
 
 **Analysis Date:** 2026-11-03
@@ -13,6 +17,7 @@
 - **Runner / Framework:** **None currently configured.** `WebAPI/HRMSWebAPI.sln` contains only the main `HRMSWebAPI.csproj` project. There is no xUnit, NUnit, or MSTest project for unit or integration testing.
 
 **Frontend Run Commands:**
+
 ```bash
 npm run test           # Run Angular unit tests via Karma
 ng test --watch=false  # Single-run headless test execution
@@ -29,6 +34,7 @@ ng test --code-coverage # Generate coverage report in Frontend/coverage/
 - Matches component or service name with `.spec.ts` suffix (e.g., `login.component.spec.ts`, `auth.guard.spec.ts`).
 
 **Structure:**
+
 ```text
 Frontend/src/app/
 ├── authentication/
@@ -42,6 +48,7 @@ Frontend/src/app/
 ## Test Structure
 
 **Suite Organization (Frontend Jasmine):**
+
 ```typescript
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
@@ -78,6 +85,7 @@ describe('LoginComponent', () => {
 - Jasmine Spies (`jasmine.createSpyObj`, `spyOn`).
 
 **Patterns:**
+
 ```typescript
 const authServiceMock = jasmine.createSpyObj('AuthService', ['login', 'isLoggedIn']);
 authServiceMock.login.and.returnValue(of({ IsSuccess: true, StatusCode: 200 }));
@@ -96,6 +104,7 @@ authServiceMock.login.and.returnValue(of({ IsSuccess: true, StatusCode: 200 }));
 
 **Test Data:**
 - Mock responses emulate backend `ModelResponse` structures:
+
 ```typescript
 const mockModelResponse = {
   isSuccess: true,

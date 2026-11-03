@@ -1,3 +1,7 @@
+---
+last_mapped_commit: b88e1fd8fbe340cd5ac4c6b5a413ec967fa15c2c
+last_mapped_at: 2026-11-03
+---
 # Coding Conventions
 
 **Analysis Date:** 2026-11-03
@@ -55,6 +59,7 @@
 
 **Backend Error Pattern:**
 - Controllers catch exceptions and wrap errors inside `ModelResponse`:
+
 ```csharp
 try
 {
@@ -66,10 +71,12 @@ catch (Exception ex)
     return Ok(new ModelResponse { IsSuccess = false, Message = ex.Message, StatusCode = 500 });
 }
 ```
+
 - Global uncaught exception handling handled by `JsonExceptionHandlingMiddleware.cs`.
 
 **Frontend Error Pattern:**
 - `error.interceptor.ts` intercepts HTTP errors globally, parses backend `ModelResponse.Message`, and displays a toast notification using `ngx-toastr`:
+
 ```typescript
 this.toastr.error(errorMessage || 'An unexpected error occurred', 'Error');
 ```
