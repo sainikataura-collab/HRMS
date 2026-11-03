@@ -1118,17 +1118,24 @@ export class CandidatePipelineComponent implements OnInit, OnDestroy {
       this.atsService.verifyAadhaarUniqueness({ aadhaarNo: clean, companyId: this.companyId }).subscribe({
         next: (res: any) => {
           const dupType = res?.duplicateType || res?.DuplicateType;
+          const isDup = res?.isDuplicate === true || 
+                        res?.IsDuplicate === true || 
+                        res?.ExistsStatus === 1 || 
+                        res?.existsStatus === 1 ||
+                        res?.canProceed === false || 
+                        res?.CanProceed === 0;
+
           if (dupType === 'TALENT_BENCH') {
             this.candidateRegAadhaarStatus = 'bench';
-            this.candidateRegAadhaarMessage = res.message || 'Candidate exists in Talent Bench.';
+            this.candidateRegAadhaarMessage = res.message || res.Message || 'Candidate exists in Talent Bench.';
             this.candidateRegBenchRecord = res.existingRecord || {
-              candidateName: res.existingName || res.ExistingName,
-              mrfCode: res.existingMrf || res.ExistingMrf || 'Bench',
+              candidateName: res.candidateName || res.CandidateName || res.existingName || res.ExistingName,
+              mrfCode: res.jobTitle || res.JobTitle || res.existingMrf || res.ExistingMrf || 'Bench',
               appId: res.existingAppId || res.ExistingAppId
             };
-          } else if (res && res.isDuplicate) {
+          } else if (isDup) {
             this.candidateRegAadhaarStatus = 'duplicate';
-            this.candidateRegAadhaarMessage = res.message || 'Aadhaar already registered in records.';
+            this.candidateRegAadhaarMessage = res.message || res.Message || 'Aadhaar already registered in records.';
             this.candidateRegBenchRecord = null;
           } else {
             this.candidateRegAadhaarStatus = 'verified';
@@ -2934,10 +2941,22 @@ export class CandidatePipelineComponent implements OnInit, OnDestroy {
 
       this.atsService.verifyAadhaarUniqueness({ aadhaarNo: clean, companyId: this.companyId, currentAppId: this.hireForm.appId }).subscribe({
         next: (res: any) => {
-          if (res && res.isDuplicate) {
+          const isDup = res?.isDuplicate === true || 
+                        res?.IsDuplicate === true || 
+                        res?.ExistsStatus === 1 || 
+                        res?.existsStatus === 1 ||
+                        res?.canProceed === false || 
+                        res?.CanProceed === 0;
+
+          if (isDup) {
             this.hireAadhaarStatus = 'duplicate';
-            this.hireAadhaarMessage = res.message || 'Duplicate Aadhaar found in records.';
-            this.hireAadhaarDuplicateDetails = res.existingRecord || null;
+            this.hireAadhaarMessage = res.message || res.Message || 'Duplicate Aadhaar found in records.';
+            this.hireAadhaarDuplicateDetails = res.existingRecord || {
+              candidateName: res.candidateName || res.CandidateName,
+              mrfCode: res.jobTitle || res.JobTitle,
+              currentStage: res.currentStatus || res.CurrentStatus,
+              identifier: res.existingIdentifier || res.ExistingIdentifier
+            };
           } else {
             this.hireAadhaarStatus = 'verified';
             this.hireAadhaarMessage = 'Aadhaar is unique & verified.';

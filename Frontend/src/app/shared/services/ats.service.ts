@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, of, catchError } from 'rxjs';
+import { Observable, of, catchError, map } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 export interface JobBoardMaster {
@@ -573,11 +573,38 @@ export class AtsService {
     if (payload.companyId) {
       url += `&companyId=${encodeURIComponent(payload.companyId)}`;
     }
+    if (payload.currentAppId) {
+      url += `&currentAppId=${encodeURIComponent(payload.currentAppId)}`;
+    }
     let headers = new HttpHeaders();
     if (qrToken) {
       headers = headers.set('X-QR-Token', qrToken);
     }
-    return this.http.get<any>(url, { headers });
+    return this.http.get<any>(url, { headers }).pipe(
+      map(res => {
+        let data = res;
+        if (typeof res === 'string') {
+          try { data = JSON.parse(res); } catch (_) { data = res; }
+        }
+        const isDup = data?.isDuplicate === true || 
+                      data?.IsDuplicate === true || 
+                      data?.ExistsStatus === 1 || 
+                      data?.existsStatus === 1 ||
+                      data?.canProceed === false || 
+                      data?.CanProceed === 0;
+        const canProc = !isDup && (data?.canProceed === true || data?.CanProceed === 1 || data?.CanProceedBool === true);
+        return {
+          ...data,
+          isDuplicate: isDup,
+          canProceed: canProc,
+          message: data?.message || data?.Message || (isDup ? 'Duplicate record found in system.' : 'Aadhaar is clear.'),
+          candidateName: data?.candidateName || data?.CandidateName || '',
+          currentStatus: data?.currentStatus || data?.CurrentStatus || '',
+          jobTitle: data?.jobTitle || data?.JobTitle || '',
+          duplicateType: data?.duplicateType || data?.DuplicateType || (isDup ? 'ACTIVE_PIPELINE' : 'NONE')
+        };
+      })
+    );
   }
 
   verifyAadhaarUniqueness(
