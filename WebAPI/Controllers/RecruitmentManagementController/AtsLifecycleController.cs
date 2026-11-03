@@ -1640,34 +1640,40 @@ p {{ color: #64748b; font-size: 13px; line-height: 1.6; margin: 8px 0; }}
                 }
 
                 string physicalPath = ResolvePhysicalPath(pdfPath);
+                byte[]? fileBytes = null;
+                string? ext = null;
+
+                if (!string.IsNullOrWhiteSpace(physicalPath) && System.IO.File.Exists(physicalPath))
+                {
+                    fileBytes = await System.IO.File.ReadAllBytesAsync(physicalPath);
+                    ext = Path.GetExtension(physicalPath).ToLowerInvariant();
+                }
 
                 // If file does not exist on disk, or no record existed, auto-generate on-the-fly for the candidate
-                if ((string.IsNullOrWhiteSpace(pdfPath) || !System.IO.File.Exists(physicalPath)) && appId > 0)
+                if ((fileBytes == null || fileBytes.Length == 0) && appId > 0)
                 {
-                    pdfPath = await GenerateOfferLetterOnTheFlyAsync(appId);
-                    if (!string.IsNullOrWhiteSpace(pdfPath))
+                    var generatedResult = await GenerateOfferLetterBytesAsync(appId);
+                    if (generatedResult.fileBytes != null && generatedResult.fileBytes.Length > 0)
                     {
-                        physicalPath = ResolvePhysicalPath(pdfPath);
+                        fileBytes = generatedResult.fileBytes;
+                        ext = ".pdf";
                         if (string.IsNullOrWhiteSpace(candidateName))
                         {
-                            var r = await _repository.GetOfferLetterRecordByAppIdAsync(appId);
-                            if (r != null) candidateName = (string?)r.CandidateName;
+                            candidateName = generatedResult.candidateName;
                         }
                     }
                 }
 
-                if (string.IsNullOrWhiteSpace(physicalPath) || !System.IO.File.Exists(physicalPath))
+                if (fileBytes == null || fileBytes.Length == 0)
                 {
                     return NotFound(new { success = false, message = "Offer letter file could not be generated or located on disk." });
                 }
 
-                var fileBytes = await System.IO.File.ReadAllBytesAsync(physicalPath);
                 string cleanName = (candidateName ?? $"Candidate_{appId}").Replace(" ", "_");
-                string ext = Path.GetExtension(physicalPath).ToLowerInvariant();
                 string mimeType = ext == ".docx"
                     ? "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                     : (ext == ".doc" ? "application/msword" : "application/pdf");
-                string downloadName = $"OfferLetter_{cleanName}_{appId}{(ext.Length > 0 ? ext : ".pdf")}";
+                string downloadName = $"OfferLetter_{cleanName}_{appId}{(ext?.Length > 0 ? ext : ".pdf")}";
 
                 if (download)
                 {
@@ -1691,11 +1697,11 @@ p {{ color: #64748b; font-size: 13px; line-height: 1.6; margin: 8px 0; }}
             string clean = pdfPath.TrimStart('/', '\\').Replace('/', Path.DirectorySeparatorChar);
             var candidates = new[]
             {
-                Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", clean),
                 Path.Combine(AppContext.BaseDirectory, "wwwroot", clean),
-                Path.Combine(@"d:\hr_24_10\WebAPI\WebAPI\wwwroot", clean),
+                Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", clean),
+                Path.Combine(AppContext.BaseDirectory, clean),
                 Path.Combine(Directory.GetCurrentDirectory(), clean),
-                Path.Combine(AppContext.BaseDirectory, clean)
+                Path.Combine(@"d:\hr_24_10\WebAPI\WebAPI\wwwroot", clean)
             };
 
             foreach (var cand in candidates)
@@ -1706,7 +1712,7 @@ p {{ color: #64748b; font-size: 13px; line-height: 1.6; margin: 8px 0; }}
             return candidates[0];
         }
 
-        private async Task<string?> GenerateOfferLetterOnTheFlyAsync(long appId)
+        private async Task<(byte[]? fileBytes, string? relativePath, string? candidateName)> GenerateOfferLetterBytesAsync(long appId)
         {
             try
             {
@@ -1723,18 +1729,12 @@ p {{ color: #64748b; font-size: 13px; line-height: 1.6; margin: 8px 0; }}
                     "30 Days",
                     0, 0, 0, 0, 0, 0, 0, 0);
 
-                if (spResult == null) return null;
+                if (spResult == null) return (null, null, null);
 
                 var spData = (IDictionary<string, object>)spResult;
                 var companyName = _configuration["AppSettings:CompanyName"] ?? "Company";
                 var companyAddr = _configuration["AppSettings:CompanyAddress"] ?? "";
                 var templateFolder = _configuration["AppSettings:LetterTemplatesFolderPath"] ?? "LetterTemplates";
-                var offerLetterFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "OfferLetters");
-                if (!Directory.Exists(offerLetterFolder))
-                {
-                    offerLetterFolder = Path.Combine(AppContext.BaseDirectory, "wwwroot", "OfferLetters");
-                }
-                Directory.CreateDirectory(offerLetterFolder);
 
                 decimal gross = spData.ContainsKey("grossCTC") && spData["grossCTC"] != null && Convert.ToDecimal(spData["grossCTC"]) > 0 ? Convert.ToDecimal(spData["grossCTC"]) : 360000m;
                 decimal basic = spData.ContainsKey("basicSalary") && spData["basicSalary"] != null && Convert.ToDecimal(spData["basicSalary"]) > 0 ? Convert.ToDecimal(spData["basicSalary"]) : Math.Round(gross * 0.40m);
@@ -1747,6 +1747,7 @@ p {{ color: #64748b; font-size: 13px; line-height: 1.6; margin: 8px 0; }}
 
                 int offerId = spData.ContainsKey("offerId") && spData["offerId"] != null ? Convert.ToInt32(spData["offerId"]) : 0;
                 string offerCode = spData.ContainsKey("offerCode") ? spData["offerCode"]?.ToString() ?? "" : "";
+                string candName = spData.ContainsKey("candidateName") ? spData["candidateName"]?.ToString() ?? "" : "";
 
                 List<OfferSalaryHeadDto>? heads = null;
                 try
@@ -1769,7 +1770,7 @@ p {{ color: #64748b; font-size: 13px; line-height: 1.6; margin: 8px 0; }}
                     OfferId = offerId,
                     OfferCode = offerCode,
                     CandidateCode = spData.ContainsKey("candidateCode") ? spData["candidateCode"]?.ToString() : "",
-                    CandidateName = spData.ContainsKey("candidateName") ? spData["candidateName"]?.ToString() : "",
+                    CandidateName = candName,
                     FatherName = spData.ContainsKey("fatherName") ? spData["fatherName"]?.ToString() : "",
                     CandidateAddress = spData.ContainsKey("candidateAddress") ? spData["candidateAddress"]?.ToString() : "",
                     CandidateEmail = spData.ContainsKey("candidateEmail") ? spData["candidateEmail"]?.ToString() : "",
@@ -1799,20 +1800,43 @@ p {{ color: #64748b; font-size: 13px; line-height: 1.6; margin: 8px 0; }}
                 };
 
                 byte[] pdfBytes = OfferLetterGenerator.GenerateOfferLetterPdf(offerData, templateFolder);
-                string safeOfferCode = (offerCode ?? $"App_{appId}").Replace('/', '_').Replace('\\', '_');
-                string pdfFileName = $"OfferLetter_{safeOfferCode}_{DateTime.Now:yyyyMMddHHmmss}.pdf";
-                string pdfFilePath = Path.Combine(offerLetterFolder, pdfFileName);
-                await System.IO.File.WriteAllBytesAsync(pdfFilePath, pdfBytes);
-                string relativePdfPath = $"OfferLetters/{pdfFileName}";
+                string? relativePdfPath = null;
 
-                await _repository.SaveOfferLetterPathAsync(appId, offerId, relativePdfPath);
-                return relativePdfPath;
+                try
+                {
+                    var offerLetterFolder = Path.Combine(AppContext.BaseDirectory, "wwwroot", "OfferLetters");
+                    if (!Directory.Exists(offerLetterFolder))
+                    {
+                        offerLetterFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "OfferLetters");
+                    }
+                    Directory.CreateDirectory(offerLetterFolder);
+
+                    string safeOfferCode = (offerCode ?? $"App_{appId}").Replace('/', '_').Replace('\\', '_');
+                    string pdfFileName = $"OfferLetter_{safeOfferCode}_{DateTime.Now:yyyyMMddHHmmss}.pdf";
+                    string pdfFilePath = Path.Combine(offerLetterFolder, pdfFileName);
+                    await System.IO.File.WriteAllBytesAsync(pdfFilePath, pdfBytes);
+                    relativePdfPath = $"OfferLetters/{pdfFileName}";
+
+                    await _repository.SaveOfferLetterPathAsync(appId, offerId, relativePdfPath);
+                }
+                catch (Exception diskEx)
+                {
+                    Console.WriteLine($"[GenerateOfferLetterBytesAsync] Warning: Disk write skipped: {diskEx.Message}");
+                }
+
+                return (pdfBytes, relativePdfPath, candName);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[GenerateOfferLetterOnTheFlyAsync] Error for appId {appId}: {ex}");
-                return null;
+                Console.WriteLine($"[GenerateOfferLetterBytesAsync] Error for appId {appId}: {ex}");
+                return (null, null, null);
             }
+        }
+
+        private async Task<string?> GenerateOfferLetterOnTheFlyAsync(long appId)
+        {
+            var res = await GenerateOfferLetterBytesAsync(appId);
+            return res.relativePath;
         }
 
         // =========================================================================
