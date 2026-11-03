@@ -1,0 +1,113 @@
+// ============================================================================
+// Public Walk-In Candidate Application Portal Styling
+// Modern, Mobile-First, Clean Glassmorphism & High Readability
+// ============================================================================
+
+:host {
+  display: block;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0b192c 0%, #1e3a8a 50%, #0f172a 100%);
+  padding: 1.5rem 1rem 3rem 1rem;
+  font-family: 'Work Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: #1e293b;
+}
+
+.walkin-apply-container {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+// ── Hub Header Banner ───────────────────────────────────────────────────────
+.hub-header-banner {
+  background: linear-gradient(135deg, #0051d5 0%, #0284c7 100%);
+  position: relative;
+  box-shadow: 0 4px 12px rgba(0, 81, 213, 0.2);
+}
+
+// ── Form Controls & Inputs ─────────────────────────────────────────────────
+.form-label-walkin {
+  font-size: 11.5px;
+  letter-spacing: -0.1px;
+}
+
+.walkin-input {
+  border-color: #cbd5e1;
+  transition: all 0.15s ease-in-out;
+
+  &:focus {
+    border-color: #0051d5;
+    box-shadow: 0 0 0 3px rgba(0, 81, 213, 0.15);
+  }
+
+  &.is-invalid {
+    border-color: #dc3545;
+    background-color: #fff8f8;
+  }
+
+  &.is-valid {
+    border-color: #198754;
+    background-color: #f6fff9;
+  }
+}
+
+.input-group-text {
+  border-color: #cbd5e1;
+  font-size: 13px;
+}
+
+// ── Submit Button ──────────────────────────────────────────────────────────
+.btn-submit-walkin {
+  background: linear-gradient(135deg, #0051d5 0%, #0284c7 100%);
+  border: none;
+  font-size: 13px;
+  letter-spacing: 0.2px;
+  transition: all 0.2s ease-in-out;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(0, 81, 213, 0.35);
+  }
+
+  &:disabled {
+    background: #cbd5e1;
+    color: #64748b;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+}
+
+// ── Success Card ───────────────────────────────────────────────────────────
+.success-confirmation-card {
+  animation: scaleUpIn 0.3s ease-out;
+
+  .ref-box {
+    background-color: #eff6ff !important;
+    border-color: #bfdbfe !important;
+  }
+}
+
+.unauthorized-card {
+  animation: scaleUpIn 0.3s ease-out;
+}
+
+@keyframes scaleUpIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@media (max-width: 576px) {
+  :host {
+    padding: 0.75rem 0.5rem 2rem 0.5rem;
+  }
+
+  .apply-card, .success-confirmation-card, .unauthorized-card {
+    border-radius: 12px !important;
+  }
+}

@@ -7,7 +7,7 @@ This roadmap delivers end-to-end duplicate Aadhaar card prevention across HRBook
 ## Phases
 
 - [x] **Phase 1: Centralized Backend Aadhaar Deduplication Engine** - Unified stored procedure, repository, and REST API validation service with server-side guards.
-- [ ] **Phase 2: Sourcing Surfaces Deduplication** - Real-time client feedback and submission blocks for Manpower Public Apply and Vendor Portal registration.
+- [x] **Phase 2: Sourcing Surfaces Deduplication & Document Submission Stage Progression** - Real-time client feedback and submission blocks for Manpower Public Apply, Vendor Portal registration, and automatic progression to Docs_Submitted.
 - [ ] **Phase 3: Onboarding Dossier & Talent Pool Integration** - Statutory dossier uniqueness checks and Talent Bench re-allocation workflow.
 
 ## Phase Details
@@ -27,18 +27,18 @@ Plans:
 - [x] 01-02: Implement repository methods, controller endpoints, and server-side batch submission guards in WebAPI.
 
 ### Phase 2: Sourcing Surfaces Deduplication
-**Goal**: Prevent duplicate Aadhaar submissions at the initial point of entry on Manpower Public Apply and Vendor Portal registration.
+**Goal**: Prevent duplicate Aadhaar submissions at the initial point of entry on Manpower Public Apply and Vendor Portal registration, and advance candidates on document submission.
 **Depends on**: Phase 1
 **Requirements**: MANPOWER-01, MANPOWER-02, MANPOWER-03, VENDOR-01, VENDOR-02, VENDOR-03
 **Success Criteria**:
   1. Candidates entering Aadhaar on the public walk-in link receive instant inline verification; duplicate numbers are blocked from submitting.
   2. Vendors typing Aadhaar numbers in batch registration rows receive immediate duplicate warnings before submitting the batch roster.
   3. Pre-flight check prevents batch submission if any duplicate Aadhaar exists in the database.
-**Plans**: 2 plans
+  4. Submitting candidate documents and statutory dossier advances selected candidates to Docs_Submitted.
+**Plans**: 1 plan
 
 Plans:
-- [ ] 02-01: Update `public-walkin-apply.component.ts` with enhanced validation and blocking UX.
-- [ ] 02-02: Implement debounced row-level check and pre-flight validation in `vendor-portal.component.ts` and `vendor-add-candidate.component.ts`.
+- [x] 02-01: Implement real-time Aadhaar deduplication across Public Apply, Vendor Add Candidate, Vendor Portal, and auto-advance selected candidates to Docs_Submitted on document submission.
 
 ### Phase 3: Onboarding Dossier & Talent Pool Integration
 **Goal**: Enforce Aadhaar uniqueness during statutory onboarding document completion and enable smart re-allocation from the Talent Bench.

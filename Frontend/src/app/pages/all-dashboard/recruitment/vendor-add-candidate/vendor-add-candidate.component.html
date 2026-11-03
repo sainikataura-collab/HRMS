@@ -1,0 +1,1090 @@
+<div class="vendor-add-candidate-container px-2 px-md-3 pt-0 pb-3" style="background-color: #f6f8fa; font-family: 'Work Sans', sans-serif;">
+
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <!-- MOBILE-ONLY LAYOUT (d-md-none)                                         -->
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <div class="d-md-none">
+
+    <!-- Mobile Header: Back + Job chip + Switch dropdown -->
+    <div class="mob-header">
+      <div class="mob-header-top">
+        <button (click)="backToAssignedJobs()" class="mob-back-btn">
+          <i class="fa-solid fa-arrow-left me-1"></i>Back
+        </button>
+        <div class="mob-job-chip" (click)="openJobDetailsModal()" title="Tap to view job details">
+          <span class="mob-job-title">{{ selectedJob ? selectedJob.jobTitle : 'Loading...' }}</span>
+          <span *ngIf="selectedJob?.mrfCode" class="mob-mrf-badge">{{ selectedJob?.mrfCode }}</span>
+        </div>
+      </div>
+      <!-- Location + Dept row -->
+      <div *ngIf="selectedJob" class="mob-header-meta">
+        <i class="fa-solid fa-location-dot text-danger me-1"></i>{{ selectedJob?.location }}
+        <span class="mx-1 text-muted">·</span>{{ selectedJob?.department }}
+      </div>
+      <!-- Switch Job -->
+      <div class="mob-switch-row">
+        <span class="mob-switch-label">Switch:</span>
+        <select class="form-select form-select-sm mob-switch-select shadow-none"
+                [(ngModel)]="selectedJob"
+                [compareWith]="compareJobs"
+                (ngModelChange)="onJobSelectChange($event)">
+          <option *ngFor="let j of assignedJobs" [ngValue]="j">{{ j.mrfCode }} - {{ j.jobTitle }}</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- TOP SECTION: MAIN ADD CANDIDATE ACTION -->
+    <div class="mob-add-hero-card">
+      <div class="mob-hero-content">
+        <div class="mob-hero-icon">
+          <i class="fa-solid fa-user-plus"></i>
+        </div>
+        <div class="mob-hero-text">
+          <div class="mob-hero-title">Add Candidate</div>
+          <div class="mob-hero-sub">Register candidate directly for this job</div>
+        </div>
+      </div>
+      <div class="d-flex align-items-center gap-2 flex-wrap">
+        <button (click)="openMobileAddModal()" class="mob-hero-add-btn">
+          <i class="fa-solid fa-plus me-1.5"></i>Add New
+        </button>
+        <button (click)="openMobilePoolModal()" class="mob-hero-add-btn" style="background: #2563eb;">
+          <i class="fa-solid fa-users me-1.5"></i>From Pool
+        </button>
+      </div>
+    </div>
+
+    <!-- Batch submission feedback (mobile) -->
+    <div *ngIf="batchSubmissionFeedback"
+         class="alert py-2 px-3 mb-2 border-0 rounded-2 small mx-2"
+         [ngClass]="batchSubmissionFeedback.failed === 0 ? 'alert-success' : 'alert-warning'">
+      <div class="fw-bold mb-1">
+        <i class="me-1" [class]="batchSubmissionFeedback.failed === 0 ? 'fa-solid fa-circle-check text-success' : 'fa-solid fa-triangle-exclamation text-warning'"></i>
+        {{ batchSubmissionFeedback.message }}
+        <span class="badge bg-white text-dark border ms-1">
+          {{ batchSubmissionFeedback.succeeded }} OK, {{ batchSubmissionFeedback.failed }} Failed
+        </span>
+      </div>
+      <ul class="mb-0 ps-3">
+        <li *ngFor="let item of batchSubmissionFeedback.results">
+          <span [ngClass]="item.success ? 'text-success fw-bold' : 'text-danger fw-bold'">{{ item.candidateName }}:</span>
+          {{ item.message }}
+          <span *ngIf="item.applicationNo" class="badge bg-light text-dark border ms-1">{{ item.applicationNo }}</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- ── Already Submitted Candidates (mobile small cards) ───────────────────── -->
+    <div class="mob-section">
+      <div class="mob-section-header">
+        <span><i class="fa-solid fa-users-viewfinder text-primary me-1.5"></i>Submitted Candidates</span>
+        <div class="d-flex align-items-center gap-2">
+          <span class="mob-count-badge">{{ jobSubmittedCandidates.length }} Profiles</span>
+          <button (click)="loadJobSubmissions(selectedJob?.reqId)" class="mob-refresh-btn" title="Refresh">
+            <i class="fa-solid fa-rotate-right" [class.spin-anim]="loadingSubmissions"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Search -->
+      <div class="mob-search-row">
+        <i class="fa-solid fa-magnifying-glass text-muted"></i>
+        <input type="text" class="mob-search-input" [(ngModel)]="submissionSearchQuery" placeholder="Search candidates...">
+      </div>
+
+      <!-- Loading -->
+      <div *ngIf="loadingSubmissions" class="text-center py-3 small text-muted">
+        <span class="spinner-border spinner-border-sm me-1 text-primary"></span>Loading...
+      </div>
+
+      <!-- Empty -->
+      <div *ngIf="!loadingSubmissions && filteredSubmissions.length === 0"
+           class="mob-empty-state">
+        <i class="fa-solid fa-folder-open fs-3 mb-2 d-block text-secondary"></i>
+        No candidates submitted yet for this job.
+      </div>
+
+      <!-- Small Candidate Cards -->
+      <div *ngIf="!loadingSubmissions && filteredSubmissions.length > 0" class="mob-cand-list">
+        <div *ngFor="let cand of filteredSubmissions; let idx = index"
+             class="mob-cand-card"
+             (click)="openCandidateDetails(cand)"
+             title="Click to view candidate details">
+          <!-- Top row: App No + Stage badge -->
+          <div class="mob-cand-top">
+            <span class="mob-app-no">{{ cand.applicationNo }}</span>
+            <span class="badge mob-stage-badge"
+                  [ngClass]="{
+                    'bg-success text-white': cand.stage === 'Hired',
+                    'bg-primary text-white': cand.stage === 'Selected',
+                    'bg-info text-white': cand.stage === 'Docs_Submitted' || cand.stage === 'Docs_Verified',
+                    'bg-warning text-dark': cand.stage === 'Interview' || cand.stage === 'Interview_Scheduled',
+                    'bg-danger text-white': cand.isRejected || cand.stage === 'Rejected',
+                    'bg-secondary text-white': !cand.stage || cand.stage === 'None'
+                  }">
+              {{ cand.stage === 'Docs_Submitted' ? 'Docs Submitted' : (cand.stage === 'Docs_Verified' ? 'Docs Verified' : (cand.stage || 'Applied')) }}
+            </span>
+          </div>
+          <!-- Name -->
+          <div class="mob-cand-name">{{ cand.candidateName }}</div>
+          <!-- Mobile, Aadhaar, Date -->
+          <div class="mob-cand-meta">
+            <span><i class="fa-solid fa-phone me-1 text-muted"></i>{{ cand.mobile }}</span>
+            <span *ngIf="cand.aadhaarNo" class="mx-1 text-muted">·</span>
+            <span *ngIf="cand.aadhaarNo"><i class="fa-solid fa-id-card me-1 text-muted"></i>{{ cand.aadhaarNo }}</span>
+            <span class="mx-1 text-muted">·</span>
+            <span class="text-muted">{{ cand.submittedDate ? (cand.submittedDate | date:'d MMM y') : '-' }}</span>
+          </div>
+          <!-- See details action bar -->
+          <div class="mob-cand-footer-action">
+            <span class="mob-see-details-link">
+              <i class="fa-regular fa-eye me-1"></i>See Details
+              <i class="fa-solid fa-chevron-right ms-1 text-muted" style="font-size: 9px;"></i>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /d-md-none -->
+
+
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <!-- DESKTOP-ONLY LAYOUT (d-none d-md-block) — UNCHANGED                   -->
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <div class="d-none d-md-block">
+  <div class="card border-0 shadow-sm rounded-3 overflow-hidden bg-white mt-1 mb-3">
+
+    <!-- ========================================================================= -->
+    <!-- HEADER BAR: EXACT MATCH TO USER SCREENSHOT                                -->
+    <!-- < Back to Assigned Jobs | Job Title | MRF | Location · Dept | Switch Job  -->
+    <!-- ========================================================================= -->
+    <div class="px-3 py-2.5 bg-light border-bottom d-flex justify-content-between align-items-center flex-wrap gap-2">
+      
+      <!-- Left side: Back button & Job info -->
+      <div class="d-flex align-items-center gap-2 flex-wrap">
+        <button (click)="backToAssignedJobs()" 
+                class="btn btn-sm btn-neutral-action gap-1.5 shadow-none">
+          <i class="fa-solid fa-arrow-left"></i>
+          <span>Back to Assigned Jobs</span>
+        </button>
+
+        <div class="vr mx-1" style="height: 22px; color: #94a3b8;"></div>
+
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+          <span class="fw-bold fs-6" 
+                style="color: #3080e8 !important; letter-spacing: -0.2px; cursor: pointer; text-decoration: underline; text-decoration-color: #94a3b8;"
+                (click)="openJobDetailsModal()"
+                title="Click to view full job description and details">
+            {{ selectedJob ? selectedJob.jobTitle : (loadingJobs ? 'Loading Job...' : 'No Job Selected') }}
+          </span>
+          
+          <span *ngIf="selectedJob?.mrfCode" 
+                class="badge" 
+                style="background-color: #3080e8; color: #fff; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 12px;">
+            {{ selectedJob?.mrfCode }}
+          </span>
+
+          <span *ngIf="selectedJob" class="small d-flex align-items-center gap-1.5 fw-semibold" style="font-size: 12px; color: #0f172a !important;">
+            <i class="fa-solid fa-location-dot text-danger"></i>
+            <span style="color: #0f172a !important;">{{ selectedJob?.location }}</span>
+            <span style="color: #64748b;">·</span>
+            <span style="color: #0f172a !important;">{{ selectedJob?.department }}</span>
+          </span>
+        </div>
+      </div>
+
+      <!-- Right side: Switch Job Dropdown -->
+      <div class="d-flex align-items-center gap-2">
+        <span class="fw-bold" style="font-size: 12px; color: #0f172a !important;">Switch Job:</span>
+        <select class="form-select form-select-sm shadow-none fw-semibold"
+                style="min-width: 250px; font-size: 12px; border-color: #94a3b8; border-radius: 6px; color: #0f172a !important;"
+                [(ngModel)]="selectedJob"
+                [compareWith]="compareJobs"
+                (ngModelChange)="onJobSelectChange($event)">
+          <option *ngFor="let j of assignedJobs" [ngValue]="j" style="color: #0f172a; font-weight: 600;">
+            {{ j.mrfCode }} - {{ j.jobTitle }}
+          </option>
+        </select>
+      </div>
+
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- SECTION 1: ALREADY SUBMITTED CANDIDATES FOR THIS JOB                      -->
+    <!-- Strictly filtered by Vendor ID & Req ID                                   -->
+    <!-- ========================================================================= -->
+    <div class="p-3 border-bottom">
+      
+      <!-- Toolbar -->
+      <div class="d-flex justify-content-between align-items-center mb-2.5 flex-wrap gap-2">
+        <div class="d-flex align-items-center gap-2">
+          <span class="d-flex align-items-center gap-1.5 fw-bold" style="font-size: 13px; color: #0f172a !important;">
+            <i class="fa-solid fa-users-viewfinder text-primary"></i>
+            Already Submitted Candidates for this Job
+          </span>
+          <span class="badge" 
+                style="background-color: #dbeafe; color: #1e40af; font-weight: 700; font-size: 11px; padding: 4px 10px; border-radius: 12px;">
+            {{ jobSubmittedCandidates.length }} Profiles
+          </span>
+          <button (click)="loadJobSubmissions(selectedJob?.reqId)"
+                  class="btn btn-sm btn-neutral-action py-0.5 px-2 ms-1 shadow-none"
+                  title="Refresh Candidates">
+            <i class="fa-solid fa-rotate-right" [class.spin-anim]="loadingSubmissions"></i>
+          </button>
+        </div>
+
+        <div class="d-flex align-items-center gap-2">
+          <div class="input-group input-group-sm" style="width: 240px;">
+            <span class="input-group-text bg-white border-end-0" style="border-color: #94a3b8; color: #0f172a;">
+              <i class="fa-solid fa-magnifying-glass"></i>
+            </span>
+            <input type="text"
+                   class="form-control border-start-0 shadow-none fw-semibold"
+                   style="border-color: #94a3b8; font-size: 11.5px; color: #0f172a !important;"
+                   [(ngModel)]="submissionSearchQuery"
+                   placeholder="Search candidates...">
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div *ngIf="loadingSubmissions" class="text-center py-4 fw-semibold small" style="color: #0f172a;">
+        <span class="spinner-border spinner-border-sm me-1 text-primary"></span>
+        Loading submitted candidates for this job...
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="!loadingSubmissions && filteredSubmissions.length === 0"
+           class="card border text-center py-4 my-2 rounded-2"
+           style="background-color: #f8fafc; border-color: #cbd5e1 !important;">
+        <i class="fa-solid fa-folder-open fs-3 mb-2 d-block" style="color: #3080e8;"></i>
+        <span class="fw-bold" style="color: #0f172a; font-size: 13px;">No candidate profiles have been submitted for this job yet.</span>
+        <span class="d-block mt-1 fw-semibold" style="color: #334155; font-size: 11.5px;">Add candidate profiles using the Sourcing Roster below.</span>
+      </div>
+
+      <!-- Table Matching User's Screenshot -->
+      <div *ngIf="!loadingSubmissions && filteredSubmissions.length > 0"
+           class="table-responsive border rounded-2 shadow-none"
+           style="max-height: 280px; overflow-y: auto; border-color: #cbd5e1 !important;">
+        <table class="table table-hover table-sm align-middle mb-0" style="font-size: 11.5px;">
+          <thead class="table-light sticky-top" style="top: 0; z-index: 2; background-color: #f1f5f9;">
+            <tr style="border-bottom: 2px solid #94a3b8;">
+              <th style="width: 45px;" class="text-center fw-bold" style="color: #0f172a !important;">#</th>
+              <th style="min-width: 140px;" class="fw-bold" style="color: #0f172a !important;">APPLICATION NO</th>
+              <th style="min-width: 180px;" class="fw-bold" style="color: #0f172a !important;">CANDIDATE NAME</th>
+              <th style="min-width: 120px;" class="fw-bold" style="color: #0f172a !important;">MOBILE</th>
+              <th style="min-width: 140px;" class="fw-bold" style="color: #0f172a !important;">AADHAAR NO</th>
+              <th style="min-width: 110px;" class="text-center fw-bold" style="color: #0f172a !important;">CURRENT STAGE</th>
+              <th style="min-width: 110px;" class="text-center fw-bold" style="color: #0f172a !important;">INTERVIEW STATUS</th>
+              <th style="min-width: 120px;" class="fw-bold" style="color: #0f172a !important;">SUBMITTED ON</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let cand of filteredSubmissions; let idx = index"
+                (click)="openCandidateDetails(cand)"
+                class="cand-row-clickable"
+                title="Click to view candidate details"
+                style="border-bottom: 1px solid #f1f5f9; cursor: pointer;">
+              <td class="text-center fw-bold" style="color: #0f172a;">{{ idx + 1 }}</td>
+              <td>
+                <span class="badge font-monospace" 
+                      style="background-color: #e0f2fe; color: #0284c7; border: 1px solid #bae6fd; font-size: 11px; padding: 3px 8px; border-radius: 6px;">
+                  {{ cand.applicationNo }}
+                </span>
+              </td>
+              <td class="fw-bold text-dark">{{ cand.candidateName }}</td>
+              <td class="mono-val">{{ cand.mobile }}</td>
+              <td>
+                <span *ngIf="cand.aadhaarNo" class="mono-val">{{ cand.aadhaarNo }}</span>
+                <span *ngIf="!cand.aadhaarNo" 
+                      class="badge"
+                      style="background-color: #e2e8f0; color: #334155; font-size: 10px; padding: 2px 8px; border-radius: 8px;">
+                  Not Provided
+                </span>
+              </td>
+              <td class="text-center">
+                <span class="badge" 
+                      style="font-size: 10.5px; padding: 3px 10px; border-radius: 12px; font-weight: 600;"
+                      [ngClass]="{
+                        'bg-success text-white': cand.stage === 'Hired',
+                        'bg-primary text-white': cand.stage === 'Selected',
+                        'bg-info text-white': cand.stage === 'Docs_Submitted' || cand.stage === 'Docs_Verified',
+                        'bg-warning text-dark': cand.stage === 'Interview' || cand.stage === 'Interview_Scheduled',
+                        'bg-danger text-white': cand.isRejected || cand.stage === 'Rejected',
+                        'stage-applied-badge text-white': cand.stage === 'Applied' || cand.stage === 'Screening',
+                        'bg-secondary text-white': !cand.stage || cand.stage === 'None'
+                      }">
+                  {{ cand.stage === 'Docs_Submitted' ? 'Docs Submitted' : (cand.stage === 'Docs_Verified' ? 'Docs Verified' : (cand.stage || 'Applied')) }}
+                </span>
+              </td>
+              <td class="text-center">
+                <span class="badge" 
+                      style="background-color: #f1f5f9; color: #0f172a; border: 1px solid #94a3b8; font-size: 10.5px; padding: 3px 10px; border-radius: 12px; font-weight: 600;">
+                  {{ cand.interviewStatus || 'Pending' }}
+                </span>
+              </td>
+              <td class="fw-semibold small" style="color: #0f172a;">
+                {{ cand.submittedDate ? (cand.submittedDate | date:'mediumDate') : '-' }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- SECTION 2: SOURCING CANDIDATES (NEW MANUAL ROSTER OR EXISTING POOL)        -->
+    <!-- Supports fresh batch entry & recycling Bench / Previously Rejected pool    -->
+    <!-- ========================================================================= -->
+    <div class="p-3">
+
+      <!-- ── SOURCING MODE TOGGLE (NEW vs POOL) ── -->
+      <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3 pb-2 border-bottom">
+        <div class="btn-group btn-group-sm p-1 rounded-2" style="background-color: #f1f5f9; border: 1px solid #cbd5e1;">
+          <button type="button" 
+                  class="btn btn-sm fw-bold px-3 py-1.5 shadow-none"
+                  [ngClass]="sourcingMode === 'NEW' ? 'btn-primary text-white shadow-sm' : 'text-dark bg-white border'"
+                  (click)="setSourcingMode('NEW')"
+                  style="border-radius: 5px; font-size: 12px;">
+            <i class="fa-solid fa-user-plus me-1.5 text-primary"></i>Add New Candidates (Manual Roster)
+          </button>
+          <button type="button" 
+                  class="btn btn-sm fw-bold px-3 py-1.5 shadow-none d-flex align-items-center gap-1.5"
+                  [ngClass]="sourcingMode === 'POOL' ? 'btn-primary text-white shadow-sm' : 'text-dark bg-white border'"
+                  (click)="setSourcingMode('POOL')"
+                  style="border-radius: 5px; font-size: 12px;">
+            <i class="fa-solid fa-users-rectangle me-1 text-primary"></i>Select from Existing Pool (Bench &amp; Rejected)
+            <span class="badge ms-1" 
+                  [ngClass]="sourcingMode === 'POOL' ? 'bg-white text-primary' : 'bg-primary text-white'"
+                  style="font-size: 10px; padding: 2px 7px; border-radius: 10px;">
+              {{ poolCandidates.length }}
+            </span>
+          </button>
+        </div>
+
+        <div class="text-muted small" style="font-size: 11.5px;">
+          <span *ngIf="sourcingMode === 'NEW'"><i class="fa-solid fa-circle-info text-primary me-1"></i>Fill basic details below for new candidate profiles.</span>
+          <span *ngIf="sourcingMode === 'POOL'"><i class="fa-solid fa-recycle text-success me-1"></i>Re-assign eligible candidates from your pre-registered Talent Bench or Previously Rejected candidates.</span>
+        </div>
+      </div>
+
+      <!-- ═════════════════════════════════════════════════════════════════════ -->
+      <!-- MODE 1: ADD NEW CANDIDATES ROSTER (MANUAL FORM)                      -->
+      <!-- ═════════════════════════════════════════════════════════════════════ -->
+      <div *ngIf="sourcingMode === 'NEW'">
+
+        <!-- Submission Feedback Summary -->
+        <div *ngIf="batchSubmissionFeedback" 
+             class="alert py-2.5 px-3 mb-3 border-0 rounded-2 shadow-sm small"
+             [ngClass]="batchSubmissionFeedback.failed === 0 ? 'alert-success' : 'alert-warning'">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <div class="fw-bold">
+              <i class="me-1" [class]="batchSubmissionFeedback.failed === 0 ? 'fa-solid fa-circle-check text-success' : 'fa-solid fa-triangle-exclamation text-warning'"></i>
+              {{ batchSubmissionFeedback.message }}
+              <span class="badge bg-white text-dark border ms-2">
+                {{ batchSubmissionFeedback.succeeded }} Succeeded, {{ batchSubmissionFeedback.failed }} Failed
+              </span>
+            </div>
+          </div>
+          <ul class="mb-0 ps-3">
+            <li *ngFor="let item of batchSubmissionFeedback.results">
+              <span [ngClass]="item.success ? 'text-success fw-bold' : 'text-danger fw-bold'">{{ item.candidateName }}:</span>
+              {{ item.message }}
+              <span *ngIf="item.applicationNo" class="badge bg-light text-dark border ms-1">{{ item.applicationNo }}</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Roster Header Toolbar -->
+        <div class="d-flex justify-content-between align-items-center mb-2.5 flex-wrap gap-2">
+          <span class="fw-bold text-dark d-flex align-items-center gap-1.5" style="font-size: 13px;">
+            <i class="fa-solid fa-user-plus text-primary"></i>
+            Add New Candidates Roster ({{ batchCandidates.length }} Profiles)
+          </span>
+
+          <div class="d-flex align-items-center gap-1.5">
+            <button (click)="addBatchRow()" 
+                    class="btn btn-sm btn-outline-primary shadow-none fw-semibold"
+                    style="font-size: 11.5px; border-radius: 6px; padding: 4px 12px;">
+              <i class="fa-solid fa-plus me-1"></i>Add Row
+            </button>
+            <button (click)="addMultipleRows(3)" 
+                    class="btn btn-sm btn-neutral-action shadow-none"
+                    style="font-size: 11.5px; padding: 4px 12px;">
+              <i class="fa-solid fa-plus me-1"></i>Add 3 Rows
+            </button>
+          </div>
+        </div>
+
+        <!-- Input Roster Table -->
+        <div class="table-responsive border rounded-2 mb-3 shadow-none" style="border-color: #cbd5e1 !important;">
+          <table class="table table-hover table-bordered align-middle mb-0" style="font-size: 12px;">
+            <thead class="table-light" style="background-color: #f1f5f9;">
+              <tr style="border-bottom: 2px solid #94a3b8;">
+                <th style="width: 40px;" class="text-center fw-bold" style="color: #0f172a !important;">#</th>
+                <th style="min-width: 190px;" class="fw-bold" style="color: #0f172a !important;">Candidate Full Name *</th>
+                <th style="min-width: 150px;" class="fw-bold" style="color: #0f172a !important;">Mobile Number *</th>
+                <th style="min-width: 170px;" class="fw-bold" style="color: #0f172a !important;">Aadhaar Card No *</th>
+                <th style="min-width: 180px;" class="fw-bold" style="color: #0f172a !important;">Email Address</th>
+                <th style="min-width: 110px;" class="fw-bold" style="color: #0f172a !important;">Gender</th>
+                <th style="min-width: 130px;" class="fw-bold" style="color: #0f172a !important;">Date of Birth</th>
+                <th style="width: 45px;" class="text-center fw-bold" style="color: #0f172a !important;">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of batchCandidates; let i = index">
+                <td class="text-center fw-bold" style="color: #0f172a !important;">{{ i + 1 }}</td>
+                <td>
+                  <input type="text"
+                         class="form-control form-control-sm field-contrast shadow-none"
+                         [(ngModel)]="row.candidateName"
+                         placeholder="Full Name *" />
+                </td>
+                <td>
+                  <input type="text"
+                         class="form-control form-control-sm field-contrast mono-input shadow-none"
+                         [(ngModel)]="row.mobile"
+                         (input)="onMobileInput(row)"
+                         placeholder="10 Digits *"
+                         maxlength="10" />
+                </td>
+                <td style="min-width: 160px;">
+                  <div class="position-relative">
+                    <input type="text"
+                           class="form-control form-control-sm field-contrast mono-input shadow-none pe-4"
+                           [ngClass]="{
+                             'is-invalid': row.aadhaarStatus === 'duplicate',
+                             'is-valid': row.aadhaarStatus === 'verified'
+                           }"
+                           [(ngModel)]="row.aadhaarNo"
+                           (input)="onAadhaarInput(row)"
+                           (blur)="validateRowAadhaar(row)"
+                           placeholder="12-Digit Aadhaar *"
+                           maxlength="12" />
+                    <span *ngIf="row.aadhaarStatus === 'checking'" class="spinner-border spinner-border-sm text-primary position-absolute end-0 top-50 translate-middle-y me-2" style="width: 13px; height: 13px;"></span>
+                    <i *ngIf="row.aadhaarStatus === 'verified'" class="fa-solid fa-circle-check text-success position-absolute end-0 top-50 translate-middle-y me-2" title="Aadhaar Verified & Unique"></i>
+                    <i *ngIf="row.aadhaarStatus === 'duplicate'" class="fa-solid fa-circle-exclamation text-danger position-absolute end-0 top-50 translate-middle-y me-2" [title]="row.aadhaarMessage || 'Duplicate Aadhaar'"></i>
+                  </div>
+                  <div *ngIf="row.aadhaarStatus === 'duplicate'" class="text-danger small mt-0.5" style="font-size: 10px; line-height: 1.2;">
+                    {{ row.aadhaarMessage }}
+                  </div>
+                </td>
+                <td>
+                  <input type="email"
+                         class="form-control form-control-sm field-contrast shadow-none"
+                         [(ngModel)]="row.email"
+                         placeholder="candidate@email.com" />
+                </td>
+                <td>
+                  <select class="form-select form-select-sm field-contrast shadow-none" [(ngModel)]="row.gender">
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </td>
+                <td>
+                  <input type="date"
+                         class="form-control form-control-sm field-contrast shadow-none"
+                         [(ngModel)]="row.dateOfBirth" />
+                </td>
+                <td class="text-center">
+                  <button (click)="removeBatchRow(i)"
+                          class="btn btn-sm btn-link text-danger p-0 shadow-none"
+                          title="Remove candidate row">
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Action Footer -->
+        <div class="d-flex justify-content-between align-items-center pt-2">
+          <button (click)="backToAssignedJobs()" 
+                  class="btn btn-sm btn-neutral-action px-3 shadow-none">
+            Cancel &amp; Return
+          </button>
+
+          <button (click)="submitCandidateBatch()"
+                  [disabled]="submittingBatch"
+                  class="btn btn-sm d-flex align-items-center gap-2 px-4 shadow-none"
+                  style="background-color: #3080e8; border-color: #3080e8; color: #fff; font-size: 12px; font-weight: 600; border-radius: 6px; padding: 7px 20px; box-shadow: 0 2px 6px #acb5f6;">
+            <i class="fa-solid fa-paper-plane" *ngIf="!submittingBatch"></i>
+            <span class="spinner-border spinner-border-sm" *ngIf="submittingBatch"></span>
+            <span>Submit {{ batchCandidates.length }} Candidates</span>
+          </button>
+        </div>
+
+      </div><!-- /MODE 1 -->
+
+      <!-- ═════════════════════════════════════════════════════════════════════ -->
+      <!-- MODE 2: SELECT FROM EXISTING POOL (BENCH & PREVIOUSLY REJECTED)      -->
+      <!-- ═════════════════════════════════════════════════════════════════════ -->
+      <div *ngIf="sourcingMode === 'POOL'">
+
+        <!-- Pool Toolbar: Sub-tabs & Multi-field Search -->
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+          <!-- Sub-filters: All, Bench Only, Previously Rejected -->
+          <div class="d-flex align-items-center gap-1.5 flex-wrap">
+            <button class="btn btn-sm px-2.5 py-1 fw-bold shadow-none"
+                    [ngClass]="poolFilterTab === 'ALL' ? 'btn-primary text-white shadow-sm' : 'bg-white text-dark border'"
+                    (click)="setPoolFilter('ALL')" style="font-size: 11px; border-radius: 6px;">
+              All Eligible Pool ({{ poolCandidates.length }})
+            </button>
+            <button class="btn btn-sm px-2.5 py-1 fw-bold shadow-none"
+                    [ngClass]="poolFilterTab === 'BENCH' ? 'btn-primary text-white shadow-sm' : 'bg-white text-dark border'"
+                    (click)="setPoolFilter('BENCH')" style="font-size: 11px; border-radius: 6px;">
+              <i class="fa-solid fa-layer-group text-info me-1"></i>Talent Bench ({{ poolBenchCount }})
+            </button>
+            <button class="btn btn-sm px-2.5 py-1 fw-bold shadow-none"
+                    [ngClass]="poolFilterTab === 'REJECTED' ? 'btn-primary text-white shadow-sm' : 'bg-white text-dark border'"
+                    (click)="setPoolFilter('REJECTED')" style="font-size: 11px; border-radius: 6px;">
+              <i class="fa-solid fa-circle-xmark text-danger me-1"></i>Previously Rejected ({{ poolRejectedCount }})
+            </button>
+            <button class="btn btn-sm bg-white text-dark border py-1 px-2 shadow-none ms-1"
+                    (click)="loadPoolCandidates()" title="Refresh Candidate Pool">
+              <i class="fa-solid fa-rotate-right" [class.spin-anim]="loadingPool"></i>
+            </button>
+          </div>
+
+          <!-- Search by Aadhaar, Mobile, Name -->
+          <div class="d-flex align-items-center gap-2">
+            <div class="input-group input-group-sm" style="min-width: 320px;">
+              <span class="input-group-text bg-white border-end-0 text-muted">
+                <i class="fa-solid fa-magnifying-glass"></i>
+              </span>
+              <input type="text"
+                     class="form-control border-start-0 shadow-none fw-semibold"
+                     style="font-size: 11.5px; border-color: #94a3b8;"
+                     [(ngModel)]="poolSearchQuery"
+                     placeholder="Search by Aadhaar, Mobile, or Name...">
+              <button *ngIf="poolSearchQuery" class="btn btn-outline-secondary border-start-0 border-start" (click)="poolSearchQuery = ''">
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Loading Pool State -->
+        <div *ngIf="loadingPool" class="text-center py-4 text-muted fw-semibold small">
+          <span class="spinner-border spinner-border-sm me-2 text-primary"></span>
+          Loading talent pool candidates...
+        </div>
+
+        <!-- Empty State -->
+        <div *ngIf="!loadingPool && filteredPoolCandidates.length === 0"
+             class="card border text-center py-4 my-2 rounded-2"
+             style="background-color: #f8fafc; border-color: #cbd5e1 !important;">
+          <i class="fa-solid fa-users-slash fs-3 mb-2 d-block text-secondary"></i>
+          <span class="fw-bold text-dark" style="font-size: 13px;">No eligible pool candidates found.</span>
+          <span class="d-block mt-1 text-muted" style="font-size: 11.5px;">
+            Only pre-registered Talent Bench candidates and Previously Rejected candidates appear here. Active pipeline candidates are excluded.
+          </span>
+        </div>
+
+        <!-- Pool Candidates Table -->
+        <div *ngIf="!loadingPool && filteredPoolCandidates.length > 0"
+             class="table-responsive border rounded-2 mb-3 shadow-none"
+             style="max-height: 380px; overflow-y: auto; border-color: #cbd5e1 !important;">
+          <table class="table table-hover table-sm align-middle mb-0" style="font-size: 11.5px;">
+            <thead class="table-light sticky-top" style="top: 0; z-index: 2; background-color: #f1f5f9;">
+              <tr style="border-bottom: 2px solid #94a3b8;">
+                <th style="width: 40px;" class="text-center">
+                  <input type="checkbox" 
+                         class="form-check-input shadow-none cursor-pointer"
+                         [checked]="isAllPoolSelected()"
+                         (change)="toggleSelectAllPool($event)"
+                         title="Select All Eligible Candidates" />
+                </th>
+                <th style="min-width: 140px;" class="fw-bold" style="color: #0f172a !important;">POOL SOURCE</th>
+                <th style="min-width: 140px;" class="fw-bold" style="color: #0f172a !important;">APPLICATION NO</th>
+                <th style="min-width: 180px;" class="fw-bold" style="color: #0f172a !important;">CANDIDATE NAME</th>
+                <th style="min-width: 130px;" class="fw-bold" style="color: #0f172a !important;">MOBILE NUMBER</th>
+                <th style="min-width: 150px;" class="fw-bold" style="color: #0f172a !important;">AADHAAR CARD NO</th>
+                <th style="min-width: 90px;" class="fw-bold" style="color: #0f172a !important;">GENDER</th>
+                <th style="min-width: 120px;" class="fw-bold" style="color: #0f172a !important;">SKILL LEVEL</th>
+                <th style="min-width: 120px;" class="fw-bold" style="color: #0f172a !important;">REGISTERED ON</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let cand of filteredPoolCandidates"
+                  (click)="toggleSelectPoolCandidate(cand.appId)"
+                  [class.table-active]="isPoolCandidateSelected(cand.appId)"
+                  style="cursor: pointer; border-bottom: 1px solid #f1f5f9;">
+                <td class="text-center" (click)="$event.stopPropagation()">
+                  <input type="checkbox"
+                         class="form-check-input shadow-none cursor-pointer"
+                         [checked]="isPoolCandidateSelected(cand.appId)"
+                         (change)="toggleSelectPoolCandidate(cand.appId)" />
+                </td>
+                <td>
+                  <span *ngIf="cand.poolType === 'BENCH'" 
+                        class="badge" 
+                        style="background-color: #e0f2fe; color: #0284c7; border: 1px solid #bae6fd; font-size: 10.5px; padding: 3px 8px; border-radius: 6px;">
+                    <i class="fa-solid fa-layer-group me-1"></i>Talent Bench
+                  </span>
+                  <span *ngIf="cand.poolType === 'REJECTED'" 
+                        class="badge" 
+                        style="background-color: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; font-size: 10.5px; padding: 3px 8px; border-radius: 6px;"
+                        [title]="cand.rejectionReason || 'Previously rejected'">
+                    <i class="fa-solid fa-circle-xmark me-1"></i>Rejected ({{ cand.mrfCode }})
+                  </span>
+                </td>
+                <td>
+                  <span class="badge font-monospace" 
+                        style="background-color: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; font-size: 11px; padding: 3px 8px; border-radius: 6px;">
+                    {{ cand.applicationNo }}
+                  </span>
+                </td>
+                <td class="fw-bold text-dark">{{ cand.candidateName }}</td>
+                <td class="mono-val">{{ cand.mobile }}</td>
+                <td>
+                  <span *ngIf="cand.aadhaarNo" class="mono-val fw-bold" style="color: #0f172a;">{{ cand.aadhaarNo }}</span>
+                  <span *ngIf="!cand.aadhaarNo" class="text-muted small">Not Provided</span>
+                </td>
+                <td>{{ cand.gender || 'Male' }}</td>
+                <td>
+                  <span class="badge bg-light text-dark border" style="font-size: 10.5px;">{{ cand.skillClassification }}</span>
+                </td>
+                <td class="text-muted small">
+                  {{ cand.registeredDate ? (cand.registeredDate | date:'mediumDate') : '-' }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Action Footer for Pool Mode -->
+        <div class="d-flex justify-content-between align-items-center pt-2 flex-wrap gap-2">
+          <div class="small fw-semibold text-muted">
+            Selected: <strong class="text-primary">{{ selectedPoolAppIds.size }}</strong> of {{ filteredPoolCandidates.length }} candidate(s)
+          </div>
+
+          <div class="d-flex align-items-center gap-2">
+            <button (click)="backToAssignedJobs()" class="btn btn-sm btn-neutral-action px-3 shadow-none">
+              Cancel &amp; Return
+            </button>
+            <button (click)="assignSelectedPoolCandidates()"
+                    [disabled]="selectedPoolAppIds.size === 0 || assigningPoolCandidates"
+                    class="btn btn-sm d-flex align-items-center gap-2 px-4 shadow-none"
+                    style="background-color: #3080e8; border-color: #3080e8; color: #fff; font-size: 12px; font-weight: 600; border-radius: 6px; padding: 7px 20px; box-shadow: 0 2px 6px #acb5f6;">
+              <i class="fa-solid fa-user-check" *ngIf="!assigningPoolCandidates"></i>
+              <span class="spinner-border spinner-border-sm" *ngIf="assigningPoolCandidates"></span>
+              <span>Assign Selected Candidates ({{ selectedPoolAppIds.size }}) to {{ selectedJob?.mrfCode }}</span>
+            </button>
+          </div>
+        </div>
+
+      </div><!-- /MODE 2 -->
+
+    </div>
+
+  </div>
+  </div><!-- /d-none d-md-block -->
+
+
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <!-- MOBILE: ADD NEW CANDIDATE MODAL (popup)                                -->
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <div *ngIf="showMobileAddModal" class="d-md-none mob-modal-backdrop" (click)="closeMobileAddModal()">
+    <div class="mob-modal-sheet" (click)="$event.stopPropagation()">
+
+      <!-- Modal Header -->
+      <div class="mob-modal-header">
+        <span><i class="fa-solid fa-user-plus me-2 text-primary"></i>Add New Candidate</span>
+        <button class="mob-modal-close" (click)="closeMobileAddModal()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="mob-modal-body">
+        <!-- Full Name -->
+        <div class="mob-field-group">
+          <label class="mob-field-label">Full Name <span class="text-danger">*</span></label>
+          <input type="text" class="mob-field-input"
+                 [(ngModel)]="newCandidateRow.candidateName"
+                 placeholder="Enter candidate full name" />
+        </div>
+        <!-- Mobile -->
+        <div class="mob-field-group">
+          <label class="mob-field-label">Mobile Number <span class="text-danger">*</span></label>
+          <input type="tel" class="mob-field-input"
+                 [(ngModel)]="newCandidateRow.mobile"
+                 (input)="onMobileModalMobileInput()"
+                 placeholder="10-digit mobile" maxlength="10" />
+        </div>
+        <!-- Aadhaar -->
+        <div class="mob-field-group">
+          <label class="mob-field-label">Aadhaar Card No <span class="text-danger">*</span></label>
+          <input type="tel" class="mob-field-input"
+                 [(ngModel)]="newCandidateRow.aadhaarNo"
+                 (input)="onMobileModalAadhaarInput()"
+                 placeholder="12-digit Aadhaar" maxlength="12" />
+        </div>
+        <!-- Email (optional) -->
+        <div class="mob-field-group">
+          <label class="mob-field-label">Email <span class="text-muted">(optional)</span></label>
+          <input type="email" class="mob-field-input"
+                 [(ngModel)]="newCandidateRow.email"
+                 placeholder="candidate@email.com" />
+        </div>
+        <!-- Gender + DOB row -->
+        <div class="mob-field-row">
+          <div class="mob-field-group flex-1">
+            <label class="mob-field-label">Gender</label>
+            <select class="mob-field-input" [(ngModel)]="newCandidateRow.gender">
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="mob-field-group flex-1">
+            <label class="mob-field-label">Date of Birth</label>
+            <input type="date" class="mob-field-input" [(ngModel)]="newCandidateRow.dateOfBirth" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="mob-modal-footer">
+        <button class="mob-cancel-btn" (click)="closeMobileAddModal()">Cancel</button>
+        <button class="mob-save-btn" (click)="saveMobileCandidate()" [disabled]="submittingBatch">
+          <span class="spinner-border spinner-border-sm me-1" *ngIf="submittingBatch"></span>
+          <i class="fa-solid fa-paper-plane me-1" *ngIf="!submittingBatch"></i>
+          Submit Candidate
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- ========================================================================= -->
+<!-- MODAL: FULL JOB DETAILS (Opened on Job Title Click)                       -->
+<!-- ========================================================================= -->
+<div *ngIf="showJobDetailsModal && selectedJob" 
+     class="modal-backdrop-custom"
+     (click)="closeJobDetailsModal()">
+  <div class="modal-dialog-custom" (click)="$event.stopPropagation()">
+    
+    <!-- 1. Modal Header -->
+    <div class="modal-header-hero">
+      <div class="d-flex align-items-center gap-3">
+        <div class="job-icon-box">
+          <i class="fa-solid fa-briefcase"></i>
+        </div>
+        <div class="flex-grow-1 min-w-0">
+          <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+            <span class="mrf-pill">{{ selectedJob.mrfCode }}</span>
+            <span class="badge bg-success-subtle text-success border border-success-subtle d-inline-flex align-items-center gap-1.5" style="font-size: 10.5px; font-weight: 600; padding: 2.5px 8px; border-radius: 6px;">
+              <span class="pulse-dot"></span>
+              {{ selectedJob.workflowStatus || selectedJob.requisitionStatus || 'Active Requisition' }}
+            </span>
+            <span class="badge bg-light text-dark border" style="font-size: 10.5px; font-weight: 600; padding: 2.5px 8px; border-radius: 6px;">
+              Priority: {{ selectedJob.priority || 'Medium' }}
+            </span>
+          </div>
+          <h5 class="job-hero-title mb-1 text-truncate" [title]="selectedJob.jobTitle">
+            {{ selectedJob.jobTitle }}
+          </h5>
+          <div class="job-hero-meta d-flex align-items-center gap-2 flex-wrap text-muted" style="font-size: 11.5px;">
+            <span><i class="fa-solid fa-building me-1 text-primary"></i>{{ selectedJob.department }}</span>
+            <span class="meta-dot">&bull;</span>
+            <span><i class="fa-solid fa-location-dot me-1 text-danger"></i>{{ selectedJob.location }}</span>
+            <span class="meta-dot">&bull;</span>
+            <span><i class="fa-regular fa-clock me-1 text-secondary"></i>{{ selectedJob.employmentType || 'Full-Time' }}</span>
+          </div>
+        </div>
+      </div>
+      <button type="button" class="btn-modal-close" (click)="closeJobDetailsModal()" aria-label="Close">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <!-- 2. Modal Body (Scrollable) -->
+    <div class="modal-body-scrollable">
+      
+      <!-- Key Metric Strip (4 Cards) -->
+      <div class="row g-2.5 mb-3">
+        <div class="col-6 col-md-3">
+          <div class="metric-card">
+            <div class="d-flex align-items-center justify-content-between mb-1">
+              <span class="metric-label">VACANCIES</span>
+              <div class="metric-icon-small bg-blue-subtle text-primary">
+                <i class="fa-solid fa-users"></i>
+              </div>
+            </div>
+            <div class="metric-val text-primary">{{ selectedJob.openingsCount || 1 }} <span class="metric-unit">Positions</span></div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="metric-card">
+            <div class="d-flex align-items-center justify-content-between mb-1">
+              <span class="metric-label">EXPERIENCE</span>
+              <div class="metric-icon-small bg-slate-subtle text-slate">
+                <i class="fa-solid fa-user-graduate"></i>
+              </div>
+            </div>
+            <div class="metric-val text-dark">
+              {{ selectedJob.experienceMin != null ? selectedJob.experienceMin : 0 }} - {{ selectedJob.experienceMax != null ? selectedJob.experienceMax : 3 }} <span class="metric-unit">Yrs</span>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="metric-card">
+            <div class="d-flex align-items-center justify-content-between mb-1">
+              <span class="metric-label">BUDGET / CTC</span>
+              <div class="metric-icon-small bg-emerald-subtle text-success">
+                <i class="fa-solid fa-indian-rupee-sign"></i>
+              </div>
+            </div>
+            <div class="metric-val text-success" *ngIf="selectedJob.ctcMin != null || selectedJob.ctcMax != null">
+              ₹{{ selectedJob.ctcMin | number }} - {{ selectedJob.ctcMax | number }}
+            </div>
+            <div class="metric-val text-muted" style="font-size: 13px;" *ngIf="selectedJob.ctcMin == null && selectedJob.ctcMax == null">
+              Standard Norms
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Requisition Specifications 2-Column Specs Grid -->
+      <div class="specs-card mb-3">
+        <div class="specs-card-header">
+          <i class="fa-solid fa-sliders text-primary me-2"></i>Requisition Specifications
+        </div>
+        <div class="specs-grid">
+          <div class="spec-item">
+            <span class="spec-label"><i class="fa-solid fa-building-user me-1.5 text-secondary"></i>Workplace Mode</span>
+            <span class="spec-value">{{ selectedJob.workplaceType || 'On-Site' }}</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label"><i class="fa-solid fa-business-time me-1.5 text-secondary"></i>Employment Type</span>
+            <span class="spec-value">{{ selectedJob.employmentType || 'Full-Time' }}</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label"><i class="fa-solid fa-handshake-angle me-1.5 text-secondary"></i>Commercial Terms</span>
+            <span class="spec-value text-primary fw-bold">{{ selectedJob.commissionTerms || 'Standard (8.33%)' }}</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label"><i class="fa-solid fa-truck-ramp-box me-1.5 text-secondary"></i>Vendor Channel</span>
+            <span class="spec-value">{{ selectedJob.vendorType || 'Supply Vendors' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sourcing Pipeline Performance Strip (No percentages, crisp clean counts) -->
+      <div class="pipeline-stats-card mb-3">
+        <div class="d-flex align-items-center gap-1.5 fw-bold text-dark mb-2.5" style="font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.4px;">
+          <i class="fa-solid fa-chart-line text-primary"></i>
+          <span>Your Sourcing Status</span>
+        </div>
+        <div class="row g-2 text-center">
+          <div class="col-4">
+            <div class="stat-pill">
+              <div class="text-muted text-uppercase fw-semibold" style="font-size: 9.5px; letter-spacing: 0.4px;">Sourced</div>
+              <div class="fw-bold fs-5" style="color: #3080e8;">{{ selectedJob.submittedCount || 0 }}</div>
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="stat-pill">
+              <div class="text-muted text-uppercase fw-semibold" style="font-size: 9.5px; letter-spacing: 0.4px;">Shortlisted</div>
+              <div class="fw-bold fs-5 text-success">{{ selectedJob.selectedCount || 0 }}</div>
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="stat-pill">
+              <div class="text-muted text-uppercase fw-semibold" style="font-size: 9.5px; letter-spacing: 0.4px;">Hired</div>
+              <div class="fw-bold fs-5 text-dark">{{ selectedJob.hiredCount || 0 }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Job Description & Requisition Overview -->
+      <div class="jd-section">
+        <div class="d-flex align-items-center gap-1.5 mb-2 fw-bold text-dark" style="font-size: 12px;">
+          <i class="fa-solid fa-file-lines text-primary"></i>
+          <span>Job Description &amp; Scope</span>
+        </div>
+        <div class="jd-content-box">
+          <p class="mb-0" *ngIf="selectedJob.jobDescription">{{ selectedJob.jobDescription }}</p>
+          <div class="text-muted py-2 d-flex align-items-center gap-2" *ngIf="!selectedJob.jobDescription">
+            <i class="fa-solid fa-circle-info text-secondary"></i>
+            <span>No specific extended job description attached to this requisition. Source candidates aligned with standard {{ selectedJob.department }} requirements.</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 3. Modal Footer -->
+    <div class="modal-footer-custom">
+      <button type="button" (click)="closeJobDetailsModal()" class="btn btn-sm btn-neutral-action px-4">
+        <i class="fa-solid fa-xmark me-2"></i>
+        <span>Close</span>
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- MODAL: CANDIDATE DETAILS (Opened on card click / row click)               -->
+<!-- ========================================================================= -->
+<div *ngIf="showCandidateModal && selectedCandidate"
+     class="mob-modal-backdrop"
+     style="z-index: 2100;"
+     (click)="closeCandidateDetails()">
+  <div class="mob-modal-sheet cand-detail-modal" (click)="$event.stopPropagation()">
+
+    <!-- Header -->
+    <div class="mob-modal-header">
+      <div class="d-flex align-items-center gap-2">
+        <i class="fa-solid fa-id-card-clip text-primary fs-6"></i>
+        <span class="fw-bold fs-6">Candidate Details</span>
+      </div>
+      <button class="mob-modal-close" (click)="closeCandidateDetails()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <!-- Body -->
+    <div class="mob-modal-body">
+      <!-- Candidate Hero -->
+      <div class="cand-detail-hero">
+        <div class="cand-detail-avatar">
+          {{ (selectedCandidate.candidateName || 'C').charAt(0).toUpperCase() }}
+        </div>
+        <div class="cand-detail-title-box">
+          <div class="cand-detail-name">{{ selectedCandidate.candidateName }}</div>
+          <div class="d-flex align-items-center gap-2 mt-1">
+            <span class="mob-app-no">{{ selectedCandidate.applicationNo }}</span>
+            <span class="badge mob-stage-badge"
+                  [ngClass]="{
+                    'bg-success text-white': selectedCandidate.stage === 'Hired',
+                    'bg-primary text-white': selectedCandidate.stage === 'Selected',
+                    'bg-warning text-dark': selectedCandidate.stage === 'Interview' || selectedCandidate.stage === 'Interview_Scheduled',
+                    'bg-danger text-white': selectedCandidate.isRejected || selectedCandidate.stage === 'Rejected',
+                    'bg-secondary text-white': !selectedCandidate.stage || selectedCandidate.stage === 'None'
+                  }">
+              {{ selectedCandidate.stage || 'Applied' }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Info Grid -->
+      <div class="cand-info-grid">
+        <div class="cand-info-item">
+          <div class="cand-info-label">Mobile Number</div>
+          <div class="cand-info-val"><i class="fa-solid fa-phone me-1.5 text-primary"></i>{{ selectedCandidate.mobile }}</div>
+        </div>
+        <div class="cand-info-item">
+          <div class="cand-info-label">Aadhaar Card No</div>
+          <div class="cand-info-val"><i class="fa-solid fa-id-card me-1.5 text-secondary"></i>{{ selectedCandidate.aadhaarNo || 'Not Provided' }}</div>
+        </div>
+        <div class="cand-info-item">
+          <div class="cand-info-label">Email Address</div>
+          <div class="cand-info-val"><i class="fa-regular fa-envelope me-1.5 text-secondary"></i>{{ selectedCandidate.email || 'N/A' }}</div>
+        </div>
+        <div class="cand-info-item">
+          <div class="cand-info-label">Gender</div>
+          <div class="cand-info-val">{{ selectedCandidate.gender || 'Not Specified' }}</div>
+        </div>
+        <div class="cand-info-item" *ngIf="selectedCandidate.dateOfBirth">
+          <div class="cand-info-label">Date of Birth</div>
+          <div class="cand-info-val">{{ selectedCandidate.dateOfBirth | date:'mediumDate' }}</div>
+        </div>
+        <div class="cand-info-item">
+          <div class="cand-info-label">Interview Status</div>
+          <div class="cand-info-val">{{ selectedCandidate.interviewStatus || 'Pending' }}</div>
+        </div>
+        <div class="cand-info-item">
+          <div class="cand-info-label">Submitted On</div>
+          <div class="cand-info-val">{{ selectedCandidate.submittedDate ? (selectedCandidate.submittedDate | date:'mediumDate') : '-' }}</div>
+        </div>
+        <div class="cand-info-item" *ngIf="selectedJob">
+          <div class="cand-info-label">Requisition / Job</div>
+          <div class="cand-info-val">{{ selectedJob.mrfCode }} - {{ selectedJob.jobTitle }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="mob-modal-footer">
+      <button class="mob-save-btn w-100" (click)="closeCandidateDetails()">
+        <i class="fa-solid fa-check me-1.5"></i>Done
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- MOBILE: POOL SELECTION MODAL (popup)                                    -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div *ngIf="showMobilePoolModal" class="d-md-none mob-modal-backdrop" (click)="closeMobilePoolModal()">
+  <div class="mob-modal-sheet" (click)="$event.stopPropagation()" style="max-height: 90vh;">
+    <!-- Modal Header -->
+    <div class="mob-modal-header">
+      <span><i class="fa-solid fa-users-rectangle me-2 text-primary"></i>Select from Pool</span>
+      <button class="mob-modal-close" (click)="closeMobilePoolModal()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <!-- Search input -->
+    <div class="p-2 border-bottom">
+      <div class="input-group input-group-sm">
+        <span class="input-group-text bg-white border-end-0 text-muted"><i class="fa-solid fa-magnifying-glass"></i></span>
+        <input type="text" class="form-control border-start-0" [(ngModel)]="poolSearchQuery" placeholder="Search Aadhaar, Phone, Name...">
+      </div>
+    </div>
+
+    <!-- Candidates List -->
+    <div class="mob-modal-body p-2" style="overflow-y: auto; max-height: 60vh;">
+      <div *ngIf="loadingPool" class="text-center py-3 small text-muted">
+        <span class="spinner-border spinner-border-sm me-1 text-primary"></span>Loading pool...
+      </div>
+      <div *ngIf="!loadingPool && filteredPoolCandidates.length === 0" class="text-center py-3 small text-muted">
+        No eligible candidates available in pool.
+      </div>
+      <div *ngFor="let cand of filteredPoolCandidates" 
+           class="p-2 border rounded-2 mb-2"
+           [class.bg-light]="isPoolCandidateSelected(cand.appId)"
+           (click)="toggleSelectPoolCandidate(cand.appId)">
+        <div class="d-flex justify-content-between align-items-center">
+          <div class="d-flex align-items-center gap-2">
+            <input type="checkbox" class="form-check-input" [checked]="isPoolCandidateSelected(cand.appId)" (click)="$event.stopPropagation()" (change)="toggleSelectPoolCandidate(cand.appId)">
+            <span class="fw-bold small">{{ cand.candidateName }}</span>
+          </div>
+          <span class="badge" [ngClass]="cand.poolType === 'BENCH' ? 'bg-info text-white' : 'bg-danger text-white'" style="font-size: 9.5px;">
+            {{ cand.poolType === 'BENCH' ? 'Bench' : 'Rejected' }}
+          </span>
+        </div>
+        <div class="small text-muted mt-1" style="font-size: 11px;">
+          <span><i class="fa-solid fa-phone me-1"></i>{{ cand.mobile }}</span>
+          <span *ngIf="cand.aadhaarNo" class="ms-2"><i class="fa-solid fa-id-card me-1"></i>{{ cand.aadhaarNo }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="mob-modal-footer">
+      <button class="mob-save-btn w-100" 
+              [disabled]="selectedPoolAppIds.size === 0 || assigningPoolCandidates"
+              (click)="assignSelectedPoolCandidates()">
+        <span class="spinner-border spinner-border-sm me-1" *ngIf="assigningPoolCandidates"></span>
+        <i class="fa-solid fa-user-check me-1" *ngIf="!assigningPoolCandidates"></i>
+        Assign Selected ({{ selectedPoolAppIds.size }})
+      </button>
+    </div>
+  </div>
+</div>

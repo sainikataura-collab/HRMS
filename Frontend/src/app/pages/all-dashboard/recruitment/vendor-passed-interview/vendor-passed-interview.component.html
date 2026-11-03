@@ -1,0 +1,1738 @@
+<!-- ========================================================================= -->
+<!-- 1. TOP HEADER & NAVIGATION (Responsive Unified Header)                   -->
+<!-- ========================================================================= -->
+<section class="bg-white border-bottom shadow-sm" [ngClass]="{'d-none d-md-block': activeView === 'detail'}">
+  <div class="container-fluid px-2 px-md-3">
+    <div class="py-2">
+
+      <!-- Case 1: In List View -->
+      <ng-container *ngIf="activeView === 'list'">
+        <!-- Mobile Header (d-md-none) -->
+        <div class="d-md-none">
+          <div class="d-flex justify-content-between align-items-center mb-1.5">
+            <button (click)="goBackToVendorPortal()" 
+                    class="btn btn-sm btn-neutral-action py-1 px-2.5" 
+                    title="Return to Allocated Jobs">
+              <i class="fa-solid fa-arrow-left me-1"></i>Back
+            </button>
+            <div class="fw-bold fs-6 text-dark">Passed Candidates</div>
+            <button (click)="loadPassedInterviewCandidates()"
+                    class="btn btn-sm btn-outline-secondary py-1 px-2"
+                    title="Refresh">
+              <i class="fa-solid fa-rotate-right" [class.spin-anim]="loadingData"></i>
+            </button>
+          </div>
+          <div class="d-flex align-items-center gap-1.5 mt-1">
+            <span class="small fw-bold text-muted" style="font-size: 11px;">Partner:</span>
+            <select *ngIf="!isVendorUser && vendors.length > 0"
+                    class="form-select form-select-sm flex-grow-1"
+                    style="font-size: 11.5px; color: #0f172a; font-weight: 600;"
+                    [(ngModel)]="selectedVendorId"
+                    (ngModelChange)="onVendorChange($event)">
+              <option *ngFor="let v of vendors" [value]="v.vendorId">
+                {{ v.vendorName }} ({{ v.assignedJobsCount }} Jobs)
+              </option>
+            </select>
+            <span *ngIf="isVendorUser || vendors.length === 0" 
+                  class="badge bg-light text-dark border px-2 py-1 fw-bold text-truncate" 
+                  style="font-size: 10.5px; max-width: 250px;">
+              {{ vendorProfile?.vendorName || 'Active Vendor Organization' }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Desktop Header (d-none d-md-flex) -->
+        <div class="d-none d-md-flex row align-items-center">
+          <div class="col-md-7">
+            <div class="d-flex align-items-center gap-2">
+              <button (click)="goBackToVendorPortal()" 
+                      class="btn btn-sm btn-neutral-action" 
+                      title="Return to Allocated Jobs">
+                <i class="fa-solid fa-arrow-left me-1.5"></i>
+                <span>Back to Allocated Jobs</span>
+              </button>
+              <div class="vr my-1"></div>
+              <div>
+                <h6 class="mb-0 fw-bold text-dark fs-6" style="letter-spacing: -0.2px;">
+                  Passed Interview Candidates
+                </h6>
+                <div style="font-size: 11.5px; color: #334155; font-weight: 500;">
+                  Complete remaining statutory, banking, nominee and document details for selected candidates.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-5 d-flex justify-content-end align-items-center gap-2">
+            <div class="d-flex align-items-center gap-1.5">
+              <span class="small fw-bold text-nowrap" style="font-size: 11.5px; color: #1e293b;">
+                <i class="fa-solid fa-handshake text-primary me-1"></i>Partner:
+              </span>
+              <select *ngIf="!isVendorUser && vendors.length > 0"
+                      class="form-select form-select-sm"
+                      style="min-width: 200px; max-width: 280px; font-size: 12px; color: #0f172a; font-weight: 600;"
+                      [(ngModel)]="selectedVendorId"
+                      (ngModelChange)="onVendorChange($event)">
+                <option *ngFor="let v of vendors" [value]="v.vendorId">
+                  {{ v.vendorName }} ({{ v.assignedJobsCount }} Jobs)
+                </option>
+              </select>
+              <span *ngIf="isVendorUser || vendors.length === 0" 
+                    class="badge bg-light text-dark border px-2.5 py-1.5 fw-bold" 
+                    style="font-size: 11px; color: #0f172a !important;">
+                {{ vendorProfile?.vendorName || 'Active Vendor Organization' }}
+              </span>
+            </div>
+
+            <button (click)="loadPassedInterviewCandidates()"
+                    class="btn btn-outline-secondary btn-sm"
+                    title="Refresh Candidates">
+              <i class="fa-solid fa-rotate-right" [class.spin-anim]="loadingData"></i>
+            </button>
+          </div>
+        </div>
+      </ng-container>
+
+      <!-- Case 2: In Candidate Detail View (Single Desktop Header) -->
+      <ng-container *ngIf="activeView === 'detail' && selectedCandidate">
+
+        <!-- Desktop Detail Header (d-none d-md-flex) -->
+        <div class="d-none d-md-flex justify-content-between align-items-center flex-wrap gap-2">
+          <div class="d-flex align-items-center gap-2 flex-wrap">
+            <button (click)="backToList()" class="btn btn-back-custom" title="Back to Candidate List">
+              <i class="fa-solid fa-arrow-left"></i>
+              <span>Back to Candidate List</span>
+            </button>
+            <div class="vr my-1"></div>
+
+            <h5 class="mb-0 fw-bold text-dark fs-6 text-nowrap">
+              {{ dossierForm.candidateName || selectedCandidate.candidateName }}
+            </h5>
+            <span class="badge bg-secondary mono-val text-nowrap">{{ selectedCandidate.applicationNo }}</span>
+            <span class="badge bg-success-subtle text-success border border-success-subtle fw-semibold text-nowrap" style="font-size: 10px;">
+              <i class="fa-solid fa-check-circle me-1"></i>Cleared Interview
+            </span>
+
+            <span class="text-muted mx-0.5">•</span>
+
+            <span class="text-nowrap" style="font-size: 11.5px; color: #334155;">
+              Role: <strong class="text-dark">{{ selectedCandidate.jobTitle }}</strong> · Requisition: <strong class="text-primary">{{ selectedCandidate.mrfCode }}</strong> · Location: <strong class="text-dark">{{ selectedCandidate.location }}</strong>
+            </span>
+          </div>
+
+          <div class="d-flex align-items-center gap-2 flex-shrink-0 ms-auto">
+            <span class="badge bg-success-subtle text-success border border-success-subtle px-2.5 py-1.5 fw-semibold text-nowrap" style="font-size: 11px;">
+              <i class="fa-solid fa-check me-1"></i>{{ uploadedDocsCount }} Uploaded
+            </span>
+            <span class="badge text-nowrap" [ngClass]="missingMandatoryDocsCount === 0 ? 'bg-success text-white' : 'bg-danger text-white'" style="padding: 6px 10px; font-size: 11px;">
+              <i class="fa-solid fa-triangle-exclamation me-1"></i>{{ missingMandatoryDocsCount }} Mandatory Missing
+            </span>
+          </div>
+        </div>
+      </ng-container>
+
+    </div>
+  </div>
+</section>
+
+<!-- ========================================================================= -->
+<!-- 2. MAIN BODY                                                              -->
+<!-- ========================================================================= -->
+<section class="vendor-passed-interview-container py-3">
+  <div class="container-fluid">
+
+    <!-- ===================================================================== -->
+    <!-- VIEW A: CANDIDATES LIST IN "SELECTED" PHASE                           -->
+    <!-- ===================================================================== -->
+    <div *ngIf="activeView === 'list'">
+
+      <!-- Filters Strip -->
+      <div class="card border-0 shadow-sm rounded-3 mb-3">
+        <div class="card-body p-2.5">
+          <div class="row g-2 align-items-center">
+            
+            <!-- Filter by Role -->
+            <div class="col-12 col-md-5 col-lg-4">
+              <div class="d-flex align-items-center gap-2">
+                <span class="fw-bold small text-nowrap" style="font-size: 11.5px; color: #1e293b;">Role:</span>
+                <select class="form-select form-select-sm" 
+                        style="font-size: 12px; color: #0f172a; font-weight: 600;" 
+                        [(ngModel)]="selectedJobFilter">
+                  <option value="">All Job Roles ({{ selectedCandidates.length }})</option>
+                  <option *ngFor="let job of availableJobs" [value]="job">
+                    {{ job }}
+                  </option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Search Query -->
+            <div class="col-12 col-md-7 col-lg-5 ms-auto">
+              <div class="input-group input-group-sm">
+                <span class="input-group-text bg-white border-end-0 text-dark">
+                  <i class="fa-solid fa-magnifying-glass"></i>
+                </span>
+                <input type="text"
+                       class="form-control border-start-0 ps-0 field-contrast"
+                       placeholder="Search name, phone, Aadhaar, MRF..."
+                       [(ngModel)]="searchQuery" />
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile Candidate Cards (d-md-none) -->
+      <div class="d-md-none mb-3">
+        <div *ngIf="filteredCandidates.length === 0" class="text-center py-4 bg-white rounded-3 border small" style="color: #475569;">
+          <i class="fa-solid fa-user-clock fs-2 mb-2 d-block text-secondary opacity-50"></i>
+          <span class="fw-bold" style="color: #1e293b;">No candidates currently in Selected phase.</span>
+        </div>
+
+        <div class="d-flex flex-column gap-2" *ngIf="filteredCandidates.length > 0">
+          <div *ngFor="let c of filteredCandidates; let i = index"
+               class="mob-passed-card"
+               (click)="selectCandidate(c)">
+            <!-- Top Row: App No + Status Badge -->
+            <div class="d-flex justify-content-between align-items-center mb-1.5">
+              <span class="badge bg-light text-dark border mono-val" style="font-size: 10px;">{{ c.applicationNo }}</span>
+              <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size: 9.5px; font-weight: 600;">
+                <i class="fa-solid fa-circle-check me-1"></i>Passed Interview
+              </span>
+            </div>
+
+            <!-- Candidate Name & Meta -->
+            <div class="d-flex justify-content-between align-items-start mb-1">
+              <div>
+                <div class="fw-bold text-dark" style="font-size: 13px; line-height: 1.2;">{{ c.candidateName }}</div>
+                <div class="text-muted" style="font-size: 10.5px;">{{ c.gender || '—' }} · {{ c.location || 'Hub' }}</div>
+              </div>
+              <div class="text-end text-muted" style="font-size: 10px;">
+                {{ (c.selectedDate || c.appliedDate) | date:'d MMM y' }}
+              </div>
+            </div>
+
+            <!-- Role & MRF chip -->
+            <div class="mob-passed-job-chip mb-2">
+              <i class="fa-solid fa-briefcase text-primary me-1"></i>
+              <strong class="text-primary me-1">{{ c.jobTitle }}</strong>
+              <span class="badge bg-white text-secondary border py-0.5 px-1.5" style="font-size: 9.5px;">{{ c.mrfCode }}</span>
+            </div>
+
+            <!-- Contact & Status Row -->
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-1 pt-1.5 border-top mb-2">
+              <span class="mono-val" style="font-size: 11px;">
+                <i class="fa-solid fa-phone text-muted me-1"></i>{{ c.mobile }}
+              </span>
+              <!-- Statutory Status -->
+              <span *ngIf="c.panNo && c.bankAccNo" class="badge bg-success text-white" style="font-size: 9px;">
+                <i class="fa-solid fa-check me-1"></i>Statutory Filled
+              </span>
+              <span *ngIf="!c.panNo || !c.bankAccNo" class="badge bg-warning text-dark border border-warning-subtle" style="font-size: 9px;">
+                <i class="fa-solid fa-clock me-1"></i>Pending Details
+              </span>
+            </div>
+
+            <!-- Action Button -->
+            <button (click)="selectCandidate(c); $event.stopPropagation()"
+                    class="btn btn-sm btn-primary w-100 fw-bold d-flex align-items-center justify-content-center gap-1.5"
+                    style="background-color: #3080e8; border-color: #3080e8; box-shadow: 0 2px 6px #acb5f6; font-size: 12px; border-radius: 8px; padding: 7px 12px;">
+              <i class="fa-solid fa-user-pen"></i>
+              <span>Complete Details</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Desktop Candidates Table (d-none d-md-block) -->
+      <div class="d-none d-md-block card border-0 shadow-sm rounded-3 overflow-hidden">
+        <div class="table-responsive" style="max-height: 560px; overflow-y: auto;">
+          
+          <div *ngIf="filteredCandidates.length === 0" class="text-center py-5 small" style="color: #475569;">
+            <i class="fa-solid fa-user-clock fs-2 mb-2 d-block text-secondary opacity-50"></i>
+            <span class="fw-bold" style="color: #1e293b;">No candidates currently in Selected phase matching your filter.</span><br>
+            When candidates clear client interviews in the hiring pipeline, they will appear here automatically.
+          </div>
+
+          <table class="table table-hover table-borderless align-middle mb-0" *ngIf="filteredCandidates.length > 0">
+            <thead class="table-light sticky-top bg-white border-bottom" style="top: -1px; z-index: 2;">
+              <tr class="text-start">
+                <th class="sr-no-col">#</th>
+                <th class="candidate-name-col">Candidate Name</th>
+                <th style="white-space: nowrap;">Application No</th>
+                <th>Job Title & MRF</th>
+                <th style="white-space: nowrap;">Contact Info</th>
+                <th style="white-space: nowrap;">Cleared Date</th>
+                <th style="white-space: nowrap;">Dossier Status</th>
+                <th class="text-end pe-2" style="width: 130px; white-space: nowrap;">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let c of filteredCandidates; let i = index"
+                  (click)="selectCandidate(c)"
+                  style="cursor: pointer;"
+                  title="Click to complete remaining details for this candidate">
+                
+                <td class="sr-no-col fw-bold" style="color: #334155;">{{ i + 1 }}</td>
+                
+                <!-- Candidate Name & Meta (Reduced column length) -->
+                <td class="candidate-name-col">
+                  <div class="fw-bold text-dark text-truncate" style="font-size: 12px; max-width: 140px;" [title]="c.candidateName">{{ c.candidateName }}</div>
+                  <div class="text-truncate" style="font-size: 10px; color: #475569; max-width: 140px;">
+                    {{ c.gender || '—' }} · {{ c.location || 'Hub' }}
+                  </div>
+                </td>
+
+                <!-- Application No -->
+                <td style="white-space: nowrap;">
+                  <span class="badge bg-light text-dark border mono-val">{{ c.applicationNo }}</span>
+                </td>
+
+                <!-- Job Title & MRF -->
+                <td style="max-width: 150px;">
+                  <div class="fw-bold text-primary text-truncate" style="font-size: 11.5px; max-width: 150px;" [title]="c.jobTitle">{{ c.jobTitle }}</div>
+                  <div class="fw-semibold text-truncate" style="font-size: 10.5px; color: #334155; max-width: 150px;">{{ c.mrfCode }}</div>
+                </td>
+
+                <!-- Contact Info -->
+                <td style="white-space: nowrap;">
+                  <div class="mono-val" style="font-size: 11px;">
+                    <i class="fa-solid fa-phone text-primary me-1"></i>{{ c.mobile }}
+                  </div>
+                  <div class="text-truncate fw-medium" style="font-size: 10px; max-width: 130px; color: #334155;" *ngIf="c.email" [title]="c.email">
+                    {{ c.email }}
+                  </div>
+                </td>
+
+                <!-- Interview Cleared Date -->
+                <td style="white-space: nowrap;">
+                  <div class="fw-bold text-dark" style="font-size: 11px;">
+                    {{ (c.selectedDate || c.appliedDate) | date:'dd MMM yyyy' }}
+                  </div>
+                  <span class="badge bg-success-subtle text-success border border-success-subtle d-inline-flex align-items-center gap-1" style="font-size: 9px; font-weight: 600;">
+                    <i class="fa-solid fa-circle-check"></i> Passed
+                  </span>
+                </td>
+
+                <!-- Dossier Status -->
+                <td style="white-space: nowrap;">
+                  <div *ngIf="c.panNo && c.bankAccNo" class="d-flex align-items-center gap-1.5">
+                    <span class="badge bg-success text-white" style="font-size: 9.5px;">
+                      <i class="fa-solid fa-check me-1"></i>Statutory Filled
+                    </span>
+                  </div>
+                  <div *ngIf="!c.panNo || !c.bankAccNo" class="d-flex align-items-center gap-1.5">
+                    <span class="badge bg-warning text-dark border border-warning-subtle" style="font-size: 9.5px;">
+                      <i class="fa-solid fa-clock me-1"></i>Pending Details
+                    </span>
+                  </div>
+                  <div class="mt-0.5 fw-medium" style="font-size: 10px; color: #334155;">
+                    <span [ngClass]="c.missingMandatoryDocsCount === 0 ? 'text-success' : 'text-danger fw-semibold'">
+                      {{ c.uploadedDocsCount || 0 }} files ({{ c.missingMandatoryDocsCount || 0 }} missing)
+                    </span>
+                  </div>
+                </td>
+
+                <!-- Action Button -->
+                <td class="text-end pe-2" style="white-space: nowrap;" (click)="$event.stopPropagation()">
+                  <button (click)="selectCandidate(c)"
+                          class="btn btn-sm btn-primary d-inline-flex align-items-center gap-1 shadow-none"
+                          style="background-color: #3080e8; border-color: #3080e8; box-shadow: 0 2px 6px #acb5f6; font-size: 11px; font-weight: 600; border-radius: 5px; padding: 4px 10px; white-space: nowrap;">
+                    <i class="fa-solid fa-user-pen"></i>
+                    <span>Complete Details</span>
+                  </button>
+                </td>
+
+              </tr>
+            </tbody>
+          </table>
+
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- VIEW B: CANDIDATE DETAILS COMPLETION & ONBOARDING DOSSIER FORM        -->
+    <!-- ===================================================================== -->
+    <div *ngIf="activeView === 'detail' && selectedCandidate">
+
+      <!-- ── DESKTOP/WEB VIEW (REMAINS 100% UNTOUCHED) ────────────────────── -->
+      <div class="d-none d-md-block">
+
+      <!-- 1. Editable Candidate Profile (Prefilled from Initial Submission + Fully Editable) -->
+      <div class="card border-0 shadow-sm rounded-3 mb-3">
+        <div class="card-header bg-white py-2 px-3 border-bottom d-flex justify-content-between align-items-center">
+          <span class="fw-bold text-dark" style="font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.4px;">
+            <i class="fa-solid fa-user-pen text-primary me-1.5"></i>Candidate Information (Prefilled · Fully Editable)
+          </span>
+          <span class="badge bg-light text-dark border fw-semibold" style="font-size: 10.5px; color: #1e293b !important;">
+            <i class="fa-solid fa-pencil text-primary me-1"></i>Edit details if needed
+          </span>
+        </div>
+        <div class="card-body p-3">
+          <div class="row g-2.5">
+            
+            <!-- Full Name -->
+            <div class="col-12 col-md-4 col-lg-3">
+              <label class="prefill-label mb-1">Full Legal Name *</label>
+              <input type="text"
+                     class="form-control form-control-sm field-contrast fw-bold"
+                     [(ngModel)]="dossierForm.candidateName"
+                     placeholder="Candidate Full Name" />
+            </div>
+
+            <!-- Mobile -->
+            <div class="col-12 col-md-4 col-lg-3">
+              <label class="prefill-label mb-1">Mobile Number *</label>
+              <input type="text"
+                     class="form-control form-control-sm mono-val field-contrast"
+                     [(ngModel)]="dossierForm.mobile"
+                     placeholder="10-digit mobile"
+                     maxlength="10" />
+            </div>
+
+            <!-- Email -->
+            <div class="col-12 col-md-4 col-lg-3">
+              <label class="prefill-label mb-1">Email Address</label>
+              <input type="email"
+                     class="form-control form-control-sm field-contrast"
+                     [(ngModel)]="dossierForm.email"
+                     placeholder="candidate@email.com" />
+            </div>
+
+            <!-- Date of Birth -->
+            <div class="col-12 col-md-4 col-lg-3">
+              <label class="prefill-label mb-1">Date of Birth</label>
+              <input type="date"
+                     class="form-control form-control-sm field-contrast"
+                     [(ngModel)]="dossierForm.dateOfBirth" />
+            </div>
+
+            <!-- Gender -->
+            <div class="col-12 col-md-4 col-lg-3">
+              <label class="prefill-label mb-1">Gender</label>
+              <select class="form-select form-select-sm field-contrast"
+                      [(ngModel)]="dossierForm.gender">
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+
+            <!-- Father's Name -->
+            <div class="col-12 col-md-4 col-lg-3">
+              <label class="prefill-label mb-1">Father's Name</label>
+              <input type="text"
+                     class="form-control form-control-sm field-contrast"
+                     [(ngModel)]="dossierForm.fatherName"
+                     placeholder="Father's Full Name" />
+            </div>
+
+            <!-- Religion -->
+            <div class="col-12 col-md-4 col-lg-3">
+              <label class="prefill-label mb-1">Religion <span class="text-danger">*</span></label>
+              <select class="form-select form-select-sm field-contrast"
+                      [(ngModel)]="dossierForm.religion">
+                <option *ngFor="let rel of religions" [value]="rel">{{ rel }}</option>
+              </select>
+            </div>
+
+            <!-- Aadhaar Number -->
+            <div class="col-12 col-md-4 col-lg-3">
+              <label class="prefill-label mb-1 d-flex justify-content-between">
+                <span>Aadhaar Card Number *</span>
+                <span *ngIf="aadhaarStatus === 'checking'" class="text-primary small" style="font-size: 10px;">
+                  <span class="spinner-border spinner-border-sm me-1" style="width: 9px; height: 9px;"></span>Checking...
+                </span>
+                <span *ngIf="aadhaarStatus === 'verified'" class="text-success small fw-semibold" style="font-size: 10px;">
+                  <i class="fa-solid fa-circle-check me-0.5"></i>Verified
+                </span>
+                <span *ngIf="aadhaarStatus === 'duplicate'" class="text-danger small fw-semibold" style="font-size: 10px;">
+                  <i class="fa-solid fa-circle-exclamation me-0.5"></i>Duplicate
+                </span>
+              </label>
+              <input type="text"
+                     class="form-control form-control-sm mono-val field-contrast"
+                     [ngClass]="{
+                       'is-invalid': aadhaarStatus === 'duplicate',
+                       'is-valid': aadhaarStatus === 'verified'
+                     }"
+                     [(ngModel)]="dossierForm.aadhaarNo"
+                     (input)="onAadhaarInput()"
+                     (blur)="validateAadhaar()"
+                     placeholder="12-digit Aadhaar number"
+                     maxlength="12" />
+              <div *ngIf="aadhaarStatus === 'duplicate'" class="text-danger small mt-0.5" style="font-size: 10px; line-height: 1.2;">
+                {{ aadhaarMessage }}
+              </div>
+            </div>
+
+            <!-- Allocated Requisition & Location (Context badge) -->
+            <div class="col-12 col-md-4 col-lg-3">
+              <label class="prefill-label mb-1">Requisition & Operating Hub</label>
+              <div class="p-1 px-2 rounded-2 border bg-light d-flex flex-column justify-content-center" style="min-height: 31px;">
+                <span class="fw-bold text-primary text-truncate" style="font-size: 11.5px;">{{ selectedCandidate.mrfCode }} ({{ selectedCandidate.jobTitle }})</span>
+                <span class="text-truncate fw-medium" style="font-size: 10px; color: #475569;">{{ selectedCandidate.location }} · {{ selectedCandidate.department }}</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Add Remaining Candidate Details (Interactive Tabs) -->
+      <div class="card border-0 shadow-sm rounded-3 mb-3">
+        
+        <!-- Navigation Sub-Tabs -->
+        <div class="card-header bg-white border-bottom p-2 px-3 d-flex gap-2 flex-nowrap overflow-auto align-items-center mob-subtabs-bar">
+          <button type="button"
+                  class="tab-btn flex-shrink-0"
+                  [class.active]="dossierActiveTab === 'statutory'"
+                  (click)="dossierActiveTab = 'statutory'; switchDossierTab('statutory')">
+            <i class="fa-solid fa-id-card"></i>
+            <span>1. Statutory &amp; Identification</span>
+          </button>
+          <button type="button"
+                  class="tab-btn flex-shrink-0"
+                  [class.active]="dossierActiveTab === 'bank'"
+                  (click)="dossierActiveTab = 'bank'; switchDossierTab('bank')">
+            <i class="fa-solid fa-building-columns"></i>
+            <span>2. Bank Details</span>
+          </button>
+          <button type="button"
+                  class="tab-btn flex-shrink-0"
+                  [class.active]="dossierActiveTab === 'nominee'"
+                  (click)="dossierActiveTab = 'nominee'; switchDossierTab('nominee')">
+            <i class="fa-solid fa-users-viewfinder"></i>
+            <span>3. Nominee Details</span>
+          </button>
+          <button type="button"
+                  class="tab-btn flex-shrink-0"
+                  [class.active]="dossierActiveTab === 'docs'"
+                  (click)="dossierActiveTab = 'docs'; switchDossierTab('docs')">
+            <i class="fa-solid fa-folder-open"></i>
+            <span>4. Documents ({{ uploadedDocsCount }}/{{ candidateDocs.length }})</span>
+            <span *ngIf="missingMandatoryDocsCount > 0" class="badge bg-danger rounded-pill ms-1">
+              {{ missingMandatoryDocsCount }} Missing
+            </span>
+          </button>
+        </div>
+
+        <div class="card-body p-3">
+
+          <!-- ── TAB 1: STATUTORY & IDENTIFICATION ────────────────────────── -->
+          <div [style.display]="dossierActiveTab === 'statutory' ? 'block' : 'none'">
+            <div class="alert alert-light border py-2 px-3 mb-3 small fw-medium" style="color: #1e293b;">
+              <i class="fa-solid fa-circle-info text-primary me-1"></i>
+              Enter statutory compliance registration numbers for PF, ESIC, Income Tax, and Identity verification.
+            </div>
+
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label text-dark fw-bold small mb-1 d-flex justify-content-between">
+                  <span>Aadhaar Card Number *</span>
+                  <span *ngIf="aadhaarStatus === 'checking'" class="text-primary small" style="font-size: 11px;">
+                    <span class="spinner-border spinner-border-sm me-1" style="width: 10px; height: 10px;"></span>Checking...
+                  </span>
+                  <span *ngIf="aadhaarStatus === 'verified'" class="text-success small fw-semibold" style="font-size: 11px;">
+                    <i class="fa-solid fa-circle-check me-1"></i>Verified &amp; Unique
+                  </span>
+                  <span *ngIf="aadhaarStatus === 'duplicate'" class="text-danger small fw-semibold" style="font-size: 11px;">
+                    <i class="fa-solid fa-circle-exclamation me-1"></i>Duplicate
+                  </span>
+                </label>
+                <input type="text"
+                       class="form-control form-control-sm mono-val field-contrast"
+                       [ngClass]="{
+                         'is-invalid': aadhaarStatus === 'duplicate',
+                         'is-valid': aadhaarStatus === 'verified'
+                       }"
+                       [(ngModel)]="dossierForm.aadhaarNo"
+                       (input)="onAadhaarInput()"
+                       (blur)="validateAadhaar()"
+                       placeholder="12-digit Aadhaar number"
+                       maxlength="12" />
+                <div *ngIf="aadhaarStatus === 'duplicate'" class="text-danger small mt-1" style="font-size: 11px; line-height: 1.3;">
+                  {{ aadhaarMessage }}
+                </div>
+                <span class="form-hint" *ngIf="aadhaarStatus !== 'duplicate'">Required for identity cross-verification against government portal.</span>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label text-dark fw-bold small mb-1">PAN Card Number *</label>
+                <input type="text"
+                       class="form-control form-control-sm mono-val field-contrast"
+                       [(ngModel)]="dossierForm.panNo"
+                       placeholder="10-character Permanent Account Number"
+                       maxlength="10"
+                       style="text-transform: uppercase;" />
+                <span class="form-hint">Example: ABCDE1234F</span>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label text-dark fw-bold small mb-1">EPF UAN Number</label>
+                <input type="text"
+                       class="form-control form-control-sm mono-val field-contrast"
+                       [(ngModel)]="dossierForm.uanNo"
+                       placeholder="12-digit Universal Account Number (if existing PF)"
+                       maxlength="12" />
+                <span class="form-hint">Universal Account Number for Employees' Provident Fund.</span>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label text-dark fw-bold small mb-1">ESIC IP Number</label>
+                <input type="text"
+                       class="form-control form-control-sm mono-val field-contrast"
+                       [(ngModel)]="dossierForm.esicNo"
+                       placeholder="17-digit Insurance Person Number (if applicable)"
+                       maxlength="17" />
+                <span class="form-hint">Employee State Insurance Corporation registration number.</span>
+              </div>
+            </div>
+
+            <!-- Step Navigation -->
+            <div class="d-flex justify-content-end mt-3 pt-2.5 border-top">
+              <button type="button" 
+                      class="btn btn-sm btn-outline-primary fw-semibold px-3 d-inline-flex align-items-center gap-1.5"
+                      (click)="dossierActiveTab = 'bank'; switchDossierTab('bank')">
+                <span>Proceed to Bank &amp; Direct Deposit</span>
+                <i class="fa-solid fa-arrow-right"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- ── TAB 2: BANK & DIRECT DEPOSIT ─────────────────────────────── -->
+          <div [style.display]="dossierActiveTab === 'bank' ? 'block' : 'none'">
+            <div class="alert alert-light border py-2 px-3 mb-3 small fw-medium" style="color: #1e293b;">
+              <i class="fa-solid fa-circle-info text-primary me-1"></i>
+              Ensure candidate's name matches bank records for automated payroll disbursements.
+            </div>
+
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label text-dark fw-bold small mb-1">Bank Name *</label>
+                <input type="text"
+                       class="form-control form-control-sm field-contrast"
+                       [(ngModel)]="dossierForm.bankName"
+                       placeholder="e.g. State Bank of India, HDFC Bank, ICICI Bank" />
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label text-dark fw-bold small mb-1">IFSC Code *</label>
+                <input type="text"
+                       class="form-control form-control-sm mono-val field-contrast"
+                       [(ngModel)]="dossierForm.bankIfsc"
+                       placeholder="11-character IFSC code"
+                       maxlength="11"
+                       style="text-transform: uppercase;" />
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label text-dark fw-bold small mb-1">Bank Account Number *</label>
+                <input type="text"
+                       class="form-control form-control-sm mono-val field-contrast"
+                       [(ngModel)]="dossierForm.bankAccNo"
+                       placeholder="Enter full bank account number" />
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label text-dark fw-bold small mb-1">Branch Name / City</label>
+                <input type="text"
+                       class="form-control form-control-sm field-contrast"
+                       placeholder="e.g. Noida Sector 62 Branch" />
+              </div>
+            </div>
+
+            <!-- Step Navigation -->
+            <div class="d-flex justify-content-between align-items-center mt-3 pt-2.5 border-top">
+              <button type="button" 
+                      class="btn btn-sm btn-outline-secondary fw-semibold px-3 d-inline-flex align-items-center gap-1.5"
+                      (click)="dossierActiveTab = 'statutory'; switchDossierTab('statutory')">
+                <i class="fa-solid fa-arrow-left"></i>
+                <span>Previous: Statutory Numbers</span>
+              </button>
+              <button type="button" 
+                      class="btn btn-sm btn-outline-primary fw-semibold px-3 d-inline-flex align-items-center gap-1.5"
+                      (click)="dossierActiveTab = 'nominee'; switchDossierTab('nominee')">
+                <span>Proceed to Nominee Details</span>
+                <i class="fa-solid fa-arrow-right"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- ── TAB 3: NOMINEE & EMERGENCY DETAILS ───────────────────────── -->
+          <div [style.display]="dossierActiveTab === 'nominee' ? 'block' : 'none'">
+            <div class="alert alert-light border py-2 px-3 mb-3 small fw-medium" style="color: #1e293b;">
+              <i class="fa-solid fa-circle-info text-primary me-1"></i>
+              Statutory nomination details for Group Term Life, Gratuity, and Provident Fund records.
+            </div>
+
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label text-dark fw-bold small mb-1">Nominee Full Name *</label>
+                <input type="text"
+                       class="form-control form-control-sm field-contrast"
+                       [(ngModel)]="dossierForm.nomineeName"
+                       placeholder="Enter legal nominee name" />
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label text-dark fw-bold small mb-1">Relationship with Candidate *</label>
+                <select class="form-select form-select-sm field-contrast"
+                        [(ngModel)]="dossierForm.nomineeRelation">
+                  <option value="Father">Father</option>
+                  <option value="Mother">Mother</option>
+                  <option value="Spouse">Spouse</option>
+                  <option value="Son">Son</option>
+                  <option value="Daughter">Daughter</option>
+                  <option value="Brother">Brother</option>
+                  <option value="Sister">Sister</option>
+                </select>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label text-dark fw-bold small mb-1">Nominee Date of Birth</label>
+                <input type="date"
+                       class="form-control form-control-sm field-contrast"
+                       [(ngModel)]="dossierForm.nomineeDOB" />
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label text-dark fw-bold small mb-1">Nominee Emergency Contact *</label>
+                <input type="text"
+                       class="form-control form-control-sm mono-val field-contrast"
+                       [(ngModel)]="dossierForm.nomineeContact"
+                       placeholder="10-digit mobile number"
+                       maxlength="10" />
+              </div>
+            </div>
+
+            <!-- Step Navigation -->
+            <div class="d-flex justify-content-between align-items-center mt-3 pt-2.5 border-top">
+              <button type="button" 
+                      class="btn btn-sm btn-outline-secondary fw-semibold px-3 d-inline-flex align-items-center gap-1.5"
+                      (click)="dossierActiveTab = 'bank'; switchDossierTab('bank')">
+                <i class="fa-solid fa-arrow-left"></i>
+                <span>Previous: Bank Details</span>
+              </button>
+              <button type="button" 
+                      class="btn btn-sm btn-outline-primary fw-semibold px-3 d-inline-flex align-items-center gap-1.5"
+                      (click)="dossierActiveTab = 'docs'; switchDossierTab('docs')">
+                <span>Proceed to Onboarding Documents</span>
+                <i class="fa-solid fa-arrow-right"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- ── TAB 4: MANDATORY ONBOARDING DOCUMENTS ────────────────────── -->
+          <div [style.display]="dossierActiveTab === 'docs' ? 'block' : 'none'">
+            <div class="alert alert-light border py-2 px-3 mb-3 small fw-medium d-flex justify-content-between align-items-center" style="color: #1e293b;">
+              <div>
+                <i class="fa-solid fa-circle-info text-primary me-1"></i>
+                Upload legible PDF, PNG, or JPG files (Max 10MB per file). These files will be audited by the HR Compliance team.
+              </div>
+              <span class="badge bg-light text-dark border">
+                {{ uploadedDocsCount }} of {{ candidateDocs.length }} Uploaded
+              </span>
+            </div>
+
+            <div *ngIf="loadingDocs" class="text-center py-4 small" style="color: #334155;">
+              <span class="spinner-border spinner-border-sm me-2 text-primary"></span>
+              Loading required document checklist...
+            </div>
+
+            <!-- Mobile Document Cards (d-md-none) -->
+            <div class="d-md-none d-flex flex-column gap-2" *ngIf="!loadingDocs && candidateDocs.length > 0">
+              <div *ngFor="let doc of candidateDocs; let idx = index" class="card border rounded-3 p-2.5 bg-light shadow-none">
+                <div class="d-flex justify-content-between align-items-start mb-1">
+                  <div class="fw-bold text-dark" style="font-size: 12px;">{{ idx + 1 }}. {{ doc.docTypeName }}</div>
+                  <span *ngIf="doc.isMandatory" class="badge bg-danger-subtle text-danger border border-danger-subtle" style="font-size: 9.5px;">Mandatory</span>
+                  <span *ngIf="!doc.isMandatory" class="badge bg-light text-dark border" style="font-size: 9.5px;">Optional</span>
+                </div>
+                <div class="text-muted mb-2" style="font-size: 10px;">Category: {{ doc.docCategory || 'Statutory & Identity' }}</div>
+
+                <!-- Status & File Info -->
+                <div class="d-flex justify-content-between align-items-center mb-2 bg-white p-2 rounded-2 border">
+                  <div class="min-w-0 flex-grow-1 me-2">
+                    <div *ngIf="doc.fileName" class="text-primary text-truncate fw-semibold" style="font-size: 11px; cursor: pointer;" (click)="previewDocument(doc)">
+                      <i class="fa-solid fa-file me-1"></i>{{ doc.fileName }}
+                    </div>
+                    <div *ngIf="!doc.fileName" class="text-danger fw-semibold" style="font-size: 10.5px;">
+                      <i class="fa-solid fa-clock text-warning me-1"></i>Pending Upload
+                    </div>
+                  </div>
+                  <div>
+                    <span *ngIf="doc.isVerified || doc.verificationStatus === 'Approved'" class="badge bg-success text-white" style="font-size: 9px;">Verified</span>
+                    <span *ngIf="doc.verificationStatus === 'Rejected'" class="badge bg-danger text-white" style="font-size: 9px;">Rejected</span>
+                    <span *ngIf="(!doc.isVerified && doc.verificationStatus !== 'Rejected') && doc.fileName" class="badge bg-warning text-dark border" style="font-size: 9px;">Pending Audit</span>
+                    <span *ngIf="!doc.fileName" class="badge bg-light text-muted border" style="font-size: 9px;">Not Uploaded</span>
+                  </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="d-flex gap-1.5 justify-content-end align-items-center">
+                  <button *ngIf="doc.fileName" (click)="previewDocument(doc)" class="btn btn-xs btn-outline-primary" style="font-size: 11px; padding: 4px 10px;">
+                    <i class="fa-regular fa-eye me-1"></i>View
+                  </button>
+                  <label class="btn btn-xs btn-primary mb-0 cursor-pointer d-inline-flex align-items-center gap-1"
+                         style="background-color: #3080e8; border-color: #3080e8; box-shadow: 0 2px 6px #acb5f6; font-size: 11px; padding: 4px 12px;"
+                         [class.disabled]="uploadingDocCode === doc.docTypeCode">
+                    <i class="fa-solid fa-arrow-up-from-bracket" *ngIf="uploadingDocCode !== doc.docTypeCode"></i>
+                    <span *ngIf="uploadingDocCode === doc.docTypeCode" class="spinner-border spinner-border-sm"></span>
+                    <span>{{ doc.fileName ? 'Replace' : 'Upload' }}</span>
+                    <input type="file"
+                           (change)="onFileSelected($event, doc.docTypeCode)"
+                           style="display: none;"
+                           accept=".pdf,.png,.jpg,.jpeg" />
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Desktop Documents Table (d-none d-md-block) -->
+            <div class="d-none d-md-block table-responsive" *ngIf="!loadingDocs && candidateDocs.length > 0">
+              <table class="table table-hover table-bordered align-middle mb-0" style="font-size: 11.5px;">
+                <thead class="table-light">
+                  <tr>
+                    <th style="width: 40px;" class="text-center">#</th>
+                    <th>Document Name & Category</th>
+                    <th style="width: 110px;">Requirement</th>
+                    <th>Uploaded File</th>
+                    <th style="width: 120px;" class="text-center">Verification Status</th>
+                    <th style="width: 170px;" class="text-end pe-3">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let doc of candidateDocs; let idx = index">
+                    <td class="text-center fw-bold" style="color: #334155;">{{ idx + 1 }}</td>
+                    
+                    <td>
+                      <div class="fw-bold text-dark">{{ doc.docTypeName }}</div>
+                      <div style="font-size: 10.5px; color: #475569; font-weight: 500;">
+                        Category: {{ doc.docCategory || 'Statutory & Identity' }}
+                      </div>
+                    </td>
+
+                    <td>
+                      <span *ngIf="doc.isMandatory" class="badge bg-danger-subtle text-danger border border-danger-subtle">
+                        Mandatory
+                      </span>
+                      <span *ngIf="!doc.isMandatory" class="badge bg-light text-dark border fw-medium" style="color: #334155;">
+                        Optional
+                      </span>
+                    </td>
+
+                    <td>
+                      <div *ngIf="doc.fileName" class="d-flex align-items-center gap-2">
+                        <i class="fa-solid" [ngClass]="doc.fileName.endsWith('.pdf') ? 'fa-file-pdf text-danger' : 'fa-file-image text-primary'" style="font-size: 16px;"></i>
+                        <div class="text-truncate" style="max-width: 220px;">
+                          <a class="text-primary fw-semibold text-truncate d-block cursor-pointer" 
+                             (click)="previewDocument(doc)" 
+                             style="text-decoration: underline; font-size: 11.5px; cursor: pointer;" 
+                             [title]="doc.fileName">
+                            {{ doc.fileName }}
+                          </a>
+                          <div class="text-muted" style="font-size: 9.5px;">
+                            {{ formatFileSize(doc.fileSize) }} · Uploaded
+                          </div>
+                        </div>
+                      </div>
+                      <div *ngIf="!doc.fileName" class="text-danger fw-semibold" style="font-size: 11px;">
+                        <i class="fa-solid fa-clock text-warning me-1"></i>Pending Upload
+                      </div>
+                    </td>
+
+                    <td class="text-center">
+                      <span *ngIf="doc.isVerified || doc.verificationStatus === 'Approved'" class="badge bg-success text-white">
+                        <i class="fa-solid fa-check me-1"></i>Verified
+                      </span>
+                      <span *ngIf="doc.verificationStatus === 'Rejected'" class="badge bg-danger text-white">
+                        <i class="fa-solid fa-xmark me-1"></i>Rejected
+                      </span>
+                      <span *ngIf="(!doc.isVerified && doc.verificationStatus !== 'Rejected') && doc.fileName" class="badge bg-warning text-dark border">
+                        Pending HR Audit
+                      </span>
+                      <span *ngIf="!doc.fileName" class="badge bg-light text-dark border" style="color: #334155;">
+                        Not Uploaded
+                      </span>
+                    </td>
+
+                    <td class="text-end pe-3">
+                      <div class="d-flex justify-content-end align-items-center gap-1.5">
+                        
+                        <!-- Preview Button -->
+                        <button *ngIf="doc.fileName"
+                                (click)="previewDocument(doc)"
+                                class="btn btn-xs btn-outline-primary d-inline-flex align-items-center gap-1"
+                                style="font-size: 10.5px; padding: 3px 8px;"
+                                title="Preview Document">
+                          <i class="fa-solid fa-eye"></i> View
+                        </button>
+
+                        <!-- Open in New Tab Button -->
+                        <button *ngIf="doc.fileName"
+                                (click)="openDocInNewWindow(doc)"
+                                class="btn btn-xs btn-light border d-inline-flex align-items-center"
+                                style="font-size: 10.5px; padding: 3px 7px;"
+                                title="Open in New Tab">
+                          <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        </button>
+
+                        <!-- Upload File Input -->
+                        <label class="btn btn-xs btn-outline-secondary mb-0 cursor-pointer d-inline-flex align-items-center gap-1"
+                                style="font-size: 10.5px; padding: 3px 8px;"
+                                [class.disabled]="uploadingDocCode === doc.docTypeCode">
+                          <i class="fa-solid fa-arrow-up-from-bracket" *ngIf="uploadingDocCode !== doc.docTypeCode"></i>
+                          <span *ngIf="uploadingDocCode === doc.docTypeCode" class="spinner-border spinner-border-sm"></span>
+                          <span>{{ doc.fileName ? 'Replace' : 'Upload' }}</span>
+                          <input type="file"
+                                 (change)="onFileSelected($event, doc.docTypeCode)"
+                                 style="display: none;"
+                                 accept=".pdf,.png,.jpg,.jpeg" />
+                        </label>
+
+                      </div>
+                    </td>
+
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Step Navigation -->
+            <div class="d-flex justify-content-start align-items-center mt-3 pt-2.5 border-top">
+              <button type="button" 
+                      class="btn btn-sm btn-outline-secondary fw-semibold px-3 d-inline-flex align-items-center gap-1.5"
+                      (click)="dossierActiveTab = 'nominee'; switchDossierTab('nominee')">
+                <i class="fa-solid fa-arrow-left"></i>
+                <span>Previous: Nominee Details</span>
+              </button>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- ── Action Footer (Custom class to avoid global card-footer CSS override) ── -->
+        <div class="dossier-action-footer d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2">
+          <button (click)="backToList()" class="btn btn-back-custom" title="Back to Candidate List">
+            <i class="fa-solid fa-arrow-left"></i>
+            <span>Back to Candidates List</span>
+          </button>
+
+          <div class="d-flex align-items-center gap-2 flex-wrap">
+            <button (click)="saveDossierDetails()"
+                    [disabled]="savingDossier || submittingToHR"
+                    class="btn btn-outline-primary btn-sm px-3 d-inline-flex align-items-center gap-1.5"
+                    style="height: 38px;">
+              <span *ngIf="savingDossier" class="spinner-border spinner-border-sm"></span>
+              <i *ngIf="!savingDossier" class="fa-solid fa-floppy-disk"></i>
+              <span>Save Details</span>
+            </button>
+
+            <button (click)="submitToSiteHR()"
+                    [disabled]="submittingToHR || savingDossier || missingMandatoryDocsCount > 0 || aadhaarStatus === 'duplicate'"
+                    class="btn btn-success btn-sm px-4 d-inline-flex align-items-center gap-2"
+                    style="height: 38px; font-weight: 600;">
+              <span *ngIf="submittingToHR" class="spinner-border spinner-border-sm"></span>
+              <i *ngIf="!submittingToHR" class="fa-solid fa-paper-plane"></i>
+              <span>Submit Documents to Site HR (Move to Next Step)</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      </div> <!-- ── END OF DESKTOP/WEB VIEW (UNTOUCHED) ────────────────── -->
+
+      <!-- ── MOBILE VIEW: REDESIGNED WITH TABS & POPUPS (d-md-none) ──────── -->
+      <div class="d-md-none mob-dossier-wrapper">
+
+        <!-- 1. Mobile Header Navigation (Single, Tidy Header) -->
+        <div class="mob-passed-header mb-2.5">
+          <div class="d-flex align-items-center justify-content-between">
+            <button type="button" class="mob-back-btn" (click)="backToList()">
+              <i class="fa-solid fa-arrow-left me-1"></i> Candidates
+            </button>
+            <div class="d-flex align-items-center gap-1.5">
+              <span class="badge bg-light text-dark border mono-val fw-semibold" style="font-size: 11px;">
+                {{ selectedCandidate.applicationNo }}
+              </span>
+              <span class="badge bg-success-subtle text-success border border-success-subtle fw-semibold" style="font-size: 10px;">
+                <i class="fa-solid fa-circle-check me-1"></i>Cleared Interview
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Candidate Hero Overview Card (Tidy, Balanced & Cohesive) -->
+        <div class="mob-cand-hero-card mb-2.5">
+          <!-- Top Row: Avatar + Name + MRF Code -->
+          <div class="d-flex align-items-center">
+            <div class="mob-cand-avatar me-2.5">
+              {{ (dossierForm.candidateName || selectedCandidate.candidateName || 'C')[0] | uppercase }}
+            </div>
+            <div class="flex-grow-1 min-w-0">
+              <div class="d-flex align-items-center justify-content-between gap-1">
+                <div class="fw-bold text-dark text-truncate" style="font-size: 15px; letter-spacing: -0.2px;">
+                  {{ dossierForm.candidateName || selectedCandidate.candidateName }}
+                </div>
+                <span class="badge bg-light text-muted border mono-val text-nowrap" style="font-size: 10px; font-weight: 600;">
+                  {{ selectedCandidate.mrfCode }}
+                </span>
+              </div>
+              <div class="text-muted text-truncate mt-0.5" style="font-size: 11px;">
+                <i class="fa-solid fa-briefcase text-primary me-1"></i>{{ selectedCandidate.jobTitle }}
+                <span class="mx-1 text-muted">·</span>
+                <i class="fa-solid fa-location-dot text-secondary me-0.5"></i>{{ selectedCandidate.location }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Row: Unified Readiness & Document Compliance Bar -->
+          <div class="mob-readiness-bar mt-2.5 pt-2 border-top">
+            <div class="d-flex justify-content-between align-items-center mb-1.5">
+              <div class="d-flex align-items-center gap-1.5">
+                <i class="fa-solid fa-list-check text-primary" style="font-size: 11px;"></i>
+                <span class="fw-bold text-dark" style="font-size: 11.5px;">Dossier Readiness</span>
+                <span class="text-muted" style="font-size: 10.5px;">({{ completedSectionsCount }}/5 Sections)</span>
+              </div>
+              <div>
+                <span *ngIf="missingMandatoryDocsCount === 0" class="badge bg-success-subtle text-success border border-success-subtle fw-semibold" style="font-size: 9.5px;">
+                  <i class="fa-solid fa-check me-1"></i>All Docs Ready
+                </span>
+                <span *ngIf="missingMandatoryDocsCount > 0" class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle fw-semibold" style="font-size: 9.5px;">
+                  <i class="fa-solid fa-circle-exclamation me-1"></i>{{ missingMandatoryDocsCount }} Docs Pending
+                </span>
+              </div>
+            </div>
+
+            <!-- Sleek Modern Progress Bar -->
+            <div class="progress" style="height: 5px; background-color: #f1f5f9; border-radius: 10px; overflow: hidden;">
+              <div class="progress-bar bg-primary" role="progressbar" [style.width.%]="(completedSectionsCount / 5) * 100"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Horizontal Scrolling Tabs Strip (Tap opens respective popup) -->
+        <div class="mob-section-tabs-bar mb-2.5">
+          <!-- Tab 1: Personal Details -->
+          <button type="button" class="mob-tab-chip" (click)="openSectionPopup('personal')">
+            <i class="fa-solid fa-user-check text-primary"></i>
+            <span>Personal</span>
+            <span *ngIf="isPersonalComplete" class="mob-tab-dot bg-success"></span>
+            <span *ngIf="!isPersonalComplete" class="mob-tab-dot bg-warning"></span>
+          </button>
+
+          <!-- Tab 2: Statutory & Identification -->
+          <button type="button" class="mob-tab-chip" (click)="openSectionPopup('statutory')">
+            <i class="fa-solid fa-id-card text-purple" style="color: #7e22ce;"></i>
+            <span>Statutory</span>
+            <span *ngIf="isStatutoryComplete" class="mob-tab-dot bg-success"></span>
+            <span *ngIf="!isStatutoryComplete" class="mob-tab-dot bg-warning"></span>
+          </button>
+
+          <!-- Tab 3: Bank Details -->
+          <button type="button" class="mob-tab-chip" (click)="openSectionPopup('bank')">
+            <i class="fa-solid fa-building-columns text-success"></i>
+            <span>Bank</span>
+            <span *ngIf="isBankComplete" class="mob-tab-dot bg-success"></span>
+            <span *ngIf="!isBankComplete" class="mob-tab-dot bg-warning"></span>
+          </button>
+
+          <!-- Tab 4: Nominee Details -->
+          <button type="button" class="mob-tab-chip" (click)="openSectionPopup('nominee')">
+            <i class="fa-solid fa-users-viewfinder text-warning" style="color: #d97706;"></i>
+            <span>Nominee</span>
+            <span *ngIf="isNomineeComplete" class="mob-tab-dot bg-success"></span>
+            <span *ngIf="!isNomineeComplete" class="mob-tab-dot bg-warning"></span>
+          </button>
+
+          <!-- Tab 5: Documents Checklist -->
+          <button type="button" class="mob-tab-chip" (click)="openSectionPopup('docs')">
+            <i class="fa-solid fa-folder-open text-primary"></i>
+            <span>Documents</span>
+            <span class="badge rounded-pill bg-light text-dark border ms-1" style="font-size: 9px;">
+              {{ uploadedDocsCount }}/{{ candidateDocs.length }}
+            </span>
+          </button>
+        </div>
+
+        <!-- 4. Interactive Bento Section Cards -->
+        <div class="d-flex flex-column gap-2.5 mb-3">
+          
+          <!-- Card 1: Personal Details -->
+          <div class="mob-section-card" (click)="openSectionPopup('personal')">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <div class="d-flex align-items-center gap-2">
+                <div class="mob-section-icon bg-primary-subtle text-primary">
+                  <i class="fa-solid fa-user"></i>
+                </div>
+                <div>
+                  <div class="fw-bold text-dark" style="font-size: 13px;">Personal Details</div>
+                  <div class="text-muted" style="font-size: 10.5px;">Identity, contact &amp; basic profile</div>
+                </div>
+              </div>
+              <span *ngIf="isPersonalComplete" class="badge bg-success-subtle text-success border border-success-subtle fw-semibold" style="font-size: 9.5px;">
+                <i class="fa-solid fa-check me-1"></i>Completed
+              </span>
+              <span *ngIf="!isPersonalComplete" class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle fw-semibold" style="font-size: 9.5px;">
+                <i class="fa-solid fa-circle-exclamation me-1"></i>Required
+              </span>
+            </div>
+            
+            <div class="mob-card-snippet">
+              <div class="d-flex justify-content-between py-1 border-bottom">
+                <span class="mob-snippet-label">Legal Name</span>
+                <span class="mob-snippet-val text-truncate">{{ dossierForm.candidateName || 'Tap to enter' }}</span>
+              </div>
+              <div class="d-flex justify-content-between py-1 border-bottom">
+                <span class="mob-snippet-label">Mobile</span>
+                <span class="mob-snippet-val mono-val">{{ dossierForm.mobile || 'Tap to enter' }}</span>
+              </div>
+              <div class="d-flex justify-content-between py-1">
+                <span class="mob-snippet-label">DOB / Gender / Religion</span>
+                <span class="mob-snippet-val">{{ (dossierForm.dateOfBirth || '-') + ' · ' + (dossierForm.gender || '-') + ' · ' + (dossierForm.religion || '-') }}</span>
+              </div>
+            </div>
+
+            <div class="mob-card-footer-cta">
+              <span>Edit Personal Details</span>
+              <i class="fa-solid fa-chevron-right"></i>
+            </div>
+          </div>
+
+          <!-- Card 2: Statutory & Identification -->
+          <div class="mob-section-card" (click)="openSectionPopup('statutory')">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <div class="d-flex align-items-center gap-2">
+                <div class="mob-section-icon" style="background: #f3e8ff; color: #7e22ce;">
+                  <i class="fa-solid fa-id-card"></i>
+                </div>
+                <div>
+                  <div class="fw-bold text-dark" style="font-size: 13px;">Statutory &amp; Identification</div>
+                  <div class="text-muted" style="font-size: 10.5px;">Aadhaar, PAN, EPF UAN &amp; ESIC</div>
+                </div>
+              </div>
+              <span *ngIf="isStatutoryComplete" class="badge bg-success-subtle text-success border border-success-subtle fw-semibold" style="font-size: 9.5px;">
+                <i class="fa-solid fa-check me-1"></i>Completed
+              </span>
+              <span *ngIf="!isStatutoryComplete" class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle fw-semibold" style="font-size: 9.5px;">
+                <i class="fa-solid fa-circle-exclamation me-1"></i>Required
+              </span>
+            </div>
+
+            <div class="mob-card-snippet">
+              <div class="d-flex justify-content-between py-1 border-bottom">
+                <span class="mob-snippet-label">Aadhaar Card</span>
+                <span class="mob-snippet-val mono-val">{{ dossierForm.aadhaarNo || 'Tap to enter' }}</span>
+              </div>
+              <div class="d-flex justify-content-between py-1 border-bottom">
+                <span class="mob-snippet-label">PAN Number</span>
+                <span class="mob-snippet-val mono-val">{{ dossierForm.panNo || 'Tap to enter' }}</span>
+              </div>
+              <div class="d-flex justify-content-between py-1">
+                <span class="mob-snippet-label">UAN / ESIC</span>
+                <span class="mob-snippet-val mono-val">{{ (dossierForm.uanNo || 'N/A') + ' / ' + (dossierForm.esicNo || 'N/A') }}</span>
+              </div>
+            </div>
+
+            <div class="mob-card-footer-cta">
+              <span>Edit Statutory Details</span>
+              <i class="fa-solid fa-chevron-right"></i>
+            </div>
+          </div>
+
+          <!-- Card 3: Bank Details -->
+          <div class="mob-section-card" (click)="openSectionPopup('bank')">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <div class="d-flex align-items-center gap-2">
+                <div class="mob-section-icon" style="background: #ecfdf5; color: #059669;">
+                  <i class="fa-solid fa-building-columns"></i>
+                </div>
+                <div>
+                  <div class="fw-bold text-dark" style="font-size: 13px;">Bank Account Details</div>
+                  <div class="text-muted" style="font-size: 10.5px;">Payroll disbursement bank account</div>
+                </div>
+              </div>
+              <span *ngIf="isBankComplete" class="badge bg-success-subtle text-success border border-success-subtle fw-semibold" style="font-size: 9.5px;">
+                <i class="fa-solid fa-check me-1"></i>Completed
+              </span>
+              <span *ngIf="!isBankComplete" class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle fw-semibold" style="font-size: 9.5px;">
+                <i class="fa-solid fa-circle-exclamation me-1"></i>Required
+              </span>
+            </div>
+
+            <div class="mob-card-snippet">
+              <div class="d-flex justify-content-between py-1 border-bottom">
+                <span class="mob-snippet-label">Bank Name</span>
+                <span class="mob-snippet-val text-truncate">{{ dossierForm.bankName || 'Tap to enter' }}</span>
+              </div>
+              <div class="d-flex justify-content-between py-1 border-bottom">
+                <span class="mob-snippet-label">Account No</span>
+                <span class="mob-snippet-val mono-val">{{ dossierForm.bankAccNo || 'Tap to enter' }}</span>
+              </div>
+              <div class="d-flex justify-content-between py-1">
+                <span class="mob-snippet-label">IFSC Code</span>
+                <span class="mob-snippet-val mono-val">{{ dossierForm.bankIfsc || 'Tap to enter' }}</span>
+              </div>
+            </div>
+
+            <div class="mob-card-footer-cta">
+              <span>Edit Bank Details</span>
+              <i class="fa-solid fa-chevron-right"></i>
+            </div>
+          </div>
+
+          <!-- Card 4: Nominee Details -->
+          <div class="mob-section-card" (click)="openSectionPopup('nominee')">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <div class="d-flex align-items-center gap-2">
+                <div class="mob-section-icon" style="background: #fffbeb; color: #d97706;">
+                  <i class="fa-solid fa-users-viewfinder"></i>
+                </div>
+                <div>
+                  <div class="fw-bold text-dark" style="font-size: 13px;">Nominee &amp; Emergency Details</div>
+                  <div class="text-muted" style="font-size: 10.5px;">Statutory nominee for insurance &amp; PF</div>
+                </div>
+              </div>
+              <span *ngIf="isNomineeComplete" class="badge bg-success-subtle text-success border border-success-subtle fw-semibold" style="font-size: 9.5px;">
+                <i class="fa-solid fa-check me-1"></i>Completed
+              </span>
+              <span *ngIf="!isNomineeComplete" class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle fw-semibold" style="font-size: 9.5px;">
+                <i class="fa-solid fa-circle-exclamation me-1"></i>Required
+              </span>
+            </div>
+
+            <div class="mob-card-snippet">
+              <div class="d-flex justify-content-between py-1 border-bottom">
+                <span class="mob-snippet-label">Nominee Name</span>
+                <span class="mob-snippet-val text-truncate">{{ dossierForm.nomineeName || 'Tap to enter' }}</span>
+              </div>
+              <div class="d-flex justify-content-between py-1 border-bottom">
+                <span class="mob-snippet-label">Relationship</span>
+                <span class="mob-snippet-val">{{ dossierForm.nomineeRelation || 'Not Set' }}</span>
+              </div>
+              <div class="d-flex justify-content-between py-1">
+                <span class="mob-snippet-label">Contact No</span>
+                <span class="mob-snippet-val mono-val">{{ dossierForm.nomineeContact || 'Tap to enter' }}</span>
+              </div>
+            </div>
+
+            <div class="mob-card-footer-cta">
+              <span>Edit Nominee Details</span>
+              <i class="fa-solid fa-chevron-right"></i>
+            </div>
+          </div>
+
+          <!-- Card 5: Documents Checklist -->
+          <div class="mob-section-card" (click)="openSectionPopup('docs')">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <div class="d-flex align-items-center gap-2">
+                <div class="mob-section-icon" style="background: #eff6ff; color: #0051d5;">
+                  <i class="fa-solid fa-folder-open"></i>
+                </div>
+                <div>
+                  <div class="fw-bold text-dark" style="font-size: 13px;">Document Checklist</div>
+                  <div class="text-muted" style="font-size: 10.5px;">Mandatory &amp; compliance files</div>
+                </div>
+              </div>
+              <span class="badge" [ngClass]="isDocsComplete ? 'bg-success-subtle text-success border border-success-subtle' : 'bg-warning-subtle text-warning-emphasis border border-warning-subtle'" style="font-size: 9.5px;">
+                {{ uploadedDocsCount }} / {{ candidateDocs.length }} Uploaded
+              </span>
+            </div>
+
+            <div class="mob-card-snippet">
+              <div class="d-flex justify-content-between py-1 border-bottom">
+                <span class="mob-snippet-label">Mandatory Docs</span>
+                <span class="mob-snippet-val" [class.text-danger]="missingMandatoryDocsCount > 0" [class.text-success]="missingMandatoryDocsCount === 0">
+                  {{ missingMandatoryDocsCount === 0 ? 'All Mandatory Uploaded' : missingMandatoryDocsCount + ' Missing' }}
+                </span>
+              </div>
+              <div class="d-flex justify-content-between py-1">
+                <span class="mob-snippet-label">Audit Repository</span>
+                <span class="mob-snippet-val">CJ DARCL Digital Vault</span>
+              </div>
+            </div>
+
+            <div class="mob-card-footer-cta">
+              <span>View &amp; Upload Documents</span>
+              <i class="fa-solid fa-chevron-right"></i>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- 5. Mobile Bottom Pinned Action Bar -->
+        <div class="mob-bottom-pinned-bar d-flex gap-2">
+          <button type="button" 
+                  (click)="saveDossierDetails()"
+                  [disabled]="savingDossier || submittingToHR"
+                  class="btn btn-outline-secondary flex-grow-1"
+                  style="font-size: 12px; height: 42px;">
+            <span *ngIf="savingDossier" class="spinner-border spinner-border-sm me-1"></span>
+            <i *ngIf="!savingDossier" class="fa-solid fa-floppy-disk me-1"></i>
+            <span>Save Details</span>
+          </button>
+
+          <button type="button" 
+                  (click)="submitToSiteHR()"
+                  [disabled]="submittingToHR || savingDossier || missingMandatoryDocsCount > 0 || aadhaarStatus === 'duplicate'"
+                  class="mob-save-btn flex-grow-1"
+                  style="height: 42px; background: #198754;">
+            <span *ngIf="submittingToHR" class="spinner-border spinner-border-sm me-1"></span>
+            <i *ngIf="!submittingToHR" class="fa-solid fa-paper-plane me-1"></i>
+            <span>Submit to HR</span>
+          </button>
+        </div>
+
+      </div> <!-- ── END OF MOBILE VIEW ───────────────────────────────── -->
+
+      <!-- ── 5 MOBILE SECTION POPUPS ────────────────────────────────────── -->
+      
+      <!-- POPUP 1: PERSONAL DETAILS -->
+      <div *ngIf="activeSectionPopup === 'personal'" class="mob-modal-backdrop" (click)="closeSectionPopup()">
+        <div class="mob-modal-sheet" (click)="$event.stopPropagation()">
+          <div class="mob-modal-header">
+            <div class="d-flex align-items-center gap-2">
+              <div class="mob-section-icon bg-primary-subtle text-primary" style="width: 28px; height: 28px; font-size: 12px;">
+                <i class="fa-solid fa-user-pen"></i>
+              </div>
+              <span>Personal Details</span>
+            </div>
+            <button type="button" class="mob-modal-close" (click)="closeSectionPopup()">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+
+          <div class="mob-modal-body">
+            <div class="mob-field-group">
+              <label class="mob-field-label">Full Legal Name *</label>
+              <input type="text"
+                     class="mob-field-input fw-bold"
+                     [(ngModel)]="dossierForm.candidateName"
+                     placeholder="Candidate Full Legal Name" />
+            </div>
+
+            <div class="mob-field-row">
+              <div class="mob-field-group">
+                <label class="mob-field-label">Mobile Number *</label>
+                <input type="text"
+                       class="mob-field-input mono-val"
+                       [(ngModel)]="dossierForm.mobile"
+                       placeholder="10-digit mobile"
+                       maxlength="10" />
+              </div>
+              <div class="mob-field-group">
+                <label class="mob-field-label">Gender</label>
+                <select class="mob-field-input" [(ngModel)]="dossierForm.gender">
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="mob-field-group">
+              <label class="mob-field-label">Email Address</label>
+              <input type="email"
+                     class="mob-field-input"
+                     [(ngModel)]="dossierForm.email"
+                     placeholder="candidate@email.com" />
+            </div>
+
+            <div class="mob-field-row">
+              <div class="mob-field-group">
+                <label class="mob-field-label">Date of Birth</label>
+                <input type="date"
+                       class="mob-field-input"
+                       [(ngModel)]="dossierForm.dateOfBirth" />
+              </div>
+              <div class="mob-field-group">
+                <label class="mob-field-label">Father's Name</label>
+                <input type="text"
+                       class="mob-field-input"
+                       [(ngModel)]="dossierForm.fatherName"
+                       placeholder="Father's Name" />
+              </div>
+            </div>
+
+            <div class="mob-field-group">
+              <label class="mob-field-label">Religion <span class="text-danger">*</span></label>
+              <select class="mob-field-input" [(ngModel)]="dossierForm.religion">
+                <option *ngFor="let rel of religions" [value]="rel">{{ rel }}</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="mob-modal-footer">
+            <button type="button" class="mob-cancel-btn" (click)="closeSectionPopup()">Cancel</button>
+            <button type="button" class="mob-save-btn" (click)="saveSectionAndClose()">
+              <i class="fa-solid fa-check"></i>
+              <span>Save &amp; Close</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- POPUP 2: STATUTORY & IDENTIFICATION -->
+      <div *ngIf="activeSectionPopup === 'statutory'" class="mob-modal-backdrop" (click)="closeSectionPopup()">
+        <div class="mob-modal-sheet" (click)="$event.stopPropagation()">
+          <div class="mob-modal-header">
+            <div class="d-flex align-items-center gap-2">
+              <div class="mob-section-icon" style="width: 28px; height: 28px; font-size: 12px; background: #f3e8ff; color: #7e22ce;">
+                <i class="fa-solid fa-id-card"></i>
+              </div>
+              <span>Statutory &amp; Identification</span>
+            </div>
+            <button type="button" class="mob-modal-close" (click)="closeSectionPopup()">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+
+          <div class="mob-modal-body">
+            <div class="alert alert-light border py-2 px-3 small fw-medium mb-0" style="color: #1e293b; font-size: 11px;">
+              <i class="fa-solid fa-circle-info text-primary me-1"></i>
+              Required for government compliance, PF, ESIC &amp; income tax records.
+            </div>
+
+            <div class="mob-field-group">
+              <label class="mob-field-label d-flex justify-content-between">
+                <span>Aadhaar Card Number *</span>
+                <span *ngIf="aadhaarStatus === 'checking'" class="text-primary small" style="font-size: 10px;">
+                  <span class="spinner-border spinner-border-sm me-1" style="width: 9px; height: 9px;"></span>Checking...
+                </span>
+                <span *ngIf="aadhaarStatus === 'verified'" class="text-success small fw-semibold" style="font-size: 10px;">
+                  <i class="fa-solid fa-circle-check me-0.5"></i>Verified
+                </span>
+                <span *ngIf="aadhaarStatus === 'duplicate'" class="text-danger small fw-semibold" style="font-size: 10px;">
+                  <i class="fa-solid fa-circle-exclamation me-0.5"></i>Duplicate
+                </span>
+              </label>
+              <input type="text"
+                     class="mob-field-input mono-val"
+                     [ngClass]="{
+                       'is-invalid': aadhaarStatus === 'duplicate',
+                       'is-valid': aadhaarStatus === 'verified'
+                     }"
+                     [(ngModel)]="dossierForm.aadhaarNo"
+                     (input)="onAadhaarInput()"
+                     (blur)="validateAadhaar()"
+                     placeholder="12-digit Aadhaar number"
+                     maxlength="12" />
+              <div *ngIf="aadhaarStatus === 'duplicate'" class="text-danger small mt-0.5" style="font-size: 10.5px;">
+                {{ aadhaarMessage }}
+              </div>
+            </div>
+
+            <div class="mob-field-group">
+              <label class="mob-field-label">PAN Card Number *</label>
+              <input type="text"
+                     class="mob-field-input mono-val"
+                     [(ngModel)]="dossierForm.panNo"
+                     placeholder="10-character PAN (e.g. ABCDE1234F)"
+                     maxlength="10"
+                     style="text-transform: uppercase;" />
+            </div>
+
+            <div class="mob-field-group">
+              <label class="mob-field-label">EPF UAN Number</label>
+              <input type="text"
+                     class="mob-field-input mono-val"
+                     [(ngModel)]="dossierForm.uanNo"
+                     placeholder="12-digit Universal Account Number (if existing PF)"
+                     maxlength="12" />
+            </div>
+
+            <div class="mob-field-group">
+              <label class="mob-field-label">ESIC IP Number</label>
+              <input type="text"
+                     class="mob-field-input mono-val"
+                     [(ngModel)]="dossierForm.esicNo"
+                     placeholder="17-digit Insurance Person Number (if applicable)"
+                     maxlength="17" />
+            </div>
+          </div>
+
+          <div class="mob-modal-footer">
+            <button type="button" class="mob-cancel-btn" (click)="closeSectionPopup()">Cancel</button>
+            <button type="button" class="mob-save-btn" (click)="saveSectionAndClose()">
+              <i class="fa-solid fa-check"></i>
+              <span>Save &amp; Close</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- POPUP 3: BANK DETAILS -->
+      <div *ngIf="activeSectionPopup === 'bank'" class="mob-modal-backdrop" (click)="closeSectionPopup()">
+        <div class="mob-modal-sheet" (click)="$event.stopPropagation()">
+          <div class="mob-modal-header">
+            <div class="d-flex align-items-center gap-2">
+              <div class="mob-section-icon" style="width: 28px; height: 28px; font-size: 12px; background: #ecfdf5; color: #059669;">
+                <i class="fa-solid fa-building-columns"></i>
+              </div>
+              <span>Bank Account Details</span>
+            </div>
+            <button type="button" class="mob-modal-close" (click)="closeSectionPopup()">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+
+          <div class="mob-modal-body">
+            <div class="alert alert-light border py-2 px-3 small fw-medium mb-0" style="color: #1e293b; font-size: 11px;">
+              <i class="fa-solid fa-circle-info text-primary me-1"></i>
+              Must match candidate's legal name for automated payroll disbursements.
+            </div>
+
+            <div class="mob-field-group">
+              <label class="mob-field-label">Bank Name *</label>
+              <input type="text"
+                     class="mob-field-input"
+                     [(ngModel)]="dossierForm.bankName"
+                     placeholder="e.g. State Bank of India, HDFC Bank" />
+            </div>
+
+            <div class="mob-field-group">
+              <label class="mob-field-label">Bank Account Number *</label>
+              <input type="text"
+                     class="mob-field-input mono-val"
+                     [(ngModel)]="dossierForm.bankAccNo"
+                     placeholder="Enter full bank account number" />
+            </div>
+
+            <div class="mob-field-row">
+              <div class="mob-field-group">
+                <label class="mob-field-label">IFSC Code *</label>
+                <input type="text"
+                       class="mob-field-input mono-val"
+                       [(ngModel)]="dossierForm.bankIfsc"
+                       placeholder="11-character IFSC"
+                       maxlength="11"
+                       style="text-transform: uppercase;" />
+              </div>
+              <div class="mob-field-group">
+                <label class="mob-field-label">Branch / City</label>
+                <input type="text"
+                       class="mob-field-input"
+                       [(ngModel)]="dossierForm.bankBranch"
+                       placeholder="Branch name or city" />
+              </div>
+            </div>
+          </div>
+
+          <div class="mob-modal-footer">
+            <button type="button" class="mob-cancel-btn" (click)="closeSectionPopup()">Cancel</button>
+            <button type="button" class="mob-save-btn" (click)="saveSectionAndClose()">
+              <i class="fa-solid fa-check"></i>
+              <span>Save &amp; Close</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- POPUP 4: NOMINEE DETAILS -->
+      <div *ngIf="activeSectionPopup === 'nominee'" class="mob-modal-backdrop" (click)="closeSectionPopup()">
+        <div class="mob-modal-sheet" (click)="$event.stopPropagation()">
+          <div class="mob-modal-header">
+            <div class="d-flex align-items-center gap-2">
+              <div class="mob-section-icon" style="width: 28px; height: 28px; font-size: 12px; background: #fffbeb; color: #d97706;">
+                <i class="fa-solid fa-users-viewfinder"></i>
+              </div>
+              <span>Nominee &amp; Emergency Details</span>
+            </div>
+            <button type="button" class="mob-modal-close" (click)="closeSectionPopup()">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+
+          <div class="mob-modal-body">
+            <div class="alert alert-light border py-2 px-3 small fw-medium mb-0" style="color: #1e293b; font-size: 11px;">
+              <i class="fa-solid fa-circle-info text-primary me-1"></i>
+              Statutory nomination for Group Term Life, Gratuity, and PF records.
+            </div>
+
+            <div class="mob-field-group">
+              <label class="mob-field-label">Nominee Full Name *</label>
+              <input type="text"
+                     class="mob-field-input"
+                     [(ngModel)]="dossierForm.nomineeName"
+                     placeholder="Enter legal nominee name" />
+            </div>
+
+            <div class="mob-field-row">
+              <div class="mob-field-group">
+                <label class="mob-field-label">Relationship *</label>
+                <select class="mob-field-input" [(ngModel)]="dossierForm.nomineeRelation">
+                  <option value="Father">Father</option>
+                  <option value="Mother">Mother</option>
+                  <option value="Spouse">Spouse</option>
+                  <option value="Son">Son</option>
+                  <option value="Daughter">Daughter</option>
+                  <option value="Brother">Brother</option>
+                  <option value="Sister">Sister</option>
+                </select>
+              </div>
+              <div class="mob-field-group">
+                <label class="mob-field-label">Nominee DOB</label>
+                <input type="date"
+                       class="mob-field-input"
+                       [(ngModel)]="dossierForm.nomineeDOB" />
+              </div>
+            </div>
+
+            <div class="mob-field-group">
+              <label class="mob-field-label">Emergency Contact Number *</label>
+              <input type="text"
+                     class="mob-field-input mono-val"
+                     [(ngModel)]="dossierForm.nomineeContact"
+                     placeholder="10-digit mobile number"
+                     maxlength="10" />
+            </div>
+          </div>
+
+          <div class="mob-modal-footer">
+            <button type="button" class="mob-cancel-btn" (click)="closeSectionPopup()">Cancel</button>
+            <button type="button" class="mob-save-btn" (click)="saveSectionAndClose()">
+              <i class="fa-solid fa-check"></i>
+              <span>Save &amp; Close</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- POPUP 5: DOCUMENTS CHECKLIST -->
+      <div *ngIf="activeSectionPopup === 'docs'" class="mob-modal-backdrop" (click)="closeSectionPopup()">
+        <div class="mob-modal-sheet" (click)="$event.stopPropagation()">
+          <div class="mob-modal-header">
+            <div class="d-flex align-items-center gap-2">
+              <div class="mob-section-icon bg-primary-subtle text-primary" style="width: 28px; height: 28px; font-size: 12px;">
+                <i class="fa-solid fa-folder-open"></i>
+              </div>
+              <div>
+                <div>Document Checklist</div>
+                <div class="text-muted fw-normal" style="font-size: 10px;">{{ uploadedDocsCount }} of {{ candidateDocs.length }} uploaded</div>
+              </div>
+            </div>
+            <button type="button" class="mob-modal-close" (click)="closeSectionPopup()">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+
+          <div class="mob-modal-body">
+            <div class="alert alert-light border py-2 px-3 small fw-medium mb-0" style="color: #1e293b; font-size: 10.5px;">
+              <i class="fa-solid fa-circle-info text-primary me-1"></i>
+              Upload legible PDF, PNG, or JPG (Max 10MB). Audited by HR Compliance team.
+            </div>
+
+            <div *ngIf="loadingDocs" class="text-center py-4 small" style="color: #334155;">
+              <span class="spinner-border spinner-border-sm me-2 text-primary"></span>
+              Loading document checklist...
+            </div>
+
+            <div *ngIf="!loadingDocs" class="d-flex flex-column gap-2">
+              <div *ngFor="let doc of candidateDocs; let idx = index" class="card border rounded-3 p-2.5 bg-light shadow-none">
+                <div class="d-flex justify-content-between align-items-start mb-1">
+                  <div class="fw-bold text-dark" style="font-size: 11.5px;">{{ idx + 1 }}. {{ doc.docTypeName }}</div>
+                  <span *ngIf="doc.isMandatory" class="badge bg-danger-subtle text-danger border border-danger-subtle" style="font-size: 9px;">Mandatory</span>
+                  <span *ngIf="!doc.isMandatory" class="badge bg-light text-dark border" style="font-size: 9px;">Optional</span>
+                </div>
+                <div class="text-muted mb-2" style="font-size: 9.5px;">Category: {{ doc.docCategory || 'Statutory & Identity' }}</div>
+
+                <!-- Status & File Info -->
+                <div class="d-flex justify-content-between align-items-center mb-2 bg-white p-2 rounded-2 border">
+                  <div class="min-w-0 flex-grow-1 me-2">
+                    <div *ngIf="doc.fileName" class="text-primary text-truncate fw-semibold" style="font-size: 11px; cursor: pointer;" (click)="previewDocument(doc)">
+                      <i class="fa-solid fa-file me-1"></i>{{ doc.fileName }}
+                    </div>
+                    <div *ngIf="!doc.fileName" class="text-danger fw-semibold" style="font-size: 10.5px;">
+                      <i class="fa-solid fa-clock text-warning me-1"></i>Pending Upload
+                    </div>
+                  </div>
+                  <div>
+                    <span *ngIf="doc.isVerified || doc.verificationStatus === 'Approved'" class="badge bg-success text-white" style="font-size: 9px;">Verified</span>
+                    <span *ngIf="doc.verificationStatus === 'Rejected'" class="badge bg-danger text-white" style="font-size: 9px;">Rejected</span>
+                    <span *ngIf="(!doc.isVerified && doc.verificationStatus !== 'Rejected') && doc.fileName" class="badge bg-warning text-dark border" style="font-size: 9px;">Pending Audit</span>
+                    <span *ngIf="!doc.fileName" class="badge bg-light text-muted border" style="font-size: 9px;">Not Uploaded</span>
+                  </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="d-flex gap-1.5 justify-content-end align-items-center">
+                  <button *ngIf="doc.fileName" (click)="previewDocument(doc)" class="btn btn-xs btn-outline-primary" style="font-size: 10.5px; padding: 4px 10px;">
+                    <i class="fa-regular fa-eye me-1"></i>View
+                  </button>
+                  <label class="btn btn-xs btn-primary mb-0 cursor-pointer d-inline-flex align-items-center gap-1"
+                         style="background-color: #0051d5; border-color: #0051d5; font-size: 10.5px; padding: 4px 12px;"
+                         [class.disabled]="uploadingDocCode === doc.docTypeCode">
+                    <i class="fa-solid fa-arrow-up-from-bracket" *ngIf="uploadingDocCode !== doc.docTypeCode"></i>
+                    <span *ngIf="uploadingDocCode === doc.docTypeCode" class="spinner-border spinner-border-sm"></span>
+                    <span>{{ doc.fileName ? 'Replace' : 'Upload' }}</span>
+                    <input type="file"
+                           (change)="onFileSelected($event, doc.docTypeCode)"
+                           style="display: none;"
+                           accept=".pdf,.png,.jpg,.jpeg" />
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mob-modal-footer">
+            <button type="button" class="mob-save-btn w-100" (click)="closeSectionPopup()">
+              <i class="fa-solid fa-check"></i>
+              <span>Done / Close</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+<!-- ========================================================================= -->
+<!-- 3. MODAL: DOCUMENT PREVIEW (CJ DARCL DIGITAL REPOSITORY)                   -->
+<!-- ========================================================================= -->
+<div *ngIf="showDocPreviewModal" class="modal-backdrop-custom">
+  <div class="modal-dialog-custom border">
+    <!-- Header -->
+    <div class="p-2.5 px-3 border-bottom d-flex justify-content-between align-items-center bg-light flex-shrink-0">
+      <div class="fw-bold text-dark small d-flex align-items-center gap-2">
+        <div class="rounded p-1 bg-primary text-white d-flex align-items-center justify-content-center" style="width: 24px; height: 24px;">
+          <i class="fa-solid fa-file-lines" style="font-size: 12px;"></i>
+        </div>
+        <div>
+          <div class="fw-bold text-dark" style="font-size: 12.5px;">{{ previewDocTitle }}</div>
+          <div class="text-muted" style="font-size: 9.5px;">Candidate Digital File Repository Preview</div>
+        </div>
+      </div>
+      <div class="d-flex align-items-center gap-2">
+        <button class="btn btn-xs btn-outline-primary d-inline-flex align-items-center gap-1"
+                style="font-size: 11px; padding: 3px 8px;"
+                (click)="openDocInNewWindow()">
+          <i class="fa-solid fa-arrow-up-right-from-square"></i> Open in New Tab
+        </button>
+        <button (click)="closeDocPreviewModal()" class="btn-close shadow-none" style="font-size: 11px;"></button>
+      </div>
+    </div>
+
+    <!-- Document Viewer Body -->
+    <div class="p-0 flex-grow-1 bg-light position-relative" style="overflow: hidden; min-height: 0;">
+      <iframe *ngIf="previewDocUrl" [src]="previewDocUrl" width="100%" height="100%" frameborder="0" style="border: none; display: block;"></iframe>
+    </div>
+
+    <!-- Footer -->
+    <div class="p-2 px-3 border-top d-flex justify-content-between align-items-center bg-light flex-shrink-0">
+      <span class="text-muted" style="font-size: 10px;">
+        <i class="fa-solid fa-shield-halved text-success me-1"></i>Digitally verified via CJ DARCL Document Repository
+      </span>
+      <button class="btn btn-secondary btn-sm" style="font-size: 11px; padding: 3px 12px;" (click)="closeDocPreviewModal()">
+        Close Preview
+      </button>
+    </div>
+  </div>
+</div>

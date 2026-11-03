@@ -19,3 +19,4 @@
 - Tested active employee Aadhaar `490286349371` $\rightarrow$ `CanProceed = False`, `IsDuplicate = True`, `Type = EMPLOYEE`, Existing Employee: Deepak Kumar Upreti / EMP01 (Managing Director).
 - Tested active candidate Aadhaar without `@CurrentAppId` $\rightarrow$ `CanProceed = False`, `IsDuplicate = True`, `Type = ACTIVE_PIPELINE`, Existing Candidate: NIKUNJ.
 - Tested candidate Aadhaar with `@CurrentAppId` (self-exclusion) $\rightarrow$ `CanProceed = True`, `IsDuplicate = False`, `Type = NONE`.
+
