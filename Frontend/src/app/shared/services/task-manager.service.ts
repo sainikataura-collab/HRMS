@@ -137,6 +137,8 @@ export interface TaskLookupsDto {
   departments: DepartmentLookupItem[];
   employees: EmployeeLookupItem[];
   taskTypes?: TaskTypeLookupItem[];
+  viewerContext?: any;
+  data?: any;
 }
 
 @Injectable({

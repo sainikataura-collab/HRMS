@@ -173,7 +173,7 @@ export class TaskManagerComponent implements OnInit, OnDestroy {
           this.employees = (res.employees || []).slice(0, 10);
           this.boardEmployees = [...this.employees];
           this.taskTypes = res.taskTypes || [];
-          this.viewerContext = res.viewerContext || null;
+          this.viewerContext = res.viewerContext || res.data?.viewerContext || null;
           this.isLookupsLoading = false;
         },
         error: (err) => {
