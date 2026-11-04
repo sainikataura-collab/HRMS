@@ -25,7 +25,7 @@ export class TransitionRemarksModalComponent {
 
   get isRemarksRequired(): boolean {
     const target = (this.toStatus || '').toUpperCase().trim();
-    return target === 'CLOSED' || target === 'ON HOLD';
+    return target === 'CLOSED' || target === 'ON HOLD' || target === 'ON_HOLD';
   }
 
   get fromStatusBadgeClass(): string {

@@ -922,8 +922,7 @@
 <!-- 1. Drag-and-Drop / Quick Status Transition Mandatory Remarks Modal -->
 <app-transition-remarks-modal
   [isOpen]="isRemarksModalOpen"
-  [taskCode]="pendingTask?.taskCode || ''"
-  [taskSubject]="pendingTask?.subject || ''"
+  [task]="pendingTask"
   [fromStatus]="pendingFromStatus"
   [toStatus]="pendingToStatus"
   [isSubmitting]="isUpdatingStatus"
