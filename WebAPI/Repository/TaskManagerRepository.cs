@@ -143,6 +143,8 @@ namespace HRMSWebAPI.Repository
                 RecurrenceEndType = string.IsNullOrWhiteSpace(dto.RecurrenceEndType) ? "NEVER" : dto.RecurrenceEndType,
                 RecurrenceEndDate = dto.RecurrenceEndDate,
                 RecurrenceOccurrencesTotal = dto.RecurrenceOccurrencesTotal,
+                RecurrenceDueOffsetHours = dto.RecurrenceDueOffsetHours ?? 24,
+                RecurrenceDueOffsetUnit = string.IsNullOrWhiteSpace(dto.RecurrenceDueOffsetUnit) ? "DAYS" : dto.RecurrenceDueOffsetUnit,
                 IsSelfTask = dto.IsSelfTask,
                 TaskTypeId = dto.TaskTypeId,
                 TaskTypeName = dto.TaskTypeName,

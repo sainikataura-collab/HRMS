@@ -344,6 +344,8 @@ namespace HRMSWebAPI.Controllers
             public string? RecurrenceEndType { get; set; }
             public DateTime? RecurrenceEndDate { get; set; }
             public int? RecurrenceOccurrencesTotal { get; set; }
+            public int? RecurrenceDueOffsetHours { get; set; }
+            public string? RecurrenceDueOffsetUnit { get; set; }
             public string? AttachmentUrl { get; set; }
             public string? AttachmentFileName { get; set; }
             public string? CreatedByEmpId { get; set; }
@@ -377,6 +379,8 @@ namespace HRMSWebAPI.Controllers
                     RecurrenceEndType = dto.RecurrenceEndType ?? "NEVER",
                     RecurrenceEndDate = dto.RecurrenceEndDate,
                     RecurrenceOccurrencesTotal = dto.RecurrenceOccurrencesTotal,
+                    RecurrenceDueOffsetHours = dto.RecurrenceDueOffsetHours ?? 24,
+                    RecurrenceDueOffsetUnit = string.IsNullOrWhiteSpace(dto.RecurrenceDueOffsetUnit) ? "DAYS" : dto.RecurrenceDueOffsetUnit,
                     CompanyId = ResolveCompanyId(dto.CompanyId),
                     TaskTypeId = dto.TaskTypeId,
                     TaskTypeName = dto.TaskTypeName,

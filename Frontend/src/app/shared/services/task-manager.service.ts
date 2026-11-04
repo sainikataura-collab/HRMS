@@ -88,6 +88,8 @@ export interface TaskCreateRequestDto {
   recurrenceEndType?: string; // 'NEVER' | 'ON_DATE' | 'AFTER_COUNT'
   recurrenceEndDate?: string;
   recurrenceOccurrencesTotal?: number;
+  recurrenceDueOffsetHours?: number;
+  recurrenceDueOffsetUnit?: string;
   attachmentUrl?: string;
   attachmentFileName?: string;
   createdByEmpId?: string;

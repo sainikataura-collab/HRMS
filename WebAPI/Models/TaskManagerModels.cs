@@ -123,6 +123,8 @@ namespace HRMSWebAPI.Models
         public DateTime? RecurrenceEndDate { get; set; }
         public int? RecurrenceOccurrencesTotal { get; set; }
         public int RecurrenceOccurrencesCount { get; set; }
+        public int? RecurrenceDueOffsetHours { get; set; }
+        public string? RecurrenceDueOffsetUnit { get; set; }
         public DateTime? NextOccurrenceDate { get; set; }
         public int? ParentTaskId { get; set; }
         public string? ParentTaskCode { get; set; }
@@ -199,6 +201,8 @@ namespace HRMSWebAPI.Models
         public string? RecurrenceEndType { get; set; } = "NEVER"; // NEVER, ON_DATE, AFTER_COUNT
         public DateTime? RecurrenceEndDate { get; set; }
         public int? RecurrenceOccurrencesTotal { get; set; }
+        public int? RecurrenceDueOffsetHours { get; set; } = 24;
+        public string? RecurrenceDueOffsetUnit { get; set; } = "DAYS";
         public bool IsSelfTask { get; set; }
         public int? TaskTypeId { get; set; }
         public string? TaskTypeName { get; set; }

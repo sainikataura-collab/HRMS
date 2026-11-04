@@ -203,11 +203,11 @@
             </div>
           </div>
 
-          <!-- Property 4: Target Deadline + Quick SLA Chips -->
+          <!-- Property 4: Target Deadline + Quick SLA Chips (or First Occurrence Date when Recurring) -->
           <div class="prop-row align-items-start">
             <div class="prop-label pt-1">
               <i class="fa-regular fa-clock"></i>
-              <span>Due Date</span>
+              <span>{{ isRecurring ? 'First Run' : 'Due Date' }}</span>
             </div>
             <div class="prop-control">
               <input
@@ -216,11 +216,15 @@
                 [(ngModel)]="deadlineDate"
                 [disabled]="isSubmitting"
               />
-              <div class="quick-sla-chips">
+              <div *ngIf="!isRecurring" class="quick-sla-chips">
                 <button type="button" class="sla-chip" (click)="setDeadlinePreset('TOMORROW')">Tomorrow 6 PM</button>
                 <button type="button" class="sla-chip" (click)="setDeadlinePreset('3DAYS')">In 3 Days</button>
                 <button type="button" class="sla-chip" (click)="setDeadlinePreset('NEXT_WEEK')">Next Week</button>
                 <button type="button" class="sla-chip" (click)="setDeadlinePreset('END_OF_MONTH')">Month End</button>
+              </div>
+              <div *ngIf="isRecurring" class="first-run-helper">
+                <i class="fa-solid fa-circle-info text-primary"></i>
+                <span>Initial task run triggers at this time; future runs repeat per schedule.</span>
               </div>
             </div>
           </div>
@@ -284,16 +288,15 @@
               </div>
             </div>
 
-            <div class="form-check form-switch m-0">
+            <label class="studio-toggle-switch" for="recurrenceSwitch" title="Toggle recurring schedule">
               <input
-                class="form-check-input studio-switch"
                 type="checkbox"
-                role="switch"
                 id="recurrenceSwitch"
                 [(ngModel)]="isRecurring"
                 [disabled]="isSubmitting"
               />
-            </div>
+              <span class="toggle-slider"></span>
+            </label>
           </div>
 
           <!-- WHEN RECURRING IS OFF: CLEAN SUMMARY & QUICK ENABLE -->
@@ -457,7 +460,88 @@
               </div>
             </div>
 
-            <!-- 5. Live Schedule Summary Ticket -->
+            <!-- 5. Instance Completion SLA (Due window for each generated occurrence) -->
+            <div class="scheduler-block">
+              <div class="d-flex align-items-center justify-content-between mb-1.5">
+                <label class="scheduler-label mb-0">
+                  <i class="fa-regular fa-hourglass-half text-primary me-1"></i>
+                  Instance Completion SLA
+                </label>
+                <span class="text-muted" style="font-size: 9.5px; font-weight: 600;">Due after creation</span>
+              </div>
+
+              <!-- Quick SLA duration presets -->
+              <div class="recurrence-sla-pills">
+                <button
+                  type="button"
+                  class="sla-preset-btn"
+                  [class.active]="recurrenceDueOffsetValue === 4 && recurrenceDueOffsetUnit === 'HOURS'"
+                  (click)="setRecurrenceSlaPreset(4, 'HOURS')"
+                >
+                  4 Hours
+                </button>
+                <button
+                  type="button"
+                  class="sla-preset-btn"
+                  [class.active]="recurrenceDueOffsetValue === 8 && recurrenceDueOffsetUnit === 'HOURS'"
+                  (click)="setRecurrenceSlaPreset(8, 'HOURS')"
+                >
+                  Same Day (8h)
+                </button>
+                <button
+                  type="button"
+                  class="sla-preset-btn"
+                  [class.active]="recurrenceDueOffsetValue === 1 && recurrenceDueOffsetUnit === 'DAYS'"
+                  (click)="setRecurrenceSlaPreset(1, 'DAYS')"
+                >
+                  1 Day
+                </button>
+                <button
+                  type="button"
+                  class="sla-preset-btn"
+                  [class.active]="recurrenceDueOffsetValue === 2 && recurrenceDueOffsetUnit === 'DAYS'"
+                  (click)="setRecurrenceSlaPreset(2, 'DAYS')"
+                >
+                  2 Days
+                </button>
+                <button
+                  type="button"
+                  class="sla-preset-btn"
+                  [class.active]="recurrenceDueOffsetValue === 3 && recurrenceDueOffsetUnit === 'DAYS'"
+                  (click)="setRecurrenceSlaPreset(3, 'DAYS')"
+                >
+                  3 Days
+                </button>
+                <button
+                  type="button"
+                  class="sla-preset-btn"
+                  [class.active]="recurrenceDueOffsetValue === 7 && recurrenceDueOffsetUnit === 'DAYS'"
+                  (click)="setRecurrenceSlaPreset(7, 'DAYS')"
+                >
+                  1 Week
+                </button>
+              </div>
+
+              <!-- Custom SLA duration stepper -->
+              <div class="sla-custom-row mt-2 d-flex align-items-center gap-2">
+                <span style="font-size: 11px; color: #64748b; font-weight: 600;">Custom SLA:</span>
+                <input
+                  type="number"
+                  class="interval-input"
+                  style="width: 56px;"
+                  min="1"
+                  max="365"
+                  [(ngModel)]="recurrenceDueOffsetValue"
+                />
+                <select class="studio-unit-select" [(ngModel)]="recurrenceDueOffsetUnit">
+                  <option value="HOURS">Hour(s)</option>
+                  <option value="DAYS">Day(s)</option>
+                </select>
+                <span class="text-muted" style="font-size: 10px;">deadline offset</span>
+              </div>
+            </div>
+
+            <!-- 6. Live Schedule Summary Ticket -->
             <div class="live-schedule-ticket">
               <div class="ticket-icon">
                 <i class="fa-solid fa-wand-magic-sparkles"></i>

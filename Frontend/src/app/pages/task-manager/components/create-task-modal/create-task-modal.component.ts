@@ -68,6 +68,10 @@ export class CreateTaskModalComponent implements OnInit, OnChanges {
   recurrenceEndDate = '';
   recurrenceOccurrencesTotal = 10;
 
+  // Recurrence SLA Duration (How much time after generation the task is due)
+  recurrenceDueOffsetValue = 1;
+  recurrenceDueOffsetUnit: 'HOURS' | 'DAYS' = 'DAYS';
+
   // Attachment
   attachmentFileName = '';
   attachmentUrl = '';
@@ -244,6 +248,11 @@ export class CreateTaskModalComponent implements OnInit, OnChanges {
     this.recurrenceEndType = endType;
   }
 
+  setRecurrenceSlaPreset(val: number, unit: 'HOURS' | 'DAYS'): void {
+    this.recurrenceDueOffsetValue = val;
+    this.recurrenceDueOffsetUnit = unit;
+  }
+
   get recurrenceSummary(): string {
     if (!this.isRecurring) return '';
 
@@ -271,7 +280,12 @@ export class CreateTaskModalComponent implements OnInit, OnChanges {
       endText = ` for ${this.recurrenceOccurrencesTotal} occurrences`;
     }
 
-    return `${freqText}${endText}.`;
+    const offsetVal = Math.max(1, Number(this.recurrenceDueOffsetValue) || 1);
+    const slaText = this.recurrenceDueOffsetUnit === 'HOURS'
+      ? `Each generated task is due within ${offsetVal} hour${offsetVal > 1 ? 's' : ''}`
+      : `Each generated task is due within ${offsetVal} day${offsetVal > 1 ? 's' : ''}`;
+
+    return `${freqText}${endText}. ${slaText}.`;
   }
 
   onFileSelected(event: any): void {
@@ -322,6 +336,12 @@ export class CreateTaskModalComponent implements OnInit, OnChanges {
 
     const selectedTypeObj = this.taskTypes.find(t => t.id === this.taskTypeId);
 
+    const offsetHours = this.isRecurring
+      ? (this.recurrenceDueOffsetUnit === 'HOURS'
+          ? Math.max(1, Number(this.recurrenceDueOffsetValue) || 1)
+          : Math.max(1, Number(this.recurrenceDueOffsetValue) || 1) * 24)
+      : undefined;
+
     const payload: TaskCreateRequestDto = {
       subject: trimmedSubject,
       description: (this.description || '').trim() || undefined,
@@ -339,6 +359,8 @@ export class CreateTaskModalComponent implements OnInit, OnChanges {
       recurrenceEndType: this.isRecurring ? this.recurrenceEndType : undefined,
       recurrenceEndDate: (this.isRecurring && this.recurrenceEndType === 'ON_DATE' && this.recurrenceEndDate) ? this.recurrenceEndDate : undefined,
       recurrenceOccurrencesTotal: (this.isRecurring && this.recurrenceEndType === 'AFTER_COUNT') ? Number(this.recurrenceOccurrencesTotal) || 10 : undefined,
+      recurrenceDueOffsetHours: offsetHours,
+      recurrenceDueOffsetUnit: this.isRecurring ? this.recurrenceDueOffsetUnit : undefined,
       attachmentUrl: this.attachmentUrl || undefined,
       attachmentFileName: this.attachmentFileName || undefined
     };
@@ -378,6 +400,8 @@ export class CreateTaskModalComponent implements OnInit, OnChanges {
     this.recurrenceEndType = 'NEVER';
     this.recurrenceEndDate = '';
     this.recurrenceOccurrencesTotal = 10;
+    this.recurrenceDueOffsetValue = 1;
+    this.recurrenceDueOffsetUnit = 'DAYS';
     this.attachmentFileName = '';
     this.attachmentUrl = '';
     this.errorMessage = '';
