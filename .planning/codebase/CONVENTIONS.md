@@ -37,6 +37,7 @@ last_mapped_at: 2026-11-03
 - TypeScript strict compiler options configured in `Frontend/tsconfig.json`
 - Component template separation: Angular components use external templates (`templateUrl: './xyz.component.html'`) and styles (`styleUrls: ['./xyz.component.scss']`)
 - Global styling powered by SCSS (`Frontend/src/styles.scss`) with custom theme color palettes.
+- **Design System Standards:** See `.planning/codebase/DESIGN.md` for exact specifications for `ng-select` dropdowns (`.custom-ng-select`), compact inputs (`.form-control-sm`, 28px height), action buttons (`.btn-primary-action`, `#3080e8` -> `#2b2b41` hover), and bento box card styling.
 
 ## Import Organization
 
