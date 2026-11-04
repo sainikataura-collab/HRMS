@@ -298,6 +298,15 @@ export class TaskManagerComponent implements OnInit, OnDestroy {
     return 'fa-solid fa-folder-tree text-secondary';
   }
 
+  getInitials(name?: string): string {
+    if (!name || !name.trim()) return '?';
+    const parts = name.trim().split(/\s+/);
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+    return parts[0].substring(0, 2).toUpperCase();
+  }
+
   onSearchChange(): void {
     this.searchSubject.next(this.searchKeyword);
   }

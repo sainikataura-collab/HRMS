@@ -1,307 +1,276 @@
-<div class="ats-task-command-page px-2 pt-2 pb-4">
+<div class="task-workspace-shell">
 
   <!-- ========================================================================= -->
-  <!-- 1. TOP CORPORATE HERO STRIP (MATCHING OATS PIPELINE & MRF WIZARD)         -->
+  <!-- 1. UNIFIED WORKSPACE COMMAND DECK & ARCHITECTURAL STATUS PULSE RIBBON     -->
   <!-- ========================================================================= -->
-  <div class="job-selector-hero d-flex flex-wrap justify-content-between align-items-center mb-2 p-2.5 px-3 bg-white rounded border shadow-sm">
-    <div class="d-flex align-items-center gap-2.5">
-      <div class="hero-icon-box">
-        <i class="fa-solid fa-list-check text-primary" style="font-size: 16px;"></i>
-      </div>
-      <div>
-        <div class="d-flex align-items-center gap-2 flex-wrap">
-          <span class="hero-title fw-bold text-dark">Enterprise Task &amp; Compliance Command Center</span>
-          <span class="badge-chip bg-primary-subtle text-primary border border-primary-subtle">
-            <i class="fa-solid fa-building-shield me-1"></i>Company-Scoped Governance
-          </span>
-          <span *ngIf="viewerContext?.isHod" class="badge-chip bg-warning-subtle text-warning-emphasis border border-warning-subtle">
-            <i class="fa-solid fa-user-tie me-1"></i>HOD View
-          </span>
-          <span *ngIf="viewerContext?.isAdmin" class="badge-chip bg-success-subtle text-success border border-success-subtle">
-            <i class="fa-solid fa-shield-halved me-1"></i>Admin Access
-          </span>
-        </div>
-        <div class="hero-subtitle text-muted">
-          Track departmental mandates, General Master compliance &amp; audit tasks, recurring schedules, and SLA deadlines with full chronological audit trails.
-        </div>
-      </div>
-    </div>
+  <div class="workspace-command-deck">
 
-    <!-- Right Controls: View Switcher (Kanban vs Table), Refresh, Create Task -->
-    <div class="d-flex align-items-center gap-2 mt-2 mt-md-0 flex-wrap">
+    <!-- Upper Tier: Identity, Perspective Switcher, Search & Primary CTA -->
+    <div class="deck-top-bar">
 
-      <!-- View Switcher Pill (Kanban Board vs Table Directory) -->
-      <div class="nav-tabs-pill">
-        <button
-          type="button"
-          class="tab-btn"
-          [class.active]="viewMode === 'KANBAN'"
-          (click)="viewMode = 'KANBAN'"
-        >
-          <i class="fa-solid fa-table-columns me-1"></i>Kanban Board
-        </button>
-        <button
-          type="button"
-          class="tab-btn"
-          [class.active]="viewMode === 'TABLE'"
-          (click)="viewMode = 'TABLE'"
-        >
-          <i class="fa-solid fa-table-list me-1"></i>Table Directory
-        </button>
-      </div>
-
-      <!-- Refresh Button -->
-      <button
-        type="button"
-        class="btn btn-light border btn-sm d-flex align-items-center justify-content-center"
-        style="width: 28px; height: 28px; border-radius: 5px;"
-        (click)="loadBoard()"
-        [disabled]="isLoading"
-        title="Refresh Tasks"
-      >
-        <i class="fa-solid fa-rotate text-secondary" [class.fa-spin]="isLoading" style="font-size: 11px;"></i>
-      </button>
-
-      <!-- Primary CTA: Create Task (Opens Big Centered Popup Modal) -->
-      <button
-        type="button"
-        class="btn btn-primary-action btn-sm d-flex align-items-center gap-1.5"
-        style="height: 28px; font-size: 11.5px; padding: 0 12px;"
-        (click)="onCreateTaskClick()"
-      >
-        <i class="fa-solid fa-plus"></i>
-        <span>Create Task</span>
-      </button>
-    </div>
-  </div>
-
-  <!-- ========================================================================= -->
-  <!-- 2. INTERACTIVE 6-CARD BENTO KPI STRIP (1-CLICK BOARD FILTERING)           -->
-  <!-- ========================================================================= -->
-  <div class="row g-2 mb-2">
-
-    <!-- KPI 1: Total Mandates -->
-    <div class="col-6 col-md-4 col-xl-2">
-      <div
-        class="bento-kpi-card"
-        style="--kpi-color: #0051d5;"
-        [class.active-kpi]="activeFilterCard === 'ALL'"
-        (click)="onSelectKpiCard('ALL')"
-      >
-        <div class="d-flex justify-content-between align-items-start">
-          <div>
-            <div class="kpi-label">TOTAL MANDATES</div>
-            <div class="kpi-value">{{ counts.allTasks }}</div>
-          </div>
-          <div class="kpi-icon-pill bg-primary-subtle text-primary">
+      <!-- Left: Brand Identity + Perspective Tabs -->
+      <div class="deck-left">
+        <div class="brand-identity">
+          <div class="brand-cube">
             <i class="fa-solid fa-layer-group"></i>
           </div>
+          <div>
+            <div class="brand-kicker">
+              WORKFLOW &amp; COMPLIANCE ENGINE
+              <span *ngIf="viewerContext?.isHod" class="role-pill hod">HOD</span>
+              <span *ngIf="viewerContext?.isAdmin" class="role-pill admin">ADMIN</span>
+            </div>
+            <h4 class="brand-title">Task Workspace</h4>
+          </div>
         </div>
-        <div class="kpi-sub">
-          <i class="fa-solid fa-circle-check text-primary"></i> All accessible tasks
+
+        <div class="deck-divider d-none d-xl-block"></div>
+
+        <!-- Integrated Perspective Tabs -->
+        <div class="perspective-tabs">
+          <button
+            *ngFor="let s of scopeOptions"
+            type="button"
+            class="perspective-tab"
+            [class.active]="selectedScope === s.id"
+            (click)="selectScopeChip(s.id)"
+          >
+            <i [class]="s.icon"></i>
+            <span>{{ s.label }}</span>
+          </button>
         </div>
       </div>
+
+      <!-- Right: Spotlight Search, View Mode Toggle, Refresh & + New Task -->
+      <div class="deck-right">
+
+        <!-- Spotlight Search -->
+        <div class="spotlight-search">
+          <i class="fa-solid fa-magnifying-glass search-glyph"></i>
+          <input
+            type="text"
+            class="spotlight-input"
+            placeholder="Search tasks, #code, scope..."
+            [(ngModel)]="searchKeyword"
+            (ngModelChange)="onSearchChange()"
+          />
+          <button
+            *ngIf="searchKeyword"
+            type="button"
+            class="btn-clear-spotlight"
+            (click)="searchKeyword = ''; onSearchChange()"
+          >
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <!-- Board / List View Switcher -->
+        <div class="view-mode-toggle">
+          <button
+            type="button"
+            class="mode-btn"
+            [class.active]="viewMode === 'KANBAN'"
+            (click)="viewMode = 'KANBAN'"
+            title="Swimlane Board View"
+          >
+            <i class="fa-solid fa-table-columns"></i>
+            <span>Board</span>
+          </button>
+          <button
+            type="button"
+            class="mode-btn"
+            [class.active]="viewMode === 'TABLE'"
+            (click)="viewMode = 'TABLE'"
+            title="Structured List View"
+          >
+            <i class="fa-solid fa-bars-staggered"></i>
+            <span>List</span>
+          </button>
+        </div>
+
+        <!-- Sync Button -->
+        <button
+          type="button"
+          class="btn-deck-sync"
+          (click)="loadBoard()"
+          [disabled]="isLoading"
+          title="Synchronize Workspace"
+        >
+          <i class="fa-solid fa-arrows-rotate" [class.fa-spin]="isLoading"></i>
+        </button>
+
+        <!-- Primary CTA: + New Task -->
+        <button
+          type="button"
+          class="btn-new-task-cta"
+          (click)="onCreateTaskClick()"
+        >
+          <i class="fa-solid fa-plus"></i>
+          <span>New Task</span>
+        </button>
+      </div>
+
     </div>
 
-    <!-- KPI 2: Open / Active -->
-    <div class="col-6 col-md-4 col-xl-2">
-      <div
-        class="bento-kpi-card"
-        style="--kpi-color: #3080e8;"
-        [class.active-kpi]="activeFilterCard === 'OPEN'"
+    <!-- Lower Tier: 1-Row Architectural Status Pulse Ribbon (1-Click Filter) -->
+    <div class="status-pulse-ribbon">
+
+      <!-- Pulse 1: All Tasks -->
+      <button
+        type="button"
+        class="pulse-segment"
+        [class.active]="activeFilterCard === 'ALL'"
+        (click)="onSelectKpiCard('ALL')"
+      >
+        <div class="pulse-top">
+          <span class="pulse-dot dot-navy"></span>
+          <span class="pulse-label">All Tasks</span>
+        </div>
+        <div class="pulse-bottom">
+          <span class="pulse-count">{{ counts.allTasks }}</span>
+          <span class="pulse-caption">total</span>
+        </div>
+      </button>
+
+      <!-- Pulse 2: Open & Active -->
+      <button
+        type="button"
+        class="pulse-segment"
+        [class.active]="activeFilterCard === 'OPEN'"
         (click)="onSelectKpiCard('OPEN')"
       >
-        <div class="d-flex justify-content-between align-items-start">
-          <div>
-            <div class="kpi-label">OPEN / ACTIVE</div>
-            <div class="kpi-value" style="color: #3080e8;">{{ counts.openTasks }}</div>
-          </div>
-          <div class="kpi-icon-pill bg-info-subtle text-info-emphasis">
-            <i class="fa-solid fa-folder-open"></i>
-          </div>
+        <div class="pulse-top">
+          <span class="pulse-dot dot-blue"></span>
+          <span class="pulse-label">Open &amp; Active</span>
         </div>
-        <div class="kpi-sub">
-          <i class="fa-solid fa-bolt text-info"></i> In active execution
+        <div class="pulse-bottom">
+          <span class="pulse-count text-blue">{{ counts.openTasks }}</span>
+          <span class="pulse-caption">in progress</span>
         </div>
-      </div>
-    </div>
+      </button>
 
-    <!-- KPI 3: On Hold / Escalated -->
-    <div class="col-6 col-md-4 col-xl-2">
-      <div
-        class="bento-kpi-card"
-        style="--kpi-color: #d97706;"
-        [class.active-kpi]="activeFilterCard === 'ON_HOLD'"
+      <!-- Pulse 3: On Hold -->
+      <button
+        type="button"
+        class="pulse-segment"
+        [class.active]="activeFilterCard === 'ON_HOLD'"
         (click)="onSelectKpiCard('ON_HOLD')"
       >
-        <div class="d-flex justify-content-between align-items-start">
-          <div>
-            <div class="kpi-label">ON HOLD</div>
-            <div class="kpi-value" style="color: #d97706;">{{ counts.onHoldTasks }}</div>
-          </div>
-          <div class="kpi-icon-pill bg-warning-subtle text-warning-emphasis">
-            <i class="fa-solid fa-circle-pause"></i>
-          </div>
+        <div class="pulse-top">
+          <span class="pulse-dot dot-amber"></span>
+          <span class="pulse-label">On Hold</span>
         </div>
-        <div class="kpi-sub">
-          <i class="fa-solid fa-hourglass-half text-warning"></i> Paused / awaiting input
+        <div class="pulse-bottom">
+          <span class="pulse-count text-amber">{{ counts.onHoldTasks }}</span>
+          <span class="pulse-caption">paused</span>
         </div>
-      </div>
-    </div>
+      </button>
 
-    <!-- KPI 4: Closed / Verified -->
-    <div class="col-6 col-md-4 col-xl-2">
-      <div
-        class="bento-kpi-card"
-        style="--kpi-color: #059669;"
-        [class.active-kpi]="activeFilterCard === 'CLOSED'"
+      <!-- Pulse 4: Completed -->
+      <button
+        type="button"
+        class="pulse-segment"
+        [class.active]="activeFilterCard === 'CLOSED'"
         (click)="onSelectKpiCard('CLOSED')"
       >
-        <div class="d-flex justify-content-between align-items-start">
-          <div>
-            <div class="kpi-label">CLOSED / DONE</div>
-            <div class="kpi-value" style="color: #059669;">{{ counts.closedTasks }}</div>
-          </div>
-          <div class="kpi-icon-pill bg-success-subtle text-success">
-            <i class="fa-solid fa-circle-check"></i>
-          </div>
+        <div class="pulse-top">
+          <span class="pulse-dot dot-emerald"></span>
+          <span class="pulse-label">Completed</span>
         </div>
-        <div class="kpi-sub">
-          <i class="fa-solid fa-check-double text-success"></i> Completed &amp; logged
+        <div class="pulse-bottom">
+          <span class="pulse-count text-emerald">{{ counts.closedTasks }}</span>
+          <span class="pulse-caption">resolved</span>
         </div>
-      </div>
-    </div>
+      </button>
 
-    <!-- KPI 5: Unassigned Queue -->
-    <div class="col-6 col-md-4 col-xl-2">
-      <div
-        class="bento-kpi-card"
-        style="--kpi-color: #7c3aed;"
-        [class.active-kpi]="activeFilterCard === 'UNASSIGNED'"
+      <!-- Pulse 5: Unassigned -->
+      <button
+        type="button"
+        class="pulse-segment"
+        [class.active]="activeFilterCard === 'UNASSIGNED'"
         (click)="onSelectKpiCard('UNASSIGNED')"
       >
-        <div class="d-flex justify-content-between align-items-start">
-          <div>
-            <div class="kpi-label">UNASSIGNED</div>
-            <div class="kpi-value" style="color: #7c3aed;">{{ counts.unassignedTasks }}</div>
-          </div>
-          <div class="kpi-icon-pill" style="background: #f3e8ff; color: #7c3aed;">
-            <i class="fa-solid fa-user-plus"></i>
-          </div>
+        <div class="pulse-top">
+          <span class="pulse-dot dot-violet"></span>
+          <span class="pulse-label">Unassigned</span>
         </div>
-        <div class="kpi-sub">
-          <i class="fa-solid fa-inbox" style="color: #7c3aed;"></i> Needs owner allocation
+        <div class="pulse-bottom">
+          <span class="pulse-count text-violet">{{ counts.unassignedTasks }}</span>
+          <span class="pulse-caption">open queue</span>
         </div>
-      </div>
-    </div>
+      </button>
 
-    <!-- KPI 6: SLA Overdue -->
-    <div class="col-6 col-md-4 col-xl-2">
-      <div
-        class="bento-kpi-card"
-        style="--kpi-color: #dc2626;"
-        [class.active-kpi]="activeFilterCard === 'OVERDUE'"
+      <!-- Pulse 6: Overdue SLA -->
+      <button
+        type="button"
+        class="pulse-segment"
+        [class.active]="activeFilterCard === 'OVERDUE'"
         (click)="onSelectKpiCard('OVERDUE')"
       >
-        <div class="d-flex justify-content-between align-items-start">
-          <div>
-            <div class="kpi-label">SLA OVERDUE</div>
-            <div class="kpi-value" style="color: #dc2626;">{{ counts.overdueTasks }}</div>
-          </div>
-          <div class="kpi-icon-pill bg-danger-subtle text-danger">
-            <i class="fa-solid fa-triangle-exclamation"></i>
-          </div>
+        <div class="pulse-top">
+          <span class="pulse-dot dot-rose pulse-ring"></span>
+          <span class="pulse-label">Overdue SLA</span>
         </div>
-        <div class="kpi-sub">
-          <i class="fa-solid fa-bell text-danger"></i> Past target deadline
+        <div class="pulse-bottom">
+          <span class="pulse-count text-rose">{{ counts.overdueTasks }}</span>
+          <span class="pulse-caption">past due</span>
         </div>
-      </div>
+      </button>
+
     </div>
 
   </div>
 
   <!-- ========================================================================= -->
-  <!-- 3. QUICK TASK TYPE (GENERAL MASTER) & VISIBILITY SCOPE CHIPS BAR          -->
+  <!-- 2. FLOATING FILTER DOCK (GENERAL MASTER CATEGORIES + INLINE SELECTORS)    -->
   <!-- ========================================================================= -->
-  <div class="pipeline-subfilter-bar bg-white p-2 px-3 rounded border mb-2 shadow-sm d-flex align-items-center justify-content-between flex-wrap gap-2">
+  <div class="workspace-filter-dock">
 
-    <!-- Left: General Master Task Type Quick Chips -->
-    <div class="d-flex align-items-center gap-1.5 flex-wrap">
-      <span class="filter-label text-muted fw-semibold me-1" style="font-size: 10.5px;">
-        <i class="fa-solid fa-tags text-primary me-1"></i>Task Type:
-      </span>
-
+    <!-- Left: General Master Category Pills -->
+    <div class="dock-categories">
       <button
         type="button"
-        class="btn-dept-chip"
+        class="cat-pill"
         [class.active]="selectedTaskTypeId === null"
         (click)="selectTaskTypeChip(null)"
       >
-        All Types
+        All Categories
       </button>
 
       <button
         *ngFor="let t of taskTypes"
         type="button"
-        class="btn-dept-chip d-inline-flex align-items-center gap-1"
+        class="cat-pill"
         [class.active]="selectedTaskTypeId === t.id"
         (click)="selectTaskTypeChip(t.id)"
       >
-        <i [class]="getTaskTypeIcon(t.name)" style="font-size: 10px;"></i>
+        <i [class]="getTaskTypeIcon(t.name)"></i>
         <span>{{ t.name }}</span>
       </button>
     </div>
 
-    <!-- Right: Quick Scope Filter Pills -->
-    <div class="d-flex align-items-center gap-1.5 flex-wrap">
-      <span class="filter-label text-muted fw-semibold me-1" style="font-size: 10.5px;">
-        <i class="fa-solid fa-eye text-primary me-1"></i>View Scope:
-      </span>
+    <!-- Right: Compact Inline Filter Controls -->
+    <div class="dock-selectors">
 
-      <button
-        *ngFor="let s of scopeOptions"
-        type="button"
-        class="btn-dept-chip d-inline-flex align-items-center gap-1"
-        [class.active]="selectedScope === s.id"
-        (click)="selectScopeChip(s.id)"
-      >
-        <i [class]="s.icon" style="font-size: 9.5px;"></i>
-        <span>{{ s.label }}</span>
-      </button>
-    </div>
-
-  </div>
-
-  <!-- ========================================================================= -->
-  <!-- 4. OATS MULTI-FILTER & SEARCH ACTION STRIP (28PX STANDARD)                -->
-  <!-- ========================================================================= -->
-  <div class="oats-filter-strip bg-white p-2.5 px-3 rounded border mb-2.5 shadow-sm">
-    <div class="row g-2 align-items-end">
-
-      <!-- Department Filter -->
-      <div class="col-12 col-sm-6 col-md-3 col-xl-2">
-        <label class="form-label-mini">Target Department</label>
+      <!-- Department Selector -->
+      <div class="dock-select-item" style="width: 165px;">
         <ng-select
-          class="custom-ng-select"
+          class="dock-ng-select"
           [items]="departments"
           bindLabel="name"
           bindValue="id"
           [clearable]="true"
           [(ngModel)]="selectedDepartmentId"
           (change)="onBoardDepartmentChange()"
-          placeholder="All Departments"
+          placeholder="Department: All"
           [loading]="isLookupsLoading"
         ></ng-select>
       </div>
 
-      <!-- Assigned Employee Filter (Top 10 + Dynamic Search) -->
-      <div class="col-12 col-sm-6 col-md-3 col-xl-3">
-        <label class="form-label-mini">
-          Assigned Employee
-          <span *ngIf="isSearchingBoardEmployees" class="spinner-border spinner-border-sm text-primary ms-1" style="width: 9px; height: 9px;"></span>
-        </label>
+      <!-- Assignee Selector (Top 10 + Dynamic Search) -->
+      <div class="dock-select-item" style="width: 185px;">
         <ng-select
-          class="custom-ng-select"
+          class="dock-ng-select"
           [items]="boardEmployees"
           bindLabel="name"
           bindValue="id"
@@ -309,115 +278,86 @@
           [(ngModel)]="selectedAssigneeId"
           (change)="onFilterChange()"
           (search)="onBoardEmployeeSearch($event)"
-          placeholder="Top 10 / Type to Search..."
+          placeholder="Assignee: Top 10 / Search"
           [loading]="isLookupsLoading || isSearchingBoardEmployees"
         >
           <ng-template ng-option-tmp let-item="item">
             <div class="d-flex justify-content-between align-items-center w-100">
-              <div class="text-truncate">
-                <span class="fw-semibold">{{ item.name }}</span>
-                <span *ngIf="item.departmentName" class="text-muted ms-1" style="font-size: 9.5px;">({{ item.departmentName }})</span>
-              </div>
-              <span *ngIf="item.isHod" class="badge-hod-pill">HOD</span>
+              <span class="text-truncate">{{ item.name }}</span>
+              <span *ngIf="item.isHod" class="hod-mini-badge">HOD</span>
             </div>
           </ng-template>
         </ng-select>
       </div>
 
-      <!-- Priority Filter -->
-      <div class="col-6 col-sm-4 col-md-2 col-xl-2">
-        <label class="form-label-mini">Priority Level</label>
+      <!-- Priority Selector -->
+      <div class="dock-select-item" style="width: 135px;">
         <ng-select
-          class="custom-ng-select"
+          class="dock-ng-select"
           [items]="priorityOptions"
           bindLabel="label"
           bindValue="id"
           [clearable]="true"
           [(ngModel)]="selectedPriority"
           (change)="onFilterChange()"
-          placeholder="All Priorities"
+          placeholder="Priority: Any"
         ></ng-select>
       </div>
 
-      <!-- Recurrence Filter -->
-      <div class="col-6 col-sm-4 col-md-2 col-xl-2">
-        <label class="form-label-mini">Recurrence Schedule</label>
+      <!-- Recurrence Selector -->
+      <div class="dock-select-item" style="width: 145px;">
         <ng-select
-          class="custom-ng-select"
+          class="dock-ng-select"
           [items]="recurrenceOptions"
           bindLabel="label"
           bindValue="id"
           [clearable]="true"
           [(ngModel)]="selectedRecurrence"
           (change)="onFilterChange()"
-          placeholder="All Schedules"
+          placeholder="Schedule: Any"
         ></ng-select>
       </div>
 
-      <!-- Search Keyword & Reset -->
-      <div class="col-12 col-sm-4 col-md-2 col-xl-3">
-        <label class="form-label-mini">Search Mandate / Code</label>
-        <div class="d-flex align-items-center gap-1.5">
-          <div class="oats-search-box position-relative flex-grow-1">
-            <i class="fa-solid fa-magnifying-glass oats-search-icon"></i>
-            <input
-              type="text"
-              class="form-control form-control-sm oats-search-input"
-              placeholder="Search code, title, scope..."
-              [(ngModel)]="searchKeyword"
-              (ngModelChange)="onSearchChange()"
-            />
-            <button
-              *ngIf="searchKeyword"
-              type="button"
-              class="btn-clear-search"
-              (click)="searchKeyword = ''; onSearchChange()"
-            >
-              <i class="fa-solid fa-xmark"></i>
-            </button>
-          </div>
-
-          <button
-            type="button"
-            class="btn btn-reset-filters"
-            [class.has-filters]="hasActiveFilters"
-            (click)="resetFilters()"
-            title="Reset All Active Filters"
-          >
-            <i class="fa-solid fa-filter-circle-xmark me-1"></i>Reset
-          </button>
-        </div>
-      </div>
+      <!-- Clear Filters Button -->
+      <button
+        *ngIf="hasActiveFilters"
+        type="button"
+        class="btn-dock-clear"
+        (click)="resetFilters()"
+        title="Clear all filters"
+      >
+        <i class="fa-solid fa-xmark me-1"></i>Clear
+      </button>
 
     </div>
+
   </div>
 
-  <!-- Loading Banner -->
-  <div *ngIf="isLoading" class="loading-state-banner mb-2.5">
-    <i class="fa-solid fa-spinner fa-spin text-primary me-2"></i>
-    <span>Synchronizing company task mandates &amp; SLA metrics...</span>
+  <!-- Sync Progress Bar -->
+  <div *ngIf="isLoading" class="sync-progress-strip">
+    <div class="sync-bar-inner"></div>
   </div>
 
   <!-- ========================================================================= -->
-  <!-- 5A. VIEW MODE 1: 3-COLUMN ENTERPRISE KANBAN BOARD                         -->
+  <!-- 3A. VIEW MODE 1: BESPOKE 3-LANE SWIMLANE BOARD (LINEAR / CLICKUP CRAFT)   -->
   <!-- ========================================================================= -->
-  <div *ngIf="viewMode === 'KANBAN'" class="kanban-board-container" cdkDropListGroup>
+  <div *ngIf="viewMode === 'KANBAN'" class="swimlane-board" cdkDropListGroup>
 
-    <!-- ── COLUMN 1: OPEN & IN PROGRESS ───────────────────────────────────── -->
-    <div class="kanban-column column-open">
-      <div class="column-header">
-        <div class="d-flex align-items-center gap-2">
-          <span class="column-dot dot-open"></span>
-          <span class="column-title">OPEN &amp; ACTIVE MANDATES</span>
+    <!-- ── LANE 1: OPEN & ACTIVE ──────────────────────────────────────────── -->
+    <div class="swimlane lane-open">
+      <div class="swimlane-header">
+        <div class="lane-title-group">
+          <span class="lane-ring ring-open"></span>
+          <span class="lane-name">Open &amp; In Progress</span>
+          <span class="lane-count">{{ openTasks.length }}</span>
         </div>
-        <div class="d-flex align-items-center gap-1.5">
-          <span class="column-subtext">Drag to transition</span>
-          <span class="column-badge badge-open">{{ openTasks.length }}</span>
-        </div>
+        <button type="button" class="btn-lane-add" (click)="onCreateTaskClick()" title="Create new task">
+          <i class="fa-solid fa-plus"></i>
+        </button>
       </div>
 
       <div
-        class="column-cards-list"
+        class="swimlane-track"
         cdkDropList
         #openList="cdkDropList"
         [cdkDropListData]="openTasks"
@@ -426,136 +366,113 @@
       >
         <div
           *ngFor="let task of openTasks"
-          class="task-card"
-          [class.card-overdue]="task.isOverdue"
+          class="studio-task-card"
+          [ngClass]="'priority-edge-' + (task.priority | lowercase)"
           cdkDrag
           (click)="onTaskClick(task)"
         >
-          <div *cdkDragPlaceholder class="task-card-placeholder"></div>
+          <div *cdkDragPlaceholder class="studio-card-placeholder"></div>
 
-          <!-- Top Strip: Code, Task Type, Priority, Overdue -->
-          <div class="card-top-row">
+          <!-- Row 1: Ticket ID, General Master Category, Recurring & Overdue -->
+          <div class="stc-header">
             <div class="d-flex align-items-center gap-1.5 flex-wrap">
-              <span class="mrf-badge">{{ task.taskCode }}</span>
-              <span *ngIf="task.taskTypeName" class="badge-type-pill" [ngClass]="'type-' + (task.taskTypeName | lowercase)">
-                <i [class]="getTaskTypeIcon(task.taskTypeName)" class="me-1"></i>{{ task.taskTypeName }}
+              <span class="ticket-id">#{{ task.taskCode }}</span>
+              <span *ngIf="task.taskTypeName" class="stc-category" [ngClass]="'cat-' + (task.taskTypeName | lowercase)">
+                <i [class]="getTaskTypeIcon(task.taskTypeName)"></i>
+                {{ task.taskTypeName }}
               </span>
             </div>
 
             <div class="d-flex align-items-center gap-1">
-              <span *ngIf="task.isOverdue" class="badge-overdue" title="Past target deadline">
-                <i class="fa-solid fa-triangle-exclamation me-0.5"></i>{{ task.overdueHours }}h late
+              <span *ngIf="task.isRecurring" class="stc-recur-pill" [title]="task.recurrencePattern + ' Recurring'">
+                <i class="fa-solid fa-arrows-rotate"></i> {{ task.recurrencePattern }}
               </span>
-              <span class="badge-priority" [ngClass]="'priority-' + (task.priority | lowercase)">
+              <span class="stc-priority-pill" [ngClass]="'p-' + (task.priority | lowercase)">
                 {{ task.priority }}
               </span>
             </div>
           </div>
 
-          <!-- Task Subject & Description Preview -->
-          <div class="card-subject" [title]="task.subject">{{ task.subject }}</div>
-          <div *ngIf="task.description" class="card-desc-snippet">{{ task.description }}</div>
+          <!-- Row 2: Title & Description -->
+          <h6 class="stc-title" [title]="task.subject">{{ task.subject }}</h6>
+          <p *ngIf="task.description" class="stc-desc">{{ task.description }}</p>
 
-          <!-- Structured Metadata Box (Department & Assignee) -->
-          <div class="card-meta-box">
-            <div class="meta-cell">
-              <span class="meta-kicker">DEPARTMENT</span>
-              <span class="meta-val text-truncate">
-                <i class="fa-regular fa-building text-muted me-1"></i>{{ task.departmentName || 'General' }}
-              </span>
-            </div>
-            <div class="meta-cell border-start ps-2">
-              <span class="meta-kicker">ASSIGNED TO</span>
-              <span class="meta-val text-truncate" [class.text-purple]="!task.assignedToEmpName">
-                <i class="fa-regular fa-user me-1"></i>{{ task.assignedToEmpName || 'Unassigned' }}
-              </span>
-            </div>
-          </div>
-
-          <!-- Badges Row: Deadline, Recurrence, Attachment -->
-          <div class="d-flex align-items-center justify-content-between flex-wrap gap-1 mt-2">
-            <span class="deadline-chip" [class.overdue-text]="task.isOverdue">
-              <i class="fa-regular fa-calendar-check me-1"></i>
-              {{ task.deadlineDate ? (task.deadlineDate | date:'dd MMM yyyy, hh:mm a') : 'No Deadline' }}
-            </span>
-
-            <div class="d-flex align-items-center gap-1">
-              <span *ngIf="task.isRecurring" class="badge-recurring" title="Automated recurring schedule">
-                <i class="fa-solid fa-arrows-rotate me-0.5"></i>{{ task.recurrencePattern }}
-              </span>
-              <span *ngIf="task.attachmentFileName" class="badge-attach" [title]="task.attachmentFileName">
-                <i class="fa-solid fa-paperclip"></i>
-              </span>
-            </div>
-          </div>
-
-          <!-- Latest Remarks Bubble -->
-          <div *ngIf="task.lastRemarks" class="card-remarks-strip mt-1.5" [title]="task.lastRemarks">
-            <i class="fa-regular fa-comment-dots text-primary me-1"></i>
+          <!-- Optional Latest Remark Note -->
+          <div *ngIf="task.lastRemarks" class="stc-remark-note" [title]="task.lastRemarks">
+            <i class="fa-regular fa-comment-dots"></i>
             <span class="text-truncate">{{ task.lastRemarks }}</span>
           </div>
 
-          <!-- Bottom Quick Action Row (Matching candidate-pipeline card actions) -->
-          <div class="card-action-footer">
-            <span class="creator-text text-truncate">
-              By {{ task.createdByName || 'System' }}
-            </span>
-
-            <div class="d-flex align-items-center gap-1" (click)="$event.stopPropagation()">
-              <button
-                type="button"
-                class="action-btn warning"
-                (click)="quickTransition(task, 'ON_HOLD', $event)"
-                title="Put Task On Hold"
+          <!-- Row 3: Avatar, Department, Due SLA & Quick Hover Actions -->
+          <div class="stc-footer">
+            <div class="stc-owner">
+              <div
+                class="owner-avatar"
+                [class.unassigned]="!task.assignedToEmpName"
+                [title]="task.assignedToEmpName || 'Unassigned'"
               >
+                {{ task.assignedToEmpName ? getInitials(task.assignedToEmpName) : '?' }}
+              </div>
+              <div class="owner-meta text-truncate">
+                <span class="owner-name text-truncate">{{ task.assignedToEmpName || 'Unassigned' }}</span>
+                <span class="owner-dept text-truncate">{{ task.departmentName || 'General' }}</span>
+              </div>
+            </div>
+
+            <div class="stc-right-meta">
+              <span *ngIf="task.attachmentFileName" class="attach-glyph" [title]="task.attachmentFileName">
+                <i class="fa-solid fa-paperclip"></i>
+              </span>
+
+              <span
+                *ngIf="task.deadlineDate"
+                class="stc-due-pill"
+                [class.is-overdue]="task.isOverdue"
+                [title]="task.isOverdue ? ('Overdue by ' + task.overdueHours + 'h') : 'Target Deadline'"
+              >
+                <i class="fa-regular" [class.fa-clock]="!task.isOverdue" [class.fa-bell]="task.isOverdue"></i>
+                {{ task.isOverdue ? (task.overdueHours + 'h late') : (task.deadlineDate | date:'dd MMM') }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Quick Action Strip on Card Bottom -->
+          <div class="stc-quick-bar" (click)="$event.stopPropagation()">
+            <span class="created-by-hint">By {{ task.createdByName || 'System' }}</span>
+            <div class="quick-btns">
+              <button type="button" class="q-btn hold" (click)="quickTransition(task, 'ON_HOLD', $event)">
                 <i class="fa-solid fa-pause"></i> Hold
               </button>
-              <button
-                type="button"
-                class="action-btn success"
-                (click)="quickTransition(task, 'CLOSED', $event)"
-                title="Mark Task Closed / Completed"
-              >
-                <i class="fa-solid fa-check"></i> Close
-              </button>
-              <button
-                type="button"
-                class="action-btn primary"
-                (click)="onTaskClick(task)"
-                title="View Full Dossier & History"
-              >
-                Dossier &rarr;
+              <button type="button" class="q-btn done" (click)="quickTransition(task, 'CLOSED', $event)">
+                <i class="fa-solid fa-check"></i> Complete
               </button>
             </div>
           </div>
         </div>
 
-        <!-- Empty Column State -->
-        <div *ngIf="openTasks.length === 0 && !isLoading" class="empty-column-box">
-          <div class="empty-icon-circle bg-primary-subtle text-primary">
-            <i class="fa-regular fa-folder-open"></i>
+        <!-- Empty State -->
+        <div *ngIf="openTasks.length === 0 && !isLoading" class="swimlane-empty">
+          <div class="empty-orb">
+            <i class="fa-solid fa-check"></i>
           </div>
-          <div class="fw-bold text-dark" style="font-size: 11.5px;">No Open Mandates</div>
-          <span class="text-muted" style="font-size: 10px;">Click "+ Create Task" or drop a card here</span>
+          <div class="empty-title">Open queue is clear</div>
+          <div class="empty-sub">Create a task or drag an item into this lane</div>
         </div>
       </div>
     </div>
 
-    <!-- ── COLUMN 2: ON HOLD / ESCALATED ──────────────────────────────────── -->
-    <div class="kanban-column column-onhold">
-      <div class="column-header">
-        <div class="d-flex align-items-center gap-2">
-          <span class="column-dot dot-onhold"></span>
-          <span class="column-title">ON HOLD / ESCALATED</span>
-        </div>
-        <div class="d-flex align-items-center gap-1.5">
-          <span class="column-subtext">Awaiting action</span>
-          <span class="column-badge badge-onhold">{{ onHoldTasks.length }}</span>
+    <!-- ── LANE 2: ON HOLD / PAUSED ───────────────────────────────────────── -->
+    <div class="swimlane lane-hold">
+      <div class="swimlane-header">
+        <div class="lane-title-group">
+          <span class="lane-ring ring-hold"></span>
+          <span class="lane-name">On Hold &amp; Blocked</span>
+          <span class="lane-count">{{ onHoldTasks.length }}</span>
         </div>
       </div>
 
       <div
-        class="column-cards-list"
+        class="swimlane-track"
         cdkDropList
         #onHoldList="cdkDropList"
         [cdkDropListData]="onHoldTasks"
@@ -564,127 +481,98 @@
       >
         <div
           *ngFor="let task of onHoldTasks"
-          class="task-card card-onhold-border"
+          class="studio-task-card card-is-hold"
+          [ngClass]="'priority-edge-' + (task.priority | lowercase)"
           cdkDrag
           (click)="onTaskClick(task)"
         >
-          <div *cdkDragPlaceholder class="task-card-placeholder"></div>
+          <div *cdkDragPlaceholder class="studio-card-placeholder"></div>
 
-          <div class="card-top-row">
+          <div class="stc-header">
             <div class="d-flex align-items-center gap-1.5 flex-wrap">
-              <span class="mrf-badge">{{ task.taskCode }}</span>
-              <span *ngIf="task.taskTypeName" class="badge-type-pill" [ngClass]="'type-' + (task.taskTypeName | lowercase)">
-                <i [class]="getTaskTypeIcon(task.taskTypeName)" class="me-1"></i>{{ task.taskTypeName }}
+              <span class="ticket-id">#{{ task.taskCode }}</span>
+              <span *ngIf="task.taskTypeName" class="stc-category" [ngClass]="'cat-' + (task.taskTypeName | lowercase)">
+                <i [class]="getTaskTypeIcon(task.taskTypeName)"></i>
+                {{ task.taskTypeName }}
               </span>
             </div>
 
             <div class="d-flex align-items-center gap-1">
-              <span *ngIf="task.isOverdue" class="badge-overdue">
-                <i class="fa-solid fa-triangle-exclamation me-0.5"></i>{{ task.overdueHours }}h late
+              <span *ngIf="task.isRecurring" class="stc-recur-pill">
+                <i class="fa-solid fa-arrows-rotate"></i> {{ task.recurrencePattern }}
               </span>
-              <span class="badge-priority" [ngClass]="'priority-' + (task.priority | lowercase)">
+              <span class="stc-priority-pill" [ngClass]="'p-' + (task.priority | lowercase)">
                 {{ task.priority }}
               </span>
             </div>
           </div>
 
-          <div class="card-subject" [title]="task.subject">{{ task.subject }}</div>
-          <div *ngIf="task.description" class="card-desc-snippet">{{ task.description }}</div>
+          <h6 class="stc-title" [title]="task.subject">{{ task.subject }}</h6>
+          <p *ngIf="task.description" class="stc-desc">{{ task.description }}</p>
 
-          <div class="card-meta-box">
-            <div class="meta-cell">
-              <span class="meta-kicker">DEPARTMENT</span>
-              <span class="meta-val text-truncate">
-                <i class="fa-regular fa-building text-muted me-1"></i>{{ task.departmentName || 'General' }}
-              </span>
-            </div>
-            <div class="meta-cell border-start ps-2">
-              <span class="meta-kicker">ASSIGNED TO</span>
-              <span class="meta-val text-truncate" [class.text-purple]="!task.assignedToEmpName">
-                <i class="fa-regular fa-user me-1"></i>{{ task.assignedToEmpName || 'Unassigned' }}
-              </span>
-            </div>
-          </div>
-
-          <div class="d-flex align-items-center justify-content-between flex-wrap gap-1 mt-2">
-            <span class="deadline-chip" [class.overdue-text]="task.isOverdue">
-              <i class="fa-regular fa-calendar-check me-1"></i>
-              {{ task.deadlineDate ? (task.deadlineDate | date:'dd MMM yyyy, hh:mm a') : 'No Deadline' }}
-            </span>
-
-            <div class="d-flex align-items-center gap-1">
-              <span *ngIf="task.isRecurring" class="badge-recurring">
-                <i class="fa-solid fa-arrows-rotate me-0.5"></i>{{ task.recurrencePattern }}
-              </span>
-              <span *ngIf="task.attachmentFileName" class="badge-attach" [title]="task.attachmentFileName">
-                <i class="fa-solid fa-paperclip"></i>
-              </span>
-            </div>
-          </div>
-
-          <div *ngIf="task.lastRemarks" class="card-remarks-strip remarks-hold mt-1.5" [title]="task.lastRemarks">
-            <i class="fa-solid fa-pause-circle text-warning me-1"></i>
+          <div *ngIf="task.lastRemarks" class="stc-remark-note hold-note" [title]="task.lastRemarks">
+            <i class="fa-solid fa-circle-pause"></i>
             <span class="text-truncate">{{ task.lastRemarks }}</span>
           </div>
 
-          <div class="card-action-footer">
-            <span class="creator-text text-truncate">
-              By {{ task.createdByName || 'System' }}
-            </span>
+          <div class="stc-footer">
+            <div class="stc-owner">
+              <div class="owner-avatar" [class.unassigned]="!task.assignedToEmpName">
+                {{ task.assignedToEmpName ? getInitials(task.assignedToEmpName) : '?' }}
+              </div>
+              <div class="owner-meta text-truncate">
+                <span class="owner-name text-truncate">{{ task.assignedToEmpName || 'Unassigned' }}</span>
+                <span class="owner-dept text-truncate">{{ task.departmentName || 'General' }}</span>
+              </div>
+            </div>
 
-            <div class="d-flex align-items-center gap-1" (click)="$event.stopPropagation()">
-              <button
-                type="button"
-                class="action-btn info"
-                (click)="quickTransition(task, 'OPEN', $event)"
-                title="Resume Task to Open"
+            <div class="stc-right-meta">
+              <span
+                *ngIf="task.deadlineDate"
+                class="stc-due-pill"
+                [class.is-overdue]="task.isOverdue"
               >
+                <i class="fa-regular fa-clock"></i>
+                {{ task.deadlineDate | date:'dd MMM' }}
+              </span>
+            </div>
+          </div>
+
+          <div class="stc-quick-bar" (click)="$event.stopPropagation()">
+            <span class="created-by-hint">Paused</span>
+            <div class="quick-btns">
+              <button type="button" class="q-btn resume" (click)="quickTransition(task, 'OPEN', $event)">
                 <i class="fa-solid fa-play"></i> Resume
               </button>
-              <button
-                type="button"
-                class="action-btn success"
-                (click)="quickTransition(task, 'CLOSED', $event)"
-                title="Mark Task Closed"
-              >
-                <i class="fa-solid fa-check"></i> Close
-              </button>
-              <button
-                type="button"
-                class="action-btn primary"
-                (click)="onTaskClick(task)"
-              >
-                Dossier &rarr;
+              <button type="button" class="q-btn done" (click)="quickTransition(task, 'CLOSED', $event)">
+                <i class="fa-solid fa-check"></i> Complete
               </button>
             </div>
           </div>
         </div>
 
-        <div *ngIf="onHoldTasks.length === 0 && !isLoading" class="empty-column-box">
-          <div class="empty-icon-circle bg-warning-subtle text-warning-emphasis">
+        <div *ngIf="onHoldTasks.length === 0 && !isLoading" class="swimlane-empty">
+          <div class="empty-orb hold-orb">
             <i class="fa-regular fa-circle-pause"></i>
           </div>
-          <div class="fw-bold text-dark" style="font-size: 11.5px;">No Tasks On Hold</div>
-          <span class="text-muted" style="font-size: 10px;">Drag tasks here to pause with remarks</span>
+          <div class="empty-title">Nothing on hold</div>
+          <div class="empty-sub">Drop blocked tasks here with a remark</div>
         </div>
       </div>
     </div>
 
-    <!-- ── COLUMN 3: CLOSED & VERIFIED ────────────────────────────────────── -->
-    <div class="kanban-column column-closed">
-      <div class="column-header">
-        <div class="d-flex align-items-center gap-2">
-          <span class="column-dot dot-closed"></span>
-          <span class="column-title">CLOSED &amp; VERIFIED</span>
-        </div>
-        <div class="d-flex align-items-center gap-1.5">
-          <span class="column-subtext">Audit archived</span>
-          <span class="column-badge badge-closed">{{ closedTasks.length }}</span>
+    <!-- ── LANE 3: COMPLETED & VERIFIED ───────────────────────────────────── -->
+    <div class="swimlane lane-closed">
+      <div class="swimlane-header">
+        <div class="lane-title-group">
+          <span class="lane-ring ring-closed"></span>
+          <span class="lane-name">Completed</span>
+          <span class="lane-count">{{ closedTasks.length }}</span>
         </div>
       </div>
 
       <div
-        class="column-cards-list"
+        class="swimlane-track"
         cdkDropList
         #closedList="cdkDropList"
         [cdkDropListData]="closedTasks"
@@ -693,78 +581,62 @@
       >
         <div
           *ngFor="let task of closedTasks"
-          class="task-card card-closed"
+          class="studio-task-card card-is-closed"
           cdkDrag
           (click)="onTaskClick(task)"
         >
-          <div *cdkDragPlaceholder class="task-card-placeholder"></div>
+          <div *cdkDragPlaceholder class="studio-card-placeholder"></div>
 
-          <div class="card-top-row">
+          <div class="stc-header">
             <div class="d-flex align-items-center gap-1.5 flex-wrap">
-              <span class="mrf-badge">{{ task.taskCode }}</span>
-              <span *ngIf="task.taskTypeName" class="badge-type-pill" [ngClass]="'type-' + (task.taskTypeName | lowercase)">
-                <i [class]="getTaskTypeIcon(task.taskTypeName)" class="me-1"></i>{{ task.taskTypeName }}
+              <span class="ticket-id">#{{ task.taskCode }}</span>
+              <span *ngIf="task.taskTypeName" class="stc-category" [ngClass]="'cat-' + (task.taskTypeName | lowercase)">
+                <i [class]="getTaskTypeIcon(task.taskTypeName)"></i>
+                {{ task.taskTypeName }}
               </span>
             </div>
 
-            <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size: 8.5px; padding: 1.5px 6px;">
-              <i class="fa-solid fa-check-double me-0.5"></i>RESOLVED
+            <span class="stc-resolved-pill">
+              <i class="fa-solid fa-check"></i> Done
             </span>
           </div>
 
-          <div class="card-subject text-decoration-line-through text-muted" [title]="task.subject">{{ task.subject }}</div>
+          <h6 class="stc-title done-strike" [title]="task.subject">{{ task.subject }}</h6>
 
-          <div class="card-meta-box">
-            <div class="meta-cell">
-              <span class="meta-kicker">DEPARTMENT</span>
-              <span class="meta-val text-truncate">
-                <i class="fa-regular fa-building text-muted me-1"></i>{{ task.departmentName || 'General' }}
-              </span>
-            </div>
-            <div class="meta-cell border-start ps-2">
-              <span class="meta-kicker">COMPLETED BY</span>
-              <span class="meta-val text-truncate">
-                <i class="fa-solid fa-user-check text-success me-1"></i>{{ task.assignedToEmpName || 'Unassigned' }}
-              </span>
-            </div>
-          </div>
-
-          <div *ngIf="task.lastRemarks" class="card-remarks-strip remarks-closed mt-1.5" [title]="task.lastRemarks">
-            <i class="fa-solid fa-check-circle text-success me-1"></i>
+          <div *ngIf="task.lastRemarks" class="stc-remark-note done-note" [title]="task.lastRemarks">
+            <i class="fa-solid fa-circle-check"></i>
             <span class="text-truncate">{{ task.lastRemarks }}</span>
           </div>
 
-          <div class="card-action-footer mt-2">
-            <span class="creator-text text-truncate">
-              Closed • {{ (task.updatedAt || task.createdAt) | date:'dd MMM yyyy' }}
-            </span>
+          <div class="stc-footer">
+            <div class="stc-owner">
+              <div class="owner-avatar done-avatar">
+                {{ task.assignedToEmpName ? getInitials(task.assignedToEmpName) : '✓' }}
+              </div>
+              <div class="owner-meta text-truncate">
+                <span class="owner-name text-truncate">{{ task.assignedToEmpName || 'Unassigned' }}</span>
+                <span class="owner-dept text-truncate">{{ task.departmentName || 'General' }}</span>
+              </div>
+            </div>
 
-            <div class="d-flex align-items-center gap-1" (click)="$event.stopPropagation()">
+            <div class="stc-right-meta">
               <button
                 type="button"
-                class="action-btn ghost"
+                class="q-btn reopen"
                 (click)="quickTransition(task, 'OPEN', $event)"
-                title="Reopen Task"
               >
                 <i class="fa-solid fa-rotate-left"></i> Reopen
-              </button>
-              <button
-                type="button"
-                class="action-btn primary"
-                (click)="onTaskClick(task)"
-              >
-                Dossier &rarr;
               </button>
             </div>
           </div>
         </div>
 
-        <div *ngIf="closedTasks.length === 0 && !isLoading" class="empty-column-box">
-          <div class="empty-icon-circle bg-success-subtle text-success">
-            <i class="fa-regular fa-circle-check"></i>
+        <div *ngIf="closedTasks.length === 0 && !isLoading" class="swimlane-empty">
+          <div class="empty-orb closed-orb">
+            <i class="fa-solid fa-check-double"></i>
           </div>
-          <div class="fw-bold text-dark" style="font-size: 11.5px;">No Closed Tasks</div>
-          <span class="text-muted" style="font-size: 10px;">Drop completed tasks here to log resolution</span>
+          <div class="empty-title">No completed tasks yet</div>
+          <div class="empty-sub">Drag finished tasks here to log closure</div>
         </div>
       </div>
     </div>
@@ -772,105 +644,94 @@
   </div>
 
   <!-- ========================================================================= -->
-  <!-- 5B. VIEW MODE 2: ENTERPRISE OATS TABLE DIRECTORY VIEW                     -->
+  <!-- 3B. VIEW MODE 2: AIRTABLE / LINEAR STRUCTURED LIST VIEW                   -->
   <!-- ========================================================================= -->
-  <div *ngIf="viewMode === 'TABLE'" class="table-card bg-white rounded border shadow-sm">
-
-    <div class="p-2 px-3 border-bottom d-flex justify-content-between align-items-center flex-wrap gap-2 bg-light">
-      <div class="d-flex align-items-center gap-2">
-        <h6 class="mb-0 fw-bold text-dark" style="font-size: 11.5px;">
-          <i class="fa-solid fa-table-list text-primary me-1.5"></i>Enterprise Task &amp; Compliance Register
-        </h6>
-        <span class="badge bg-white text-secondary border" style="font-size: 9.5px;">
-          Showing {{ allFilteredTasks.length }} Tasks
-        </span>
-      </div>
-      <span class="text-muted" style="font-size: 10px;">
-        <i class="fa-solid fa-circle-info text-primary me-1"></i>Click any row or "Dossier" to inspect full audit timeline &amp; attachments
-      </span>
-    </div>
-
+  <div *ngIf="viewMode === 'TABLE'" class="studio-list-surface">
     <div class="table-responsive">
-      <table class="table ats-job-table align-middle w-100 mb-0">
+      <table class="table studio-list-table align-middle mb-0">
         <thead>
           <tr>
-            <th style="width: 110px;">TASK CODE</th>
-            <th style="min-width: 240px;">MANDATE SUBJECT &amp; LATEST REMARKS</th>
-            <th style="width: 120px;">TASK TYPE</th>
-            <th style="width: 140px;">DEPARTMENT</th>
-            <th style="width: 150px;">ASSIGNED TO</th>
-            <th style="width: 95px;">PRIORITY</th>
-            <th style="width: 145px;">SLA DEADLINE</th>
-            <th style="width: 100px;">CADENCE</th>
-            <th style="width: 95px;">STATUS</th>
-            <th class="text-end" style="width: 165px;">ACTIONS</th>
+            <th style="width: 105px;">TICKET</th>
+            <th style="min-width: 250px;">TASK &amp; LATEST REMARK</th>
+            <th style="width: 130px;">CATEGORY</th>
+            <th style="width: 145px;">DEPARTMENT</th>
+            <th style="width: 170px;">ASSIGNEE</th>
+            <th style="width: 100px;">PRIORITY</th>
+            <th style="width: 140px;">DUE DATE</th>
+            <th style="width: 105px;">SCHEDULE</th>
+            <th style="width: 100px;">STATUS</th>
+            <th class="text-end" style="width: 155px;">QUICK ACTION</th>
           </tr>
         </thead>
         <tbody>
           <tr
             *ngFor="let task of allFilteredTasks"
-            class="cursor-pointer"
             (click)="onTaskClick(task)"
           >
             <td>
-              <span class="mrf-badge">{{ task.taskCode }}</span>
+              <span class="ticket-id">#{{ task.taskCode }}</span>
             </td>
             <td>
-              <div class="fw-bold text-dark" style="font-size: 11.5px;">{{ task.subject }}</div>
-              <div *ngIf="task.lastRemarks" class="text-muted text-truncate" style="font-size: 10px; max-width: 320px;">
+              <div class="fw-bold text-dark" style="font-size: 12px;">{{ task.subject }}</div>
+              <div *ngIf="task.lastRemarks" class="text-muted text-truncate" style="font-size: 10.5px; max-width: 340px;">
                 <i class="fa-regular fa-comment-dots text-primary me-1"></i>{{ task.lastRemarks }}
               </div>
             </td>
             <td>
-              <span *ngIf="task.taskTypeName" class="badge-type-pill" [ngClass]="'type-' + (task.taskTypeName | lowercase)">
-                <i [class]="getTaskTypeIcon(task.taskTypeName)" class="me-1"></i>{{ task.taskTypeName }}
+              <span *ngIf="task.taskTypeName" class="stc-category" [ngClass]="'cat-' + (task.taskTypeName | lowercase)">
+                <i [class]="getTaskTypeIcon(task.taskTypeName)"></i>
+                {{ task.taskTypeName }}
               </span>
-              <span *ngIf="!task.taskTypeName" class="text-muted" style="font-size: 10px;">General</span>
+              <span *ngIf="!task.taskTypeName" class="text-muted" style="font-size: 10.5px;">General</span>
             </td>
             <td>
-              <span class="fw-semibold text-dark" style="font-size: 11px;">{{ task.departmentName || 'Cross-Dept' }}</span>
+              <span class="fw-semibold text-secondary" style="font-size: 11px;">{{ task.departmentName || 'Cross-Dept' }}</span>
             </td>
             <td>
-              <span *ngIf="task.assignedToEmpName" class="fw-semibold text-primary" style="font-size: 11px;">
-                <i class="fa-regular fa-user me-1"></i>{{ task.assignedToEmpName }}
-              </span>
-              <span *ngIf="!task.assignedToEmpName" class="badge bg-purple-subtle" style="font-size: 9.5px; background: #f3e8ff; color: #7c3aed;">
-                Unassigned
-              </span>
+              <div class="d-flex align-items-center gap-2">
+                <div class="owner-avatar" [class.unassigned]="!task.assignedToEmpName">
+                  {{ task.assignedToEmpName ? getInitials(task.assignedToEmpName) : '?' }}
+                </div>
+                <span class="fw-semibold text-dark" style="font-size: 11.5px;">
+                  {{ task.assignedToEmpName || 'Unassigned' }}
+                </span>
+              </div>
             </td>
             <td>
-              <span class="badge-priority" [ngClass]="'priority-' + (task.priority | lowercase)">
+              <span class="stc-priority-pill" [ngClass]="'p-' + (task.priority | lowercase)">
                 {{ task.priority }}
               </span>
             </td>
             <td>
-              <div [class.text-danger]="task.isOverdue" [class.fw-bold]="task.isOverdue" style="font-size: 10.5px;">
-                {{ task.deadlineDate ? (task.deadlineDate | date:'dd MMM yyyy, hh:mm a') : 'No Deadline' }}
-              </div>
-              <span *ngIf="task.isOverdue" class="badge-overdue mt-0.5">
-                Overdue by {{ task.overdueHours }}h
+              <span
+                *ngIf="task.deadlineDate"
+                class="stc-due-pill"
+                [class.is-overdue]="task.isOverdue"
+              >
+                {{ task.deadlineDate | date:'dd MMM yyyy' }}
               </span>
+              <span *ngIf="!task.deadlineDate" class="text-muted" style="font-size: 10.5px;">—</span>
             </td>
             <td>
-              <span *ngIf="task.isRecurring" class="badge-recurring">
-                <i class="fa-solid fa-arrows-rotate me-0.5"></i>{{ task.recurrencePattern }}
+              <span *ngIf="task.isRecurring" class="stc-recur-pill">
+                <i class="fa-solid fa-arrows-rotate"></i> {{ task.recurrencePattern }}
               </span>
-              <span *ngIf="!task.isRecurring" class="text-muted" style="font-size: 10px;">One-Time</span>
+              <span *ngIf="!task.isRecurring" class="text-muted" style="font-size: 10.5px;">One-Time</span>
             </td>
             <td>
               <span
-                class="doc-status-badge"
-                [ngClass]="task.status === 'OPEN' ? 'status-open' : task.status === 'ON_HOLD' ? 'status-pending' : 'status-approved'"
+                class="status-pill"
+                [ngClass]="task.status === 'OPEN' ? 's-open' : task.status === 'ON_HOLD' ? 's-hold' : 's-closed'"
               >
                 {{ task.status }}
               </span>
             </td>
             <td class="text-end" (click)="$event.stopPropagation()">
-              <div class="d-inline-flex align-items-center gap-1">
+              <div class="d-inline-flex gap-1">
                 <button
                   *ngIf="task.status !== 'ON_HOLD'"
                   type="button"
-                  class="action-btn warning"
+                  class="q-btn hold"
                   (click)="quickTransition(task, 'ON_HOLD', $event)"
                 >
                   Hold
@@ -878,34 +739,26 @@
                 <button
                   *ngIf="task.status !== 'CLOSED'"
                   type="button"
-                  class="action-btn success"
+                  class="q-btn done"
                   (click)="quickTransition(task, 'CLOSED', $event)"
                 >
-                  Close
+                  Done
                 </button>
                 <button
-                  *ngIf="task.status === 'CLOSED' || task.status === 'ON_HOLD'"
+                  *ngIf="task.status !== 'OPEN'"
                   type="button"
-                  class="action-btn info"
+                  class="q-btn resume"
                   (click)="quickTransition(task, 'OPEN', $event)"
                 >
                   Open
-                </button>
-                <button
-                  type="button"
-                  class="action-btn primary"
-                  (click)="onTaskClick(task)"
-                >
-                  Dossier
                 </button>
               </div>
             </td>
           </tr>
 
           <tr *ngIf="allFilteredTasks.length === 0 && !isLoading">
-            <td colspan="10" class="text-center py-4 text-muted">
-              <i class="fa-regular fa-folder-open d-block mb-1" style="font-size: 22px; opacity: 0.5;"></i>
-              No tasks match the active filter criteria.
+            <td colspan="10" class="text-center py-5 text-muted">
+              No tasks match your current filters.
             </td>
           </tr>
         </tbody>
@@ -930,7 +783,7 @@
   (cancelled)="onRemarksCancelled()"
 ></app-transition-remarks-modal>
 
-<!-- 2. Big Centered Create Task Popup Modal -->
+<!-- 2. Bespoke Task Composer Popup Modal -->
 <app-create-task-modal
   [isOpen]="isCreateModalOpen"
   [departments]="departments"
