@@ -290,7 +290,7 @@ private unreadCountInterval: any;
       //   })
       // );
 
-      this.legend.data.setAll(this.series.dataItems);
+      if (this.legend && this.series) { this.legend.data.setAll(this.series.dataItems); }
       this.series.appear(1200, 100);
     }, 500); // 🕒 short delay to ensure API data arrives
   });

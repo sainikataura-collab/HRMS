@@ -33,3 +33,4 @@
 ## 2. Verification
 - `npx tsc --noEmit` on all Task Manager components, modals, drawers, and services completed with exit code 0 (zero errors).
 - Design system standards (`.planning/codebase/DESIGN.md`) strictly maintained across typography, `28px` inputs, buttons, and bento cards.
+

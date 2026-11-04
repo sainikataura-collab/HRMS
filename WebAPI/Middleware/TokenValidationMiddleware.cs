@@ -1,4 +1,4 @@
-﻿
+
 using HRMSWebAPI.Helper;
 using HRMSWebAPI.Models;
 using Microsoft.AspNetCore.Mvc.Razor;
@@ -36,6 +36,7 @@ public class TokenValidationMiddleware
              "/api/location", // Location Tracker APIs
                           "/api/v1/atsjobrequisition", // ATS Job Requisition & Workflow APIs
              "/api/v1/atslifecycle", // ATS Full Lifecycle & Pipeline APIs
+             "/api/v1/taskmanager", // Task Manager & Kanban APIs
 
         "/api/v1/locationtracker", // Location Tracker continuous telemetry & status
         "/api/location", // Location Tracker legacy / mobile background patch endpoint
