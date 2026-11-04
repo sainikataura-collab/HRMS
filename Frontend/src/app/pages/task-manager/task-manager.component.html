@@ -1,0 +1,513 @@
+<div class="task-manager-container">
+
+  <!-- ========================================== -->
+  <!-- 1. TOP HEADER & KPI SUMMARY CARDS          -->
+  <!-- ========================================== -->
+  <div class="tm-header-row mb-3">
+    <div class="tm-title-area">
+      <div class="d-flex align-items-center gap-2">
+        <div class="title-icon-box">
+          <i class="fa-solid fa-list-check"></i>
+        </div>
+        <div>
+          <h5 class="page-title mb-0">HR Task Manager & Board</h5>
+          <span class="page-subtitle text-muted">
+            Track, assign, and manage department tasks with drag-and-drop workflow
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tm-header-actions">
+      <button type="button" class="btn btn-primary-action" (click)="onCreateTaskClick()">
+        <i class="fa-solid fa-plus me-1"></i> Create Task
+      </button>
+      <button type="button" class="btn btn-secondary-action" (click)="loadBoard()" [disabled]="isLoading" title="Refresh Board">
+        <i class="fa-solid fa-rotate" [class.fa-spin]="isLoading"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- KPI Bento Cards Grid -->
+  <div class="kpi-cards-grid mb-3">
+    
+    <!-- All Tasks -->
+    <div class="kpi-card" [class.active]="activeFilterCard === 'ALL'" (click)="onSelectKpiCard('ALL')">
+      <div class="kpi-card-content">
+        <div class="kpi-meta">
+          <span class="kpi-label">TOTAL TASKS</span>
+          <span class="kpi-number">{{ counts.allTasks }}</span>
+        </div>
+        <div class="kpi-icon-badge bg-soft-blue">
+          <i class="fa-solid fa-layer-group text-primary"></i>
+        </div>
+      </div>
+      <div class="kpi-active-indicator"></div>
+    </div>
+
+    <!-- Open Tasks -->
+    <div class="kpi-card" [class.active]="activeFilterCard === 'OPEN'" (click)="onSelectKpiCard('OPEN')">
+      <div class="kpi-card-content">
+        <div class="kpi-meta">
+          <span class="kpi-label">OPEN</span>
+          <span class="kpi-number text-primary">{{ counts.openTasks }}</span>
+        </div>
+        <div class="kpi-icon-badge bg-soft-blue">
+          <i class="fa-solid fa-folder-open text-primary"></i>
+        </div>
+      </div>
+      <div class="kpi-active-indicator"></div>
+    </div>
+
+    <!-- Closed Tasks -->
+    <div class="kpi-card" [class.active]="activeFilterCard === 'CLOSED'" (click)="onSelectKpiCard('CLOSED')">
+      <div class="kpi-card-content">
+        <div class="kpi-meta">
+          <span class="kpi-label">CLOSED</span>
+          <span class="kpi-number text-secondary">{{ counts.closedTasks }}</span>
+        </div>
+        <div class="kpi-icon-badge bg-soft-gray">
+          <i class="fa-solid fa-circle-check text-secondary"></i>
+        </div>
+      </div>
+      <div class="kpi-active-indicator"></div>
+    </div>
+
+    <!-- On Hold Tasks -->
+    <div class="kpi-card" [class.active]="activeFilterCard === 'ON_HOLD'" (click)="onSelectKpiCard('ON_HOLD')">
+      <div class="kpi-card-content">
+        <div class="kpi-meta">
+          <span class="kpi-label">ON HOLD</span>
+          <span class="kpi-number text-warning">{{ counts.onHoldTasks }}</span>
+        </div>
+        <div class="kpi-icon-badge bg-soft-warning">
+          <i class="fa-solid fa-circle-pause text-warning"></i>
+        </div>
+      </div>
+      <div class="kpi-active-indicator"></div>
+    </div>
+
+    <!-- Unassigned Tasks -->
+    <div class="kpi-card" [class.active]="activeFilterCard === 'UNASSIGNED'" (click)="onSelectKpiCard('UNASSIGNED')">
+      <div class="kpi-card-content">
+        <div class="kpi-meta">
+          <span class="kpi-label">UNASSIGNED</span>
+          <span class="kpi-number text-purple">{{ counts.unassignedTasks }}</span>
+        </div>
+        <div class="kpi-icon-badge bg-soft-purple">
+          <i class="fa-solid fa-user-xmark text-purple"></i>
+        </div>
+      </div>
+      <div class="kpi-active-indicator"></div>
+    </div>
+
+    <!-- Overdue Tasks -->
+    <div class="kpi-card" [class.active]="activeFilterCard === 'OVERDUE'" (click)="onSelectKpiCard('OVERDUE')">
+      <div class="kpi-card-content">
+        <div class="kpi-meta">
+          <span class="kpi-label">OVERDUE</span>
+          <span class="kpi-number text-danger">{{ counts.overdueTasks }}</span>
+        </div>
+        <div class="kpi-icon-badge bg-soft-danger">
+          <i class="fa-solid fa-clock-rotate-left text-danger"></i>
+        </div>
+      </div>
+      <div class="kpi-active-indicator"></div>
+    </div>
+
+  </div>
+
+  <!-- ========================================== -->
+  <!-- 2. MULTI-FILTER TOOLBAR (28px height specs)-->
+  <!-- ========================================== -->
+  <div class="tm-filter-toolbar mb-3">
+    <div class="filter-controls-row">
+
+      <!-- Scope Filter -->
+      <div class="filter-col scope-col">
+        <label class="filter-label">Scope</label>
+        <ng-select
+          class="custom-ng-select"
+          [items]="scopeOptions"
+          bindLabel="label"
+          bindValue="id"
+          [clearable]="false"
+          [(ngModel)]="selectedScope"
+          (change)="onFilterChange()"
+          placeholder="Filter Scope"
+        ></ng-select>
+      </div>
+
+      <!-- Department Filter -->
+      <div class="filter-col dept-col">
+        <label class="filter-label">Department</label>
+        <ng-select
+          class="custom-ng-select"
+          [items]="departments"
+          bindLabel="name"
+          bindValue="id"
+          [clearable]="true"
+          [(ngModel)]="selectedDepartmentId"
+          (change)="onFilterChange()"
+          placeholder="All Departments"
+          [loading]="isLookupsLoading"
+        ></ng-select>
+      </div>
+
+      <!-- Assignee Filter -->
+      <div class="filter-col assignee-col">
+        <label class="filter-label">Assigned To</label>
+        <ng-select
+          class="custom-ng-select"
+          [items]="employees"
+          bindLabel="name"
+          bindValue="id"
+          [clearable]="true"
+          [(ngModel)]="selectedAssigneeId"
+          (change)="onFilterChange()"
+          placeholder="All Employees"
+          [loading]="isLookupsLoading"
+        >
+          <ng-template ng-option-tmp let-item="item">
+            <div class="d-flex justify-content-between align-items-center w-100">
+              <span>{{ item.name }}</span>
+              <span *ngIf="item.isHod" class="badge-hod-pill">HOD</span>
+            </div>
+          </ng-template>
+        </ng-select>
+      </div>
+
+      <!-- Priority Filter -->
+      <div class="filter-col priority-col">
+        <label class="filter-label">Priority</label>
+        <ng-select
+          class="custom-ng-select"
+          [items]="priorityOptions"
+          bindLabel="label"
+          bindValue="id"
+          [clearable]="true"
+          [(ngModel)]="selectedPriority"
+          (change)="onFilterChange()"
+          placeholder="All Priorities"
+        ></ng-select>
+      </div>
+
+      <!-- Recurrence Filter -->
+      <div class="filter-col recur-col">
+        <label class="filter-label">Recurrence</label>
+        <ng-select
+          class="custom-ng-select"
+          [items]="recurrenceOptions"
+          bindLabel="label"
+          bindValue="id"
+          [clearable]="true"
+          [(ngModel)]="selectedRecurrence"
+          (change)="onFilterChange()"
+          placeholder="All Schedules"
+        ></ng-select>
+      </div>
+
+      <!-- Search Keyword -->
+      <div class="filter-col search-col flex-grow-1">
+        <label class="filter-label">Search</label>
+        <div class="search-input-wrapper">
+          <i class="fa-solid fa-magnifying-glass search-icon"></i>
+          <input
+            type="text"
+            class="form-control form-control-sm search-textbox"
+            placeholder="Search by code, subject, description..."
+            [(ngModel)]="searchKeyword"
+            (ngModelChange)="onSearchChange()"
+          />
+          <button *ngIf="searchKeyword" class="btn-clear-search" (click)="searchKeyword = ''; onSearchChange()">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Reset Action -->
+      <div class="filter-col reset-col align-self-end">
+        <button type="button" class="btn btn-reset-filters" (click)="resetFilters()" title="Reset All Filters">
+          <i class="fa-solid fa-arrow-rotate-left me-1"></i> Reset
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div *ngIf="isLoading" class="loading-state-banner mb-3">
+    <i class="fa-solid fa-spinner fa-spin text-primary me-2"></i>
+    <span>Loading Kanban board tasks...</span>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- 3. 3-COLUMN CDK DRAG-AND-DROP KANBAN BOARD -->
+  <!-- ========================================== -->
+  <div class="kanban-board-container" cdkDropListGroup>
+
+    <!-- COLUMN 1: OPEN -->
+    <div class="kanban-column column-open">
+      <div class="column-header">
+        <div class="d-flex align-items-center gap-2">
+          <span class="column-dot dot-open"></span>
+          <span class="column-title">OPEN</span>
+        </div>
+        <span class="column-badge">{{ openTasks.length }}</span>
+      </div>
+
+      <div
+        class="column-cards-list"
+        cdkDropList
+        #openList="cdkDropList"
+        [cdkDropListData]="openTasks"
+        (cdkDropListDropped)="onCardDrop($event, 'OPEN')"
+        id="col-OPEN"
+      >
+        <!-- Task Card Item -->
+        <div
+          *ngFor="let task of openTasks"
+          class="task-card"
+          cdkDrag
+          (click)="onTaskClick(task)"
+        >
+          <!-- Drag Preview Placeholder -->
+          <div *cdkDragPlaceholder class="task-card-placeholder"></div>
+
+          <!-- Top Row: Code, Overdue Badge, Priority Badge -->
+          <div class="card-top-row">
+            <span class="task-code">{{ task.taskCode }}</span>
+            <span *ngIf="task.isOverdue" class="badge-overdue">
+              <i class="fa-solid fa-triangle-exclamation me-1"></i>Overdue by {{ task.overdueHours }}h
+            </span>
+            <span class="badge-priority" [ngClass]="'priority-' + (task.priority | lowercase)">
+              {{ task.priority }}
+            </span>
+          </div>
+
+          <!-- Title / Subject -->
+          <div class="card-subject-row">
+            <h6 class="task-subject" title="{{ task.subject }}">{{ task.subject }}</h6>
+          </div>
+
+          <!-- Middle Row: Department, Relative Time -->
+          <div class="card-mid-row">
+            <span class="department-text" title="{{ task.departmentName || 'General' }}">
+              <i class="fa-regular fa-building me-1"></i>{{ task.departmentName || 'General' }}
+            </span>
+            <span class="age-text" [class.text-danger]="task.isOverdue">
+              {{ task.relativeAgeText }}
+            </span>
+          </div>
+
+          <!-- Bottom Row: By Pill & To Pill -->
+          <div class="card-footer-row">
+            <span class="chip-pill chip-by" title="Created by: {{ task.createdByName }}">
+              <span class="chip-dot"></span>
+              BY: {{ task.createdByName }}
+            </span>
+
+            <span
+              *ngIf="task.assignedToEmpName"
+              class="chip-pill chip-to"
+              title="Assigned to: {{ task.assignedToEmpName }}"
+            >
+              <span class="chip-dot"></span>
+              TO: {{ task.assignedToEmpName }}
+            </span>
+
+            <span
+              *ngIf="!task.assignedToEmpName"
+              class="chip-pill chip-unassigned"
+              title="Task is currently unassigned"
+            >
+              <span class="chip-dot"></span>
+              TO: Unassigned
+            </span>
+          </div>
+        </div>
+
+        <!-- Empty State in Column -->
+        <div *ngIf="!openTasks.length && !isLoading" class="empty-column-placeholder">
+          <i class="fa-regular fa-circle-check mb-1"></i>
+          <span>No Open Tasks</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- COLUMN 2: CLOSED -->
+    <div class="kanban-column column-closed">
+      <div class="column-header">
+        <div class="d-flex align-items-center gap-2">
+          <span class="column-dot dot-closed"></span>
+          <span class="column-title">CLOSED</span>
+        </div>
+        <span class="column-badge">{{ closedTasks.length }}</span>
+      </div>
+
+      <div
+        class="column-cards-list"
+        cdkDropList
+        #closedList="cdkDropList"
+        [cdkDropListData]="closedTasks"
+        (cdkDropListDropped)="onCardDrop($event, 'CLOSED')"
+        id="col-CLOSED"
+      >
+        <!-- Task Card Item -->
+        <div
+          *ngFor="let task of closedTasks"
+          class="task-card card-is-closed"
+          cdkDrag
+          (click)="onTaskClick(task)"
+        >
+          <div *cdkDragPlaceholder class="task-card-placeholder"></div>
+
+          <div class="card-top-row">
+            <span class="task-code">{{ task.taskCode }}</span>
+            <span class="badge-priority" [ngClass]="'priority-' + (task.priority | lowercase)">
+              {{ task.priority }}
+            </span>
+          </div>
+
+          <div class="card-subject-row">
+            <h6 class="task-subject" title="{{ task.subject }}">{{ task.subject }}</h6>
+          </div>
+
+          <div class="card-mid-row">
+            <span class="department-text" title="{{ task.departmentName || 'General' }}">
+              <i class="fa-regular fa-building me-1"></i>{{ task.departmentName || 'General' }}
+            </span>
+            <span class="age-text">{{ task.relativeAgeText }}</span>
+          </div>
+
+          <div class="card-footer-row">
+            <span class="chip-pill chip-by" title="Created by: {{ task.createdByName }}">
+              <span class="chip-dot"></span>
+              BY: {{ task.createdByName }}
+            </span>
+
+            <span
+              *ngIf="task.assignedToEmpName"
+              class="chip-pill chip-to"
+              title="Assigned to: {{ task.assignedToEmpName }}"
+            >
+              <span class="chip-dot"></span>
+              TO: {{ task.assignedToEmpName }}
+            </span>
+
+            <span
+              *ngIf="!task.assignedToEmpName"
+              class="chip-pill chip-unassigned"
+              title="Unassigned"
+            >
+              <span class="chip-dot"></span>
+              TO: Unassigned
+            </span>
+          </div>
+        </div>
+
+        <div *ngIf="!closedTasks.length && !isLoading" class="empty-column-placeholder">
+          <i class="fa-regular fa-folder-closed mb-1"></i>
+          <span>No Closed Tasks</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- COLUMN 3: ON HOLD -->
+    <div class="kanban-column column-onhold">
+      <div class="column-header">
+        <div class="d-flex align-items-center gap-2">
+          <span class="column-dot dot-onhold"></span>
+          <span class="column-title">ON HOLD</span>
+        </div>
+        <span class="column-badge">{{ onHoldTasks.length }}</span>
+      </div>
+
+      <div
+        class="column-cards-list"
+        cdkDropList
+        #onHoldList="cdkDropList"
+        [cdkDropListData]="onHoldTasks"
+        (cdkDropListDropped)="onCardDrop($event, 'ON HOLD')"
+        id="col-ON_HOLD"
+      >
+        <!-- Task Card Item -->
+        <div
+          *ngFor="let task of onHoldTasks"
+          class="task-card card-is-onhold"
+          cdkDrag
+          (click)="onTaskClick(task)"
+        >
+          <div *cdkDragPlaceholder class="task-card-placeholder"></div>
+
+          <div class="card-top-row">
+            <span class="task-code">{{ task.taskCode }}</span>
+            <span *ngIf="task.isOverdue" class="badge-overdue">
+              <i class="fa-solid fa-triangle-exclamation me-1"></i>Overdue by {{ task.overdueHours }}h
+            </span>
+            <span class="badge-priority" [ngClass]="'priority-' + (task.priority | lowercase)">
+              {{ task.priority }}
+            </span>
+          </div>
+
+          <div class="card-subject-row">
+            <h6 class="task-subject" title="{{ task.subject }}">{{ task.subject }}</h6>
+          </div>
+
+          <div class="card-mid-row">
+            <span class="department-text" title="{{ task.departmentName || 'General' }}">
+              <i class="fa-regular fa-building me-1"></i>{{ task.departmentName || 'General' }}
+            </span>
+            <span class="age-text" [class.text-danger]="task.isOverdue">
+              {{ task.relativeAgeText }}
+            </span>
+          </div>
+
+          <div class="card-footer-row">
+            <span class="chip-pill chip-by" title="Created by: {{ task.createdByName }}">
+              <span class="chip-dot"></span>
+              BY: {{ task.createdByName }}
+            </span>
+
+            <span
+              *ngIf="task.assignedToEmpName"
+              class="chip-pill chip-to"
+              title="Assigned to: {{ task.assignedToEmpName }}"
+            >
+              <span class="chip-dot"></span>
+              TO: {{ task.assignedToEmpName }}
+            </span>
+
+            <span
+              *ngIf="!task.assignedToEmpName"
+              class="chip-pill chip-unassigned"
+              title="Task is currently unassigned"
+            >
+              <span class="chip-dot"></span>
+              TO: Unassigned
+            </span>
+          </div>
+        </div>
+
+        <div *ngIf="!onHoldTasks.length && !isLoading" class="empty-column-placeholder">
+          <i class="fa-regular fa-circle-pause mb-1"></i>
+          <span>No On Hold Tasks</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Status Transition Remarks Modal -->
+  <app-transition-remarks-modal
+    [isOpen]="isRemarksModalOpen"
+    [task]="pendingTask"
+    [fromStatus]="pendingFromStatus"
+    [toStatus]="pendingToStatus"
+    [isSubmitting]="isUpdatingStatus"
+    (confirmed)="onRemarksConfirmed($event)"
+    (cancelled)="onRemarksCancelled()"
+  ></app-transition-remarks-modal>
+
+</div>
+

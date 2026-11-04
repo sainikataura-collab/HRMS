@@ -1,0 +1,650 @@
+.task-manager-container {
+  font-family: "Work Sans", sans-serif !important;
+  color: #1e293b;
+  padding: 12px 16px;
+  background-color: #f8f9fa;
+  min-height: calc(100vh - 70px);
+}
+
+// ----------------------------------------------------
+// 1. Header Row
+// ----------------------------------------------------
+.tm-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+
+  .tm-title-area {
+    .title-icon-box {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      background: #eff6ff;
+      color: #3080e8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      border: 1px solid #dbeafe;
+    }
+
+    .page-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .page-subtitle {
+      font-size: 11px;
+    }
+  }
+
+  .tm-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    .btn-primary-action {
+      background-color: #3080e8 !important;
+      border-color: #3080e8 !important;
+      color: #ffffff !important;
+      font-size: 11.5px !important;
+      font-weight: 600 !important;
+      height: 28px !important;
+      padding: 0 12px !important;
+      border-radius: 4px !important;
+      display: inline-flex;
+      align-items: center;
+      box-shadow: 0 2px 4px rgba(48, 128, 232, 0.2);
+      transition: all 0.15s ease;
+
+      &:hover {
+        background-color: #2b2b41 !important;
+        border-color: #2b2b41 !important;
+      }
+    }
+
+    .btn-secondary-action {
+      background-color: #ffffff !important;
+      border: 1px solid #cbd5e1 !important;
+      color: #475569 !important;
+      font-size: 12px !important;
+      height: 28px !important;
+      width: 28px !important;
+      padding: 0 !important;
+      border-radius: 4px !important;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      &:hover {
+        background-color: #f1f5f9 !important;
+        color: #0f172a !important;
+      }
+    }
+  }
+}
+
+// ----------------------------------------------------
+// 2. KPI Summary Cards Grid
+// ----------------------------------------------------
+.kpi-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+
+  .kpi-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 10px 12px;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.15s ease;
+    user-select: none;
+
+    &:hover {
+      border-color: #94a3b8;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+      transform: translateY(-1px);
+    }
+
+    &.active {
+      border-color: #3080e8;
+      background: #eff6ff;
+
+      .kpi-active-indicator {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: #3080e8;
+        border-radius: 0 0 6px 6px;
+      }
+    }
+
+    .kpi-card-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .kpi-meta {
+        display: flex;
+        flex-direction: column;
+
+        .kpi-label {
+          font-size: 9.5px;
+          font-weight: 600;
+          color: #64748b;
+          letter-spacing: 0.4px;
+        }
+
+        .kpi-number {
+          font-size: 18px;
+          font-weight: 700;
+          line-height: 1.2;
+          color: #0f172a;
+        }
+      }
+
+      .kpi-icon-badge {
+        width: 28px;
+        height: 28px;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+
+        &.bg-soft-blue { background: #eff6ff; }
+        &.bg-soft-gray { background: #f1f5f9; }
+        &.bg-soft-warning { background: #fffbeb; }
+        &.bg-soft-purple { background: #f5f3ff; }
+        &.bg-soft-danger { background: #fee2e2; }
+      }
+    }
+  }
+}
+
+.text-purple { color: #7c3aed !important; }
+
+// ----------------------------------------------------
+// 3. Multi-Filter Toolbar
+// ----------------------------------------------------
+.tm-filter-toolbar {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 8px 12px;
+
+  .filter-controls-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+
+    .filter-col {
+      min-width: 140px;
+
+      &.scope-col { min-width: 155px; }
+      &.dept-col { min-width: 160px; }
+      &.assignee-col { min-width: 165px; }
+      &.priority-col { min-width: 130px; }
+      &.recur-col { min-width: 135px; }
+      &.search-col { min-width: 180px; }
+      &.reset-col { min-width: 70px; }
+
+      .filter-label {
+        font-size: 10px;
+        font-weight: 600;
+        color: #475569;
+        margin-bottom: 2px;
+        display: block;
+      }
+    }
+
+    .search-input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+
+      .search-icon {
+        position: absolute;
+        left: 8px;
+        color: #94a3b8;
+        font-size: 10.5px;
+        pointer-events: none;
+      }
+
+      .search-textbox {
+        height: 28px !important;
+        padding-left: 26px !important;
+        padding-right: 22px !important;
+        font-size: 11px !important;
+        border: 1px solid #cbd5e1 !important;
+        border-radius: 4px !important;
+
+        &:focus {
+          border-color: #3080e8 !important;
+          box-shadow: 0 0 0 2px rgba(48, 128, 232, 0.12) !important;
+        }
+      }
+
+      .btn-clear-search {
+        position: absolute;
+        right: 6px;
+        background: transparent;
+        border: none;
+        color: #94a3b8;
+        font-size: 10.5px;
+        cursor: pointer;
+        padding: 0;
+
+        &:hover { color: #0f172a; }
+      }
+    }
+
+    .btn-reset-filters {
+      height: 28px !important;
+      font-size: 11px !important;
+      font-weight: 600 !important;
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      color: #475569;
+      padding: 0 10px;
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+
+      &:hover {
+        background: #e2e8f0;
+        color: #0f172a;
+      }
+    }
+  }
+}
+
+// Global ng-select specification matching DESIGN.md
+::ng-deep .custom-ng-select {
+  font-family: "Work Sans", sans-serif !important;
+  font-size: 11px !important;
+
+  .ng-select-container {
+    min-height: 28px !important;
+    height: 28px !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 4px !important;
+    background-color: #ffffff !important;
+    padding: 0 6px !important;
+    font-size: 11px !important;
+    color: #1e293b !important;
+    box-shadow: none !important;
+
+    &:hover { border-color: #94a3b8 !important; }
+  }
+
+  &.ng-select-opened > .ng-select-container {
+    border-color: #3080e8 !important;
+    box-shadow: 0 0 0 2px rgba(48, 128, 232, 0.12) !important;
+  }
+
+  &.ng-select-focused:not(.ng-select-opened) > .ng-select-container {
+    border-color: #3080e8 !important;
+  }
+
+  .ng-value-container {
+    padding: 0 !important;
+    align-items: center !important;
+
+    .ng-placeholder {
+      color: #94a3b8 !important;
+      font-size: 11px !important;
+      line-height: 26px !important;
+      top: 0 !important;
+    }
+
+    .ng-value {
+      font-size: 11px !important;
+      color: #0f172a !important;
+      line-height: 26px !important;
+    }
+
+    .ng-input {
+      top: 0 !important;
+      padding: 0 !important;
+      > input {
+        font-size: 11px !important;
+        font-family: "Work Sans", sans-serif !important;
+      }
+    }
+  }
+
+  .ng-arrow-wrapper {
+    width: 16px !important;
+    padding-right: 2px !important;
+  }
+
+  .ng-clear-wrapper {
+    width: 14px !important;
+    font-size: 11px !important;
+  }
+}
+
+.badge-hod-pill {
+  font-size: 8.5px;
+  background: #ede9fe;
+  color: #7c3aed;
+  font-weight: 700;
+  padding: 1px 4px;
+  border-radius: 3px;
+}
+
+.loading-state-banner {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 11px;
+  color: #1e40af;
+  display: flex;
+  align-items: center;
+}
+
+// ----------------------------------------------------
+// 4. 3-Column Kanban Board Layout
+// ----------------------------------------------------
+.kanban-board-container {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(290px, 1fr));
+  gap: 14px;
+  align-items: start;
+
+  @media (max-width: 992px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.kanban-column {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+  display: flex;
+  flex-direction: column;
+  min-height: 600px;
+
+  .column-header {
+    padding: 10px 14px;
+    background: #ffffff;
+    border-bottom: 1px solid #f1f5f9;
+    border-radius: 8px 8px 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .column-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: #0f172a;
+      letter-spacing: 0.3px;
+    }
+
+    .column-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+
+      &.dot-open { background: #3080e8; }
+      &.dot-closed { background: #64748b; }
+      &.dot-onhold { background: #f59e0b; }
+    }
+
+    .column-badge {
+      font-size: 10.5px;
+      font-weight: 600;
+      color: #64748b;
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      padding: 1px 8px;
+      border-radius: 12px;
+    }
+  }
+
+  .column-cards-list {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 520px;
+    overflow-y: auto;
+  }
+}
+
+// ----------------------------------------------------
+// 5. Task Card Specifications (Matching Screenshot)
+// ----------------------------------------------------
+.task-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 10px 12px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+  cursor: grab;
+  transition: all 0.15s ease;
+  user-select: none;
+
+  &:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    cursor: grabbing;
+  }
+
+  &.card-is-closed {
+    opacity: 0.92;
+    background: #fafafa;
+  }
+
+  &.card-is-onhold {
+    border-left: 3px solid #f59e0b;
+  }
+
+  // Row 1: Code, Overdue, Priority
+  .card-top-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    margin-bottom: 5px;
+
+    .task-code {
+      font-size: 10.5px;
+      font-weight: 600;
+      color: #64748b;
+      font-family: monospace;
+      letter-spacing: -0.2px;
+    }
+
+    .badge-overdue {
+      font-size: 9.5px;
+      font-weight: 600;
+      background: #fee2e2;
+      color: #dc2626;
+      padding: 2px 6px;
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+      line-height: 1.2;
+    }
+
+    .badge-priority {
+      font-size: 9px;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+
+      &.priority-high {
+        background: #fef2f2;
+        color: #ef4444;
+        border: 1px solid #fca5a5;
+      }
+
+      &.priority-medium {
+        background: #fffbeb;
+        color: #d97706;
+        border: 1px solid #fde68a;
+      }
+
+      &.priority-low {
+        background: #f0fdf4;
+        color: #16a34a;
+        border: 1px solid #bbf7d0;
+      }
+    }
+  }
+
+  // Row 2: Subject Title
+  .card-subject-row {
+    margin-bottom: 6px;
+
+    .task-subject {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #1e293b;
+      margin: 0;
+      line-height: 1.35;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      cursor: pointer;
+
+      &:hover {
+        color: #3080e8;
+      }
+    }
+  }
+
+  // Row 3: Department & Age
+  .card-mid-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 10.5px;
+    color: #64748b;
+    margin-bottom: 8px;
+
+    .department-text {
+      max-width: 170px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .age-text {
+      font-weight: 500;
+    }
+  }
+
+  // Row 4: BY & TO Chips (Exact match with reference screenshot)
+  .card-footer-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    padding-top: 4px;
+    border-top: 1px solid #f8fafc;
+
+    .chip-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 9.5px;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 130px;
+
+      .chip-dot {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: #ffffff;
+        display: inline-block;
+        flex-shrink: 0;
+      }
+
+      &.chip-by {
+        background: #7c3aed;
+        color: #ffffff;
+      }
+
+      &.chip-to {
+        background: #2563eb;
+        color: #ffffff;
+      }
+
+      &.chip-unassigned {
+        background: #334155;
+        color: #ffffff;
+      }
+    }
+  }
+}
+
+// CDK Drag & Drop Utilities
+.cdk-drag-preview {
+  box-sizing: border-box;
+  border-radius: 8px;
+  box-shadow: 0 12px 24px -4px rgba(0, 0, 0, 0.18), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  opacity: 0.95;
+  background: #ffffff;
+}
+
+.cdk-drag-placeholder {
+  opacity: 0.35;
+  border: 2px dashed #94a3b8;
+  background: #f1f5f9;
+  border-radius: 8px;
+  min-height: 80px;
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.column-cards-list.cdk-drop-list-dragging .task-card:not(.cdk-drag-placeholder) {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.empty-column-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 10px;
+  color: #94a3b8;
+  font-size: 11px;
+  border: 1px dashed #e2e8f0;
+  border-radius: 6px;
+  margin-top: 10px;
+
+  i {
+    font-size: 20px;
+    margin-bottom: 4px;
+  }
+}
+

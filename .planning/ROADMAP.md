@@ -9,7 +9,7 @@ This roadmap delivers the complete HR Task Manager & Interactive Kanban Module i
 ## Phases
 
 - [x] **Phase 5: Task Manager Backend Architecture & Database Engine** - SQL Server tables (`HR_TaskMaster`, `HR_TaskHistory`), stored procedures (`usp_HR_Task_...`), role/HOD visibility engine, attachment upload support, recurring task generator (`DAILY`, `WEEKLY`, `MONTHLY`, `YEARLY`), and WebAPI controller.
-- [ ] **Phase 6: Interactive Drag-and-Drop Kanban Board, KPI Filter Cards & Remarks Workflow** - Top clickable KPI summary cards (`Open`, `Closed`, `On Hold`, `Unassigned`, `Overdue`), multi-filter bar, 3-column CDK drag-and-drop Kanban board matching reference screenshot, and mandatory transition remarks popup modal.
+- [x] **Phase 6: Interactive Drag-and-Drop Kanban Board, KPI Filter Cards & Remarks Workflow** - Top clickable KPI summary cards (`Open`, `Closed`, `On Hold`, `Unassigned`, `Overdue`), multi-filter bar, 3-column CDK drag-and-drop Kanban board matching reference screenshot, and mandatory transition remarks popup modal.
 - [ ] **Phase 7: Task Creation Modal, Attachment & Full History Drawer & Dual Portal Routing** - Create Task modal with recurrence & file attachment, slide-out/modal Task Detail & Full History timeline view, and navigation integration in both HR Module and Employee Task-Box.
 
 ---
@@ -49,7 +49,7 @@ Plans:
   4. Dragging a card between columns opens the mandatory Remarks popup modal; confirming updates the status and logs history, while canceling reverts the card position.
 
 **Plans**: 1 plan
-- 06-01: Task Manager board layout, KPI filter cards, multi-filter bar, 3-column CDK drag-and-drop board, and drop remarks modal.
+- [x] 06-01: Task Manager board layout, KPI filter cards, multi-filter bar, 3-column CDK drag-and-drop board, and drop remarks modal.
 
 ---
 

@@ -38,3 +38,4 @@
 - `dotnet build "WebAPI/HRMSWebAPI.csproj" -v minimal`: 0 Errors.
 - All 8 database objects verified active in SQL Server.
 - Static file serving verified configured for `/Uploads` pointing to physical path `Uploads/Tasks`.
+

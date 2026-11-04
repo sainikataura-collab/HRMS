@@ -22,6 +22,11 @@ export const routes: Routes = [
             loadComponent: () => import('./hr-dash/hr-dash.component').then( (m) => m.HrDashComponent),
             title: 'HRMS - Employee-Salary'
           },
+          {
+            path: 'task-manager',
+            loadComponent: () => import('../../task-manager/task-manager.component').then( (m) => m.TaskManagerComponent),
+            title: 'HRMS - Task Manager'
+          },
          
           //Route not in use
 
