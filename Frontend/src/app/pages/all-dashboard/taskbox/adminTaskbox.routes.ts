@@ -21,6 +21,11 @@ export const routes: Routes = [
             loadComponent: () => import('./taskbox-dash/taskbox-dash.component').then( (m) => m.TaskboxDashComponent),
             title: 'HRMS - adminTaskbox Dash'
           },
+          {
+            path: 'task-manager',
+            loadComponent: () => import('../../task-manager/task-manager.component').then( (m) => m.TaskManagerComponent),
+            title: 'HRMS - Task Manager'
+          },
          {
                     path: 'PendingRegulazation',
                     canActivate: [AuthGuard],
