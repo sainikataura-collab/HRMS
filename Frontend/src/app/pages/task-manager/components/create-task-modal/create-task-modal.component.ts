@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
@@ -9,6 +9,12 @@ import {
   TaskCreateRequestDto
 } from '../../../../shared/services/task-manager.service';
 
+interface WeekDayItem {
+  id: string;
+  label: string;
+  selected: boolean;
+}
+
 @Component({
   selector: 'app-create-task-modal',
   standalone: true,
@@ -16,7 +22,7 @@ import {
   templateUrl: './create-task-modal.component.html',
   styleUrls: ['./create-task-modal.component.scss']
 })
-export class CreateTaskModalComponent {
+export class CreateTaskModalComponent implements OnInit {
   @Input() isOpen = false;
   @Input() departments: DepartmentLookupItem[] = [];
   @Input() employees: EmployeeLookupItem[] = [];
@@ -28,7 +34,7 @@ export class CreateTaskModalComponent {
   isUploadingAttachment = false;
   errorMessage = '';
 
-  // Form Fields
+  // Core Form Fields
   subject = '';
   description = '';
   departmentId: string | null = null;
@@ -37,32 +43,53 @@ export class CreateTaskModalComponent {
   priority = 'MEDIUM';
   deadlineDate = '';
 
-  // Recurrence
+  // Advanced Recurrence Controls
   isRecurring = false;
-  recurrencePattern = 'WEEKLY';
+  recurrencePattern: 'DAILY' | 'WEEKLY' | 'MONTHLY' | 'YEARLY' = 'WEEKLY';
   recurrenceInterval = 1;
+  recurrenceDaysOfWeek: WeekDayItem[] = [
+    { id: 'MON', label: 'Mon', selected: true },
+    { id: 'TUE', label: 'Tue', selected: false },
+    { id: 'WED', label: 'Wed', selected: false },
+    { id: 'THU', label: 'Thu', selected: false },
+    { id: 'FRI', label: 'Fri', selected: false },
+    { id: 'SAT', label: 'Sat', selected: false },
+    { id: 'SUN', label: 'Sun', selected: false }
+  ];
+  recurrenceDayOfMonth = 1;
+  recurrenceEndType: 'NEVER' | 'ON_DATE' | 'AFTER_COUNT' = 'NEVER';
   recurrenceEndDate = '';
+  recurrenceOccurrencesTotal = 10;
 
   // Attachment
   attachmentFileName = '';
   attachmentUrl = '';
 
   readonly priorityOptions = [
-    { id: 'HIGH', label: 'High Priority' },
-    { id: 'MEDIUM', label: 'Medium Priority' },
-    { id: 'LOW', label: 'Low Priority' }
+    { id: 'HIGH', label: 'High Priority', icon: 'fa-solid fa-arrow-up text-danger' },
+    { id: 'MEDIUM', label: 'Medium Priority', icon: 'fa-solid fa-minus text-warning' },
+    { id: 'LOW', label: 'Low Priority', icon: 'fa-solid fa-arrow-down text-info' }
   ];
 
-  readonly recurrenceOptions = [
-    { id: 'DAILY', label: 'Daily' },
-    { id: 'WEEKLY', label: 'Weekly' },
-    { id: 'MONTHLY', label: 'Monthly' },
-    { id: 'YEARLY', label: 'Yearly' }
-  ];
+  readonly dayOfMonthOptions: number[] = Array.from({ length: 28 }, (_, i) => i + 1);
 
   constructor(public taskManagerService: TaskManagerService) {}
 
-  onAssignToSelfChange(): void {
+  ngOnInit(): void {
+    this.setDefaultDeadline();
+  }
+
+  private setDefaultDeadline(): void {
+    const nextWeek = new Date();
+    nextWeek.setDate(nextWeek.getDate() + 7);
+    nextWeek.setHours(18, 0, 0, 0);
+    // Format YYYY-MM-DDTHH:mm
+    const pad = (n: number) => n.toString().padStart(2, '0');
+    this.deadlineDate = `${nextWeek.getFullYear()}-${pad(nextWeek.getMonth() + 1)}-${pad(nextWeek.getDate())}T${pad(nextWeek.getHours())}:${pad(nextWeek.getMinutes())}`;
+  }
+
+  toggleAssignToSelf(): void {
+    this.isAssignToSelf = !this.isAssignToSelf;
     if (this.isAssignToSelf) {
       const currentId = this.taskManagerService.currentUserId;
       if (currentId) {
@@ -71,6 +98,55 @@ export class CreateTaskModalComponent {
     } else {
       this.assignedToEmpId = null;
     }
+  }
+
+  setRecurrencePattern(pattern: 'DAILY' | 'WEEKLY' | 'MONTHLY' | 'YEARLY'): void {
+    this.recurrencePattern = pattern;
+  }
+
+  toggleDayOfWeek(day: WeekDayItem): void {
+    day.selected = !day.selected;
+    // Ensure at least one day is selected
+    if (!this.recurrenceDaysOfWeek.some(d => d.selected)) {
+      day.selected = true;
+    }
+  }
+
+  setEndType(endType: 'NEVER' | 'ON_DATE' | 'AFTER_COUNT'): void {
+    this.recurrenceEndType = endType;
+  }
+
+  /**
+   * Human-friendly live natural language summary of recurrence settings
+   */
+  get recurrenceSummary(): string {
+    if (!this.isRecurring) return '';
+
+    let freqText = '';
+    const interval = Math.max(1, Number(this.recurrenceInterval) || 1);
+
+    if (this.recurrencePattern === 'DAILY') {
+      freqText = interval === 1 ? 'Repeats every day' : `Repeats every ${interval} days`;
+    } else if (this.recurrencePattern === 'WEEKLY') {
+      const selectedDays = this.recurrenceDaysOfWeek.filter(d => d.selected).map(d => d.label);
+      const daysStr = selectedDays.length > 0 ? selectedDays.join(', ') : 'every week';
+      freqText = interval === 1 ? `Repeats weekly on ${daysStr}` : `Repeats every ${interval} weeks on ${daysStr}`;
+    } else if (this.recurrencePattern === 'MONTHLY') {
+      freqText = interval === 1 
+        ? `Repeats on day ${this.recurrenceDayOfMonth} of every month` 
+        : `Repeats on day ${this.recurrenceDayOfMonth} every ${interval} months`;
+    } else if (this.recurrencePattern === 'YEARLY') {
+      freqText = interval === 1 ? 'Repeats yearly' : `Repeats every ${interval} years`;
+    }
+
+    let endText = '';
+    if (this.recurrenceEndType === 'ON_DATE' && this.recurrenceEndDate) {
+      endText = ` until ${this.recurrenceEndDate}`;
+    } else if (this.recurrenceEndType === 'AFTER_COUNT' && this.recurrenceOccurrencesTotal) {
+      endText = ` for ${this.recurrenceOccurrencesTotal} occurrences`;
+    }
+
+    return `${freqText}${endText}.`;
   }
 
   onFileSelected(event: any): void {
@@ -114,6 +190,11 @@ export class CreateTaskModalComponent {
     this.isSubmitting = true;
     this.errorMessage = '';
 
+    const selectedDays = this.recurrenceDaysOfWeek
+      .filter(d => d.selected)
+      .map(d => d.id)
+      .join(',');
+
     const payload: TaskCreateRequestDto = {
       subject: trimmedSubject,
       description: (this.description || '').trim() || undefined,
@@ -123,8 +204,12 @@ export class CreateTaskModalComponent {
       deadlineDate: this.deadlineDate || undefined,
       isRecurring: this.isRecurring,
       recurrencePattern: this.isRecurring ? this.recurrencePattern : undefined,
-      recurrenceInterval: this.isRecurring ? Number(this.recurrenceInterval) || 1 : undefined,
-      recurrenceEndDate: (this.isRecurring && this.recurrenceEndDate) ? this.recurrenceEndDate : undefined,
+      recurrenceInterval: this.isRecurring ? Math.max(1, Number(this.recurrenceInterval) || 1) : undefined,
+      recurrenceDays: (this.isRecurring && this.recurrencePattern === 'WEEKLY') ? selectedDays : undefined,
+      recurrenceDayOfMonth: (this.isRecurring && this.recurrencePattern === 'MONTHLY') ? this.recurrenceDayOfMonth : undefined,
+      recurrenceEndType: this.isRecurring ? this.recurrenceEndType : undefined,
+      recurrenceEndDate: (this.isRecurring && this.recurrenceEndType === 'ON_DATE' && this.recurrenceEndDate) ? this.recurrenceEndDate : undefined,
+      recurrenceOccurrencesTotal: (this.isRecurring && this.recurrenceEndType === 'AFTER_COUNT') ? Number(this.recurrenceOccurrencesTotal) || 10 : undefined,
       attachmentUrl: this.attachmentUrl || undefined,
       attachmentFileName: this.attachmentFileName || undefined
     };
@@ -137,7 +222,7 @@ export class CreateTaskModalComponent {
       },
       error: (err) => {
         console.error('Failed to create task', err);
-        this.errorMessage = 'Could not create task. Please try again.';
+        this.errorMessage = 'Could not create task. Please verify your connection.';
         this.isSubmitting = false;
       }
     });
@@ -155,11 +240,15 @@ export class CreateTaskModalComponent {
     this.assignedToEmpId = null;
     this.isAssignToSelf = false;
     this.priority = 'MEDIUM';
-    this.deadlineDate = '';
+    this.setDefaultDeadline();
     this.isRecurring = false;
     this.recurrencePattern = 'WEEKLY';
     this.recurrenceInterval = 1;
+    this.recurrenceDaysOfWeek.forEach((d, idx) => d.selected = idx === 0);
+    this.recurrenceDayOfMonth = 1;
+    this.recurrenceEndType = 'NEVER';
     this.recurrenceEndDate = '';
+    this.recurrenceOccurrencesTotal = 10;
     this.attachmentFileName = '';
     this.attachmentUrl = '';
     this.errorMessage = '';
@@ -167,4 +256,3 @@ export class CreateTaskModalComponent {
     this.isUploadingAttachment = false;
   }
 }
-

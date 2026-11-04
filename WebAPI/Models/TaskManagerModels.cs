@@ -63,6 +63,7 @@ namespace HRMSWebAPI.Models
         public bool OnlyUnassigned { get; set; }
         public bool OnlyOverdue { get; set; }
         public string? SearchText { get; set; }
+        public string? CompanyId { get; set; }
     }
 
     public class TaskKpiSummaryDto
@@ -106,11 +107,18 @@ namespace HRMSWebAPI.Models
         public bool IsRecurring { get; set; }
         public string? RecurrenceType { get; set; } = "NONE";
         public int RecurrenceInterval { get; set; } = 1;
+        public string? RecurrenceDays { get; set; }
+        public int? RecurrenceDayOfMonth { get; set; }
+        public string? RecurrenceEndType { get; set; } = "NEVER";
+        public DateTime? RecurrenceEndDate { get; set; }
+        public int? RecurrenceOccurrencesTotal { get; set; }
+        public int RecurrenceOccurrencesCount { get; set; }
         public DateTime? NextOccurrenceDate { get; set; }
         public int? ParentTaskId { get; set; }
         public string? ParentTaskCode { get; set; }
         public bool IsSelfTask { get; set; }
         public DateTime? ClosedAt { get; set; }
+        public string? CompanyId { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public bool IsOverdue { get; set; }
@@ -174,6 +182,11 @@ namespace HRMSWebAPI.Models
         public bool IsRecurring { get; set; }
         public string RecurrenceType { get; set; } = "NONE"; // NONE, DAILY, WEEKLY, MONTHLY, YEARLY
         public int RecurrenceInterval { get; set; } = 1;
+        public string? RecurrenceDays { get; set; }
+        public int? RecurrenceDayOfMonth { get; set; }
+        public string? RecurrenceEndType { get; set; } = "NEVER"; // NEVER, ON_DATE, AFTER_COUNT
+        public DateTime? RecurrenceEndDate { get; set; }
+        public int? RecurrenceOccurrencesTotal { get; set; }
         public bool IsSelfTask { get; set; }
         public string? ActionById { get; set; }
         public string? ActionByName { get; set; }

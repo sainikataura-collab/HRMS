@@ -23,27 +23,28 @@
     <div class="custom-modal-body">
       
       <!-- Subject -->
-      <div class="mb-2">
-        <label class="form-label-mini">
+      <div class="form-group mb-2">
+        <label class="form-label-custom">
           Subject / Title <span class="text-danger">*</span>
         </label>
         <input
           type="text"
-          class="form-control form-control-sm"
-          placeholder="e.g. Verify monthly payroll deductions, Client audit review..."
+          class="form-control form-control-clean"
+          placeholder="e.g. Verify monthly payroll deductions, Client compliance audit..."
           [(ngModel)]="subject"
           [disabled]="isSubmitting"
           maxlength="200"
+          autofocus
         />
       </div>
 
       <!-- Description -->
-      <div class="mb-2">
-        <label class="form-label-mini">Description & Scope</label>
+      <div class="form-group mb-2">
+        <label class="form-label-custom">Description & Scope</label>
         <textarea
-          class="form-control form-control-sm desc-textarea"
-          rows="3"
-          placeholder="Provide detailed instructions, checklist items, or deliverables..."
+          class="form-control form-control-clean desc-textarea"
+          rows="2"
+          placeholder="Provide detailed instructions, deliverables, or checklist..."
           [(ngModel)]="description"
           [disabled]="isSubmitting"
         ></textarea>
@@ -51,10 +52,10 @@
 
       <!-- Department & Assignee Row -->
       <div class="row g-2 mb-2">
-        <div class="col-md-6">
-          <label class="form-label-mini">Target Department</label>
+        <div class="col-sm-6">
+          <label class="form-label-custom">Target Department</label>
           <ng-select
-            class="custom-ng-select"
+            class="clean-ng-select"
             [items]="departments"
             bindLabel="name"
             bindValue="id"
@@ -65,25 +66,23 @@
           ></ng-select>
         </div>
 
-        <div class="col-md-6">
-          <div class="d-flex justify-content-between align-items-center">
-            <label class="form-label-mini mb-0">Assign To</label>
-            <div class="form-check form-check-inline m-0 self-assign-toggle">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                id="assignSelfCheck"
-                [(ngModel)]="isAssignToSelf"
-                (change)="onAssignToSelfChange()"
-                [disabled]="isSubmitting"
-              />
-              <label class="form-check-label self-assign-label" for="assignSelfCheck">
-                Assign to me
-              </label>
-            </div>
+        <div class="col-sm-6">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <label class="form-label-custom mb-0">Assign To</label>
+            <button
+              type="button"
+              class="btn-assign-self"
+              [class.active]="isAssignToSelf"
+              (click)="toggleAssignToSelf()"
+              [disabled]="isSubmitting"
+              title="Quickly assign this ticket to yourself"
+            >
+              <i class="fa-solid" [class.fa-user-check]="isAssignToSelf" [class.fa-user-plus]="!isAssignToSelf"></i>
+              <span>{{ isAssignToSelf ? 'Assigned to Me' : 'Assign to Me' }}</span>
+            </button>
           </div>
           <ng-select
-            class="custom-ng-select"
+            class="clean-ng-select"
             [items]="employees"
             bindLabel="name"
             bindValue="id"
@@ -94,8 +93,8 @@
           >
             <ng-template ng-option-tmp let-item="item">
               <div class="d-flex justify-content-between align-items-center w-100">
-                <span>{{ item.name }}</span>
-                <span *ngIf="item.isHod" class="badge-hod-pill">HOD</span>
+                <span class="text-truncate">{{ item.name }}</span>
+                <span *ngIf="item.isHod" class="badge-hod-pill ms-2">HOD</span>
               </div>
             </ng-template>
           </ng-select>
@@ -104,34 +103,42 @@
 
       <!-- Priority & Deadline Row -->
       <div class="row g-2 mb-2">
-        <div class="col-md-6">
-          <label class="form-label-mini">Priority</label>
+        <div class="col-sm-6">
+          <label class="form-label-custom">Priority</label>
           <ng-select
-            class="custom-ng-select"
+            class="clean-ng-select"
             [items]="priorityOptions"
             bindLabel="label"
             bindValue="id"
             [clearable]="false"
             [(ngModel)]="priority"
             [disabled]="isSubmitting"
-          ></ng-select>
+          >
+            <ng-template ng-option-tmp let-item="item">
+              <div class="d-flex align-items-center gap-2">
+                <i [class]="item.icon"></i>
+                <span>{{ item.label }}</span>
+              </div>
+            </ng-template>
+          </ng-select>
         </div>
 
-        <div class="col-md-6">
-          <label class="form-label-mini">Deadline Date & Time</label>
+        <div class="col-sm-6">
+          <label class="form-label-custom">Deadline Date & Time</label>
           <input
             type="datetime-local"
-            class="form-control form-control-sm deadline-input"
+            class="form-control form-control-clean deadline-input"
             [(ngModel)]="deadlineDate"
             [disabled]="isSubmitting"
           />
         </div>
       </div>
 
-      <!-- Attachment Upload Area -->
-      <div class="mb-3">
-        <label class="form-label-mini">Attachment</label>
-        <div *ngIf="!attachmentFileName" class="attachment-upload-box">
+      <!-- Attachment Drop Zone -->
+      <div class="form-group mb-3">
+        <label class="form-label-custom">Attachment</label>
+        
+        <div *ngIf="!attachmentFileName" class="compact-upload-zone">
           <input
             type="file"
             id="taskFileInput"
@@ -139,46 +146,60 @@
             (change)="onFileSelected($event)"
             [disabled]="isSubmitting || isUploadingAttachment"
           />
-          <label for="taskFileInput" class="upload-trigger-label">
-            <i *ngIf="!isUploadingAttachment" class="fa-solid fa-cloud-arrow-up upload-icon"></i>
+          <label for="taskFileInput" class="upload-label-inner">
+            <i *ngIf="!isUploadingAttachment" class="fa-solid fa-paperclip upload-icon"></i>
             <i *ngIf="isUploadingAttachment" class="fa-solid fa-spinner fa-spin upload-icon text-primary"></i>
-            <span *ngIf="!isUploadingAttachment" class="upload-text">
-              <strong>Click to upload</strong> or drag and drop document (PDF, Excel, Docx, Image up to 20MB)
-            </span>
-            <span *ngIf="isUploadingAttachment" class="upload-text text-primary">
-              Uploading file to server...
-            </span>
+            <div class="upload-text-block">
+              <span *ngIf="!isUploadingAttachment">
+                <strong>Click to attach file</strong> or drag & drop (PDF, Excel, Word, Image up to 20MB)
+              </span>
+              <span *ngIf="isUploadingAttachment" class="text-primary fw-semibold">
+                Uploading attachment to server...
+              </span>
+            </div>
           </label>
         </div>
 
         <!-- Uploaded File Badge -->
-        <div *ngIf="attachmentFileName" class="uploaded-file-pill">
+        <div *ngIf="attachmentFileName" class="uploaded-file-chip">
           <div class="d-flex align-items-center gap-2 text-truncate">
-            <i class="fa-solid fa-paperclip text-primary"></i>
-            <span class="file-name-text text-truncate">{{ attachmentFileName }}</span>
+            <i class="fa-solid fa-file-lines text-primary"></i>
+            <span class="file-name text-truncate">{{ attachmentFileName }}</span>
           </div>
           <button
             type="button"
-            class="btn-remove-attachment"
+            class="btn-remove-file"
             (click)="removeAttachment()"
             [disabled]="isSubmitting"
-            title="Remove attachment"
+            title="Remove file"
           >
             <i class="fa-solid fa-xmark"></i>
           </button>
         </div>
       </div>
 
-      <!-- Recurrence Accordion / Box -->
-      <div class="recurrence-box mb-2">
-        <div class="d-flex justify-content-between align-items-center mb-2">
+      <!-- ============================================== -->
+      <!-- ADVANCED RECURRING TASK SCHEDULE PANEL         -->
+      <!-- ============================================== -->
+      <div class="recurrence-panel" [class.panel-open]="isRecurring">
+        
+        <!-- Toggle Header -->
+        <div class="recurrence-header" (click)="isRecurring = !isRecurring">
           <div class="d-flex align-items-center gap-2">
-            <i class="fa-solid fa-arrows-rotate text-primary"></i>
-            <span class="recur-title">Recurring Task Schedule</span>
+            <div class="recur-icon-box" [class.active]="isRecurring">
+              <i class="fa-solid fa-arrows-rotate"></i>
+            </div>
+            <div>
+              <span class="recur-header-title">Recurring Task Schedule</span>
+              <span class="recur-header-sub d-block text-muted">
+                {{ isRecurring ? 'Configuring recurring schedule' : 'Disabled (One-off task)' }}
+              </span>
+            </div>
           </div>
-          <div class="form-check form-switch m-0">
+          
+          <div class="form-check form-switch m-0" (click)="$event.stopPropagation()">
             <input
-              class="form-check-input"
+              class="form-check-input recur-switch"
               type="checkbox"
               id="recurSwitch"
               [(ngModel)]="isRecurring"
@@ -187,48 +208,172 @@
           </div>
         </div>
 
-        <!-- Recurrence Sub-fields -->
-        <div *ngIf="isRecurring" class="recurrence-fields-row pt-2 border-top">
-          <div class="row g-2">
-            <div class="col-md-4">
-              <label class="form-label-mini">Pattern</label>
-              <ng-select
-                class="custom-ng-select"
-                [items]="recurrenceOptions"
-                bindLabel="label"
-                bindValue="id"
-                [clearable]="false"
-                [(ngModel)]="recurrencePattern"
-                [disabled]="isSubmitting"
-              ></ng-select>
+        <!-- Recurrence Expanded Configuration -->
+        <div *ngIf="isRecurring" class="recurrence-body">
+          
+          <!-- Frequency Segmented Buttons -->
+          <div class="mb-2">
+            <label class="form-label-custom mb-1">Repeat Frequency</label>
+            <div class="segmented-frequency-group">
+              <button
+                type="button"
+                class="seg-btn"
+                [class.active]="recurrencePattern === 'DAILY'"
+                (click)="setRecurrencePattern('DAILY')"
+              >
+                Daily
+              </button>
+              <button
+                type="button"
+                class="seg-btn"
+                [class.active]="recurrencePattern === 'WEEKLY'"
+                (click)="setRecurrencePattern('WEEKLY')"
+              >
+                Weekly
+              </button>
+              <button
+                type="button"
+                class="seg-btn"
+                [class.active]="recurrencePattern === 'MONTHLY'"
+                (click)="setRecurrencePattern('MONTHLY')"
+              >
+                Monthly
+              </button>
+              <button
+                type="button"
+                class="seg-btn"
+                [class.active]="recurrencePattern === 'YEARLY'"
+                (click)="setRecurrencePattern('YEARLY')"
+              >
+                Yearly
+              </button>
+            </div>
+          </div>
+
+          <!-- Weekly Days-of-Week Pills -->
+          <div *ngIf="recurrencePattern === 'WEEKLY'" class="mb-2">
+            <label class="form-label-custom mb-1">Repeat On (Days of Week)</label>
+            <div class="weekday-pills-row">
+              <button
+                *ngFor="let day of recurrenceDaysOfWeek"
+                type="button"
+                class="weekday-pill"
+                [class.selected]="day.selected"
+                (click)="toggleDayOfWeek(day)"
+              >
+                {{ day.label }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Monthly Day-of-Month Picker -->
+          <div *ngIf="recurrencePattern === 'MONTHLY'" class="mb-2">
+            <div class="row g-2 align-items-center">
+              <div class="col-sm-6">
+                <label class="form-label-custom">Day of the Month</label>
+                <ng-select
+                  class="clean-ng-select"
+                  [items]="dayOfMonthOptions"
+                  [clearable]="false"
+                  [(ngModel)]="recurrenceDayOfMonth"
+                  placeholder="Select Day (1-28)"
+                ></ng-select>
+              </div>
+              <div class="col-sm-6">
+                <label class="form-label-custom">Every (Months)</label>
+                <input
+                  type="number"
+                  min="1"
+                  max="12"
+                  class="form-control form-control-clean"
+                  [(ngModel)]="recurrenceInterval"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- Interval for Daily / Yearly -->
+          <div *ngIf="recurrencePattern === 'DAILY' || recurrencePattern === 'YEARLY'" class="mb-2">
+            <div class="row g-2 align-items-center">
+              <div class="col-sm-6">
+                <label class="form-label-custom">
+                  Repeat Every ({{ recurrencePattern === 'DAILY' ? 'Days' : 'Years' }})
+                </label>
+                <input
+                  type="number"
+                  min="1"
+                  max="365"
+                  class="form-control form-control-clean"
+                  [(ngModel)]="recurrenceInterval"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- End Condition Section -->
+          <div class="mb-2 pt-2 border-top">
+            <label class="form-label-custom mb-1">Ends</label>
+            <div class="end-conditions-row">
+              <label class="end-condition-option" [class.active]="recurrenceEndType === 'NEVER'">
+                <input
+                  type="radio"
+                  name="recurEndType"
+                  [value]="'NEVER'"
+                  [(ngModel)]="recurrenceEndType"
+                />
+                <span>Never</span>
+              </label>
+
+              <label class="end-condition-option" [class.active]="recurrenceEndType === 'ON_DATE'">
+                <input
+                  type="radio"
+                  name="recurEndType"
+                  [value]="'ON_DATE'"
+                  [(ngModel)]="recurrenceEndType"
+                />
+                <span>On Date</span>
+              </label>
+
+              <label class="end-condition-option" [class.active]="recurrenceEndType === 'AFTER_COUNT'">
+                <input
+                  type="radio"
+                  name="recurEndType"
+                  [value]="'AFTER_COUNT'"
+                  [(ngModel)]="recurrenceEndType"
+                />
+                <span>After Occurrences</span>
+              </label>
             </div>
 
-            <div class="col-md-4">
-              <label class="form-label-mini">Interval</label>
+            <!-- Conditional inputs for End Type -->
+            <div *ngIf="recurrenceEndType === 'ON_DATE'" class="mt-2">
+              <input
+                type="date"
+                class="form-control form-control-clean"
+                [(ngModel)]="recurrenceEndDate"
+                placeholder="Select end date"
+              />
+            </div>
+
+            <div *ngIf="recurrenceEndType === 'AFTER_COUNT'" class="mt-2 d-flex align-items-center gap-2">
               <input
                 type="number"
                 min="1"
-                max="365"
-                class="form-control form-control-sm"
-                [(ngModel)]="recurrenceInterval"
-                [disabled]="isSubmitting"
+                max="100"
+                class="form-control form-control-clean w-auto"
+                style="width: 100px !important;"
+                [(ngModel)]="recurrenceOccurrencesTotal"
               />
-            </div>
-
-            <div class="col-md-4">
-              <label class="form-label-mini">End Date</label>
-              <input
-                type="date"
-                class="form-control form-control-sm"
-                [(ngModel)]="recurrenceEndDate"
-                [disabled]="isSubmitting"
-              />
+              <span class="text-muted small">total occurrences</span>
             </div>
           </div>
-          <span class="recur-hint-text text-muted mt-1 d-block">
-            <i class="fa-solid fa-circle-info me-1"></i>
-            Spawns a new task automatically based on recurrence frequency until the end date.
-          </span>
+
+          <!-- Live Natural Language Summary Pill -->
+          <div class="recurrence-summary-box mt-2">
+            <i class="fa-solid fa-circle-info me-1 text-primary"></i>
+            <span class="summary-text">{{ recurrenceSummary }}</span>
+          </div>
+
         </div>
       </div>
 
@@ -242,10 +387,10 @@
 
     <!-- Modal Footer -->
     <div class="custom-modal-footer">
-      <button type="button" class="btn btn-secondary-action btn-sm" (click)="onClose()" [disabled]="isSubmitting">
+      <button type="button" class="btn btn-clean-cancel" (click)="onClose()" [disabled]="isSubmitting">
         Cancel
       </button>
-      <button type="button" class="btn btn-primary-action btn-sm" (click)="onSubmit()" [disabled]="isSubmitting || isUploadingAttachment">
+      <button type="button" class="btn btn-clean-submit" (click)="onSubmit()" [disabled]="isSubmitting || isUploadingAttachment">
         <i *ngIf="isSubmitting" class="fa-solid fa-spinner fa-spin me-1"></i>
         <i *ngIf="!isSubmitting" class="fa-solid fa-check me-1"></i>
         Create Task
@@ -254,4 +399,3 @@
 
   </div>
 </div>
-

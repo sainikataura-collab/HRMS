@@ -11,7 +11,7 @@ namespace HRMSWebAPI.Repository
 {
     public class TaskManagerRepository : ITaskManagerRepository
     {
-        public async Task<TaskLookupsResponseDto> GetLookupsAsync(string? viewerId, string? userType, int? roleId)
+        public async Task<TaskLookupsResponseDto> GetLookupsAsync(string? viewerId, string? userType, int? roleId, string? companyId = null)
         {
             var response = new TaskLookupsResponseDto();
 
@@ -20,7 +20,8 @@ namespace HRMSWebAPI.Repository
             {
                 ViewerId = viewerId,
                 UserType = userType,
-                RoleId = roleId
+                RoleId = roleId,
+                CompanyId = companyId
             };
 
             using var multi = await conn.QueryMultipleAsync(
@@ -54,7 +55,8 @@ namespace HRMSWebAPI.Repository
                 RecurrenceType = string.IsNullOrWhiteSpace(filter.RecurrenceType) ? null : filter.RecurrenceType,
                 OnlyUnassigned = filter.OnlyUnassigned,
                 OnlyOverdue = filter.OnlyOverdue,
-                SearchText = string.IsNullOrWhiteSpace(filter.SearchText) ? null : filter.SearchText
+                SearchText = string.IsNullOrWhiteSpace(filter.SearchText) ? null : filter.SearchText,
+                CompanyId = string.IsNullOrWhiteSpace(filter.CompanyId) ? null : filter.CompanyId
             };
 
             using var multi = await conn.QueryMultipleAsync(
@@ -73,13 +75,13 @@ namespace HRMSWebAPI.Repository
             return response;
         }
 
-        public async Task<TaskDetailResponseDto?> GetTaskByIdWithHistoryAsync(int taskId)
+        public async Task<TaskDetailResponseDto?> GetTaskByIdWithHistoryAsync(int taskId, string? companyId = null)
         {
             using var conn = DataBaseFactory.ConnString();
-            var parameters = new { TaskId = taskId };
+            var parameters = new { TaskId = taskId, CompanyId = companyId };
 
             using var multi = await conn.QueryMultipleAsync(
-                "dbo.usp_HR_Task_GetByIdWithHistory",
+                "dbo.usp_HR_Task_GetDetail",
                 parameters,
                 commandType: CommandType.StoredProcedure);
 
@@ -112,6 +114,11 @@ namespace HRMSWebAPI.Repository
                 IsRecurring = dto.IsRecurring,
                 RecurrenceType = string.IsNullOrWhiteSpace(dto.RecurrenceType) ? "NONE" : dto.RecurrenceType,
                 RecurrenceInterval = dto.RecurrenceInterval > 0 ? dto.RecurrenceInterval : 1,
+                RecurrenceDays = string.IsNullOrWhiteSpace(dto.RecurrenceDays) ? null : dto.RecurrenceDays,
+                RecurrenceDayOfMonth = dto.RecurrenceDayOfMonth,
+                RecurrenceEndType = string.IsNullOrWhiteSpace(dto.RecurrenceEndType) ? "NEVER" : dto.RecurrenceEndType,
+                RecurrenceEndDate = dto.RecurrenceEndDate,
+                RecurrenceOccurrencesTotal = dto.RecurrenceOccurrencesTotal,
                 IsSelfTask = dto.IsSelfTask,
                 ActionById = dto.ActionById,
                 ActionByName = dto.ActionByName,

@@ -56,6 +56,7 @@ export interface TaskBoardFilterDto {
   recurrencePattern?: string;
   searchKeyword?: string;
   filterCard?: string; // 'ALL' | 'OPEN' | 'CLOSED' | 'ON_HOLD' | 'UNASSIGNED' | 'OVERDUE'
+  companyId?: string;
 }
 
 export interface TaskStatusUpdateRequestDto {
@@ -64,6 +65,7 @@ export interface TaskStatusUpdateRequestDto {
   remarks?: string;
   updatedByEmpId?: string;
   updatedByName?: string;
+  companyId?: string;
 }
 
 export interface TaskCreateRequestDto {
@@ -76,11 +78,16 @@ export interface TaskCreateRequestDto {
   isRecurring: boolean;
   recurrencePattern?: string;
   recurrenceInterval?: number;
+  recurrenceDays?: string;
+  recurrenceDayOfMonth?: number;
+  recurrenceEndType?: string; // 'NEVER' | 'ON_DATE' | 'AFTER_COUNT'
   recurrenceEndDate?: string;
+  recurrenceOccurrencesTotal?: number;
   attachmentUrl?: string;
   attachmentFileName?: string;
   createdByEmpId?: string;
   createdByName?: string;
+  companyId?: string;
 }
 
 export interface TaskHistoryItemDto {
@@ -158,21 +165,35 @@ export class TaskManagerService {
   }
 
   /**
+   * Helper to retrieve currently authenticated CompanyId
+   */
+  get currentCompanyId(): string {
+    return sessionStorage.getItem('companyId') ||
+           localStorage.getItem('companyId') ||
+           sessionStorage.getItem('fk_companyId') ||
+           'GU-1';
+  }
+
+  /**
    * Fetch Board tasks and summary counts based on active filters
    */
   getBoard(filter: TaskBoardFilterDto): Observable<TaskBoardResponseDto> {
     const payload: TaskBoardFilterDto = {
       viewerEmpId: this.currentUserId,
+      companyId: this.currentCompanyId,
       ...filter
     };
     return this.http.post<TaskBoardResponseDto>(`${this.baseUrl}/TaskManager/board`, payload);
   }
 
   /**
-   * Fetch departments and employees dropdown lookup data
+   * Fetch departments and employees dropdown lookup data scoped to current Company
    */
   getLookups(): Observable<TaskLookupsDto> {
-    return this.http.get<TaskLookupsDto>(`${this.baseUrl}/TaskManager/lookups`);
+    const companyId = this.currentCompanyId;
+    return this.http.get<TaskLookupsDto>(
+      `${this.baseUrl}/TaskManager/lookups?viewerId=${encodeURIComponent(this.currentUserId)}&companyId=${encodeURIComponent(companyId)}`
+    );
   }
 
   /**
@@ -181,6 +202,7 @@ export class TaskManagerService {
   updateStatusAndRemarks(request: TaskStatusUpdateRequestDto): Observable<any> {
     const payload: TaskStatusUpdateRequestDto = {
       ...request,
+      companyId: this.currentCompanyId,
       updatedByEmpId: request.updatedByEmpId || this.currentUserId,
       updatedByName: request.updatedByName || this.currentUserName
     };
@@ -191,7 +213,10 @@ export class TaskManagerService {
    * Fetch full task details along with complete audit trail / history
    */
   getTaskById(taskId: number): Observable<TaskDetailDto> {
-    return this.http.get<TaskDetailDto>(`${this.baseUrl}/TaskManager/${taskId}?viewerEmpId=${encodeURIComponent(this.currentUserId)}`);
+    const companyId = this.currentCompanyId;
+    return this.http.get<TaskDetailDto>(
+      `${this.baseUrl}/TaskManager/${taskId}?viewerEmpId=${encodeURIComponent(this.currentUserId)}&companyId=${encodeURIComponent(companyId)}`
+    );
   }
 
   /**
@@ -200,6 +225,7 @@ export class TaskManagerService {
   createTask(request: TaskCreateRequestDto): Observable<any> {
     const payload: TaskCreateRequestDto = {
       ...request,
+      companyId: this.currentCompanyId,
       createdByEmpId: request.createdByEmpId || this.currentUserId,
       createdByName: request.createdByName || this.currentUserName
     };

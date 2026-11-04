@@ -23,6 +23,24 @@ namespace HRMSWebAPI.Controllers
             _repository = repository;
         }
 
+        private string? ResolveCompanyId(string? explicitCompanyId = null)
+        {
+            if (!string.IsNullOrWhiteSpace(explicitCompanyId))
+                return explicitCompanyId.Trim();
+
+            var fromItems = HttpContext.Items["DecryptedCompanyId"]?.ToString();
+            if (!string.IsNullOrWhiteSpace(fromItems))
+                return fromItems.Trim();
+
+            if (Request.Headers.TryGetValue("companyId", out var compHeader) && !string.IsNullOrWhiteSpace(compHeader))
+                return compHeader.ToString().Trim();
+
+            if (Request.Headers.TryGetValue("CompanyId", out var compHeader2) && !string.IsNullOrWhiteSpace(compHeader2))
+                return compHeader2.ToString().Trim();
+
+            return null;
+        }
+
         private string? ResolveViewerId(string? explicitId)
         {
             if (!string.IsNullOrWhiteSpace(explicitId))
@@ -103,6 +121,13 @@ namespace HRMSWebAPI.Controllers
                 relativeAgeText = FormatRelativeAge(t.AgeMinutes, t.CreatedAt),
                 isRecurring = t.IsRecurring,
                 recurrencePattern = t.RecurrenceType,
+                recurrenceDays = t.RecurrenceDays,
+                recurrenceDayOfMonth = t.RecurrenceDayOfMonth,
+                recurrenceEndType = t.RecurrenceEndType,
+                recurrenceEndDate = t.RecurrenceEndDate,
+                recurrenceOccurrencesTotal = t.RecurrenceOccurrencesTotal,
+                recurrenceOccurrencesCount = t.RecurrenceOccurrencesCount,
+                companyId = t.CompanyId,
                 hasAttachments = !string.IsNullOrWhiteSpace(t.AttachmentPath),
                 attachmentUrl = t.AttachmentPath,
                 attachmentFileName = t.AttachmentName,
@@ -122,18 +147,21 @@ namespace HRMSWebAPI.Controllers
             public string? RecurrencePattern { get; set; }
             public string? SearchKeyword { get; set; }
             public string? FilterCard { get; set; }
+            public string? CompanyId { get; set; }
         }
 
         [HttpGet("lookups")]
         public async Task<IActionResult> GetLookups(
             [FromQuery] string? viewerId = null,
             [FromQuery] string? userType = null,
-            [FromQuery] int? roleId = null)
+            [FromQuery] int? roleId = null,
+            [FromQuery] string? companyId = null)
         {
             try
             {
                 var resolvedId = ResolveViewerId(viewerId);
-                var lookups = await _repository.GetLookupsAsync(resolvedId, userType, roleId);
+                var resolvedCompId = ResolveCompanyId(companyId);
+                var lookups = await _repository.GetLookupsAsync(resolvedId, userType, roleId, resolvedCompId);
 
                 return Ok(new
                 {
@@ -183,6 +211,7 @@ namespace HRMSWebAPI.Controllers
                     filter.Priority = payload.Priority;
                     filter.RecurrenceType = payload.RecurrencePattern;
                     filter.SearchText = payload.SearchKeyword;
+                    filter.CompanyId = ResolveCompanyId(payload.CompanyId);
 
                     var fc = (payload.FilterCard ?? "").ToUpper().Trim();
                     if (fc == "UNASSIGNED") filter.OnlyUnassigned = true;
@@ -220,11 +249,12 @@ namespace HRMSWebAPI.Controllers
         }
 
         [HttpGet("{taskId:int}")]
-        public async Task<IActionResult> GetTaskById([FromRoute] int taskId)
+        public async Task<IActionResult> GetTaskById([FromRoute] int taskId, [FromQuery] string? companyId = null)
         {
             try
             {
-                var detail = await _repository.GetTaskByIdWithHistoryAsync(taskId);
+                var resolvedCompId = ResolveCompanyId(companyId);
+                var detail = await _repository.GetTaskByIdWithHistoryAsync(taskId, resolvedCompId);
                 if (detail == null || detail.Task == null)
                     return NotFound(new { isSuccess = false, message = $"Task with ID {taskId} was not found." });
 
@@ -268,11 +298,16 @@ namespace HRMSWebAPI.Controllers
             public bool IsRecurring { get; set; }
             public string? RecurrencePattern { get; set; }
             public int? RecurrenceInterval { get; set; }
+            public string? RecurrenceDays { get; set; }
+            public int? RecurrenceDayOfMonth { get; set; }
+            public string? RecurrenceEndType { get; set; }
             public DateTime? RecurrenceEndDate { get; set; }
+            public int? RecurrenceOccurrencesTotal { get; set; }
             public string? AttachmentUrl { get; set; }
             public string? AttachmentFileName { get; set; }
             public string? CreatedByEmpId { get; set; }
             public string? CreatedByName { get; set; }
+            public string? CompanyId { get; set; }
         }
 
         [HttpPost("create")]
@@ -294,6 +329,12 @@ namespace HRMSWebAPI.Controllers
                     IsRecurring = dto.IsRecurring,
                     RecurrenceType = dto.IsRecurring ? (dto.RecurrencePattern ?? "WEEKLY") : "NONE",
                     RecurrenceInterval = dto.RecurrenceInterval ?? 1,
+                    RecurrenceDays = dto.RecurrenceDays,
+                    RecurrenceDayOfMonth = dto.RecurrenceDayOfMonth,
+                    RecurrenceEndType = dto.RecurrenceEndType ?? "NEVER",
+                    RecurrenceEndDate = dto.RecurrenceEndDate,
+                    RecurrenceOccurrencesTotal = dto.RecurrenceOccurrencesTotal,
+                    CompanyId = ResolveCompanyId(dto.CompanyId),
                     ActionById = ResolveViewerId(dto.CreatedByEmpId)
                 };
 
@@ -320,6 +361,7 @@ namespace HRMSWebAPI.Controllers
             public string? Remarks { get; set; }
             public string? UpdatedByEmpId { get; set; }
             public string? UpdatedByName { get; set; }
+            public string? CompanyId { get; set; }
         }
 
         [HttpPost("update-status")]

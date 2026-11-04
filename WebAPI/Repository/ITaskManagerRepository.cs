@@ -5,9 +5,9 @@ namespace HRMSWebAPI.Repository
 {
     public interface ITaskManagerRepository
     {
-        Task<TaskLookupsResponseDto> GetLookupsAsync(string? viewerId, string? userType, int? roleId);
+        Task<TaskLookupsResponseDto> GetLookupsAsync(string? viewerId, string? userType, int? roleId, string? companyId = null);
         Task<TaskBoardResponseDto> GetBoardAsync(TaskBoardFilterDto filter);
-        Task<TaskDetailResponseDto?> GetTaskByIdWithHistoryAsync(int taskId);
+        Task<TaskDetailResponseDto?> GetTaskByIdWithHistoryAsync(int taskId, string? companyId = null);
         Task<(int TaskId, string TaskCode)> CreateTaskAsync(CreateTaskRequestDto dto, string? attachmentName, string? attachmentPath);
         Task<bool> UpdateStatusAndRemarksAsync(TaskStatusTransitionRequestDto dto, string? attachmentName, string? attachmentPath);
         Task<int> ProcessRecurringTasksAsync();

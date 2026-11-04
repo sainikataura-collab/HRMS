@@ -92,8 +92,12 @@
 // ----------------------------------------------------
 .kpi-cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
   gap: 10px;
+
+  @media (max-width: 576px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
 
   .kpi-card {
     background: #ffffff;
@@ -182,23 +186,24 @@
 
   .filter-controls-row {
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     gap: 8px;
     flex-wrap: wrap;
 
     .filter-col {
-      min-width: 140px;
+      flex: 1 1 130px;
+      min-width: 120px;
 
-      &.scope-col { min-width: 155px; }
-      &.dept-col { min-width: 160px; }
-      &.assignee-col { min-width: 165px; }
-      &.priority-col { min-width: 130px; }
-      &.recur-col { min-width: 135px; }
-      &.search-col { min-width: 180px; }
-      &.reset-col { min-width: 70px; }
+      &.scope-col { flex: 1 1 140px; }
+      &.dept-col { flex: 1.2 1 150px; }
+      &.assignee-col { flex: 1.2 1 150px; }
+      &.priority-col { flex: 0.9 1 115px; }
+      &.recur-col { flex: 0.9 1 115px; }
+      &.search-col { flex: 1.5 1 160px; }
+      &.reset-col { flex: 0 0 auto; min-width: auto; }
 
       .filter-label {
-        font-size: 10px;
+        font-size: 10.5px;
         font-weight: 600;
         color: #475569;
         margin-bottom: 2px;
@@ -357,24 +362,35 @@
 // 4. 3-Column Kanban Board Layout
 // ----------------------------------------------------
 .kanban-board-container {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(290px, 1fr));
+  display: flex;
   gap: 14px;
-  align-items: start;
+  align-items: flex-start;
+  overflow-x: auto;
+  padding-bottom: 12px;
 
-  @media (max-width: 992px) {
-    grid-template-columns: 1fr;
+  .kanban-column {
+    flex: 1 1 0;
+    min-width: 280px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+    display: flex;
+    flex-direction: column;
+    min-height: 550px;
+  }
+
+  @media (max-width: 860px) {
+    flex-direction: column;
+    overflow-x: visible;
+
+    .kanban-column {
+      width: 100%;
+      min-width: unset;
+      min-height: auto;
+    }
   }
 }
-
-.kanban-column {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
-  display: flex;
-  flex-direction: column;
-  min-height: 600px;
 
   .column-header {
     padding: 10px 14px;
