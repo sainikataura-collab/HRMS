@@ -191,3 +191,4 @@ All dropdowns across the application must use `@ng-select/ng-select` with the un
   * Font Weight: `600`
   * Padding: `1px 6px`
   * Border Radius: `3px`
+
