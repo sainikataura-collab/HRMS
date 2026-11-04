@@ -37,3 +37,4 @@
 - Verified valid sequence generation: Candidate hire generated next sequential number `314072` for company `GU-8`.
 - Verified UI elements: Clean business labels rendered without internal SQL/table strings.
 - Strictly maintained dev servers (no build commands run).
+

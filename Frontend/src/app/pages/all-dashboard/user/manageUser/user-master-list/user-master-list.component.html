@@ -1,0 +1,91 @@
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <!-- Heading Section -->
+     
+
+
+      <div class="card-header py-2">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-3 col-lg-2 col-xxl-2 d-flex align-items-center justify-content-between">
+            <h4>List of Users</h4>
+           
+          </div>
+          <div class="col-sm-12 col-md-3 col-lg-3 col-xxl-3 d-flex align-items-center justify-content-center">
+            <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText" (ngModelChange)="onSearchChange()" />
+          </div>
+          
+          <div class="col-sm-12 col-md-6 col-lg-7 col-xxl-7 d-flex align-items-center justify-content-md-end ms-auto gap-2">
+            <button class="btn btn-light btn-sm text-nowrap" style="background-color: white;" routerLink="/dash/user/userdashboard/user-master">
+                Add
+            </button>
+            <button class="btn btn-light btn-sm text-nowrap" style="background-color: white;" (click)="exportToExcel()">
+              Download
+            </button>
+            <button *ngIf="companyCode === 'deliveryplus'" class="btn btn-light btn-sm text-nowrap" style="background-color: white;" (click)="sendEmails('CREDENTIALS')" [disabled]="sendingType === 'CREDENTIALS' && sendingUserId === 'ALL'">
+              <i *ngIf="sendingType === 'CREDENTIALS' && sendingUserId === 'ALL'" class="fas fa-spinner fa-spin me-1"></i>
+              <i *ngIf="!(sendingType === 'CREDENTIALS' && sendingUserId === 'ALL')" class="fas fa-envelope me-1"></i> Send All Credentials
+            </button>
+            <button *ngIf="companyCode === 'deliveryplus'" class="btn btn-light btn-sm text-nowrap" style="background-color: white;" (click)="sendEmails('REMINDER')" [disabled]="sendingType === 'REMINDER' && sendingUserId === 'ALL'">
+              <i *ngIf="sendingType === 'REMINDER' && sendingUserId === 'ALL'" class="fas fa-spinner fa-spin me-1"></i>
+              <i *ngIf="!(sendingType === 'REMINDER' && sendingUserId === 'ALL')" class="fas fa-bell me-1"></i> Send All Reminders
+            </button>
+          </div>
+          
+        </div>
+    </div>
+
+      <!-- Table Section -->
+      <div class="card-body p-0">
+        <div class="table-responsive table-invoice">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Sr.</th>
+                <th>Login Id</th>
+                <th>Employee Name</th>
+                <th>Role</th>
+                <th>Active</th>
+                <th *ngIf="companyCode === 'deliveryplus'">Total Vendors</th>
+                <th *ngIf="companyCode === 'deliveryplus'">Incomplete Vendors</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let data of filteredData() | paginate: { itemsPerPage: pageSize, currentPage: pageIndex, totalItems: totalItems }; let i = index">
+                <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+                <td>{{ data.loginname }}</td>
+                <td>{{ data.empname }}</td>
+                <td>{{ data.roleName || data.RoleName }}</td>
+                <td>{{ data.activeStatus || data.ActiveStatus }}</td>
+                <td *ngIf="companyCode === 'deliveryplus'">{{ data.TotalVendorCount || data.totalVendorCount || 0 }}</td>
+                <td *ngIf="companyCode === 'deliveryplus'" [ngClass]="{'text-danger fw-bold': (data.IncompleteVendorCount || data.incompleteVendorCount || 0) > 0}">
+                  {{ data.IncompleteVendorCount || data.incompleteVendorCount || 0 }}
+                </td>
+                <td>
+                  <button class="btn btn-sm" (click)="editUser(encryptionService.encryptText(data.pk_userId))" title="Edit">
+                    <i class="fa-regular fa-pen-to-square"></i>
+                  </button>
+                  <button *ngIf="companyCode !== 'deliveryplus'" class="btn btn-sm text-danger" (click)="deleteUser(data.pk_userId)" title="Delete">
+                    <i class="fa fa-trash"></i>
+                  </button>
+                  <ng-container *ngIf="companyCode === 'deliveryplus'">
+                    <button class="btn btn-sm text-primary" (click)="sendEmails('CREDENTIALS', data)" title="Send Credentials" [disabled]="sendingType === 'CREDENTIALS' && (sendingUserId === 'ALL' || sendingUserId === data.pk_userId)">
+                      <i *ngIf="!(sendingType === 'CREDENTIALS' && sendingUserId === data.pk_userId)" class="fa fa-envelope"></i>
+                      <i *ngIf="sendingType === 'CREDENTIALS' && sendingUserId === data.pk_userId" class="fas fa-spinner fa-spin"></i>
+                    </button>
+                    <button class="btn btn-sm text-warning" (click)="sendEmails('REMINDER', data)" title="Send Reminder" [disabled]="sendingType === 'REMINDER' && (sendingUserId === 'ALL' || sendingUserId === data.pk_userId)">
+                      <i *ngIf="!(sendingType === 'REMINDER' && sendingUserId === data.pk_userId)" class="fa fa-bell"></i>
+                      <i *ngIf="sendingType === 'REMINDER' && sendingUserId === data.pk_userId" class="fas fa-spinner fa-spin"></i>
+                    </button>
+                  </ng-container>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

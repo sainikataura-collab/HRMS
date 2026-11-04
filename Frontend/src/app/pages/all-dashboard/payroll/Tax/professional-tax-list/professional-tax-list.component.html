@@ -1,0 +1,95 @@
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-between">
+            <h4>List of Professional Tax Slab</h4>
+
+          </div>
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-center">
+            <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText" (ngModelChange)="onSearch()" />
+          </div>
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-md-end">
+            <button class="btn btnheader" routerLink="/dash/user/userdashboard/professionalTax">
+              Add
+            </button>
+            <button class="btn btn-light mx-1" (click)="exportToExcel()">
+              Download
+            </button>
+          </div>
+
+
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="row g-4">
+          <div class="col-md-4"><label>State</label>
+            <ng-select id="state" [items]="states" bindLabel="name" bindValue="value" placeholder="--Select State--"
+              [(ngModel)]="fk_stateid" (change)="onStateChange(fk_stateid)" class="w-100">
+            </ng-select>
+
+
+          </div>
+        </div>
+
+      </div>
+      <div class="card-body">
+        <div class="table-responsive table-invoice">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Sr.No</th>
+                <th>State</th>
+                <th>Gender</th>
+                <th>Sequence</th>
+                <th>Lower Limit</th>
+                <th>Upper Limit</th>
+                <th>Tax Percentage</th>
+                <th>Action</th>
+
+              </tr>
+            </thead>
+            <tbody *ngIf="(filteredData() | paginate: { itemsPerPage: pageSize, currentPage: pageIndex ,totalItems: totalItems }).length > 0; else noData">
+              <tr
+                *ngFor="let item of filteredData() 
+                          | paginate : { itemsPerPage: pageSize, currentPage: pageIndex ,totalItems: totalItems };let i = index">
+                <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+                <td>{{ item.state}}</td>
+                <td>{{item.gender}}</td>
+                <td>{{ item.sno}}</td>
+                <td>{{ item.lowerlimit}}</td>
+                <td>{{ item.upperlimit}}</td>
+
+                <td>{{ item.tax_percent}}</td>
+                <td>
+                  <button class="btn btn-sm btn-outline"><i class="fa-regular fa-pen-to-square"
+                      (click)="isUpdate(encryptionService.encryptText(item.pk_slabid.toString()))"></i></button>
+
+                  <button class="btn btn-sm btn-outline"><i class="fa fa-trash"
+                      (click)="deleteProfessional(item.pk_slabid)"></i></button>
+                </td>
+              </tr>
+            </tbody>
+
+            <!-- Message shown when no data is available -->
+            <ng-template #noData>
+              <tbody>
+                <tr>
+                  <td colspan="7" class="text-center">No data available</td>
+                </tr>
+              </tbody>
+            </ng-template>
+
+          </table>
+          <pagination-controls (pageChange)="onPageChange($event)" [responsive]="true">
+          </pagination-controls>
+
+
+        </div>
+      </div>
+
+
+    </div>
+  </div>
+</div>

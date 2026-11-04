@@ -1,0 +1,60 @@
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="row w-100">
+                  <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-between">
+                    <h4>List of Issued Budget</h4>
+                   
+                  </div>
+                  <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+                    <button class="btn btnheader" routerLink="/dash/hr/hrdashboard/CRD_BudgetIssue_Mst">
+                        Add
+                      </button>
+                  </div>
+              
+                  
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive table-invoice">
+                    <table class="table table-bordered">
+                        <thead>
+                          <tr>
+                            <th>Sr.</th>
+                            <th>Financial Year</th>
+                            <th>Card Type</th>
+                            <th>Quarter Dec</th>
+                            <th>Projected Amount</th>
+                            <th>Issued Amount</th>
+                            <th>Action</th>
+                            
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr *ngFor="let budgetissuemaster of BudgetissuemasterList; let i = index">
+                            <td>{{ i + 1 }}</td>
+                            <td> {{budgetissuemaster.FinancialYear}}</td>
+                            <td>{{budgetissuemaster.CardType}}</td>
+                            <td> {{budgetissuemaster.QuarterDec}}</td>
+                            <td>{{budgetissuemaster.ProjectedAmount}}</td>
+                            <td> {{budgetissuemaster.IssuedAmount}}</td>
+                     
+                            <td>
+                                <button class="btn btn-sm btn-outline" (click)="edit(budgetissuemaster.id)" ><i class="fa-regular fa-pen-to-square" style="color:#3080e8; font-size: 14px;"></i></button>
+                              
+                               <button class="btn btn-sm btn-outline" (click)="delete(budgetissuemaster.id)"><i class="fa fa-trash" style="color:#3080e8; font-size: 14px;"></i></button>
+                              </td>
+                          </tr> 
+                        </tbody>
+                      </table>
+            
+                    
+                  </div>
+            </div>
+
+          
+        </div>
+    </div>
+</div>

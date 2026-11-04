@@ -1,0 +1,87 @@
+<div class="row">
+  <div class="col-12">
+    <div class="card w-100 shadow-sm border-0">
+
+      <div class="card-header py-2 bg-primary">
+        <div class="row w-100 align-items-center">
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-between">
+            <h4 class="mb-0 text-white">
+              Amazon DSP RateCard
+            </h4>
+          </div>
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-center">
+            <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchTerm" (ngModelChange)="onSearch()" (keyup.enter)="onSearch()" />
+          </div>
+
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-md-end gap-2">
+            <button type="button" class="btn bg-white text-primary shadow-sm" routerLink="/dash/vendor_management/vendor_managementdashboard/amazon_dsp_block_ratecard" title="Upload Excel">
+              <i class="fa fa-upload me-1"></i>Upload
+            </button>
+
+            <button type="button" class="btn bg-white text-primary shadow-sm" (click)="exportToExcel()" title="Export to Excel">
+              <i class="fa fa-download me-1"></i>Download
+            </button>
+            <button class="btn btnheader mx-1" routerLink="/dash/vendor_management/vendor_managementdashboard/amazon_dsp_rate_card_form">
+              Add New
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <div class="table-responsive table-invoice">
+          <table id="exportTable" class="table table-hover align-middle">
+            <thead class="table-light">
+              <tr>
+                <th style="width: 60px;">Sr.</th>
+                <th>Location</th>
+                <th>Block</th>
+                <th>Vehicle Type</th>
+                <th>Rate(₹)</th>
+                <th>Effective From</th>
+                <th>Upload / Entry Date</th>
+                <th style="width: 100px;" class="text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let data of rateCardList | paginate : { itemsPerPage: pageSize, currentPage: pageIndex, totalItems: totalItems }; let i = index">
+                <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+                <td>{{ data.locationName || data.locationID || '-' }}</td>
+                <td>{{ data.blockName || data.block || '-' }}</td>
+                <td>{{ data.vehicleTypeName || data.vehicleType || '-' }}</td>
+                <td>
+                  <span class="">{{ data.rate || '0' }}</span>
+                </td>
+                <td>{{ data.effectiveFrom | date: 'dd-MM-yyyy' }}</td>
+                <td>{{ (data.uploadTime || data.dated) | date: 'dd-MM-yyyy HH:mm' }}</td>
+                <td class="text-center">
+                  <button class="btn btn-sm" (click)="editRateCard(data.pk_BlockRateCardID)" title="Edit">
+                    <i class="fa-regular fa-pen-to-square"></i>
+                  </button>
+                </td>
+              </tr>
+              <tr *ngIf="!isLoading && rateCardList.length === 0">
+                <td colspan="8" class="text-center py-4 text-muted">
+                  <i class="fa fa-folder-open d-block mb-2 fs-3 text-secondary"></i>
+                  No Amazon DSP RateCard records found.
+                </td>
+              </tr>
+              <tr *ngIf="isLoading">
+                <td colspan="8" class="text-center py-4 text-muted">
+                  <div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div>
+                  Loading rate cards...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="d-flex mt-3" *ngIf="rateCardList.length > 0">
+            <pagination-controls (pageChange)="onPageChange($event)">
+            </pagination-controls>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

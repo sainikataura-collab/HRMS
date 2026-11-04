@@ -1,0 +1,91 @@
+
+<div class="row">
+    <div class="col-12">
+      <div class="card">
+        <!--  -->
+
+
+
+      <div class="card-header py-2">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-between">
+            <h4>Project Master Details</h4>
+           
+          </div>
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-center">
+            <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText" />
+          </div>
+          
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-md-end">
+            <button class="btn btnheader" routerLink="/dash/recruitment/recruitmentdashboard/ProjectMaster">
+                Add
+              </button>
+              <button class="btn btnheader mx-1" (click)="exportToExcel()">
+                Download
+              </button>
+          </div>
+          
+        </div>
+    </div>
+        
+        <!--  -->
+        <div class="card-body">
+          <div class="table-responsive table-invoice">
+            <table Id="exportTable"  class="table">
+              <thead>
+                
+                    <tr>
+                        <th>Sr.No.</th>
+                        <th>Project Code</th>
+                        <th>Project Name</th>
+                        <th>Active</th>
+                        <th>Action</th>
+                     </tr>
+              </thead>
+             
+                <tbody>
+                    <tr *ngFor="let item of filteredData() 
+                    | paginate : { itemsPerPage: pageSize, currentPage: pageIndex ,totalItems: totalItems };let i = index">
+                        <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+                        <td>{{ item.projectcode}}</td>
+                        <td>{{ item.projectname}}</td>
+                       <td>{{ item.active ? 'Yes' : 'No' }}</td>
+                        
+
+                        <td>
+                          <button class="btn btn-sm btn-outline px-1 mx-1"  ><i class="fa-regular fa-pen-to-square fw-semibold" (click)="isUpdate(encryptionService.encryptText(item.pk_ProjectId.toString()))"></i></button> 
+                          <button class="btn btn-sm btn-outline px-1 mx-1"><i class="fa fa-trash text-dark"(click)="deleteFunctional(item.pk_ProjectId)"></i></button>
+                         
+                        </td>
+
+                      </tr>
+                </tbody>
+                   
+            
+            </table>
+  
+            <!-- Pagination controls -->
+            <pagination-controls
+              (pageChange)="onPageChange($event)"
+              totalItems="totalItems"
+              itemsPerPage="pageSize">
+            </pagination-controls>
+
+            <ng-template #noData>
+              <tr>
+                <td colspan="4" class="text-center">No data available</td>
+              </tr>
+            </ng-template>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- message modal -->
+
+  
+
+
+

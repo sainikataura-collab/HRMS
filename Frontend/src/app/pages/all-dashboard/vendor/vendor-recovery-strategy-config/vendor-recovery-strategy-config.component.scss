@@ -1,0 +1,368 @@
+/* ── Font Size & Typography Helpers ────────────────────────── */
+.font-10 { font-size: 10px !important; }
+.font-11 { font-size: 11px !important; }
+.font-12 { font-size: 12px !important; }
+.font-13 { font-size: 13px !important; }
+.font-14 { font-size: 14px !important; }
+.font-16 { font-size: 16px !important; }
+
+.section-header-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1e293b;
+  letter-spacing: -0.01em;
+}
+
+.scope-note {
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* ── Top Header Action Buttons (Matching Image 2) ──────────── */
+.action-btn-header {
+  font-size: 13px;
+  border-radius: 6px;
+  background-color: #ffffff;
+  border-color: #e2e8f0;
+  transition: all 0.18s ease-in-out;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+
+  &:hover {
+    background-color: #f8fafc;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+  }
+}
+
+.action-btn-history {
+  font-size: 13px;
+  border-radius: 6px;
+  background-color: #ffffff;
+  border-color: #d1d5db;
+  color: #374151;
+
+  &:hover {
+    background-color: #f9fafb;
+    color: #111827;
+    border-color: #9ca3af;
+  }
+}
+
+.action-btn-back {
+  font-size: 13px;
+  border-radius: 6px;
+  background-color: #ffffff;
+  border-color: #2563eb;
+  color: #2563eb;
+
+  &:hover {
+    background-color: #eff6ff;
+    color: #1d4ed8;
+    border-color: #1d4ed8;
+  }
+}
+
+/* ── Distinct Warning & Success Switch Buttons (Zero Shadow, Clean Segmented Control) ── */
+.scope-mode-toggle {
+  background-color: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 3px;
+  display: inline-flex;
+  gap: 3px;
+  box-shadow: none !important;
+}
+
+.scope-btn {
+  border: 1px solid transparent;
+  background-color: transparent;
+  color: #475569;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 12px;
+  height: 28px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  line-height: 1;
+  transition: all 0.15s ease-in-out;
+  cursor: pointer;
+  box-shadow: none !important;
+
+  &:hover:not(.active-global):not(.active-specific) {
+    background-color: #e2e8f0;
+    color: #1e293b;
+  }
+
+  &.active-global {
+    background-color: #f59e0b !important;
+    border-color: #d97706 !important;
+    color: #ffffff !important;
+    font-weight: 700;
+    box-shadow: none !important;
+
+    i {
+      color: #ffffff !important;
+    }
+  }
+
+  &.active-specific {
+    background-color: #10b981 !important;
+    border-color: #059669 !important;
+    color: #ffffff !important;
+    font-weight: 700;
+    box-shadow: none !important;
+
+    i {
+      color: #ffffff !important;
+    }
+  }
+}
+
+.scope-info-box {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-left: 3px solid #f59e0b;
+  height: 36px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-shadow: none !important;
+}
+
+/* ── Summary KPI Chips (Exact Vendor Transaction Sync Style) ── */
+.summary-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  border: 1px solid transparent;
+  line-height: 1.2;
+}
+
+.chip-total   { background: #e8f0fe; color: #1a56db; border-color: #c3d7fa; }
+.chip-synced  { background: #dcfce7; color: #16a34a; border-color: #bbf7d0; }
+.chip-pending { background: #fef9c3; color: #b45309; border-color: #fde68a; }
+.chip-payable { background: #f3e8ff; color: #7e22ce; border-color: #e9d5ff; }
+.chip-deficit { background: #fee2e2; color: #b91c1c; border-color: #fca5a5; }
+
+/* Deficit Carryforward Badge */
+.deficit-carryforward-badge {
+  display: inline-flex;
+  align-items: center;
+  background-color: #fff7ed;
+  color: #c2410c;
+  border: 1px solid #fdba74;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+/* ── Strategy Selection Cards (Zero Shadow, High-Contrast Highlight) ── */
+.strategy-card {
+  cursor: pointer;
+  transition: all 0.18s ease-in-out;
+  border-radius: 10px;
+  background-color: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  box-shadow: none !important;
+
+  &:hover:not(.active-fifo):not(.active-priority):not(.active-proportional) {
+    transform: translateY(-2px);
+    box-shadow: none !important;
+    border-color: #94a3b8;
+    background-color: #f8fafc;
+  }
+
+  .strategy-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: none !important;
+  }
+
+  .strategy-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1e293b;
+    letter-spacing: -0.01em;
+  }
+
+  .strategy-desc {
+    font-size: 13px;
+    line-height: 1.5;
+    color: #4b5563;
+    font-weight: 450;
+  }
+
+  .custom-radio-indicator {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid #94a3b8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #ffffff;
+    transition: all 0.15s ease;
+    box-shadow: none !important;
+
+    .radio-check {
+      font-size: 11px;
+      color: #ffffff;
+      font-weight: 900;
+    }
+  }
+
+  /* Active FIFO: Bold Blue Border & Soft Blue Tint (No Shadow) */
+  &.active-fifo {
+    background-color: #eff6ff !important;
+    border: 2.5px solid #2563eb !important;
+    box-shadow: none !important;
+
+    .strategy-title {
+      color: #1d4ed8 !important;
+    }
+
+    .custom-radio-indicator {
+      border-color: #2563eb !important;
+      background-color: #2563eb !important;
+    }
+  }
+
+  /* Active Priority: Bold Amber Border & Soft Amber Tint (No Shadow) */
+  &.active-priority {
+    background-color: #fffbeb !important;
+    border: 2.5px solid #d97706 !important;
+    box-shadow: none !important;
+
+    .strategy-title {
+      color: #b45309 !important;
+    }
+
+    .custom-radio-indicator {
+      border-color: #d97706 !important;
+      background-color: #d97706 !important;
+    }
+  }
+
+  /* Active Proportional: Bold Cyan/Sky Border & Soft Sky Tint (No Shadow) */
+  &.active-proportional {
+    background-color: #e0f2fe !important;
+    border: 2.5px solid #0284c7 !important;
+    box-shadow: none !important;
+
+    .strategy-title {
+      color: #0369a1 !important;
+    }
+
+    .custom-radio-indicator {
+      border-color: #0284c7 !important;
+      background-color: #0284c7 !important;
+    }
+  }
+}
+
+/* ── Priority Ranking List ─────────────────────────────────── */
+.priority-list {
+  li {
+    transition: background 0.15s ease;
+
+    &:hover {
+      background-color: #f8faff;
+    }
+  }
+}
+
+/* ── Sync Table (Exact Vendor Transaction Sync Table Style) ─── */
+.sync-table {
+  font-size: 13px;
+  
+  th {
+    vertical-align: middle;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    padding: 8px 12px;
+  }
+
+  .deduction-col-header {
+    background-color: #fef2f2 !important;
+    color: #991b1b !important;
+    border-bottom: 2px solid #dc3545 !important;
+    font-weight: 600 !important;
+  }
+
+  .positive-col-header {
+    background-color: #f0fdf4 !important;
+    color: #166534 !important;
+    border-bottom: 2px solid #16a34a !important;
+    font-weight: 600 !important;
+  }
+
+  td {
+    vertical-align: middle;
+    padding: 8px 12px;
+  }
+}
+
+.pending-row {
+  background-color: #ffffff;
+  
+  &:hover {
+    background-color: #f8faff !important;
+  }
+}
+
+/* ── Audit Drawer Slide-over ───────────────────────────────── */
+.modal-backdrop-custom {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(2px);
+  z-index: 1050;
+  animation: fadeIn 0.15s ease;
+}
+
+.audit-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  max-width: 880px;
+  background: #ffffff;
+  z-index: 1060;
+  display: flex;
+  flex-direction: column;
+  animation: slideLeft 0.25s ease-out;
+
+  .audit-body {
+    flex: 1;
+    overflow-y: auto;
+  }
+}
+
+@keyframes slideLeft {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

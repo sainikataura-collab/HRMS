@@ -1,0 +1,61 @@
+
+<div class="row">
+  <div class="col-12">
+      <div class="card">
+           <div class="card-header bg-primary">
+            <div class="row w-100">
+              <!-- Title Section -->
+              <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-between">
+                <h4 class="text-white">List of Roles</h4>
+              </div>
+           
+              <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-center">
+                <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText"/>
+              </div>
+              <!-- Back Button -->
+              <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 py-1 py-lg-0 d-flex align-items-center justify-content-end">
+                <button class="btn btnheader mx-1" routerLink="/dash/user/userdashboard/roleMaster"> Add </button>
+                <button class="btn btnheader mx-1" (click)="exportToExcel()"> Download </button>
+                
+          
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+              <div class="table-responsive table-invoice">
+                  <table class="table table-bordered">
+                      <thead>
+                        <tr>
+                          <th>Sr.</th>
+                          <th>Description</th>
+                          <th>Alias</th>
+                          <th>Role Level</th>
+                          <th>Action</th>
+                          
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor=" let item of filteredData() | paginate : { itemsPerPage: pageSize, currentPage: pageIndex ,totalItems: totalItems };let i = index">
+                         <td>{{(pageIndex-1)* pageSize+i+1}}</td>
+                         <td>{{item.rolename}}</td>
+                         <td>{{item.mappedalias}}</td>
+                         <td>{{item.rolelevel}}</td>
+                          <td>
+                         <button class="btn btn-sm btn-outline" > <i class="fa-regular fa-pen-to-square" (click)="edit(encryption.encryptText(item.pk_roleId.toString()))"></i></button>
+                         <button class="btn btn-sm btn-outline" ><i class="fa fa-trash" (click)="delete(item.pk_roleId)"></i> </button>
+                          </td> 
+   
+                        </tr>   
+                     </tbody>
+                   </table>
+         
+                   <pagination-controls
+                   (pageChange)="onPageChange($event)">
+                 </pagination-controls>
+          
+                  
+                </div>
+          </div>
+      </div>
+  </div>
+</div>

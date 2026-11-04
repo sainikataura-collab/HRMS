@@ -1,0 +1,373 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.workflow-sidebar-card {
+  position: sticky;
+  top: 10px;
+  width: 100%;
+  height: calc(100vh - 140px) !important;
+  min-height: 0 !important;
+  max-height: calc(100vh - 140px) !important;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  margin-bottom: 0;
+
+  .card-header {
+    flex-shrink: 0;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+  }
+
+  .header-icon-wrap {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+    background: #eef2ff;
+    color: #3b82f6;
+    font-size: 10px;
+  }
+
+  .header-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: #1e293b;
+    letter-spacing: 0.2px;
+  }
+
+  .step-pill {
+    font-size: 8.5px;
+    font-weight: 600;
+    padding: 1px 6px;
+    border-radius: 10px;
+    background: #f1f5f9;
+    color: #475569;
+    border: 1px solid #e2e8f0;
+  }
+
+  .btn-close-subtle {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    font-size: 9px;
+    line-height: 1;
+    padding: 2px 4px;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s ease-in-out;
+
+    &:hover {
+      background: #fee2e2;
+      color: #ef4444;
+    }
+  }
+}
+
+.workflow-sidebar-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  font-size: 10px;
+
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 4px;
+  }
+
+  &.has-split-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    .fact-box-section-50 {
+      flex: 1 1 50%;
+      min-height: 0;
+      max-height: 50%;
+      overflow-y: auto;
+      scrollbar-width: thin;
+
+      &::-webkit-scrollbar {
+        width: 3px;
+      }
+      &::-webkit-scrollbar-thumb {
+        background-color: #ced4da;
+        border-radius: 3px;
+      }
+    }
+
+    .navigation-section-50 {
+      flex: 1 1 50%;
+      min-height: 0;
+      max-height: 50%;
+      overflow-y: auto;
+      scrollbar-width: thin;
+
+      &::-webkit-scrollbar {
+        width: 3px;
+      }
+      &::-webkit-scrollbar-thumb {
+        background-color: #ced4da;
+        border-radius: 3px;
+      }
+    }
+  }
+
+  .section-label-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: #475569;
+
+    &.text-secondary {
+      color: #64748b !important;
+    }
+
+    &.text-success {
+      color: #15803d !important;
+    }
+
+    &.text-primary {
+      color: #1d4ed8 !important;
+    }
+
+    i {
+      font-size: 12.5px !important;
+    }
+  }
+
+  @keyframes slideRightArrow {
+    0%, 100% {
+      transform: translateX(0);
+    }
+    50% {
+      transform: translateX(4px);
+    }
+  }
+
+  @keyframes slideLeftArrow {
+    0%, 100% {
+      transform: translateX(0);
+    }
+    50% {
+      transform: translateX(-4px);
+    }
+  }
+
+  .animated-arrow {
+    display: inline-block;
+    animation: slideRightArrow 1.2s ease-in-out infinite;
+    will-change: transform;
+  }
+
+  .animated-arrow-subtle {
+    display: inline-block;
+    animation: slideRightArrow 1.6s ease-in-out infinite;
+    will-change: transform;
+  }
+
+  .animated-arrow-left {
+    display: inline-block;
+    animation: slideLeftArrow 1.2s ease-in-out infinite;
+    will-change: transform;
+  }
+
+  /* ── Fact Box Quick Actions Container (Borderless & Auto-width flex wrap) ── */
+  .factbox-quick-actions {
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: auto !important;
+      max-width: 100%;
+      gap: 5px;
+      padding: 3.5px 11px;
+      border-radius: 9999px !important;
+      font-size: 10.5px !important;
+      font-weight: 600 !important;
+      line-height: 1.2;
+      transition: all 0.18s ease-in-out;
+      cursor: pointer;
+      min-height: 26px;
+      border: none !important;
+      box-shadow: none !important;
+      white-space: nowrap;
+
+      .btn-text {
+        font-size: 10.5px !important;
+        font-weight: 600 !important;
+        line-height: 1.2;
+        letter-spacing: 0.05px;
+        white-space: nowrap;
+      }
+
+      i {
+        font-size: 11px !important;
+        flex-shrink: 0;
+      }
+
+      &:hover {
+        transform: translateY(-1.5px);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08) !important;
+      }
+
+      &:active {
+        transform: translateY(0);
+      }
+
+      /* Primary Next Step Highlight (Clear visual indication that this is the main next step) */
+      &.action-btn-primary-next {
+        box-shadow: 0 0 0 1.5px rgba(22, 163, 74, 0.5), 0 2px 5px rgba(22, 163, 74, 0.12) !important;
+        font-weight: 700 !important;
+
+        .btn-text {
+          font-weight: 700 !important;
+        }
+
+        &:hover {
+          box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.7), 0 3px 8px rgba(22, 163, 74, 0.22) !important;
+        }
+      }
+
+      /* 1. Green Subtle (Export / Monthly Attendance / Auto Salary / Salary Report) */
+      &.action-btn-green {
+        background-color: #dcfce7 !important;
+        color: #166534 !important;
+        border: none !important;
+
+        i {
+          color: #15803d !important;
+        }
+
+        &:hover {
+          background-color: #bbf7d0 !important;
+          color: #14532d !important;
+        }
+      }
+
+      /* 2. Blue Subtle (Dashboard / Attendance Adjustment / Day-wise / Return) */
+      &.action-btn-blue {
+        background-color: #dbeafe !important;
+        color: #1e40af !important;
+        border: none !important;
+
+        i {
+          color: #1d4ed8 !important;
+        }
+
+        &:hover {
+          background-color: #bfdbfe !important;
+          color: #1e3a8a !important;
+        }
+      }
+
+      /* 3. Amber / Yellow Subtle (Tracking / Create Order / Arrear Process / Attendance Report) */
+      &.action-btn-amber {
+        background-color: #fef3c7 !important;
+        color: #92400e !important;
+        border: none !important;
+
+        i {
+          color: #b45309 !important;
+        }
+
+        &:hover {
+          background-color: #fde68a !important;
+          color: #78350f !important;
+        }
+      }
+
+      /* 4. Cyan Subtle (Wallet / Manual Income Tax) */
+      &.action-btn-cyan {
+        background-color: #cffafe !important;
+        color: #0e7490 !important;
+        border: none !important;
+
+        i {
+          color: #0891b2 !important;
+        }
+
+        &:hover {
+          background-color: #a5f3fc !important;
+          color: #155e75 !important;
+        }
+      }
+
+      /* 5. Purple Subtle (Leave Report / Salary Lock) */
+      &.action-btn-purple {
+        background-color: #f3e8ff !important;
+        color: #6b21a8 !important;
+        border: none !important;
+
+        i {
+          color: #7e22ce !important;
+        }
+
+        &:hover {
+          background-color: #e9d5ff !important;
+          color: #581c87 !important;
+        }
+      }
+    }
+  }
+}
+
+/* Floating Fact / Workflow Action Button */
+.btn-float-fact {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  z-index: 1050;
+  transition: transform 0.2s ease-in-out;
+  padding: 0;
+
+  &:hover {
+    transform: scale(1.1);
+  }
+
+  i {
+    font-size: 18px;
+    color: #ffffff;
+  }
+}
+
+@media (max-width: 768px) {
+  .workflow-sidebar-card {
+    position: static !important;
+    height: auto !important;
+    min-height: auto !important;
+    max-height: none !important;
+  }
+}

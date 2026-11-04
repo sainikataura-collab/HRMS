@@ -1,0 +1,138 @@
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+
+
+            <div class="card-header bg-primary">
+                <div class="row w-100">
+                    <div
+                        class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 pe-0 d-flex align-items-center justify-content-between">
+                        <h4 class="mb-0">Short Leave Request List</h4>
+
+                        <div class="dropdown d-flex align-items-center justify-content-end d-md-none px-0">
+                            <button class="btn bg-transparent text-white px-0 mt-1" type="button"
+                                id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fa-solid fa-bars fs-6"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+
+                                <li><a class="dropdown-item" routerLink="/dash/leaves/leavesdashboard/shortLeaveList">
+                                        Go-To List</a></li>
+                                <!-- <li><a class="dropdown-item">Download PDF</a></li> -->
+                            </ul>
+                        </div>
+                    </div>
+
+
+
+
+
+                    <div class="col-12 col-md-6  d-flex justify-content-md-end align-items-center mt-md-0">
+                        <div class="d-none d-md-flex">
+                            <button class="btn btnheader mx-2"
+                                routerLink="/dash/leaves/leavesdashboard/shortLeaveList">Go-To List</button>
+                            <!-- <button class="btn btnheader"><i class="fa-solid fa-file-arrow-down"></i>&nbsp;PDF</button> -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+<!-- 
+            <div class="card-body" *ngIf="shortLeaveData">
+
+
+                <div class="row">
+                    <div class="col-12">
+                        <p> <span class="fw-semibold">Leave Date : </span> <span> {{ shortLeaveData.leaveDate }}</span></p>
+                    </div>
+                </div>
+
+                <div class="row row-cols-1 row-cols-md-6 g-3">
+                    <div class="col">
+                        <div class="card rounded shadow-none border">
+                            <p class="text-center pt-2"><span class="fw-semibold">In Time:</span> <span> {{ shortLeaveData.inTime }}</span>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card rounded shadow-none border">
+                            <p class="text-center pt-2"><span class="fw-semibold">Out Time:</span> <span> {{ shortLeaveData.outTime
+                                    }}</span></p>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card rounded shadow-none border">
+                            <p class="text-center pt-2"><span class="fw-semibold">Total Hours:</span> <span> {{ shortLeaveData.totalHours
+                                    }}</span></p>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card rounded shadow-none border">
+                            <p class="text-center pt-2"><span class="fw-semibold">Time From:</span> <span> {{ shortLeaveData.fromHours }}:{{
+                                    shortLeaveData.fromMinute }}</span></p>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card rounded shadow-none border">
+                            <p class="text-center pt-2"><span class="fw-semibold">Time To:</span> <span>{{ shortLeaveData.toHours }}:{{
+                                    shortLeaveData.toMinute }}</span></p>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card rounded shadow-none border">
+                            <p class="text-center pt-2"><span class="fw-semibold">Remarks:</span> <span>{{ shortLeaveData.remarks }}</span>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card rounded shadow-none border">
+                            <p class="text-center pt-2"><span class="fw-semibold">Short Leave Date:</span> <span>{{
+                                    shortLeaveData.shortLeaveDate }}</span></p>
+                        </div>
+                    </div>
+
+                </div>
+
+
+            </div> -->
+<div class="card-body" *ngIf="shortLeaveData">
+  <p class="mb-4 text-center fw-bold text-dark  py-2 rounded">
+    <i class="fas fa-clipboard-list me-2"></i>Short Leave Application Overview
+  </p>
+
+  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-3">
+    <div class="col" *ngFor="let item of [
+      { label: 'Leave Date', icon: 'far fa-calendar-alt', value: shortLeaveData.leaveDate, bg: 'primary' },
+      { label: 'In Time', icon: 'fas fa-sign-in-alt', value: shortLeaveData.inTime, bg: 'info' },
+      { label: 'Out Time', icon: 'fas fa-sign-out-alt', value: shortLeaveData.outTime, bg: 'warning text-dark' },
+      { label: 'Total Hours', icon: 'fas fa-hourglass-half', value: shortLeaveData.totalHours + ' hrs', bg: 'success' },
+      { label: 'Time From', icon: 'fas fa-arrow-alt-circle-right', value: shortLeaveData.fromHours + ':' + shortLeaveData.fromMinute, bg: 'danger' },
+      { label: 'Time To', icon: 'fas fa-arrow-alt-circle-left', value: shortLeaveData.toHours + ':' + shortLeaveData.toMinute, bg: 'secondary' },
+      { label: 'Short Leave Date', icon: 'far fa-calendar-check', value: shortLeaveData.shortLeaveDate, bg: 'dark' }
+    ]">
+      <div class="card rounded h-100 shadow-sm text-center text-white card-hover-effect" [ngClass]="'bg-' + item.bg">
+        <div class="card-body py-2 px-2">
+          <p class="mb-1 small"><i class="{{ item.icon }} me-1"></i> {{ item.label }}</p>
+          <p class="mb-0 fw-semibold small">{{ item.value }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card rounded mt-4 shadow-sm  border-top border-2 border-primary" style="border-top: 2px solid #3080e8;">
+    <div class="card-header border-bottom py-2 text-dark">
+      <p class="mb-0 fw-semibold small text-primary"><i class="fas fa-comment-dots me-2"></i>Remarks</p>
+    </div>
+    <div class="card-body py-3">
+      <p class="card-text small mb-0">{{ shortLeaveData.remarks || 'No remarks provided for this short leave application.' }}</p>
+    </div>
+  </div>
+</div>
+
+
+
+        </div>
+    </div>
+</div>

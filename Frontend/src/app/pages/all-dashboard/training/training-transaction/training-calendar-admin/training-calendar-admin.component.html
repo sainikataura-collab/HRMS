@@ -1,0 +1,82 @@
+
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card">
+
+<!-- Header -->
+      <div class="card-header bg-blue">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-6 col-lg-6">
+            <h4 class="">{{ isEdit ? 'Update Training Calendar ' : ' Training Calendar form' }}</h4>
+          </div>
+          <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+            <button class="btn btnheader"
+              routerLink="/dash/training/trainingdashboard/TrainingPlanning_List">Back</button>
+          </div>
+        </div>
+      </div>
+  <!-- Body -->
+   <div class="card-body mt-c4">
+  <form [formGroup]="trainingCalendarForm" class="row row-cols-1 row-cols-md-3 g-4">
+    
+       <div class="col">
+          <label>Program</label>
+          <input type="text" class="form-control" formControlName="programName" readonly />
+        </div>
+
+        <!-- SubProgram (auto-patch from TNI) -->
+        <div class="col">
+          <label>SubProgram</label>
+          <input type="text" class="form-control" formControlName="subProgramName" readonly />
+        </div>
+
+      <div class="col">
+        <label>Trainer</label>
+        <input type="text" class="form-control" formControlName="trainer" />
+      </div>
+
+      <!-- Mode Dropdown -->
+          <div class="col">
+            <label>Mode<span style="color:red">*</span></label>
+            <ng-select [items]="modeList" bindLabel="name" bindValue="value" placeholder="--Select Mode--"
+              formControlName="mode" class="w-100 small">
+            </ng-select>
+           
+          </div>
+
+      <div class="col">
+        <label>Date & Time</label>
+        <input type="datetime-local" class="form-control" formControlName="trainingDateTime" />
+      </div>
+  
+
+   
+      <div class="col">
+        <label>Location</label>
+        <input type="text" class="form-control" formControlName="location" />
+      </div>
+
+  
+       <!-- Status Dropdown -->
+          <div class="col">
+            <label>Status<span style="color:red">*</span></label>
+            <ng-select [items]="statusddl" bindLabel="name" bindValue="value" placeholder="--Select-"
+              formControlName="status" class="w-100 small">
+            </ng-select>
+           
+          </div>
+  </form>
+ <!-- Buttons -->
+        <div class="row">
+          <div class="col d-flex align-items-end justify-content-end pt-4 pb-3">
+            <button type="button" class="btn btn-primary mx-1" (click)="onSubmit()">
+              {{ isEdit ? 'Update' : 'Save' }}
+            </button>
+            <button type="button" class="btn btn-outline-dark mx-1" >Reset</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

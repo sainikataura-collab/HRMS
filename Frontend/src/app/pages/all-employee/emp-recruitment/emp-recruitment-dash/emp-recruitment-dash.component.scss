@@ -1,0 +1,25 @@
+/* Ensures table cells wrap properly */
+.table td, .table th {
+  white-space: nowrap;
+  text-align: center !important;
+  vertical-align: middle;
+}
+
+
+/* Reduce padding/margin for small screens */
+@media (max-width: 768px) {
+  .table td, .table th {
+    font-size: 12px;
+    padding: 6px 8px;
+  }
+
+
+}
+
+
+.small{
+    font-size: 12px;
+    font-weight: 600;
+}
+
+

@@ -1,0 +1,112 @@
+<div>
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <!-- 🔹 Header -->
+        <div class="card-header bg-primary">
+          <div class="row w-100">
+            <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-between">
+              <h4>Employee View Form</h4>
+            </div>
+            <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+              <button class="btn btnheader"
+                routerLink="/dash/emp-training/emp-trainingdashboard/TNI_List_For_Employee">
+                Back
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 🔹 Body -->
+        <div class="card-body mt-4" *ngIf="trainingDetail">
+          <form>
+            <div class="row mb-3">
+              <div class="col-12">
+                <span class="fs-5">{{ trainingDetail.empName }}</span>
+              </div>
+            </div>
+            <hr />
+            <div class="row row-cols-1 row-cols-lg-3 g-4">
+              <div class="col">
+                <div class="h-100">
+                  <div class="card-header bg-light">
+                    <p class="card-title mb-0 ">Program Details 📚</p>
+                  </div>
+                  <div class="card-body">
+                    <p><strong>Program:</strong> {{ trainingDetail.programName }}</p>
+                    <p><strong>SubProgram:</strong> {{ trainingDetail.subProgramName }}</p>
+                    <p><strong>Trainer:</strong> {{ trainingDetail.trainer }}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col">
+                <div class="h-100">
+                  <div class="card-header bg-light">
+                    <p class="card-title mb-0">Schedule & Location 🗓️</p>
+                  </div>
+                  <div class="card-body">
+                    <p><strong>Date & Time:</strong></p>
+                    <p>
+                      {{ trainingDetail.trainingDateTime | date:'medium' }}
+                    </p>
+                    <p><strong>Mode:</strong> {{ trainingDetail.mode }}</p>
+                    <p><strong>Location:</strong> {{ trainingDetail.location }}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col">
+                <div class="h-100">
+                  <div class="card-header bg-light">
+                    <p class="card-title mb-0">Status Updates 🔍</p>
+                  </div>
+                  <div class="card-body">
+                    <p>
+                      <strong>Final Status:</strong>
+                      <span class="badge" [ngClass]="{
+                          'bg-success':  trainingDetail.planningStatus === 'PL' || trainingDetail.planningStatus === 'Pending',
+                          'bg-info': trainingDetail.planningStatus === 'S',
+                          'bg-warning text-dark': trainingDetail.planningStatus === 'H',
+                          'bg-secondary text-dark': trainingDetail.planningStatus === 'C',
+                          'bg-secondary text-primary': trainingDetail.planningStatus === 'Completed',
+                          'bg-danger': trainingDetail.planningStatus === 'R',
+                          'bg-primary text-white': trainingDetail.planningStatus === 'A'
+                        }">
+                      {{
+                         trainingDetail.planningStatus === 'PL' ? 'Planned' :
+                        trainingDetail.planningStatus === 'Pending' ? 'Pending' :
+                        trainingDetail.planningStatus === 'S' ? 'Scheduled' :
+                        trainingDetail.planningStatus === 'Completed' ? 'Completed' :
+                        trainingDetail.planningStatus === 'R' ? 'Rejected' :
+                        trainingDetail.planningStatus === 'H' ? 'OnHold' :
+                        trainingDetail.planningStatus === 'C' ? 'Cancelled' :
+                        trainingDetail.planningStatus === 'A' ? 'Approved' :
+                        'Pending'
+                        }}
+                      </span>
+
+                    </p>
+                    <!-- <p><strong>Final Status:</strong> <span class="badge bg-secondary">{{ trainingDetail.finalStatus || 'Pending' }}</span></p> -->
+                    <p><strong>Admin Comment:</strong> {{ trainingDetail.adminComment || '-' }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="modal-footer mt-3">
+              <button class="btn btn-outline-dark mx-1" type="button" routerLink="/dash/emp-training/emp-trainingdashboard/TNI_List_For_Employee">
+                Close
+              </button>
+            </div>
+          </form>
+        </div>
+
+      
+         <tr *ngIf="trainingDetail.length === 0">
+                <td colspan="6" class="text-center text-muted">No data found</td>
+              </tr>
+      </div>
+    </div>
+  </div>
+</div>

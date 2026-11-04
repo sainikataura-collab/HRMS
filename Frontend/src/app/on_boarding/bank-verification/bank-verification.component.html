@@ -1,0 +1,327 @@
+<section>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+          <div class="card-header bg-blue">
+            <div class="row w-100">
+              <div class="col-sm-12 col-md-6 col-lg-6">
+                <h4>Bank Verification</h4>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-body mt-2">
+            <!-- ====================== VIEW MODE ====================== -->
+            <div *ngIf="isViewMode && bankData">
+              <div class="row">
+                <div class="col-md-3">
+                  <label>Bank Name:</label>
+                  <p>
+                    <strong>{{ bankData.bankName }}</strong>
+                  </p>
+                </div>
+
+                <div class="col-md-3">
+                  <label>Account No:</label>
+                  <p>
+                    <strong>{{ bankData.accountNo }}</strong>
+                  </p>
+                </div>
+
+                <div class="col-md-3">
+                  <label>IFSC Code:</label>
+                  <p>
+                    <strong>{{ bankData.ifscCode }}</strong>
+                  </p>
+                </div>
+
+                <div class="col-md-3">
+                  <label>Branch Name:</label>
+                  <p>
+                    <strong>{{ bankData.branchName }}</strong>
+                  </p>
+                </div>
+
+                <div class="col-md-4" *ngIf="bankData.passbookPhoto">
+                  <label class="fw-semibold">Passbook Photo</label><br />
+                  <img
+                    [src]="bankData.passbookPhoto"
+                    alt="Passbook"
+                    class="img-thumbnail my-2"
+                    style="
+                      width: 280px;
+                      height: 170px;
+                      object-fit: contain;
+                      cursor: pointer;
+                    "
+                  />
+                </div>
+                <div class="col-12 mt-3">
+                  <button type="button" class="btn btn-warning" (click)="editBank()">
+                    <i class="fas fa-edit me-1"></i> Edit Bank Details
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- ====================== FORM MODE ====================== -->
+            <form
+              *ngIf="!isViewMode"
+              [formGroup]="bankForm"
+              (ngSubmit)="OnSubmit()"
+            >
+              <div class="row">
+             
+
+              <!-- Account No -->
+<div class="col-sm-12 col-md-3 col-lg-3">
+  <label>Account No <span class="text-danger">*</span></label>
+  <div class="input-group">
+    <span class="input-group-text">
+      <i class="fas fa-credit-card"></i>
+    </span>
+
+    <input
+      type="tel"
+      inputmode="numeric"
+      class="form-control"
+      formControlName="AccountNo"
+      maxlength="18"
+      (keypress)="numberOnly($event)"
+    />
+
+     <button
+      *ngIf="isBankAccountVerificationRequired"
+      type="button"
+      class="btn btn-primary"
+      (click)="OTPBank()"
+      [disabled]="!bankForm.get('AccountNo')?.value || Isverifybank"
+    >
+      Verify
+    </button>
+  </div>
+
+  <div
+    *ngIf="(submitted || validate['AccountNo'].touched) && validate['AccountNo'].errors"
+    class="col-12"
+  >
+    <div *ngIf="validate['AccountNo'].errors['required']" class="text-danger">
+      Account No is required.
+    </div>
+
+    <div *ngIf="validate['AccountNo'].errors['pattern']" class="text-danger">
+      Account No must be 9–18 digits.
+    </div>
+  </div>
+</div>
+
+
+                   <!-- Bank Name -->
+                <div class="col-sm-12 col-md-6 col-lg-3">
+                  <label>Bank Name <span class="text-danger">*</span></label>
+                  <ng-select
+                    [items]="banks"
+                    bindLabel="name"
+                    bindValue="value"
+                    formControlName="Vendor_FKBankId"
+                    placeholder="Select Bank"
+                    class="w-100"
+                    (change)="onBankChange($event)"
+                    [readonly]="isBankAccountVerificationRequired"
+                  >
+                  </ng-select>
+                  <div
+                    *ngIf="(submitted || validate['Vendor_FKBankId'].touched) && validate['Vendor_FKBankId'].errors"
+                    class="col-12"
+                  >
+                    <div
+                      *ngIf="validate['Vendor_FKBankId'].errors['required']"
+                      class="text-danger"
+                    >
+                      Bank Name is required.
+                    </div>
+                  </div>
+                </div>
+                <!-- IFSC -->
+                <div class="col-sm-12 col-md-6 col-lg-3">
+                  <label>IFSC Code <span class="text-danger">*</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text"
+                      ><i class="fas fa-code"></i
+                    ></span>
+                    <input
+                      type="text"
+                      class="form-control"
+                      formControlName="IFSCCode"
+                      [readonly]="isBankAccountVerificationRequired"
+                      style="text-transform: uppercase"
+                    />
+                  </div>
+                  <div
+                    *ngIf="(submitted || validate['IFSCCode'].touched) && validate['IFSCCode'].errors"
+                    class="col-12"
+                  >
+                    <div
+                      *ngIf="validate['IFSCCode'].errors['required']"
+                      class="text-danger"
+                    >
+                      IFSC Code is required.
+                    </div>
+                    
+                  </div>
+                </div>
+
+                <!-- Branch -->
+                <div class="col-sm-12 col-md-6 col-lg-3">
+                  <label>Branch Name <span class="text-danger">*</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text"
+                      ><i class="fas fa-map-marker-alt"></i
+                    ></span>
+                    <input
+                      type="text"
+                      class="form-control"
+                      formControlName="BranchName"
+                      [readonly]="isBankAccountVerificationRequired"
+                    />
+                  </div>
+                  <div
+                    *ngIf="(submitted || validate['BranchName'].touched) && validate['BranchName'].errors"
+                    class="col-12"
+                  >
+                    <div
+                      *ngIf="validate['BranchName'].errors['required']"
+                      class="text-danger"
+                    >
+                      Branch Name is required.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ================= PASSBOOK UPLOAD ================= -->
+              <div class="row mt-3">
+                <div class="col-sm-12 col-md-6 col-lg-4">
+                  <label>Upload Passbook Photo</label>
+                  <div class="input-group">
+                    <span class="input-group-text"
+                      ><i class="fas fa-image fa-lg"></i
+                    ></span>
+                    <input
+                      type="file"
+                      #passbookFileInput
+                      (change)="onFileSelected($event, 'PassbookImageFile')"
+                      class="d-none"
+                      accept="image/jpeg,image/jpg,image/png"
+                    />
+                    <input
+                      type="text"
+                      class="form-control"
+                      placeholder="Upload Image"
+                      [value]="fileName['PassbookImageFile'] || ''"
+                      readonly
+                    />
+                    <button
+                      class="browse btn btn-primary px-4"
+                      type="button"
+                      (click)="passbookFileInput.click()"
+                    >
+                      <i class="fas fa-image"></i>
+                    </button>
+                  </div>
+                  <div
+                    *ngIf="submitted && validate['PassbookImageFile'].errors"
+                  >
+                    <div
+                      *ngIf="validate['PassbookImageFile'].errors['required']"
+                      class="text-danger"
+                    >
+                      Passbook Image is required.
+                    </div>
+                  </div>
+
+                  <div
+                    *ngIf="previewPassbookImage || originalPassbookUrl"
+                    class="col-sm-12 col-md-12 col-lg-8"
+                  >
+                    <label class="d-block mb-2">{{
+                      previewPassbookImage
+                        ? "New Image Preview:"
+                        : "Current Image:"
+                    }}</label>
+                    <img
+                      [src]="previewPassbookImage || originalPassbookUrl"
+                      alt="Passbook Preview"
+                      class="img-thumbnail w-100"
+            style="max-height: 150px; object-fit: contain;"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Save Button -->
+              <div class="row mt-3" *ngIf="!isAgent">
+                <div class="col-sm-12 d-flex justify-content-end">
+                  <button type="submit" class="btn btn-primary px-4">
+                    Save
+                  </button>
+                </div>
+              </div>
+            </form>
+
+            <!-- OTP Modal -->
+            <div
+              class="modal fade"
+              id="otpModal"
+              #otpModal
+              tabindex="-1"
+              aria-hidden="true"
+            >
+              <div class="modal-dialog modal-dialog-centered modal-sm">
+                <div class="modal-content">
+                  <div class="modal-body py-2">
+                    <div class="modal-header p-0">
+                      <p class="modal-title m-0">Verify OTP</p>
+                      <button
+                        type="button"
+                        class="btn-close"
+                        (click)="close_OTP_Modal()"
+                      ></button>
+                    </div>
+                    <p class="fw-semibold lh-base pt-1">
+                      Enter OTP sent to your registered mobile number.
+                    </p>
+                    <div
+                      id="otp"
+                      class="inputs d-flex flex-row justify-content-center mt-2"
+                    >
+                      <input
+                        *ngFor="let d of otp; let i = index"
+                        class="mx-1 my-2 text-center form-control rounded"
+                        type="text"
+                        maxlength="1"
+                        [(ngModel)]="otp[i]"
+                        (keyup)="onKeyUp($event, i)"
+                        style="width: 40px"
+                      />
+                    </div>
+                    <div class="mt-4 d-flex justify-content-center">
+                      <button
+                        class="btn btn-primary"
+                        (click)="SubmitOtpBank()"
+                        [disabled]="!isOtpComplete()"
+                      >
+                        Validate
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,69 @@
+
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+      <div class="card">
+   
+    <!--  -->
+    <div class="card-header bg-blue ">
+      <div class="row w-100 ">
+    <div class="col-sm-12 col-md-6 col-lg-6  "> 
+        <h4 class="">Bank Master</h4></div>
+    <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+      <button class="btn btnheader" routerLink="">GoTo List
+        </button>
+    </div>
+
+</div>
+
+</div>
+     
+    <!--  -->
+
+    <div class="card-body mt-4">
+        <form [formGroup]="QuarterForm">
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+
+                <div class="col">
+                    <label>Financial Year</label>
+                    <div class="form-group">
+                      <ng-select id="Financialyear" [items]="financialyear" bindLabel="name" bindValue="value" formControlName="FinancialYear" placeholder="Select Year" class="w-100"></ng-select>
+                      <span *ngIf="showError && QuarterForm.controls['Financialyear'].invalid" class="text-danger mt-1" style="font-size: 12px;">Please select a Financial Year.</span>
+                    </div> 
+                  </div>
+                
+                  <div class="col">
+                    <label>Quarter</label>
+                    <div class="form-group">
+                      <ng-select id="Quarter" [items]="quarter" bindLabel="name" bindValue="value" formControlName="Quarter" placeholder="Select Quarter" class="w-100"></ng-select>
+                      <span *ngIf="showError && QuarterForm.controls['Quarter'].invalid" class="text-danger mt-1" style="font-size: 12px;">Please select a Quarter.</span>
+                    </div>    
+                  </div>
+                
+                  <div class="col">
+                    <label>End Date</label>
+                    <input type="date" class="form-control" formControlName="endDate">
+                    <span *ngIf="showError && QuarterForm.controls['endDate'].invalid" class="text-danger mt-1" style="font-size: 12px;">Please select an End Date.</span>
+                  </div>
+            </div>
+            
+          
+            
+                    <!-- Footer buttons -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-dark mx-1">Reset</button>
+                <button type="submit" class="btn btn-primary mx-1" (click)="onSubmit()">Save</button>
+            </div>
+          </form>
+          
+     
+    </div>
+
+
+
+
+      
+</div>
+</div>
+</div> 
+
+

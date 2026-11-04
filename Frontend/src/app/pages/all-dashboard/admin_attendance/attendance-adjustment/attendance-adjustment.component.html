@@ -1,0 +1,176 @@
+<div class="row g-2">
+
+  <!-- 70%: Main Content (unchanged) -->
+  <div [ngClass]="workflowNav.isSidebarOpen ? 'col-sm-12 col-lg-9' : 'col-12'">
+    <div class="card">
+      <!--  -->
+      <div class="card-header bg-primary py-2 px-3 mt-0">
+        <div class="d-flex align-items-center justify-content-between flex-nowrap gap-3 w-100">
+          <div class="d-flex align-items-center flex-shrink-0" style="flex: 1 1 0; min-width: 0;">
+            <h4 class="mb-0 text-white text-nowrap fw-semibold">Attendance Adjustment</h4>
+          </div>
+          <div class="d-flex justify-content-center mx-auto" style="width: 100%; max-width: 450px;">
+            <app-common-search class="w-100" (filtersChanged)="handleFilters($event)"></app-common-search>
+          </div>
+          <div class="d-flex align-items-center justify-content-end flex-shrink-0" style="flex: 1 1 0; min-width: 0;">
+          </div>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <form [formGroup]="EmployeeForm">
+          <div class="row row-cols-1 row-cols-md-4">
+            <div class="col">
+              <label>Month<span style="color: red;">*</span></label>
+              <div class="form-group">
+                <ng-select id="year" [items]="Month" bindLabel="name" bindValue="value" formControlName="fk_monthId"
+                  placeholder="--Select --" class="w-100"></ng-select>
+                <span *ngIf="showError &&EmployeeForm.controls['fk_monthId'].invalid" class="text-danger mt-1"
+                  style="font-size: 12px;">
+                  Please enter Month.
+                </span>
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Year<span style="color: red;">*</span></label>
+              <div class="form-group">
+                <ng-select id="Year" [items]="Year" bindLabel="name" bindValue="value" formControlName="fk_yearId"
+                  placeholder="--Select --" class="w-100"></ng-select>
+                <span *ngIf="showError &&EmployeeForm.controls['fk_yearId'].invalid" class="text-danger mt-1"
+                  style="font-size: 12px;">
+                  Please enter Year.
+                </span>
+              </div>
+            </div>
+
+            <div class="col" *ngIf="isContractApplicable">
+              <label>Contractor Name</label>
+              <div class="form-group">
+                <ng-select [items]="Contractor" bindLabel="name" bindValue="value" [multiple]="true"
+                  [closeOnSelect]="false" formControlName="fk_costcentreid" placeholder="--Select --" class="w-100"
+                  (clear)="clearContractors()" (change)="onContractorChange()">
+                  <ng-template ng-multi-label-tmp>
+                    <span>{{ getContractorDisplayText() || '--Select --' }}</span>
+                  </ng-template>
+                  <ng-template ng-option-tmp let-item="item" let-index="index">
+                    <div *ngIf="item.value === '__select_all__'">
+                      <input type="checkbox"
+                        [checked]="isAllContractorsSelected()" class="form-check-input fs-6 mx-1" style="pointer-events: none;" />
+                      <strong>Select All</strong>
+                    </div>
+                    <div *ngIf="item.value !== '__select_all__'">
+                      <input type="checkbox" [checked]="selectedContractors.includes(item.value)"
+                        class="form-check-input fs-6 mx-1" style="pointer-events: none;" />
+                      {{ item.name }}
+                    </div>
+                  </ng-template>
+                </ng-select>
+              </div>
+            </div>
+
+            <div class="col d-flex align-items-centern justify-content-end align-items-center">
+              <button type="submit" class="btn btn-primary mx-1" (click)="toggleEmployeeList()"
+                (click)="OnVeiw()">View</button>
+              <button type="reset" class="btn btn-outline-dark mx-1">Reset</button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- List of Employee -->
+      <div *ngIf="showEmployeeList">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mt-4 mb-2">
+            <p class="text-primary m-0"><b>List of Employee</b></p>
+          </div>
+          <form [formGroup]="EmployeeForm" class="table-responsive">
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>Sr&nbsp;no</th>
+                  <th>Code</th>
+                  <th>Name</th>
+                  <th>Total&nbsp;Days</th>
+                  <th>Paid&nbsp;Days</th>
+                  <th>LWP</th>
+                  <th>Incentive&nbsp;Days</th>
+                  <th>OT&nbsp;Hrs</th>
+                </tr>
+              </thead>
+              <tbody formArrayName="employees">
+                <tr
+                  *ngFor="let empCtrl of employees.controls | paginate : { itemsPerPage: pageSize1, currentPage: pageIndex1 ,totalItems: totalCount2 }; let i = index"
+                  [formGroupName]="i">
+                  <td>{{ (pageIndex1-1) * pageSize1 + i + 1 }}</td>
+                  <td>{{ list[i].empcode }}</td>
+                  <td>{{ list[i].empname }}</td>
+                  <td><input type="number" formControlName="totdays" class="form-control" readonly="true" /></td>
+                  <td>
+                    <input type="number" formControlName="paiddays" class="form-control" step="0.50"
+                      (blur)="onPaidDaysBlur(empCtrl, i)" (change)="onPaidDaysBlur(empCtrl, i)" />
+                  </td>
+                  <td><input type="number" formControlName="lwp" class="form-control" readonly="true" /></td>
+                  <td><input type="number" formControlName="incentiveDays" class="form-control" /></td>
+                  <td><input type="number" formControlName="otHrs" class="form-control" /></td>
+                </tr>
+              </tbody>
+            </table>
+            <pagination-controls (pageChange)="onPageChange1($event)">
+            </pagination-controls>
+          </form>
+        </div>
+
+        <div class="card-body">
+          <div class="table-responsive table-invoice">
+            <div class="d-flex justify-content-between align-items-center mt-4 mb-2">
+              <p class="text-primary m-0"><b>List of Employee (Attendance Locked) </b></p>
+              <input type="text" class="form-control w-auto" placeholder="Search employee..." placeholder="Search..."
+                [(ngModel)]="searchText" />
+            </div>
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>Sr.</th>
+                  <th>Code</th>
+                  <th>Name</th>
+                  <th>Location</th>
+                  <th>Department</th>
+                  <th>Designation</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  *ngFor="let emp of filteredData() | paginate : { id :'locked',itemsPerPage: pageSize, currentPage: pageIndex ,totalItems: totalCount1 }; let i = index">
+                  <td>{{ (pageIndex-1) * pageSize + i + 1 }}</td>
+                  <td>{{ emp.empcode }}</td>
+                  <td>{{ emp.empname }}</td>
+                  <td>{{ emp.location }}</td>
+                  <td>{{ emp.department }}</td>
+                  <td>{{ emp.designation }}</td>
+                </tr>
+              </tbody>
+            </table>
+            <pagination-controls (pageChange)="onPageChange($event)" id="locked">
+            </pagination-controls>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-primary mx-1" (click)="onSave()">Save</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 30%: Shared Workflow Navigation Sidebar -->
+  <div class="col-sm-12 col-lg-3" *ngIf="workflowNav.isSidebarOpen">
+    <app-workflow-sidebar currentStep="attendance-adjustment" [getContextFn]="getPayrollContext"></app-workflow-sidebar>
+  </div>
+
+</div>
+
+<!-- Floating Open Button (Bottom-right, when closed) -->
+<button class="btn btn-primary btn-float-fact" type="button" *ngIf="!workflowNav.isSidebarOpen" (click)="workflowNav.toggleSidebar(true)" title="Open Process Actions">
+  <i class="fa fa-sitemap"></i>
+</button>

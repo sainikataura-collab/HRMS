@@ -1,0 +1,84 @@
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card">
+      <!--  -->
+  
+
+      <div class="card-header bg-blue py-lg-1 mt-0">
+        <div class="col-sm-12 col-md-12 col-lg-3 col-12">
+      
+            <div class="row w-100">
+                <div class="col-sm-12 col-md-12 col-lg-12 ">
+                  <h4> {{Isedit? 'Update Appreciator Master' : 'Appreciator Master'}}</h4>
+                </div>
+            </div>
+        </div>
+      
+        <div class="col-sm-12 col-md-12 col-lg-7 col-12">
+            <div class="row w-100">
+                <div class="col-sm-12 col-md-12 col-lg-12">
+                    <app-common-search (filtersChanged)="handleFilters($event)"></app-common-search>
+                </div>
+               
+            </div>
+        </div>
+
+
+        <div class="col-sm-12 col-md-12 col-lg-2 col-12">
+            <div class="col-sm-12 col-md-12 col-lg-12  d-flex align-items-center justify-content-md-end">
+              <button class="btn btnheader" routerLink="/dash/hr/hrdashboard/Appreciator_Master_list">
+                   Back
+                </button>
+            </div>
+            </div>
+      
+      </div>
+
+      <div class="card-body mt-4">
+        <form [formGroup]="Appreciatorform">
+          <div class="row">
+            <div class="col-md-4">
+              <label>Employee Code<span style="color: red;">*</span></label>
+
+              <div class="form-group">
+                <ng-select id="year" [items]="EmployeeList" bindLabel="name" bindValue="value" formControlName="fk_empid"
+                  placeholder="--Select --" class="w-100"></ng-select>
+                <div *ngIf="submitted   && Appreciatorform.get('fk_empid')?.invalid" class="text-danger mt-1" style="font-size: 12px;">
+                  Please choose Employee code
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Authorize to ABCD Card</label>&nbsp;&nbsp;
+                <input type="checkbox" class="form-check-input fs-6 mx-1" formControlName="isABCD">
+
+              </div>
+
+              <div class="form-group">
+                <label>Authorize to Shabash Card</label>&nbsp;&nbsp;
+                <input type="checkbox" class="form-check-input fs-6 mx-1" formControlName="isShabash">
+
+              </div>
+              <div class="form-group">
+                <label>Authorize to Welldone Card</label>&nbsp;&nbsp;
+                <input type="checkbox" class="form-check-input fs-6 mx-1" formControlName="isWelldone">
+
+              </div>
+            </div>
+
+
+          </div>
+
+
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary mx-1" (click)="submitForm()">{{Isedit? 'Update' : 'Save'}}</button>
+            <button type="reset" class="btn btn-outline-dark mx-1">Reset</button>
+            
+          </div>
+        </form>
+      </div>
+
+
+    </div>
+  </div>
+
+</div>

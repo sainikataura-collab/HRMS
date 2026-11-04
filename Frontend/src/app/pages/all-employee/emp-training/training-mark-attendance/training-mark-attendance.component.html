@@ -1,0 +1,118 @@
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <!--  filter  -->
+            <div class="card-header">
+                <div class="row w-100">
+
+                    <div
+                        class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-between">
+                        <h4 class="mb-0">Mark Attendance</h4>
+
+                        <div class="dropdown d-flex align-items-center justify-content-center d-md-none">
+                            <button class="btn bg-transparent text-white px-0 mt-1" type="button"
+                                id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fa-solid fa-bars fs-6"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+
+                                <li><a class="dropdown-item" (click)="exportToExcel()">Download</a></li>
+
+                            </ul>
+                        </div>
+                    </div>
+
+
+                    <div
+                        class="col-12 col-md-3 all-pickup-point-search-header d-flex align-items-center justify-content-md-end">
+                        <input type="text" class="form-control" placeholder="Search..." />
+                    </div>
+
+
+
+                    <div class="col-12 col-md-3 d-flex justify-content-end align-items-center mt-md-0">
+                        <div class="d-none d-md-flex">
+                            <button class="btn btnheader mx-2" (click)="exportToExcel()">Download</button>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <!-- 🔹 Table -->
+            <div class="card-body">
+                <form>
+                    <div class="table-responsive table-invoice">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>S. No.</th>
+                                    <th>Program</th>
+                                    <th>SubProgram</th>
+                                    <th>Start Date</th>
+                                    <th>End Date</th>
+                                    <th>Location</th>
+                                    <th>Status</th>
+                                    <!-- <th>Attendance</th> -->
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr
+                                    *ngFor="let item of filteredData() | paginate:{itemsPerPage: pageSize, currentPage: pageIndex, totalItems: totalItems}; let i = index">
+                                    <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+                                    <td>{{ item.programName }}</td>
+                                    <td>{{ item.subprogramName }}</td>
+                                    <td>{{ item.trainingStartDate | date:'dd-MM-yyyy HH:mm' }}</td>
+                                    <td>{{ item.trainingEndDate | date:'dd-MM-yyyy HH:mm' }}</td>
+                                    <td>{{ item.location }}</td>
+                                    <td>
+                                        <span [ngClass]="{
+                                            'status-ongoing': item.trainingStatus === 'Ongoing',
+                                            'status-upcoming': item.trainingStatus === 'Upcoming',
+                                            'status-completed': item.trainingStatus === 'Completed'
+                                            }">{{ item.trainingStatus }}
+                                        </span>
+                                    </td>
+
+                                    <td class="d-flex align-items-center justify-content-center">
+
+                                        <button *ngIf="item.trainingStatus !== 'Completed'" type="button"
+                                            class="btn btn-sm btn-success me-1" style="width:100px;"
+                                            (click)="markAttendance(item.pk_planningId)">
+                                            Mark Attend..
+                                        </button>
+                                        
+                                        <!-- <button type="button" class="btn btn-sm btn-success me-1"
+                                            (click)="markAttendance(item.pk_planningId)">
+                                            <i class="fa fa-check"></i>
+                                        </button> -->
+
+                                        <button
+                                            *ngIf="item.trainingStatus === 'Ongoing' || item.trainingStatus === 'Completed'"
+                                            type="button" class="btn btn-sm btn-info ms-1"
+                                            (click)="viewAttendance(item)"> <i class="fa fa-eye"></i>
+                                        </button>
+
+                                    </td>
+
+                                </tr>
+                                <tr *ngIf="trainingList.length === 0">
+                                    <td colspan="12" class="text-center text-muted">No data found</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <pagination-controls (pageChange)="onPageChange($event)"
+                            [responsive]="true"></pagination-controls>
+
+
+                        <!-- 🔹 Pagination -->
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

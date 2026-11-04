@@ -1,0 +1,119 @@
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card">
+
+      <!-- Header -->
+      <div class="card-header bg-blue">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-6 col-lg-6 col-9">
+            <h4>Approve Short Leave
+    </h4>
+          </div>
+          <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 col-3 d-flex align-items-center justify-content-md-end">
+            <button class="btn btnheader" routerLink="/dash/leaves/leavesdashboard/ApprovalShortLeaveList">Back</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Body -->
+      <div class="card-body mt-4">
+        <form [formGroup]="ShortLeaveForm" >
+
+          <div class="row row-cols-1 row-cols-md-3">
+          <!-- Short Leave Date -->
+          <div class="col">
+            <label>Short Leave Date <span style="color: red;">*</span></label>
+            <div class="form-group">
+              <input type="date" class="form-control" formControlName="shortLeavedate" readonly />
+              <span *ngIf="showError && ShortLeaveForm.controls['shortLeavedate'].invalid" class="text-danger mt-1 lh-base" style="font-size: 12px;">
+                Please select Short Leave Date
+              </span>
+            </div>
+          </div>
+
+          <!-- In Time -->
+          <div class="col">
+            <label>In Time <span style="color: red;">*</span></label>
+            <div class="form-group">
+              <input type="time" class="form-control" formControlName="intime" readonly />
+              <span *ngIf="showError && ShortLeaveForm.controls['intime'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                Please enter In Time
+              </span>
+            </div>
+          </div>
+
+          <!-- Out Time -->
+          <div class="col">
+            <label>Out Time <span style="color: red;">*</span></label>
+            <div class="form-group">
+              <input type="time" class="form-control" formControlName="outtime" readonly />
+              <span *ngIf="showError && ShortLeaveForm.controls['outtime'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                Please enter Out Time
+              </span>
+            </div>
+          </div>
+
+          <!-- Total Hours -->
+          <div class="col">
+            <label>Total Hours</label>
+            <div class="form-group">
+              <input type="text" class="form-control" formControlName="totalhours" readonly />
+            </div>
+          </div>
+
+          <!-- Total Days -->
+          <!-- <div class="col">
+            <label>Total Days</label>
+            <div class="form-group">
+              <input type="text" class="form-control" formControlName="totdays" readonly />
+            </div>
+          </div> -->
+   
+          <!-- Remarks -->
+          <div class="col">
+            <label>Remarks</label>
+            <div class="form-group">
+              <textarea class="form-control" formControlName="Remarks" rows="1" readonly></textarea>
+            </div>
+          </div>
+
+          </div>
+
+   <div class="page-seperator bg-primary mx-2 rounded-1">
+            <p class="text-white ms-4 p-1">Approve Short Leave</p>
+          </div>
+      <div class="row row-cols-1 row-cols-md-3 mx-2">
+         <div class="col">
+         <label>Approval Status</label>
+      <div class="form-group">
+    <ng-select [items]="StatusList" bindLabel="name" bindValue="value" formControlName="ApprovalStatus"
+                  placeholder="--Select --" class="w-100">
+                </ng-select>
+<span *ngIf="showError && ShortLeaveForm.controls['ApprovalStatus'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                Please select Approval Status
+        </span>
+            </div>
+          </div>
+
+            <div class="col">
+            <label>Approval Remarks</label>
+            <div class="form-group">
+              <textarea class="form-control" formControlName="ApprovalRemarks" rows="1"></textarea>
+            </div>
+          </div>
+
+      </div>
+
+          
+    
+
+        </form>
+           <div class="col-12 d-flex align-items-end justify-content-end mt-4">
+            <button type="button" class="btn btn-primary mx-1" (click)="onSubmit()">Submit</button>
+            <button type="reset" class="btn btn-outline-dark mx-1">Reset</button>
+          </div>
+      </div>
+
+    </div>
+  </div>
+</div>

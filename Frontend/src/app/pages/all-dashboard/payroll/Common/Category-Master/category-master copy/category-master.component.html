@@ -1,0 +1,54 @@
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+      <div class="card">
+   
+    <!--  -->
+    <div class="card-header bg-blue ">
+      <div class="row w-100 ">
+    <div class="col-sm-12 col-md-6 col-lg-6  "> <h4 class="">{{pk_Catid? 'Update Category Master' : 'Add Category Master' }}</h4></div>
+    <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+      <button class="btn btnheader" routerLink="/dash/user/userdashboard/categoryMaster_list">Back
+        </button>
+    </div>
+
+</div>
+
+</div>
+     
+    <!--  -->
+
+    <div class="card-body mt-4">
+      <form [formGroup]="categoryFrom"class="row row-cols-1 row-cols-md-3 g-4">
+
+            <div class="col"><label>Category Name<span style="color: red;">*</span></label>
+                <div class="form-group">
+                    <input  type="text" class="form-control flex-grow-1" formControlName="category" maxlength="50" minlength="2"(blur)="checkDuplicate(categoryFrom.get('category')?.value)">
+                    <span *ngIf="showError && categoryFrom.controls['category'].invalid && !categoryFrom.get('category')?.errors?.['duplicate']" class="text-danger mt-1" style="font-size: 12px;">
+                      Please enter Category Name.
+                    </span>
+                    
+                  <div *ngIf="categoryFrom.get('category')?.errors?.['duplicate']" 
+                  class="text-danger" style="font-size:10px;">
+                  {{ categoryFrom.get('category')?.errors?.['duplicate'] }}
+              </div>
+                </div>                
+            </div>
+         
+
+      </form>
+      <div class="row">
+        <div class="col d-flex align-items-end justify-content-end pt-4 pb-3">
+          <button type="button" class="btn btn-primary  mx-1"(click)="onSubmit()">{{pk_Catid ? 'Update' : 'Save' }}</button>                   
+
+            <button type="button" class="btn btn-outline-dark mx-1"(click)="resetForm()">Reset</button>
+        </div>
+    </div>
+    </div>
+
+
+
+
+      
+</div>
+</div>
+</div> 

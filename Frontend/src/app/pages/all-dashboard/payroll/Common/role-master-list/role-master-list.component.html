@@ -1,0 +1,78 @@
+
+<div class="row">
+    <div class="col-12">
+       <div class="card">
+            <div class="card-header">  
+             <div class="row w-100">
+               <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-between">
+                 <h4>List of Roles</h4>
+                
+               </div>
+               
+               <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-center">
+                 <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText" />
+               </div>
+               <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-md-end">
+                 <button class="btn btnheader"  routerLink="/dash/user/userdashboard/RoleMaster">
+                      Add
+                   </button>
+                   <button class="btn btn-light mx-1" (click)="exportToExcel()">
+                     Download
+                   </button>
+               </div>
+               
+             </div>
+         </div> 
+           <div class="card-body">
+               <div class="table-responsive table-invoice">
+                   <table class="table table-bordered">
+                       <thead>
+                         <tr>
+                           <th>S. No.</th>
+                           <th>Role</th>
+                           <th>Description</th>
+                           <th>Active</th>
+                           <th>Action</th>
+                        
+                         </tr>
+                       </thead>
+                       <tbody>
+                         <tr *ngFor=" let item of filteredData() 
+                         | paginate : { itemsPerPage: pageSize, currentPage: pageIndex ,totalItems: totalItems };let i = index">
+                     
+                              <td>{{(pageIndex-1)* pageSize+i+1}}</td>
+                           <td>{{item.roleName}}</td>
+                           <td>{{item.description}}</td>
+                           <td>{{item.isActive}}</td>
+                           <td>
+                             <button class="btn btn-sm btn-outline" (click)="isUpdate(item.roleId)">
+                               <i class="fa-regular fa-pen-to-square"></i>
+                             </button>
+                             <button class="btn btn-sm btn-outline" (click)="delete(item.roleId)">
+                               <i class="fa fa-trash"></i>
+                             </button>
+                             
+                           </td>
+                         </tr> 
+                       </tbody>
+                     </table>
+                  <!--for pagination-->
+                  <pagination-controls
+                  (pageChange)="onPageChange($event)"
+                  [responsive]="true">
+                </pagination-controls>
+              
+                      <ng-template #noData>
+                        <tr>
+                          <td colspan="4" class="text-center">No data available</td>
+                        </tr>
+                      </ng-template>
+                 </div>
+           </div>
+ 
+         
+       </div>
+   </div>
+   </div>
+ 
+ 

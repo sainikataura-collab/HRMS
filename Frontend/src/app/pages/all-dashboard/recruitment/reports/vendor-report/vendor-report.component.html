@@ -1,0 +1,208 @@
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card">
+      
+      <!-- Card Header -->
+      <div class="card-header bg-primary py-lg-1 mt-0">
+        <div class="row w-100 align-items-center">
+          <!-- Title Section -->
+          <div class="col-12 col-md-6">
+            <h4 class="text-white mb-0">Vendor Report</h4>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card Body Filter Form -->
+      <div class="card-body mt-4">
+        <form [formGroup]="filterForm" (ngSubmit)="applyFilters()">
+          <div class="row row-cols-1 row-cols-md-4 g-3">
+            
+            <div class="col">
+              <label>Month</label>
+              <div class="form-group">
+                <ng-select [items]="monthList" 
+                           bindLabel="label" 
+                           bindValue="value" 
+                           formControlName="month" 
+                           placeholder="--Select Month --" 
+                           class="w-100">
+                </ng-select>
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Year</label>
+              <div class="form-group">
+                <ng-select [items]="yearList" 
+                           bindLabel="label" 
+                           bindValue="value" 
+                           formControlName="year" 
+                           placeholder="--Select Year --" 
+                           class="w-100">
+                </ng-select>
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Vendor</label>
+              <div class="form-group">
+                <ng-select [items]="vendorList" 
+                           bindLabel="label" 
+                           bindValue="value" 
+                           formControlName="vendorCode" 
+                           placeholder="--Select Vendor --" 
+                           class="w-100">
+                </ng-select>
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Location</label>
+              <div class="form-group">
+                <ng-select [items]="locationList" 
+                           bindLabel="label" 
+                           bindValue="value" 
+                           formControlName="location" 
+                           placeholder="--Select Location --" 
+                           class="w-100">
+                </ng-select>
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Status</label>
+              <div class="form-group">
+                <ng-select [items]="statusList" 
+                           bindLabel="label" 
+                           bindValue="value" 
+                           formControlName="status" 
+                           placeholder="--Select Status --" 
+                           class="w-100">
+                </ng-select>
+              </div>
+            </div>
+
+            <div class="col">
+              <label>From Date</label>
+              <div class="form-group">
+                <input type="date" class="form-control" formControlName="fromDate" />
+              </div>
+            </div>
+
+            <div class="col">
+              <label>To Date</label>
+              <div class="form-group">
+                <input type="date" class="form-control" formControlName="toDate" />
+              </div>
+            </div>
+
+          </div>
+
+          <div class="row row-cols-1 row-cols-md-12 mt-3">
+            <div class="col d-flex align-items-center justify-content-end">
+              <button type="submit" class="btn btn-primary mx-1">View</button>
+              <button type="button" class="btn btn-outline-dark mx-1" (click)="resetFilters()">Reset</button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- List of Vendors Section -->
+      <div>
+        <div class="row p-2 align-items-center">
+          <div class="col-12 col-lg-5">
+            <p class="text-dark m-0 ps-3 text-primary fw-bold">List of Vendor</p>
+          </div>
+
+          <div class="col-12 col-lg-7 d-lg-flex align-items-center justify-content-end">
+            <button class="btn btn-primary mx-1" (click)="exportToExcel()" [disabled]="isExporting || filteredDataList.length === 0">
+              <i *ngIf="!isExporting" class="fa fa-download me-2"></i>
+              <i *ngIf="isExporting" class="fa fa-spinner fa-spin me-2"></i>
+              {{ isExporting ? 'Wait...' : 'Export Excel' }}
+            </button>
+
+            <input type="text" class="form-control" placeholder="Search..." 
+                   [(ngModel)]="searchText" (ngModelChange)="applyFilters()" style="width: 25%;" />
+          </div>
+        </div>
+
+        <div class="table-responsive table-invoice">
+          <table class="table table-bordered" id="exportTable">
+            <thead>
+              <tr>
+                <th>Sr.</th>
+                <th>Month</th>
+                <th>Vendor Code</th>
+                <th>Vendor Name</th>
+                <th>Contact Person</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Location</th>
+                <th>Assigned Jobs</th>
+                <th>Profiles Submitted</th>
+                <th>Shortlisted</th>
+                <th>Interviewed</th>
+                <th>Selected</th>
+                <th>Joined</th>
+                <th>Conv. %</th>
+                <th>Avg TAT (Days)</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of filteredDataList | paginate: { itemsPerPage: pageSize, currentPage: pageIndex, totalItems: totalItems }; let i = index">
+                <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+                <td>{{ item.monthYear }}</td>
+                <td>{{ item.vendorCode }}</td>
+                <td>{{ item.vendorName }}</td>
+                <td>{{ item.contactPerson }}</td>
+                <td>{{ item.email }}</td>
+                <td>{{ item.phone }}</td>
+                <td>{{ item.location }}</td>
+                <td>{{ item.activeJobsAssigned }}</td>
+                <td>{{ item.totalSubmitted }}</td>
+                <td>{{ item.shortlisted }}</td>
+                <td>{{ item.interviewed }}</td>
+                <td>{{ item.selected }}</td>
+                <td>{{ item.joined }}</td>
+                <td>{{ item.conversionRate }}%</td>
+                <td>{{ item.avgTatDays }}</td>
+                <td>
+                  <span class="badge" [ngClass]="{'bg-success': item.status === 'Active', 'bg-danger': item.status !== 'Active'}">
+                    {{ item.status }}
+                  </span>
+                </td>
+                <td>
+                  <a [routerLink]="['/dash/recruitment/recruitmentdashboard/vendor-wise-report']" 
+                     [queryParams]="{ vendorCode: item.vendorId || item.vendorCode, month: item.month, year: item.year }" 
+                     class="btn btn-link btn-sm text-primary px-0 text-decoration-none"
+                     title="View Breakdown">
+                    <i class="fa fa-eye me-1"></i> View
+                  </a>
+                </td>
+              </tr>
+
+              <!-- No records fallback using global no-result-card -->
+              <tr *ngIf="!filteredDataList.length">
+                <td colspan="18" class="p-0 border-0">
+                  <div class="no-result-card rounded-0">
+                    <div class="icon-box-search">
+                      <i class="fa-regular fa-folder-open"></i>
+                    </div>
+                    <h5>No records found</h5>
+                    <p>Try adjusting your <span>filters</span> or date range</p>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <pagination-controls *ngIf="filteredDataList.length > 0" (pageChange)="onPageChange($event)" [autoHide]="true" totalItems="totalItems" itemsPerPage="pageSize">
+          </pagination-controls>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

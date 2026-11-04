@@ -1,0 +1,412 @@
+// @media screen and (max-width: 767.98px) {
+
+//     #exportTable thead {
+//         display: none;
+//     }
+
+//     /* Make table rows behave like flex containers (cards) */
+//     #exportTable tbody tr {
+//         display: flex; 
+//         flex-wrap: wrap; 
+//         margin-bottom: 15px;
+//         border: 1px solid #ddd; 
+//         border-radius: 8px;
+//         padding: 10px;
+//         box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
+//         background-color: transparent; 
+//         align-items: flex-start; 
+//         overflow: hidden; 
+//     }
+
+
+//     #exportTable tbody td {
+//         display: flex; 
+//         align-items: baseline; 
+//         min-width: 120px; 
+//         padding: 0px 10px; /* Adjust padding for visual spacing */
+//         box-sizing: border-box; /* Include padding in width calculation */
+//         border-bottom: none; /* Remove individual cell borders */
+//         word-break: break-word; /* Breaks words if they are too long */
+//         overflow-wrap: break-word; /* Another property for word breaking */
+//         hyphens: auto; /* Allow hyphenation for better text flow */
+       
+       
+//     }
+
+    
+//     #exportTable tbody td:nth-last-child(odd):last-child:not(:nth-of-type(8)) { /* Exclude Action column */
+//         flex-basis: 100%; /* Make it full width if it's the only one left */
+//         min-width: 100%; /* Ensure it spans fully */
+//     }
+
+
+//     /* Style the data-label (header) */
+//     #exportTable tbody td::before {
+//         content: attr(data-label); /* Get label from data-label attribute */
+//         font-weight: 600; /* Slightly bolder for clarity */
+//         color: #3080e8; /* Your specified color for the label */
+//         flex-shrink: 0; /* Prevent label from shrinking */
+//         margin-right: 8px; /* Space between label and value */
+//         text-align: left;
+//         line-height: 1; /* Adjusted line-height for better alignment with content */
+//     }
+
+//     /* Specific styling for the 'Action' column in card view */
+//     #exportTable tbody td:nth-of-type(8) { /* Assuming 'Action' is the 4th column */
+//         flex: 0 0 100%; /* Fix this column to always take 100% width and not grow/shrink */
+//         justify-content: center; /* Center the buttons within their 100% width */
+//         padding-top: 10px; /* Add some space above action buttons */
+//         border-top: 1px dashed #eee; /* Add a subtle separator above actions */
+//         margin-top: 5px;
+//         flex-wrap: wrap; /* If buttons are many, allow them to wrap within this column */
+//     }
+
+//     #exportTable tbody td:nth-of-type(8)::before {
+//         content: ""; /* Hide the pseudo-element for the action column */
+//         display: none;
+//     }
+
+//     .table:not(.table-sm):not(.table-md):not(.dataTable) td,
+// .table:not(.table-sm):not(.table-md):not(.dataTable) th {
+//     height: auto;
+// }
+// }
+
+
+@media screen and (max-width: 767.98px) {
+  
+  #exportTable thead {
+    display: none;
+  }
+
+  /* ===== HIDE UNWANTED COLUMNS ===== */
+  #exportTable tbody td[data-label="Sr.No.:"],
+  #exportTable tbody td[data-label="Reason: "]
+  {
+    display: none !important;
+  }
+
+  /* ===== CARD CONTAINER ===== */
+  #exportTable tbody tr {
+    display: block;
+    margin: 1rem 0.2rem;
+    padding: 0rem;
+    background: #ffffff;
+    border: 1px dashed #87dabc;
+    border-left: 4px solid #10b981;
+    border-radius: 0.3rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    position: relative;
+  }
+
+   #exportTable tbody tr:nth-child(even) {
+    border-left-color: #10b981;
+    border-left: 4px solid #3080e8;
+  }
+
+  /* ===== RESET TD ===== */
+  #exportTable tbody td {
+    display: block;
+    padding: 0;
+    padding-bottom: 10px;
+    margin: 0;
+    border: none;
+    background: transparent;
+    height: auto;
+  }
+
+  #exportTable tbody td::before {
+    display: none !important;
+  }
+
+  /* ===== DATE HEADER ===== */
+  #exportTable tbody td[data-label="Request Date:"] {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #2b2e41 !important;
+    padding: 0.3rem 0.5rem;
+    background: #bed9c95c;
+    text-align: start !important;
+  }
+
+  #exportTable tbody td[data-label="Request Date:"]::before {
+    content: '📅 Request Date : ' !important;
+    display: inline-block !important;
+    font-size: .7rem;
+    margin-right: 0.5rem;
+    text-align: start !important;
+  }
+
+
+
+    #exportTable tbody td[data-label="Total days:"] {
+    display: inline-flex;
+    width:100%;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.25rem 0.5rem;
+    border-top: 1px solid #f1f5f9;
+    background: #fafbfc;
+    vertical-align: top;
+    box-sizing: border-box;
+    font-size: 0.65rem;
+    color: #1f2937;
+    font-weight: 700;
+    line-height: 1.4;
+  }
+
+  #exportTable tbody td[data-label="Total days:"]::before {
+    content: '⏱ Days' !important;
+    display: block !important;
+    font-size: .75rem;
+    color: #f15656;
+    font-weight: 600;
+  }
+
+
+
+  /* ===== STATUS BADGE (Top Right) ===== */
+  #exportTable tbody td[data-label="Status"] {
+    position: absolute;
+    top: 0.4rem;
+    right: 1rem;
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 40px;
+    font-size: 0.6rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #ffffff !important;
+    line-height: 1.4;
+  }
+
+
+
+    /* Approved - Green */
+  #exportTable tbody td[data-label="Status"].text-success {
+    background: #10b981 !important;
+    color: #ffffff !important;
+  }
+  
+  /* Pending - Yellow/Warning */
+  #exportTable tbody td[data-label="Status"].text-warning {
+    background: #f59e0b !important;
+    color: #ffffff !important;
+  }
+  
+  /* Rejected - Red */
+  #exportTable tbody td[data-label="Status"].text-danger {
+    background: #ef4444 !important;
+    color: #ffffff !important;
+  }
+
+  /* Remove the alternating color styles for status badges */
+  #exportTable tbody tr:nth-child(odd) td[data-label="Status"],
+  #exportTable tbody tr:nth-child(even) td[data-label="Status"] {
+    background: inherit; /* This will be overridden by the specific classes above */
+  }
+
+  /* ===== TIME ROW ===== */
+  #exportTable tbody td[data-label="In-Time"] {
+    display: inline-flex;
+    align-items: center;
+    padding: 0 0.5rem;
+    font-size: 0.75rem;
+    color: #1f2937;
+    font-weight: 500;
+    width: 30%;
+  }
+
+  #exportTable tbody td[data-label="In-Time"]::before {
+    content: '🕐' !important;
+    display: inline-block !important;
+    font-size: 0.925rem;
+    margin-right: 0.5rem;
+  }
+
+  #exportTable tbody td[data-label="Out-Time"] {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.75rem;
+    color: #1f2937;
+    font-weight: 500;
+    padding-right: 1rem;
+    padding-top: 0.5rem;
+    width: 30%;
+  }
+
+  #exportTable tbody td[data-label="Out-Time"]::before {
+    content: '→' !important;
+    display: inline-block !important;
+    color: #2b2e41;
+    margin: 0 0.75rem;
+    font-size: 0.925rem;
+    font-weight: 900;
+  }
+
+  /* ===== FROM DATE & TO DATE - 2 COLUMN LAYOUT ===== */
+  #exportTable tbody td[data-label="From Date : "] {
+    display: inline-flex;
+    width: 50%;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.25rem 0.5rem;
+    border-top: 1px solid #f1f5f9;
+    background: #fafbfc;
+    vertical-align: top;
+    box-sizing: border-box;
+    font-size: 0.65rem;
+    color: #1f2937;
+    font-weight: 700;
+    line-height: 1.4;
+  }
+
+  #exportTable tbody td[data-label="From Date : "]::before {
+    content: 'From Date' !important;
+    display: block !important;
+    font-size: .75rem;
+    color: #3080e8;
+    font-weight: 600;
+  }
+
+  #exportTable tbody td[data-label="To date: "] {
+    display: inline-flex;
+    width: 50%;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.25rem 0.5rem;
+    border-top: 1px solid #f1f5f9;
+    background: #fafbfc;
+    vertical-align: top;
+    box-sizing: border-box;
+    font-size: 0.65rem;
+    color: #1f2937;
+    font-weight: 700;
+    line-height: 1.4;
+  }
+
+  #exportTable tbody td[data-label="To date: "]::before {
+    content: 'To Date' !important;
+    display: block !important;
+    font-size: .75rem;
+    font-weight: 600;
+    color: #3080e8;
+  }
+
+  /* ===== RTL & TOTAL DAYS - IN ONE LINE (2 COLUMNS) ===== */
+  #exportTable tbody td[data-label="Request leavetype:"] {
+    display: inline-flex;
+    width: 50%;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.25rem 0.5rem;
+    border-top: 1px solid #f1f5f9;
+    background: #fafbfc;
+    vertical-align: top;
+    box-sizing: border-box;
+    font-size: 0.65rem;
+    color: #1f2937;
+    font-weight: 700;
+    line-height: 1.4;
+  }
+
+  #exportTable tbody td[data-label="Request leavetype:"]::before {
+    content: 'Request Leave' !important;
+    display: block !important;
+    font-size: .75rem;
+    color: #19e194;
+    font-weight: 600;
+  }
+
+
+  /* ===== TOTAL HOURS (if needed) ===== */
+  #exportTable tbody td[data-label="Total-hrs"] {
+    display: inline-flex;
+    width: 33.33%;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.25rem 0.5rem;
+    background: #fafbfc;
+    vertical-align: middle;
+    box-sizing: border-box;
+    font-size: 0.65rem;
+    color: #1f2937;
+    font-weight: 700;
+    line-height: 1.4;
+  }
+
+  /* ===== CLEAR UNWANTED CONTENT ===== */
+  #exportTable tbody td[data-label="Total-hrs"]::after {
+    content: '' !important;
+  }
+
+  #exportTable tbody td[data-label="OT Hrs"]::after {
+    content: '' !important;
+  }
+
+  #exportTable tbody td[data-label="Total days:"]::after {
+    content: '' !important;
+  }
+
+  #exportTable tbody td[data-label="Request leavetype:"]::after {
+    content: '' !important;
+  }
+
+  /* ===== EMPTY STATE ===== */
+  #exportTable tbody tr td[colspan] {
+    display: block;
+    padding: 2rem 1rem;
+    text-align: center;
+    color: #94a3b8;
+    font-size: 0.875rem;
+    position: static;
+  }
+
+  #exportTable tbody tr td[colspan]::before,
+  #exportTable tbody tr td[colspan]::after {
+    content: none !important;
+  }
+}
+
+// 
+
+
+.card-header{
+  background-color: #3080e8;
+  font-weight: bold;
+}
+
+
+.bg-light-success {
+  background-color: #caf8d4; /* Light green background */
+  color: #155724; /* Dark green text */
+  padding: 5px 10px;
+  border-radius: 7px;
+}
+
+.bg-light-error {
+  background-color: #ffeaca; /* Light red background */
+  color: #721c24; /* Dark red text */
+  padding: 5px 10px;
+  border-radius: 7px;
+}
+
+@media screen and (max-width:1024px){
+  .card-header{
+  padding: 5px 0px 0px 20px;
+  }
+  }
+
+  @media screen and (max-width:1024px) {
+    .all-pickup-point-search-header{
+      margin-bottom: 7px;
+    }
+  }
+
+
+  .text-danger:hover{
+color:#fff !important;
+}

@@ -1,0 +1,442 @@
+<section>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+          <!-- Card Header -->
+          <div class="card-header bg-blue">
+            <div class="row w-100">
+              <div class="col-sm-12 col-md-6 col-lg-6">
+                <h4 class="">PAN Verification</h4>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-body">
+            <div class="row pt-2">
+              <!-- VIEW MODE -->
+              <div *ngIf="isViewMode && panData">
+                <div class="row">
+                  <div class="col-md-4">
+                    <label>PAN No:</label>
+                    <p>
+                      <strong>{{ panData.panNo }}</strong>
+                    </p>
+                  </div>
+
+                  <div class="col-md-4">
+                    <label>Name:</label>
+                    <p>
+                      <strong>{{ panData.panName }}</strong>
+                    </p>
+                  </div>
+
+                  <div class="col-md-4">
+                    <label>Date of Birth:</label>
+                    <p>
+                      <strong>{{ panData.panDob | date : "dd MMM yyyy" }}</strong>
+                    </p>
+                  </div>
+
+                  <div class="col-md-4">
+                    <label>PAN Card Image:</label><br />
+                    <img
+                      [src]="panData.panCard"
+                      alt="PAN Card"
+                      class="img-thumbnail mb-2"
+                      style="width: 150px; height: auto; cursor: pointer"
+                    />
+                  </div>
+
+                  <div class="col-12 mt-3">
+                    <button type="button" class="btn btn-warning" (click)="editPan()">
+                      <i class="fas fa-edit me-1"></i> Edit PAN Details
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- FORM MODE -->
+              <form
+                *ngIf="!isViewMode"
+                [formGroup]="panForm"
+                (ngSubmit)="OnSubmit()"
+              >
+                <div class="row">
+                  <!-- PAN Number -->
+                  <div class="col-sm-12 col-md-5 col-lg-3 col-xxl-3">
+                    <label>PAN No.</label>
+
+                    <div class="form-group w-100">
+                      <div class="input-group">
+                        <span class="input-group-text">
+                          <i class="fas fa-id-card"></i>
+                        </span>
+
+                        <input
+                          formControlName="PANNo"
+                          type="text"
+                          class="form-control"
+                          mask="AAAAA9999A"
+                          [dropSpecialCharacters]="false"
+                          style="text-transform: uppercase"
+                          (input)="onPANInput($event)"
+                          (blur)="checkPANAvailability(panForm.get('PANNo')?.value)"
+                        />
+                      </div>
+
+                      <!-- PAN Validation -->
+                      <div
+                        *ngIf="(submitted || validate['PANNo'].touched) && validate['PANNo'].errors"
+                        class="col-12"
+                      >
+                        <div
+                          *ngIf="validate['PANNo'].errors['required']"
+                          class="text-danger"
+                        >
+                          PAN No is required.
+                        </div>
+
+                        <div
+                          *ngIf="validate['PANNo'].errors['duplicate']"
+                          class="text-danger"
+                        >
+                          {{ validate['PANNo'].errors['duplicate'] }}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Verify PAN Button -->
+                  <div
+                    *ngIf="isPanVerificationRequired"
+                    class="col-sm-12 col-md-2 col-lg-1 col-xxl-1"
+                  >
+                    <button
+                      type="button"
+                      (click)="verifyPAN()"
+                      class="btn btn-primary mt-lg-4 mb-1 d-flex align-items-center justify-content-center"
+                      [disabled]="
+                        !panForm.get('PANNo')?.value ||
+                        isVerified ||
+                        isVerifying ||
+                        panForm.get('PANNo')?.errors?.['duplicate']
+                      "
+                    >
+                      <span *ngIf="!isVerifying">Verify</span>
+                      <span *ngIf="isVerifying">
+                        <span class="spinner-border spinner-border-sm me-2"></span>
+                      </span>
+                    </button>
+                  </div>
+
+                  <!-- PAN Name -->
+                  <div class="col-sm-12 col-md-5 col-lg-4 col-xxl-4">
+                    <label>Name (As Shown on PAN Card)</label>
+                    <div class="form-group">
+                      <div class="input-group">
+                        <span class="input-group-text"
+                          ><i class="fas fa-user"></i
+                        ></span>
+                        <input
+                          type="text"
+                          class="form-control"
+                          formControlName="PANName"
+                          style="text-transform: uppercase"
+                          [readonly]="isPanVerificationRequired && isVerified"
+                        />
+                      </div>
+                      <div
+                        *ngIf="submitted && validate['PANName'].errors"
+                        class="col-12"
+                      >
+                        <div
+                          *ngIf="validate['PANName'].errors['required']"
+                          class="text-danger"
+                        >
+                          Name is required.
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Date of Birth -->
+                  <div class="col-sm-12 col-md-6 col-lg-4 col-xxl-4">
+                    <label>Date of Birth (As Shown on PAN Card)</label>
+                    <div class="form-group">
+                      <div class="input-group">
+                        <span class="input-group-text"
+                          ><i class="fas fa-calendar-alt"></i
+                        ></span>
+                        <input
+                          type="date"
+                          class="form-control"
+                          placeholder="YYYY/MM/DD"
+                          formControlName="PANDob"
+                          [readonly]="isPanVerificationRequired && isVerified"
+                        />
+                      </div>
+                      <div
+                        *ngIf="submitted && validate['PANDob'].errors"
+                        class="col-12"
+                      >
+                        <div
+                          *ngIf="validate['PANDob'].errors['required']"
+                          class="text-danger"
+                        >
+                          Dob is required.
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row mt-1">
+                  <!-- Upload PAN Card Image -->
+                  <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6">
+                    <label for="PanCard">Upload Image (PAN Card)</label>
+                    <div class="form-group">
+                      <div class="input-group">
+                        <span class="input-group-text"
+                          ><i class="fas fa-image fa-lg"></i
+                        ></span>
+                        <input
+                          type="file"
+                          #fileInput
+                          accept="image/png, image/jpeg"
+                          (change)="onFileSelected($event, 'PanCardFile')"
+                          class="d-none"
+                        />
+
+                        <input
+                          type="text"
+                          class="form-control"
+                          placeholder="Upload Image"
+                          [value]="fileName || ''"
+                          readonly
+                        />
+                        <button
+                          class="browse btn btn-primary px-4"
+                          type="button"
+                          (click)="fileInput.click()"
+                          [disabled]="isScanning"
+                        >
+                          <i class="fas fa-image"></i>
+                        </button>
+                      </div>
+
+                      <!-- OCR Scanning State -->
+                      <div *ngIf="companyConfig?.panOcr && isScanning" class="d-flex align-items-center gap-2 mt-2 text-primary">
+                        <div class="spinner-border spinner-border-sm" role="status"></div>
+                        <small class="fw-bold">Scanning PAN card with OCR...</small>
+                      </div>
+
+                      <!-- OCR Error Message -->
+                      <div *ngIf="companyConfig?.panOcr && ocrError" class="text-danger small mt-1 fw-semibold">
+                        <i class="fas fa-exclamation-triangle me-1"></i> {{ ocrError }}
+                      </div>
+
+                      <!-- OCR Result / Partial Message -->
+                      <div
+                        *ngIf="companyConfig?.panOcr && ocrInfo && !isScanning && !ocrError"
+                        class="small mt-1 fw-semibold"
+                        [ngClass]="ocrInfo.startsWith('Could not read') ? 'text-warning' : 'text-success'"
+                      >
+                        <i
+                          class="fas me-1"
+                          [ngClass]="ocrInfo.startsWith('Could not read') ? 'fa-exclamation-circle' : 'fa-check-circle'"
+                        ></i>
+                        {{ ocrInfo }}
+                      </div>
+
+                      <div *ngIf="submitted && validate['PanCardFile'].errors">
+                        <div
+                          *ngIf="validate['PanCardFile'].errors['required']"
+                          class="text-danger"
+                        >
+                          PAN Card Image is required.
+                        </div>
+                      </div>
+
+                      <div *ngIf="previewPanImage || originalPanUrl" class="mt-3">
+                        <div class="d-inline-block border rounded p-2 bg-light shadow-sm" style="max-width: 380px;">
+                          <!-- Header with Title & Rotation Tools -->
+                          <div class="d-flex align-items-center justify-content-between gap-2 mb-2 pb-1 border-bottom">
+                            <span class="small fw-bold text-secondary">
+                              <i class="fas fa-id-card text-primary me-1"></i>
+                              {{ previewPanImage ? "New Image Preview" : "Current Image" }}
+                            </span>
+                            <div class="btn-group btn-group-sm">
+                              <button
+                                type="button"
+                                class="btn btn-sm btn-outline-secondary"
+                                (click)="rotatePanImage(-90)"
+                                title="Rotate Left 90° (↶)"
+                              >
+                                <i class="fas fa-undo"></i>
+                              </button>
+                              <button
+                                type="button"
+                                class="btn btn-sm btn-outline-secondary"
+                                (click)="rotatePanImage(90)"
+                                title="Rotate Right 90° (↷)"
+                              >
+                                <i class="fas fa-redo"></i>
+                              </button>
+                              <button
+                                type="button"
+                                class="btn btn-sm btn-outline-secondary"
+                                (click)="resetPanImageRotation()"
+                                title="Reset Rotation"
+                                *ngIf="panImageRotation !== 0"
+                              >
+                                <i class="fas fa-sync-alt"></i>
+                              </button>
+                              <button
+                                type="button"
+                                class="btn btn-sm btn-outline-primary"
+                                (click)="openPanImageModal()"
+                                title="Click to View Full Size"
+                              >
+                                <i class="fas fa-search-plus"></i> View
+                              </button>
+                            </div>
+                          </div>
+
+                          <!-- Preview Frame -->
+                          <div
+                            class="d-flex align-items-center justify-content-center bg-white rounded border overflow-hidden position-relative"
+                            style="width: 340px; height: 220px; cursor: pointer;"
+                            (click)="openPanImageModal()"
+                            title="Click to view full size"
+                          >
+                            <img
+                              [src]="previewPanImage || originalPanUrl"
+                              alt="PAN Card Preview"
+                              [style.transform]="'rotate(' + panImageRotation + 'deg)'"
+                              style="
+                                max-width: 90%;
+                                max-height: 90%;
+                                object-fit: contain;
+                                transition: transform 0.3s ease;
+                              "
+                            />
+                          </div>
+
+                          <div class="d-flex justify-content-between align-items-center mt-1 text-muted" style="font-size: 11px;">
+                            <span><i class="fas fa-info-circle me-1"></i>Click image or buttons to rotate</span>
+                            <span *ngIf="panImageRotation !== 0" class="badge bg-secondary text-white">{{ panImageRotation }}°</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-sm-0 col-md-10 col-lg-10"></div>
+                  <div class="col-sm-12 col-md-2 col-lg-2">
+                    <div class="form-group shadow-none">
+                      <button
+                        type="submit"
+                        class="btn btn-primary mt-2 gap-2 d-grid d-md-block px-5"
+                        [disabled]="isScanning"
+                      >
+                        Save
+                      </button>
+                    </div>
+                  </div>
+                  <div class="col-sm-0 col-md-0 col-lg-0"></div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Full View & Rotate Modal -->
+<div
+  *ngIf="showPanImageModal && (previewPanImage || originalPanUrl)"
+  class="modal fade show d-block"
+  tabindex="-1"
+  style="background: rgba(0, 0, 0, 0.75); z-index: 1060;"
+  (click)="closePanImageModal()"
+>
+  <div class="modal-dialog modal-dialog-centered modal-lg" (click)="$event.stopPropagation()">
+    <div class="modal-content shadow-lg border-0">
+      <div class="modal-header py-2 bg-light">
+        <h6 class="modal-title mb-0 fw-bold">
+          <i class="fas fa-id-card text-primary me-2"></i>PAN Card Full View
+        </h6>
+        <div class="d-flex align-items-center gap-2">
+          <div class="btn-group btn-group-sm">
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              (click)="rotatePanImage(-90)"
+              title="Rotate Left 90°"
+            >
+              <i class="fas fa-undo me-1"></i> Rotate Left
+            </button>
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              (click)="rotatePanImage(90)"
+              title="Rotate Right 90°"
+            >
+              <i class="fas fa-redo me-1"></i> Rotate Right
+            </button>
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              (click)="resetPanImageRotation()"
+              title="Reset Rotation"
+              *ngIf="panImageRotation !== 0"
+            >
+              <i class="fas fa-sync-alt me-1"></i> Reset
+            </button>
+          </div>
+          <button
+            type="button"
+            class="btn-close ms-2"
+            (click)="closePanImageModal()"
+            aria-label="Close"
+          ></button>
+        </div>
+      </div>
+      <div
+        class="modal-body text-center p-3 bg-dark d-flex align-items-center justify-content-center"
+        style="min-height: 440px; max-height: 75vh; overflow: auto;"
+      >
+        <img
+          [src]="previewPanImage || originalPanUrl"
+          alt="PAN Card Full View"
+          [style.transform]="'rotate(' + panImageRotation + 'deg)'"
+          style="
+            max-width: 90%;
+            max-height: 65vh;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            border-radius: 6px;
+          "
+        />
+      </div>
+      <div class="modal-footer py-2 bg-light justify-content-between">
+        <small class="text-muted">
+          Current Orientation: <span class="badge bg-primary">{{ panImageRotation }}°</span>
+        </small>
+        <button
+          type="button"
+          class="btn btn-sm btn-secondary px-3"
+          (click)="closePanImageModal()"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

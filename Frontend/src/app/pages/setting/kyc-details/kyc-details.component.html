@@ -1,0 +1,124 @@
+
+  
+  <div class="row">
+    <div class="col-12 col-sm-12 col-lg-12">
+        <div>
+            <div class="card shadow-sm">
+              <div class="card-header d-flex justify-content-between align-items-center">
+              
+              </div>
+              <div class="card-body">
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                  <li class="nav-item" role="presentation">
+                    <a class="nav-link active" id="details-tab" data-bs-toggle="tab" href="#details" role="tab" aria-controls="details" aria-selected="true">KYC Details</a>
+                  </li>
+                 
+                </ul>
+                <div class="tab-content" id="myTabContent">
+                    <div class="tab-pane fade show active" id="details" role="tabpanel" aria-labelledby="details-tab">
+                        <div class="row mb-2">
+                            <div class="col-md-4"*ngIf="kyc.userType === 'Individual'||'Company'">
+                                <p><strong>UserType: </strong>{{ kyc.userType}} </p>
+                            </div>
+                            <div class="col-md-4">
+                                <p><strong>State: </strong>{{ kyc.state}}</p>
+                            </div>
+                            <div class="col-md-4">
+                                <p><strong>City: </strong> {{ kyc.city}}</p>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-md-4"*ngIf="kyc.userType === 'Individual'||'Company'">
+                                <p><strong>Pincode: </strong>{{ kyc.pincode}}</p>
+                            </div>
+                            <div class="col-md-4"*ngIf="kyc.userType === 'Individual'||'Company'">
+                                <p><strong>Address: </strong>{{ kyc.address}}</p>
+                            </div>
+                            <div class="col-md-4"*ngIf="kyc.userType === 'Individual'">
+                                <p><strong>Aadhaar No: </strong>{{ kyc.aadhaarNo}}</p>
+                            </div>
+                        </div>
+                        <div class="row mb-2"*ngIf="kyc.userType === 'Individual'">
+                            <div class="col-md-4">
+                                <p><strong>Aadhaar Verify: </strong>{{ kyc.aadhaarVerified}} </p>
+                            </div>
+                            <div class="col-md-4">
+                                <p><strong>Name(Aadhaar Card): </strong>{{ kyc.aadhaarName}} </p>
+                            </div>
+                            <div class="col-md-4">
+                                <p><strong>Address(Aadhaar Card): </strong>{{ kyc.aadhaarAddress}} </p>
+                            </div> 
+                        </div>
+                        <div class="row mb-2"*ngIf="kyc.userType === 'Individual'">
+                            <div class="col-md-4">
+                                <p><strong>DOB(Aadhar Card): </strong>{{ kyc.aadhaarDob| date: 'dd/MM/yyyy'}}</p>
+                            </div>
+                            <div class="col-md-4">
+                              <p><strong>Image (Aadhar Card Front Page): </strong>
+                                  <a *ngIf="aadhaarFrontImage" (click)="showImage('aadhaarFrontPath')" class="view-link">View</a>
+                              </p>
+                          </div>
+                            <div class="col-md-4">
+                                <p><strong>Image(AadharCard Back Page): </strong>
+                                  <a *ngIf="aadhaarBackImage" (click)="showImage('aadhaarBackPath')"class="view-link">View</a>
+                                </p>
+                        </div>
+                        </div>
+                        <div class="row mb-2"*ngIf="kyc.userType === 'Individual'||'Company'">
+                          <div class="col-md-4">
+                            <p><strong>PAN No: </strong>{{ kyc.panNo}}</p>
+                          </div>
+                          <div class="col-md-4">
+                            <p><strong>PanCard Verify: </strong>{{ kyc.panVerified}}</p>
+                          </div>
+                          <div class="col-md-4">
+                            <p><strong>Name(PanCard): </strong>{{ kyc.panName}} </p>
+                          </div>
+                      </div>
+                      <div class="row mb-2">
+                        <div class="col-md-4"*ngIf="kyc.userType === 'Individual'||'Company'">
+                          <p><strong>DOB(PanCard): </strong>{{ kyc.panDob| date: 'dd/MM/yyyy'}}</p>
+                        </div>
+                        <div class="col-md-4"*ngIf="kyc.userType === 'Individual'||'Company'">
+                        
+                          <p><strong>Image(PanCard): </strong>
+                         <a *ngIf="panCardPath" (click)="showImage('panCardPath')"class="view-link">View</a>
+                          </p>
+                        </div>
+                        <div class="col-md-4"*ngIf="kyc.userType === 'Company'">
+                          <p><strong>GST No: </strong>{{ kyc.gstNo}}</p>
+                        </div>
+                    </div>
+                    <div class="row mb-2"*ngIf="kyc.userType === 'Company'">
+                        <div class="col-md-4">
+                          <p><strong>Gst No Verify: </strong>{{ kyc.gstVerified}}</p>
+                        </div>
+                        <div class="col-md-4">
+                          <p><strong>CompanyName: </strong>{{ kyc.gstCompanyName}}</p>
+                        </div>
+                        <div class="col-md-4">
+                          <p><strong>CompanyRegDate: </strong>{{ kyc.gstCompanyRegisteredDate| date: 'dd/MM/yyyy'}}</p>
+                        </div>
+                    </div>
+                    <div class="row mb-2"*ngIf="kyc.userType === 'Company'">
+                        <div class="col-md-4">
+                          <p><strong>Image(GSTDoc): </strong>
+                          <a *ngIf="gstDocPath" (click)="showImage('gstDocPath')"class="view-link">View</a>
+                              </p>
+                        </div>
+                        <div class="col-md-4"></div>
+                        <div class="col-md-4"></div>
+
+                    </div>
+                    </div>
+
+                    
+                 
+                </div>
+              </div>
+            </div>
+          </div>
+  </div>
+  </div>
+
+  

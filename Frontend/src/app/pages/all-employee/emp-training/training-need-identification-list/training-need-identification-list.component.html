@@ -1,0 +1,123 @@
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+
+      <!-- 🔹 Filters Section -->
+      <div class="card-header bg-primary">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-4 d-flex align-items-center justify-content-between">
+            <h4>All TNI List</h4>
+          </div>
+
+          <div class="col-sm-12 col-md-4 d-flex align-items-center justify-content-center">
+            <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText" />
+          </div>
+
+          <div class="col-sm-12 col-md-4 d-flex align-items-center justify-content-md-end">
+            <button class="btn btnheader"
+              routerLink="/dash/emp-training/emp-trainingdashboard/Training_Need_Identification">
+              Add
+            </button>
+            <button class="btn btn-light mx-1" (click)="exportToExcel()">
+              Download
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 🔹 Table -->
+      <div class="card-body">
+        <div class="table-responsive table-invoice">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>S. No.</th>
+                <th>Program</th>
+                <th>SubProgram</th>
+                <th>Reason</th>
+                <th>Priority</th>
+                <th>Status</th>
+                <th>Training Date</th>
+                <th>Trainer</th>
+                <th>Mode</th>
+                <th>Location</th>
+                <th>Created Date</th>
+                <th>Comments</th>
+                <th>Action</th> <!-- 🔹 New Column -->
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                *ngFor="let item of programData | paginate: { itemsPerPage: pageSize, currentPage: pageIndex ,totalItems:totalItems}; let i = index">
+                <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+                <td>{{ item.programName }}</td>
+                <td>{{ item.subProgramName }}</td>
+                <td>{{ item.reason }}</td>
+                <td>{{ item.priority }}</td>
+
+                <!-- 🔹 Status -->
+                <td>
+                  <span [ngClass]="{
+                                    'status-pending': item.status === 'Pending',
+                                    'status-approved': item.status === 'A',
+                                    'status-reject': item.status === 'R',
+                                    'status-planned': item.status === 'PL',
+                                    'status-cancelled': item.status === 'C',
+                                    'status-Hold': item.status === 'H',
+                                    'status-Completed': item.status === 'Completed',
+                                    'status-scheduled': item.status === 'Scheduled'
+                                  }">
+                    {{
+                    item.status === 'Pending' ? 'Pending' :
+                    item.status === 'A' ? 'Approved' :
+                    item.status === 'PL' ? 'Planned' :
+                    item.status === 'R' ? 'Rejected' :
+                    item.status === 'C' ? 'Cancelled' :
+                    item.status === 'Completed' ? 'Completed' :
+                    item.status === 'H' ? 'OnHold' :
+                    item.status === 'Scheduled' ? 'Scheduled' : ''
+                    }}
+                  </span>
+                  <!-- <span *ngIf="item.status === 'Pending'">Pending</span>
+                  <span *ngIf="item.status === 'A'">Approved</span>
+                  <span *ngIf="item.status === 'PL'">Processing</span>
+                  <span *ngIf="item.status === 'Scheduled'">Scheduled</span> -->
+                </td>
+
+                <!-- 🔹 Calendar Details (only if Scheduled) -->
+                <td>{{ item.status === 'PL' ? (item.planningDateTime | date:'dd-MM-yyyy HH:mm') : '-' }}</td>
+                <td>{{ item.status === 'PL' ? item.planningTrainer : '-' }}</td>
+                <td>{{ item.status === 'PL' ? item.planningMode : '-' }}</td>
+                <td>{{ item.status === 'PL' ? item.planningLocation : '-' }}</td>
+                <td>{{ item.createdDate | date:'dd-MM-yyyy' }}</td>
+                <td>{{ item.adminComment || 'No comment added yet' }}</td>
+                <td>
+                  <button class="btn btn-sm btn-info" (click)="openCalendarView(item)">
+                    <i class="fa fa-eye"></i>
+                  </button>
+                </td>
+              </tr>
+              <tr *ngIf="programData.length === 0" class="text-center">
+                <td colspan="12" class="text-center text-muted">No data found</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- 🔹 Pagination -->
+          <pagination-controls (pageChange)="onPageChange($event)" [responsive]="true"></pagination-controls>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+

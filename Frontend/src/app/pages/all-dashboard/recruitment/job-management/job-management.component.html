@@ -1,0 +1,1759 @@
+<div class="ats-jobs-container">
+  <!-- ── 1. Top Master Header Strip ────────────────────────────────────────── -->
+  <div class="master-header-strip d-flex flex-wrap justify-content-between align-items-center">
+    <div class="d-flex align-items-center gap-2">
+      <a routerLink="/dash/recruitment/recruitmentdashboard" 
+         class="btn-back text-decoration-none" 
+         title="Back to Recruitment Dashboard">
+        <i class="bi bi-arrow-left"></i>
+      </a>
+      <div class="d-flex align-items-center gap-2 flex-wrap">
+        <h1 class="page-title mb-0">Enterprise Job Requisitions</h1>
+        
+        <!-- Authority & Security Badges -->
+        <span *ngIf="isAdmin && !hasGranularRightsConfigured()" class="badge-chip bg-danger text-white border border-danger shadow-sm">
+          <i class="bi bi-shield-check me-1"></i> Admin (Full Approval Access)
+        </span>
+        <span *ngIf="hasGranularRightsConfigured()" class="badge-chip bg-primary-subtle text-primary border border-primary-subtle shadow-2xs">
+          <i class="bi bi-person-check-fill me-1"></i> Rights: {{ getGrantedRightsSummary() }}
+        </span>
+        <span *ngIf="!isAdmin && !hasGranularRightsConfigured() && hasApprovalRights" class="badge-chip bg-primary-subtle text-primary border border-primary-subtle">
+          <i class="bi bi-person-check-fill me-1"></i> {{ levelLabel || 'Approver' }}
+        </span>
+
+        <span class="badge-chip bg-success-subtle text-success">
+          <i class="bi bi-broadcast me-1"></i> CJ DARCL ATS
+        </span>
+      </div>
+    </div>
+
+    <!-- Header Right Summary -->
+    <div class="d-flex align-items-center gap-2 mt-1 mt-md-0">
+      <a *ngIf="canRaiseRequisition || isAdmin"
+         routerLink="/dash/recruitment/recruitmentdashboard/create-job-wizard" 
+         class="btn btn-sm btn-primary d-flex align-items-center gap-1 shadow-sm"
+         style="font-size: 11px; padding: 3px 12px; background: #3080e8; border-color: #3080e8; font-weight: 500;">
+        <i class="bi bi-plus-lg"></i> Raise Requisition
+      </a>
+      <a routerLink="/dash/recruitment/recruitmentdashboard/mrf-list" 
+         class="btn btn-sm btn-mrf-dir d-flex align-items-center gap-1">
+        <i class="bi bi-card-list"></i> Full MRF Directory
+      </a>
+    </div>
+  </div>
+
+  <!-- ── 2. Bento KPI Metric Cards ─────────────────────────────────────────── -->
+  <div class="bento-kpi-grid">
+    <!-- Bento 1: Total Requisitions -->
+    <div class="bento-card" [class.active-card]="activeTab === 'All'" (click)="setTab('All'); setLevelFilter('ALL')">
+      <div>
+        <div class="bento-label">Total Requisitions</div>
+        <div class="bento-value text-dark">{{ totalJobsCount }}</div>
+        <div class="bento-subtext">All Recorded MRFs</div>
+      </div>
+      <div class="bento-icon" style="background: #f1f5f9; color: #334155; border: 1px solid #e2e8f0;">
+        <i class="bi bi-collection-fill"></i>
+      </div>
+    </div>
+
+    <!-- Bento 2: Pending Approvals -->
+    <div class="bento-card" [class.active-card]="activeTab === 'Approvals'" (click)="setTab('Approvals'); setLevelFilter('ALL')">
+      <div>
+        <div class="bento-label">Pending Approvals</div>
+        <div class="bento-value text-warning">{{ pendingApprovalsCount }}</div>
+        <div class="bento-subtext">L1 / L2 / L3 Multi-Tier</div>
+      </div>
+      <div class="bento-icon" style="background: #fffbeb; color: #d97706; border: 1px solid #fde68a;">
+        <i class="bi bi-hourglass-split"></i>
+      </div>
+    </div>
+
+    <!-- Bento 3: Approved & Active -->
+    <div class="bento-card" [class.active-card]="activeTab === 'Active'" (click)="setTab('Active'); setLevelFilter('ACTIVE')">
+      <div>
+        <div class="bento-label">Approved & Active</div>
+        <div class="bento-value text-success">{{ activeJobsCount }}</div>
+        <div class="bento-subtext">Sanctioned & Hiring Open</div>
+      </div>
+      <div class="bento-icon" style="background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0;">
+        <i class="bi bi-check-circle-fill"></i>
+      </div>
+    </div>
+
+    <!-- Bento 4: Total Sanctioned Headcount (Approved Only) -->
+    <div class="bento-card" (click)="setTab('Active'); setLevelFilter('ACTIVE')">
+      <div>
+        <div class="bento-label">Sanctioned Headcount</div>
+        <div class="bento-value text-primary">{{ totalOpenings }}</div>
+        <div class="bento-subtext">Total Approved Positions</div>
+      </div>
+      <div class="bento-icon" style="background: #eff6ff; color: #3080e8; border: 1px solid #bfdbfe;">
+        <i class="bi bi-people-fill"></i>
+      </div>
+    </div>
+
+    <!-- Bento 5: Rejected / Returned -->
+    <div class="bento-card" [class.active-card]="activeTab === 'Rejected'" (click)="setTab('Rejected'); setLevelFilter('REJECTED')">
+      <div>
+        <div class="bento-label">Rejected / Returned</div>
+        <div class="bento-value text-danger">{{ rejectedCount }}</div>
+        <div class="bento-subtext">Needs Revision & Resubmit</div>
+      </div>
+      <div class="bento-icon" style="background: #fef2f2; color: #dc2626; border: 1px solid #fecaca;">
+        <i class="bi bi-x-circle-fill"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 3. OATS Filter & Search Action Strip (from JobListingFilter.jsx) ───────────── -->
+  <div class="oats-filter-strip bg-white p-2.5 px-3 rounded border mb-2 shadow-sm d-flex justify-content-between align-items-center flex-wrap gap-2">
+    
+    <!-- Left: Section Title Tabs with Active Underline Indicator (OATS Style) -->
+    <div class="oats-tab-group d-flex align-items-center gap-3">
+      <button type="button" class="oats-tab-link" [class.active]="activeTab === 'All'" (click)="setTab('All'); setLevelFilter('ALL')">
+        All Jobs
+        <span class="oats-tab-badge ms-1">{{ totalJobsCount }}</span>
+      </button>
+      <button type="button" class="oats-tab-link" [class.active]="activeTab === 'Active'" (click)="setTab('Active'); setLevelFilter('ACTIVE')">
+        Approved & Active
+        <span class="oats-tab-badge ms-1">{{ activeJobsCount }}</span>
+      </button>
+      <button type="button" class="oats-tab-link" [class.active]="activeTab === 'Approvals'" (click)="setTab('Approvals'); setLevelFilter('ALL')">
+        Pending Approvals
+        <span class="oats-tab-badge ms-1">{{ pendingApprovalsCount }}</span>
+      </button>
+      <button type="button" class="oats-tab-link" [class.active]="activeTab === 'Drafts'" (click)="setTab('Drafts'); setLevelFilter('ALL')">
+        Drafts
+        <span class="oats-tab-badge ms-1">{{ draftsCount }}</span>
+      </button>
+      <button type="button" class="oats-tab-link" [class.active]="activeTab === 'Rejected'" (click)="setTab('Rejected'); setLevelFilter('REJECTED')">
+        Rejected
+        <span class="oats-tab-badge ms-1" style="background: #fee2e2; color: #dc2626; border-color: #fca5a5;">{{ rejectedCount }}</span>
+      </button>
+    </div>
+
+    <!-- Right Controls: Search, Timeline, Status, Table/Grid Toggle, Action Button -->
+    <div class="d-flex align-items-center gap-2 flex-wrap">
+      
+      <!-- Search Input with Blue Border -->
+      <div class="oats-search-box position-relative" style="width: 220px;">
+        <i class="bi bi-search oats-search-icon"></i>
+        <input type="text" 
+               class="form-control form-control-sm oats-search-input" 
+               [(ngModel)]="searchQuery" 
+               (ngModelChange)="applyFilter()" 
+               placeholder="Search by Title, Code, Hub...">
+      </div>
+
+      <!-- Timeline Select (OATS Style) -->
+      <select class="form-select form-select-sm oats-select"
+              [(ngModel)]="timelineFilter"
+              (ngModelChange)="onTimelineChange()"
+              style="width: 125px;">
+        <option value="all">All Timeline</option>
+        <option value="today">Today</option>
+        <option value="last_7_days">Last 7 Days</option>
+        <option value="last_30_days">Last 30 Days</option>
+        <option value="this_year">This Year</option>
+      </select>
+
+      <!-- Location / Hub Filter -->
+      <select class="form-select form-select-sm oats-select"
+              [(ngModel)]="selectedLocationFilter"
+              (ngModelChange)="onLocationFilterChange()"
+              style="width: 135px;"
+              title="Filter by Hub / Location">
+        <option value="all">All Locations</option>
+        <option *ngFor="let loc of uniqueLocations" [value]="loc">{{ loc }}</option>
+      </select>
+
+      <!-- Status Select (OATS Style) -->
+      <select class="form-select form-select-sm oats-select"
+              [(ngModel)]="jobStatusFilter"
+              (ngModelChange)="onStatusFilterChange()"
+              style="width: 120px;">
+        <option value="all">All Status</option>
+        <option value="Active">Active</option>
+        <option value="Pending">Pending</option>
+        <option value="Draft">Draft</option>
+        <option value="Closed">Closed</option>
+        <option value="Rejected">Rejected</option>
+      </select>
+
+      <!-- View Switcher Removed (Table View Enforced) -->
+    </div>
+
+  </div>
+
+  <!-- ── 4. Granular Level & Stage Quick-Filter Bar ────────────────────────── -->
+  <div class="level-filter-bar d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
+    <div class="d-flex align-items-center gap-1.5 flex-wrap">
+      <span class="filter-label">
+        <i class="bi bi-funnel-fill text-primary"></i> Stage:
+      </span>
+
+      <!-- All Levels -->
+      <button type="button" 
+              class="btn-level-chip" 
+              [class.active]="selectedLevelFilter === 'ALL'" 
+              (click)="setLevelFilter('ALL')">
+        All Stages <span class="chip-count">{{ totalJobsCount }}</span>
+      </button>
+
+      <!-- Level 1: Operations -->
+      <button *ngIf="hasL1Right()"
+              type="button" 
+              class="btn-level-chip l1-chip" 
+              [class.active]="selectedLevelFilter === 'L1'" 
+              (click)="setLevelFilter('L1')">
+        <span class="level-indicator-dot" style="background: #d97706;"></span>
+        L1: Operations <span class="chip-count">{{ l1Count }}</span>
+      </button>
+
+      <!-- Level 2: Corp HR -->
+      <button *ngIf="hasL2Right()"
+              type="button" 
+              class="btn-level-chip l2-chip" 
+              [class.active]="selectedLevelFilter === 'L2'" 
+              (click)="setLevelFilter('L2')">
+        <span class="level-indicator-dot" style="background: #0284c7;"></span>
+        L2: Corp HR <span class="chip-count">{{ l2Count }}</span>
+      </button>
+
+      <!-- Level 3: HOD -->
+      <button *ngIf="hasL3Right()"
+              type="button" 
+              class="btn-level-chip l3-chip" 
+              [class.active]="selectedLevelFilter === 'L3'" 
+              (click)="setLevelFilter('L3')">
+        <span class="level-indicator-dot" style="background: #4f46e5;"></span>
+        L3: HOD <span class="chip-count">{{ l3Count }}</span>
+      </button>
+
+
+      <!-- Approved & Active -->
+      <button type="button" 
+              class="btn-level-chip active-chip" 
+              [class.active]="selectedLevelFilter === 'ACTIVE'" 
+              (click)="setLevelFilter('ACTIVE')">
+        <span class="level-indicator-dot" style="background: #16a34a;"></span>
+        Approved & Active <span class="chip-count">{{ activeJobsCount }}</span>
+      </button>
+
+      <!-- Rejected -->
+      <button type="button" 
+              class="btn-level-chip rejected-chip" 
+              [class.active]="selectedLevelFilter === 'REJECTED'" 
+              (click)="setLevelFilter('REJECTED')">
+        <span class="level-indicator-dot" style="background: #ef4444;"></span>
+        Rejected <span class="chip-count">{{ rejectedCount }}</span>
+      </button>
+    </div>
+
+    <!-- Active Filter Reset Indicator -->
+    <div *ngIf="selectedLevelFilter !== 'ALL'" class="d-flex align-items-center gap-1">
+      <small class="text-muted fw-semibold" style="font-size: 10.5px;">Filtered by: <strong>{{ selectedLevelFilter }}</strong></small>
+      <button type="button" class="btn btn-sm btn-link text-danger p-0 ms-1 text-decoration-none fw-bold" (click)="setLevelFilter('ALL')" style="font-size: 11px;">
+        <i class="bi bi-x-circle"></i> Clear
+      </button>
+    </div>
+  </div>
+
+  <!-- ── 5. VIEW 1: OATS Table View (from JobTable.jsx) ────────────────────────── -->
+  <div class="table-card mb-2" *ngIf="viewMode === 'table'">
+    <div class="table-header-title">
+      <div class="d-flex align-items-center gap-1.5">
+        <h6 class="mb-0 fw-bold text-dark" style="font-size: 11.5px;">
+          Requisition Roster
+        </h6>
+        <span class="badge bg-light text-muted border" style="font-size: 9px; font-weight: 600;">
+          Showing {{ filteredJobs.length }} of {{ jobList.length }} Requisitions
+        </span>
+      </div>
+      <div class="d-flex align-items-center gap-1 text-muted" style="font-size: 9.5px;">
+        <i class="bi bi-diagram-3-fill text-primary"></i>
+        <span>Site HR &rarr; L1 (Operations) &rarr; L2 (Corp HR) &rarr; L3 (HOD) &rarr; Active</span>
+      </div>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table ats-job-table align-middle w-100">
+        <thead>
+          <tr>
+            <th style="width: 32px;" class="text-center">
+              <input type="checkbox"
+                     class="form-check-input"
+                     [checked]="isAllJobsSelected()"
+                     [indeterminate]="isIndeterminateSelected()"
+                     (change)="toggleSelectAllJobs($event)"
+                     title="Select All">
+            </th>
+            <th style="min-width: 170px;">MRF & JOB TITLE</th>
+            <th style="width: 90px; max-width: 90px;">HUB</th>
+            <th style="width: 80px; max-width: 80px;">DEPT</th>
+            <th style="width: 60px;" class="text-center">OPENINGS</th>
+            <th style="min-width: 155px;">WORKFLOW & STAGE</th>
+            <th style="min-width: 145px;">RAISED BY</th>
+            <th class="text-end" style="min-width: 175px; white-space: nowrap;">ACTIONS</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let job of paginatedJobs; let idx = index" [class.selected-row]="isJobSelected(job)">
+            
+            <!-- Checkbox -->
+            <td class="text-center" style="width: 32px;">
+              <input type="checkbox"
+                     class="form-check-input"
+                     [checked]="isJobSelected(job)"
+                     (change)="toggleSelectJob(job)">
+            </td>
+
+            <!-- MRF Code & Title -->
+            <td>
+              <div class="d-flex flex-column" style="min-width: 0;">
+                <div class="d-flex align-items-center gap-1 text-truncate">
+                  <span class="mrf-chip flex-shrink-0" (click)="openJobDetail(job)" title="Click to view full requisition details">
+                    {{ job.mrfCode || ('MRF/2026/' + job.reqId) }}
+                  </span>
+                  <span (click)="openJobDetail(job)" class="job-title-text text-truncate" [title]="job.jobTitle">
+                    {{ job.jobTitle }}
+                  </span>
+                  <i class="bi bi-stars text-primary" style="font-size: 11px;" title="AI Matching Enabled"></i>
+                </div>
+                <small class="text-muted mt-0.5 text-truncate" style="font-size: 9px;">
+                  {{ job.designation || job.jobTitle }} &bull; {{ job.employmentType || 'Full-Time' }}
+                </small>
+              </div>
+            </td>
+
+            <!-- Hub -->
+            <td style="width: 90px; max-width: 90px;">
+              <div class="d-flex align-items-center gap-1 text-dark fw-medium text-truncate" [title]="job.location || 'Hub Operations'" style="font-size: 9.5px;">
+                <i class="bi bi-geo-alt-fill text-danger flex-shrink-0" style="font-size: 9px;"></i>
+                <span class="text-truncate">{{ job.location || 'Hub' }}</span>
+              </div>
+            </td>
+
+            <!-- Department -->
+            <td style="width: 80px; max-width: 80px;">
+              <span class="badge bg-light text-dark border fw-medium text-truncate d-inline-block" [title]="job.department || 'Operations'" style="font-size: 8.5px; padding: 1.5px 5px; border-radius: 3px; max-width: 75px;">
+                {{ job.department || 'Operations' }}
+              </span>
+            </td>
+
+            <!-- Headcount Demand -->
+            <td style="width: 60px;" class="text-center">
+              <span class="badge bg-primary-subtle text-primary border border-primary-subtle fw-bold" style="font-size: 9px; padding: 2px 5px;">
+                {{ job.openPositions || job.openingsCount || 1 }}
+              </span>
+            </td>
+
+            <!-- WORKFLOW LEVEL & STAGE -->
+            <td>
+              <div class="d-flex flex-column gap-0.5" (click)="openApprovalModal(job)" style="cursor: pointer;" title="Click to view full approval trail">
+                <div>
+                  <span class="badge-stage-level shadow-sm" [ngClass]="getLevelBadgeClass(job.workflowStatus || job.status)">
+                    <i class="bi" [ngClass]="getLevelIcon(job.workflowStatus || job.status)"></i>
+                    {{ getLevelTitle(job.workflowStatus || job.status) }}
+                  </span>
+                </div>
+
+                <!-- 3-Tier Visual Stepper Progress Bar (or Rejection Banner) -->
+                <div class="d-flex align-items-center gap-1 mt-0.5">
+                  <div class="stage-stepper-mini" *ngIf="job.workflowStatus !== 'Rejected' && !job.isDisapproved">
+                    <span class="step-dot" 
+                          [ngClass]="job.workflowStatus === 'Submitted' ? 'dot-active' : 'dot-done'" 
+                          title="Site HR: Submitted"></span>
+                    <span class="step-line" 
+                          [ngClass]="job.workflowStatus !== 'Submitted' ? 'line-done' : ''"></span>
+                    
+                    <span class="step-dot" 
+                          [ngClass]="job.workflowStatus === 'L1_Pending' ? 'dot-active' : (job.workflowStatus === 'L2_Pending' || job.workflowStatus === 'L3_Pending' || job.workflowStatus === 'Active' ? 'dot-done' : 'dot-idle')" 
+                          title="L1: Operations Review"></span>
+                    <span class="step-line" 
+                          [ngClass]="job.workflowStatus === 'L3_Pending' || job.workflowStatus === 'Active' || job.workflowStatus === 'L2_Pending' ? 'line-done' : ''"></span>
+                    
+                    <span class="step-dot" 
+                          [ngClass]="job.workflowStatus === 'L2_Pending' ? 'dot-active' : (job.workflowStatus === 'L3_Pending' || job.workflowStatus === 'Active' ? 'dot-done' : 'dot-idle')" 
+                          title="L2: Corp HR Review"></span>
+                    <span class="step-line" 
+                          [ngClass]="job.workflowStatus === 'Active' || job.workflowStatus === 'L3_Pending' ? 'line-done' : ''"></span>
+                    
+                    <span class="step-dot" 
+                          [ngClass]="job.workflowStatus === 'L3_Pending' ? 'dot-active' : (job.workflowStatus === 'Active' ? 'dot-done' : 'dot-idle')" 
+                          title="L3: HOD Final Review"></span>
+                  </div>
+
+                  <!-- Rejection Tag when returned -->
+                  <div *ngIf="job.workflowStatus === 'Rejected' || job.isDisapproved == 1" class="d-inline-flex align-items-center gap-1">
+                    <span class="badge bg-danger text-white fw-bold shadow-xs" style="font-size: 8.5px; padding: 1.5px 5px;">
+                      <i class="bi bi-x-circle me-0.5"></i> {{ job.rejectedByLevel ? 'Rejected at ' + job.rejectedByLevel : 'Returned' }}
+                    </span>
+                  </div>
+
+                  <small [ngClass]="(job.workflowStatus === 'Rejected' || job.isDisapproved == 1) ? 'text-danger fw-bold' : 'text-muted fw-semibold'" style="font-size: 8.5px;">
+                    {{ getStageStepText(job.workflowStatus || job.status) }}
+                  </small>
+                </div>
+              </div>
+            </td>
+
+            <!-- Submitted By & Date + Time (with seconds) -->
+            <td style="min-width: 145px;">
+              <div class="text-dark fw-bold text-truncate" style="font-size: 11.5px;" [title]="job.submittedBy || 'Site HR'">{{ job.submittedBy || 'Site HR' }}</div>
+              <span class="text-muted d-block" style="font-size: 11px; font-weight: 500; font-family: 'Work Sans', sans-serif;">{{ (job.createdDate | date:'dd-MM-yyyy, hh:mm:ss a') || '-' }}</span>
+            </td>
+
+            <!-- Action Buttons -->
+            <td class="text-end" style="min-width: 175px; white-space: nowrap;">
+              <div class="d-inline-flex align-items-center justify-content-end gap-1">
+                
+                <!-- View Full Requisition Details (Matching MRF List) -->
+                <button type="button"
+                        class="btn-action-outline" 
+                        (click)="openJobDetail(job)"
+                        title="View Full Requisition Details">
+                  <i class="bi bi-eye"></i> View
+                </button>
+
+                <!-- Open Pipeline Action: Strictly for Approved & Active jobs -->
+                <a *ngIf="isJobActive(job)"
+                   [routerLink]="['/dash/recruitment/recruitmentdashboard/pipeline']"
+                   [queryParams]="{ reqId: job.reqId || job.jobId }"
+                   class="btn-action-pipeline text-decoration-none"
+                   title="Open Candidate Pipeline">
+                  <i class="bi bi-diagram-3-fill"></i>
+                  <span>Pipeline</span>
+                </a>
+
+                <!-- If Pending & User has Right to act: Review & Approve -->
+                <button *ngIf="!isJobActive(job) && job.status !== 'Closed' && canUserAct(job)" 
+                        class="btn-action-primary" 
+                        (click)="openApprovalModal(job)"
+                        title="Review requisition and approve or reject">
+                  <i class="bi bi-shield-check"></i> Review
+                </button>
+
+                <!-- If Rejected: Edit & Resubmit Button -->
+                <button *ngIf="job.workflowStatus === 'Rejected' || job.isDisapproved == 1"
+                        class="btn-action-primary"
+                        style="background-color: #3080e8; border-color: #3080e8;"
+                        (click)="editJob(job)"
+                        title="Edit and correct requisition to resubmit">
+                  <i class="bi bi-pencil-square"></i> Edit
+                </button>
+
+                <!-- If Active or Closed: Assign Vendors -->
+                <button *ngIf="isJobActive(job) || job.status === 'Closed'"
+                        class="btn-action-outline" 
+                        (click)="openVendorAllocationModal(job)" 
+                        title="Assign Vendors & Sourcing Channels">
+                  <i class="bi bi-people-fill"></i> Vendors
+                </button>
+
+              </div>
+            </td>
+          </tr>
+
+          <!-- Empty State for Table -->
+          <tr *ngIf="paginatedJobs.length === 0">
+            <td colspan="8" class="text-center py-4 text-muted">
+              <div class="py-3">
+                <i class="bi bi-inbox text-secondary opacity-50" style="font-size: 26px;"></i>
+                <h6 class="mt-2 mb-1 fw-bold text-dark" style="font-size: 12px;">No Requisitions in this view</h6>
+                <p class="text-muted mx-auto mb-2" style="font-size: 10.5px; max-width: 380px;">
+                  No job requisitions match the selected filters or search query.
+                </p>
+                <div class="d-flex justify-content-center gap-2 mt-1">
+                  <button type="button" class="btn btn-sm btn-outline-secondary py-0.5 px-2" (click)="setLevelFilter('ALL')" style="font-size: 10px; height: 24px;">
+                    Reset Filters
+                  </button>
+                  <a *ngIf="canRaiseRequisition || isAdmin" routerLink="/dash/recruitment/recruitmentdashboard/create-job-wizard" class="btn-create-req text-decoration-none" style="font-size: 10px; height: 24px; padding: 0 10px;">
+                    <i class="bi bi-plus-lg me-1"></i> Raise Requisition
+                  </a>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- OATS Table Pagination Footer -->
+    <div class="p-2 px-3 bg-light border-top d-flex justify-content-between align-items-center flex-wrap gap-2" style="font-size: 10px;">
+      <div class="d-flex align-items-center gap-2">
+        <span class="text-muted">
+          Showing {{ filteredJobs.length > 0 ? (currentPage - 1) * pageSize + 1 : 0 }}-{{ (currentPage * pageSize) < filteredJobs.length ? (currentPage * pageSize) : filteredJobs.length }} of {{ filteredJobs.length }} records
+        </span>
+        <div class="d-flex align-items-center gap-1 ms-2">
+          <span class="text-muted">Rows per page:</span>
+          <select class="form-select form-select-sm py-0 px-1" style="height: 22px; width: 55px; font-size: 10px;" [(ngModel)]="pageSize" (ngModelChange)="changePageSize($event)">
+            <option [value]="10">10</option>
+            <option [value]="20">20</option>
+            <option [value]="30">30</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="d-flex align-items-center gap-1" *ngIf="totalPages > 1">
+        <button class="btn btn-light btn-sm border py-0 px-1.5" [disabled]="currentPage === 1" (click)="goToPage(currentPage - 1)" style="font-size: 9.5px; height: 22px;">
+          <i class="bi bi-chevron-left"></i>
+        </button>
+        <button class="btn btn-sm py-0 px-2 fw-bold" 
+                *ngFor="let p of pagesArray" 
+                [ngClass]="currentPage === p ? 'btn-primary text-white' : 'btn-light border'" 
+                (click)="goToPage(p)" 
+                style="font-size: 9.5px; height: 22px;">
+          {{ p }}
+        </button>
+        <button class="btn btn-light btn-sm border py-0 px-1.5" [disabled]="currentPage === totalPages" (click)="goToPage(currentPage + 1)" style="font-size: 9.5px; height: 22px;">
+          <i class="bi bi-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 6. VIEW 2: OATS Grid / Bento View (from JobGrid.jsx) ────────────────── -->
+  <div class="oats-grid-container mb-3" *ngIf="viewMode === 'grid'">
+    <div class="row g-2.5">
+      <div class="col-12 col-md-6 col-xl-4" *ngFor="let job of paginatedJobs">
+        <div class="oats-job-card h-100 d-flex bg-white rounded border p-2.5 position-relative shadow-sm">
+          
+          <!-- Left: Initials Avatar Box with Priority Tag (Matching JobGrid.jsx) -->
+          <div class="oats-card-avatar d-flex flex-column align-items-center justify-content-center flex-shrink-0 me-2.5">
+            <span class="avatar-initials">{{ getInitials(job.jobTitle) }}</span>
+            <span class="avatar-priority-corner" [style.backgroundColor]="getPriorityColor(job)" [title]="'Priority: ' + getPriority(job)"></span>
+          </div>
+
+          <!-- Right: Job Details & Pipeline Navigation -->
+          <div class="oats-card-content d-flex flex-column flex-grow-1 min-w-0">
+            
+            <!-- Top Line: MRF Code + Submissions & Pipeline Badges -->
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <span class="mrf-chip flex-shrink-0" (click)="openJobDetail(job)" title="Click to view full requisition details">
+                {{ job.mrfCode || ('MRF/2026/' + job.reqId) }}
+              </span>
+              <div class="d-flex align-items-center gap-1">
+                <span class="oats-badge-sub" title="Candidate Submissions">{{ getSubmissionsCount(job) }}</span>
+                <!-- ONLY show pipeline badge link if job is approved and active -->
+                <a *ngIf="isJobActive(job)"
+                   [routerLink]="['/dash/recruitment/recruitmentdashboard/pipeline']"
+                   [queryParams]="{ reqId: job.reqId || job.jobId }"
+                   class="oats-badge-pip text-decoration-none"
+                   title="Click to Open Pipeline">
+                  {{ getPipelineCount(job) }}
+                </a>
+                <span *ngIf="!isJobActive(job)" 
+                      class="badge bg-light text-muted border" 
+                      style="font-size: 8.5px;"
+                      title="Approval In Progress">
+                  <i class="bi bi-hourglass-split text-warning"></i>
+                </span>
+                <span class="oats-badge-note" title="Job Notes" (click)="openApprovalModal(job)">
+                  <i class="bi bi-sticky-fill"></i>
+                </span>
+              </div>
+            </div>
+
+            <!-- Job Title -->
+            <h5 class="oats-card-title text-truncate mb-1" [title]="job.jobTitle" (click)="openJobDetail(job)">
+              {{ job.jobTitle }}
+            </h5>
+
+            <!-- Department & Hub Location -->
+            <div class="oats-card-meta d-flex align-items-center gap-2 mb-2 text-muted" style="font-size: 10px;">
+              <span class="text-truncate"><i class="bi bi-building me-1 text-secondary"></i>{{ job.department || 'Operations' }}</span>
+              <span>&bull;</span>
+              <span class="text-truncate"><i class="bi bi-geo-alt-fill me-1 text-danger"></i>{{ job.location || 'Hub' }}</span>
+            </div>
+
+            <!-- Headcount Demand & Workflow Status -->
+            <div class="d-flex justify-content-between align-items-center mb-2 mt-auto">
+              <span class="badge bg-primary-subtle text-primary border border-primary-subtle" style="font-size: 9.5px; padding: 2px 6px;">
+                <i class="bi bi-people-fill me-1"></i>{{ job.openPositions || job.openingsCount || 1 }} Openings
+              </span>
+              <span class="badge-stage-level" [ngClass]="getLevelBadgeClass(job.workflowStatus || job.status)">
+                {{ getLevelTitle(job.workflowStatus || job.status) }}
+              </span>
+            </div>
+
+            <!-- Card Action Footer -->
+            <div class="oats-card-footer pt-2 border-top d-flex justify-content-between align-items-center gap-1">
+              <div class="d-flex align-items-center gap-1">
+                <!-- View Full Requisition Details (Matching MRF List) -->
+                <button class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1"
+                        style="font-size: 10px; height: 26px; padding: 0 8px;"
+                        (click)="openJobDetail(job)"
+                        title="View Full Requisition Details">
+                  <i class="bi bi-eye"></i> View
+                </button>
+
+                <!-- If Pending & User has Right to act: Review & Approve -->
+                <button *ngIf="!isJobActive(job) && job.status !== 'Closed' && canUserAct(job)"
+                        class="btn btn-sm btn-primary-action d-flex align-items-center gap-1"
+                        style="font-size: 10px; height: 26px; padding: 0 8px;"
+                        (click)="openApprovalModal(job)"
+                        title="Review and Approve">
+                  <i class="bi bi-shield-check"></i> Review
+                </button>
+
+                <!-- If Active: Assign Vendors -->
+                <button *ngIf="isJobActive(job)"
+                        class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1"
+                        style="font-size: 10px; height: 26px; padding: 0 8px;"
+                        (click)="openVendorAllocationModal(job)"
+                        title="Assign Vendors">
+                  <i class="bi bi-people-fill"></i> Vendors
+                </button>
+              </div>
+              
+              <!-- Pipeline Button: ONLY if Approved and Active -->
+              <a *ngIf="isJobActive(job)"
+                 [routerLink]="['/dash/recruitment/recruitmentdashboard/pipeline']"
+                 [queryParams]="{ reqId: job.reqId || job.jobId }"
+                 class="btn btn-primary-action btn-sm d-flex align-items-center gap-1 text-decoration-none"
+                 style="font-size: 10px; height: 26px; padding: 0 10px;"
+                 title="Open Candidate Pipeline">
+                <span>Open Pipeline</span>
+                <i class="bi bi-arrow-right"></i>
+              </a>
+
+              <!-- If Not Active and Not Rejected: Show Pending Badge -->
+              <span *ngIf="!isJobActive(job) && !isJobRejected(job)" 
+                    class="badge bg-light text-muted border d-flex align-items-center gap-1"
+                    style="font-size: 9.5px; height: 26px; padding: 0 8px;"
+                    title="Pipeline opens once approved">
+                <i class="bi bi-lock-fill text-secondary"></i>
+                <span>Approval In Progress</span>
+              </span>
+
+              <!-- If Rejected: Show Edit & Resubmit button -->
+              <button *ngIf="isJobRejected(job)"
+                      class="btn btn-sm btn-primary d-flex align-items-center gap-1 shadow-xs"
+                      style="font-size: 10px; height: 26px; padding: 0 10px; background-color: #3080e8; border-color: #3080e8;"
+                      (click)="editJob(job)"
+                      title="Edit and correct requisition to resubmit">
+                <i class="bi bi-pencil-square"></i>
+                <span>Edit & Resubmit</span>
+              </button>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Empty State for Grid -->
+      <div class="col-12" *ngIf="paginatedJobs.length === 0">
+        <div class="text-center py-4 bg-white rounded border">
+          <i class="bi bi-inbox text-secondary opacity-50" style="font-size: 28px;"></i>
+          <h6 class="mt-2 mb-1 fw-bold text-dark" style="font-size: 12px;">No Requisitions Match Filters</h6>
+          <p class="text-muted mx-auto mb-2" style="font-size: 10.5px;">Try changing search keyword, stage or timeline filter.</p>
+          <button type="button" class="btn btn-outline-secondary btn-sm" (click)="setLevelFilter('ALL')" style="font-size: 10px;">
+            Reset Filters
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- OATS Grid Pagination Footer -->
+    <div class="p-2 px-3 bg-white border rounded mt-2 d-flex justify-content-between align-items-center flex-wrap gap-2 shadow-sm" style="font-size: 10px;">
+      <div class="d-flex align-items-center gap-2">
+        <span class="text-muted">
+          Showing {{ filteredJobs.length > 0 ? (currentPage - 1) * pageSize + 1 : 0 }}-{{ (currentPage * pageSize) < filteredJobs.length ? (currentPage * pageSize) : filteredJobs.length }} of {{ filteredJobs.length }} records
+        </span>
+        <div class="d-flex align-items-center gap-1 ms-2">
+          <span class="text-muted">Rows per page:</span>
+          <select class="form-select form-select-sm py-0 px-1" style="height: 22px; width: 55px; font-size: 10px;" [(ngModel)]="pageSize" (ngModelChange)="changePageSize($event)">
+            <option [value]="10">10</option>
+            <option [value]="20">20</option>
+            <option [value]="30">30</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="d-flex align-items-center gap-1" *ngIf="totalPages > 1">
+        <button class="btn btn-light btn-sm border py-0 px-1.5" [disabled]="currentPage === 1" (click)="goToPage(currentPage - 1)" style="font-size: 9.5px; height: 22px;">
+          <i class="bi bi-chevron-left"></i>
+        </button>
+        <button class="btn btn-sm py-0 px-2 fw-bold" 
+                *ngFor="let p of pagesArray" 
+                [ngClass]="currentPage === p ? 'btn-primary text-white' : 'btn-light border'" 
+                (click)="goToPage(p)" 
+                style="font-size: 9.5px; height: 22px;">
+          {{ p }}
+        </button>
+        <button class="btn btn-light btn-sm border py-0 px-1.5" [disabled]="currentPage === totalPages" (click)="goToPage(currentPage + 1)" style="font-size: 9.5px; height: 22px;">
+          <i class="bi bi-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 5. Approval Workflow & Lifecycle Modal (Clean, Scrollable & Pinned) ── -->
+  <div class="modal-backdrop-custom" *ngIf="showApprovalModal" (click)="closeApprovalModal()">
+    <div class="modal-box-custom" (click)="$event.stopPropagation()">
+      <!-- Modal Header (Pinned at Top) -->
+      <div class="modal-head">
+        <div class="d-flex flex-column" style="gap: 4px; min-width: 0;">
+          <div class="d-flex align-items-center flex-wrap" style="gap: 8px;">
+            <span class="modal-mrf-badge">
+              <i class="bi bi-file-earmark-text me-1"></i>{{ selectedJobForApproval?.mrfCode || ('MRF/2026/' + selectedJobForApproval?.reqId) }}
+            </span>
+            <h5 class="modal-title-main mb-0">{{ selectedJobForApproval?.jobTitle }}</h5>
+          </div>
+          <div class="modal-meta-strip d-flex align-items-center flex-wrap">
+            <span class="meta-item"><i class="bi bi-geo-alt-fill text-danger me-1"></i><strong>{{ selectedJobForApproval?.location || 'Hub Operations' }}</strong></span>
+            <span class="meta-divider">&bull;</span>
+            <span class="meta-item"><i class="bi bi-briefcase-fill text-primary me-1"></i><strong>{{ selectedJobForApproval?.department || 'Operations' }}</strong></span>
+            <span class="meta-divider">&bull;</span>
+            <span class="meta-item"><i class="bi bi-people-fill text-success me-1"></i><strong>{{ selectedJobForApproval?.openPositions || selectedJobForApproval?.openingsCount || 1 }} Openings</strong></span>
+          </div>
+        </div>
+        <button type="button" class="btn-close ms-2 flex-shrink-0" (click)="closeApprovalModal()" aria-label="Close"></button>
+      </div>
+
+      <!-- Modal Body (Inner Scrollable) -->
+      <div class="modal-body-scroll">
+        <!-- 5-Step Vertical Workflow Stepper -->
+        <div class="lifecycle-stepper">
+          <div class="d-flex align-items-center justify-content-between mb-2 pb-1 border-bottom">
+            <span class="fw-bold text-dark d-flex align-items-center gap-1" style="font-size: 11px;">
+              <i class="bi bi-diagram-3-fill text-primary"></i> 16-Step CJ DARCL Approval Lifecycle
+            </span>
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle" style="font-size: 9px; padding: 2px 7px;">
+              {{ approvalState?.OverallStatus || selectedJobForApproval?.workflowStatus || 'In Progress' }}
+            </span>
+          </div>
+
+          <!-- Step 1: Site HR Submission -->
+          <div class="step-item">
+            <div class="step-circle passed">
+              <i class="bi bi-check-lg"></i>
+            </div>
+            <div class="step-title-row">
+              <div class="step-name">Step 1: Requisition Raised by Site HR</div>
+              <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size: 8.5px;">Submitted</span>
+            </div>
+            <div class="step-meta">
+              Raised by: <strong class="text-dark">{{ selectedJobForApproval?.submittedBy || 'Site HR' }}</strong> &bull; <span style="font-size: 11px; font-weight: 500;">{{ (selectedJobForApproval?.createdDate | date:'dd-MM-yyyy, hh:mm:ss a') }}</span>
+            </div>
+          </div>
+
+          <!-- Step 2: L1 Operations Team -->
+          <div class="step-item">
+            <div class="step-circle" [ngClass]="getStepClass(2)">
+              <i class="bi" [ngClass]="getStepClass(2) === 'passed' ? 'bi-check-lg' : (getStepClass(2) === 'rejected' ? 'bi-x-lg' : (getStepClass(2) === 'current' ? 'bi-hourglass-split' : 'bi-circle'))"></i>
+            </div>
+            <div class="step-title-row">
+              <div class="step-name">Step 2: Level 1 - Operations Team Review</div>
+              <span class="badge" 
+                    [ngClass]="getStepClass(2) === 'passed' ? 'bg-success-subtle text-success border border-success-subtle' : (getStepClass(2) === 'rejected' ? 'bg-danger-subtle text-danger border border-danger-subtle' : (getStepClass(2) === 'current' ? 'bg-warning-subtle text-warning border border-warning-subtle' : 'bg-light text-muted border'))" 
+                    style="font-size: 8.5px;">
+                {{ approvalState?.L1Action || (getStepClass(2) === 'current' ? 'Pending Review' : (getStepClass(2) === 'passed' ? 'Approved' : 'Pending')) }}
+              </span>
+            </div>
+            <div class="step-meta" *ngIf="approvalState?.L1ApproverName">
+              Approver: <strong class="text-dark">{{ approvalState?.L1ApproverName }}</strong> &bull; <span style="font-size: 11px; font-weight: 500;">{{ (approvalState?.L1ActionDate | date:'dd-MM-yyyy, hh:mm:ss a') }}</span>
+            </div>
+            <div *ngIf="approvalState?.L1Remarks" class="step-remark">
+              "{{ approvalState?.L1Remarks }}"
+            </div>
+          </div>
+
+          <!-- Step 3: L2 Corporate HR -->
+          <div class="step-item">
+            <div class="step-circle" [ngClass]="getStepClass(3)">
+              <i class="bi" [ngClass]="getStepClass(3) === 'passed' ? 'bi-check-lg' : (getStepClass(3) === 'rejected' ? 'bi-x-lg' : (getStepClass(3) === 'current' ? 'bi-hourglass-split' : 'bi-circle'))"></i>
+            </div>
+            <div class="step-title-row">
+              <div class="step-name">Step 3: Level 2 - Corporate HR Head</div>
+              <span class="badge" 
+                    [ngClass]="getStepClass(3) === 'passed' ? 'bg-success-subtle text-success border border-success-subtle' : (getStepClass(3) === 'rejected' ? 'bg-danger-subtle text-danger border border-danger-subtle' : (getStepClass(3) === 'current' ? 'bg-warning-subtle text-warning border border-warning-subtle' : 'bg-light text-muted border'))" 
+                    style="font-size: 8.5px;">
+                {{ approvalState?.L2Action || (getStepClass(3) === 'current' ? 'Pending Review' : (getStepClass(3) === 'passed' ? 'Approved' : 'Pending')) }}
+              </span>
+            </div>
+            <div class="step-meta" *ngIf="approvalState?.L2ApproverName">
+              Approver: <strong class="text-dark">{{ approvalState?.L2ApproverName }}</strong> &bull; <span style="font-size: 11px; font-weight: 500;">{{ (approvalState?.L2ActionDate | date:'dd-MM-yyyy, hh:mm:ss a') }}</span>
+            </div>
+            <div *ngIf="approvalState?.L2Remarks" class="step-remark">
+              "{{ approvalState?.L2Remarks }}"
+            </div>
+          </div>
+
+          <!-- Step 4: L3 HOD Approval -->
+          <div class="step-item">
+            <div class="step-circle" [ngClass]="getStepClass(4)">
+              <i class="bi" [ngClass]="getStepClass(4) === 'passed' ? 'bi-check-lg' : (getStepClass(4) === 'rejected' ? 'bi-x-lg' : (getStepClass(4) === 'current' ? 'bi-hourglass-split' : 'bi-circle'))"></i>
+            </div>
+            <div class="step-title-row">
+              <div class="step-name">Step 4: Level 3 - HOD / Regional Head</div>
+              <span class="badge" 
+                    [ngClass]="getStepClass(4) === 'passed' ? 'bg-success-subtle text-success border border-success-subtle' : (getStepClass(4) === 'rejected' ? 'bg-danger-subtle text-danger border border-danger-subtle' : (getStepClass(4) === 'current' ? 'bg-warning-subtle text-warning border border-warning-subtle' : 'bg-light text-muted border'))" 
+                    style="font-size: 8.5px;">
+                {{ approvalState?.L3Action || (getStepClass(4) === 'current' ? 'Pending Review' : (getStepClass(4) === 'passed' ? 'Approved' : 'Pending')) }}
+              </span>
+            </div>
+            <div class="step-meta" *ngIf="approvalState?.L3ApproverName">
+              Approver: <strong class="text-dark">{{ approvalState?.L3ApproverName }}</strong> &bull; <span style="font-size: 11px; font-weight: 500;">{{ (approvalState?.L3ActionDate | date:'dd-MM-yyyy, hh:mm:ss a') }}</span>
+            </div>
+            <div *ngIf="approvalState?.L3Remarks" class="step-remark">
+              "{{ approvalState?.L3Remarks }}"
+            </div>
+          </div>
+
+          <!-- Step 5: Active / Hiring Open & Vendor Sourcing Allocation -->
+          <div class="step-item">
+            <div class="step-circle" [ngClass]="getStepClass(5)">
+              <i class="bi" [ngClass]="getStepClass(5) === 'passed' ? 'bi-people-fill' : 'bi-flag-fill'"></i>
+            </div>
+            <div class="step-title-row">
+              <div class="step-name">Step 5: Sanctioned & Vendor Allocation (TA / Supply Vendors)</div>
+              <span class="badge" 
+                    [ngClass]="getStepClass(5) === 'passed' ? 'bg-success-subtle text-success border border-success-subtle' : 'bg-light text-muted border'" 
+                    style="font-size: 8.5px;">
+                {{ getStepClass(5) === 'passed' ? 'Active / Ready' : 'Locked' }}
+              </span>
+            </div>
+            <div class="step-meta" *ngIf="getStepClass(5) === 'passed'">
+              <span class="text-success fw-semibold"><i class="bi bi-check-circle-fill me-1"></i>Approved demand ready for candidate sourcing channels.</span>
+              <div class="mt-1.5 d-flex align-items-center gap-2">
+                <a [routerLink]="['/dash/recruitment/recruitmentdashboard/pipeline']"
+                   [queryParams]="{ reqId: selectedJobForApproval?.reqId || selectedJobForApproval?.jobId }"
+                   (click)="closeApprovalModal()"
+                   class="btn btn-sm btn-primary-action py-0.5 px-2.5 d-inline-flex align-items-center gap-1 shadow-sm text-decoration-none" 
+                   style="font-size: 9.5px; height: 24px; border-radius: 4px; font-weight: 600;">
+                  <i class="bi bi-diagram-3-fill"></i> Open Pipeline
+                </a>
+                <button type="button" 
+                        class="btn btn-sm btn-primary py-0.5 px-2.5 d-inline-flex align-items-center gap-1 shadow-sm" 
+                        (click)="openVendorModalFromApproval()" 
+                        style="font-size: 9.5px; height: 24px; background-color: #3080e8; border-color: #3080e8; border-radius: 4px; font-weight: 600;">
+                  <i class="bi bi-person-lines-fill"></i> Assign Vendors & TA Channels (Step 5)
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Approver Remarks Field -->
+        <div *ngIf="canUserAct(selectedJobForApproval)" class="mt-2 p-2 bg-light rounded border">
+          <label class="form-label fw-bold text-dark mb-1 d-flex justify-content-between align-items-center" style="font-size: 10px;">
+            <span><i class="bi bi-chat-left-text me-1 text-primary"></i> Approver Remarks</span>
+            <span class="text-muted fw-normal" style="font-size: 9px;">(Optional for approval, mandatory for rejection)</span>
+          </label>
+          <textarea rows="2"
+                    class="form-control form-control-sm bg-white" 
+                    [(ngModel)]="approvalRemarks" 
+                    placeholder="Enter review remarks, budget compliance notes, or rejection reason..."
+                    style="font-size: 10px; line-height: 1.4; border-color: #cbd5e1; border-radius: 4px; padding: 4px 8px; resize: vertical;"></textarea>
+        </div>
+      </div>
+
+      <!-- Modal Footer (Pinned at Bottom with Guaranteed Gap) -->
+      <div class="modal-foot">
+        <button type="button" class="btn btn-sm btn-outline-secondary px-3" (click)="closeApprovalModal()" style="font-size: 11px; height: 30px; border-radius: 5px;">
+          Close
+        </button>
+
+        <div class="footer-action-buttons d-flex align-items-center" *ngIf="canUserAct(selectedJobForApproval)" style="gap: 12px;">
+          <button type="button" 
+                  class="btn btn-sm btn-outline-danger fw-semibold px-3 d-inline-flex align-items-center btn-reject-action" 
+                  [disabled]="isSubmittingApproval" 
+                  (click)="submitApproval(false)"
+                  style="font-size: 11px; height: 30px; border-radius: 5px; gap: 6px; margin-right: 12px !important;">
+            <i class="bi bi-x-circle"></i> Reject Requisition
+          </button>
+          
+          <button type="button" 
+                  class="btn btn-sm btn-success fw-semibold px-3 shadow-sm d-inline-flex align-items-center btn-approve-action" 
+                  [disabled]="isSubmittingApproval" 
+                  (click)="submitApproval(true)"
+                  style="background-color: #16a34a; border-color: #16a34a; font-size: 11px; height: 30px; border-radius: 5px; gap: 6px;">
+            <i class="bi bi-check-circle" *ngIf="!isSubmittingApproval"></i>
+            <span class="spinner-border spinner-border-sm" *ngIf="isSubmittingApproval"></span>
+            <span>Approve Requisition</span>
+          </button>
+        </div>
+
+        <div *ngIf="!canUserAct(selectedJobForApproval) && isJobActive(selectedJobForApproval)" class="d-flex align-items-center gap-2">
+          <a [routerLink]="['/dash/recruitment/recruitmentdashboard/pipeline']"
+             [queryParams]="{ reqId: selectedJobForApproval?.reqId || selectedJobForApproval?.jobId }"
+             (click)="closeApprovalModal()"
+             class="btn btn-sm btn-primary-action px-3 d-inline-flex align-items-center gap-1 text-decoration-none shadow-sm"
+             style="font-size: 11px; height: 30px; border-radius: 5px;">
+            <i class="bi bi-diagram-3-fill"></i> Open Pipeline
+          </a>
+        </div>
+
+        <div *ngIf="!canUserAct(selectedJobForApproval) && !isJobActive(selectedJobForApproval)" class="text-muted fst-italic" style="font-size: 10px;">
+          <i class="bi bi-info-circle me-1 text-primary"></i> Read-only workflow view. You do not hold approval rights for {{ selectedJobForApproval?.workflowStatus || 'this tier' }}.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 6. Step 5: Sourcing Channel & Vendor Allocation Modal (TA or Supply Vendors) ── -->
+  <div class="modal-backdrop-custom" *ngIf="showVendorAllocationModal" (click)="closeVendorAllocationModal()">
+    <div class="modal-box-custom modal-vendor-box" (click)="$event.stopPropagation()">
+      <!-- Modal Header (Compact Single-Line) -->
+      <div class="modal-head py-1.5 px-3 bg-white" style="background-color: #ffffff !important;">
+        <div class="d-flex align-items-center justify-content-between w-100">
+          <div class="d-flex align-items-center flex-wrap gap-2">
+            <span class="badge bg-primary text-white" style="font-size: 8.5px; font-weight: 700; padding: 2px 6px; border-radius: 3px; background-color: #3080e8 !important;">
+              STEP 5
+            </span>
+            <span class="modal-mrf-badge" style="font-size: 10px; padding: 1.5px 6px;">
+              <i class="bi bi-file-earmark-text me-1"></i>{{ selectedJobForVendor?.mrfCode || ('MRF/2026/' + selectedJobForVendor?.reqId) }}
+            </span>
+            <h6 class="modal-title-main mb-0 fw-bold" style="font-size: 12px;">{{ selectedJobForVendor?.jobTitle }}</h6>
+            <div class="d-flex align-items-center gap-1.5 text-muted" style="font-size: 9px;">
+              <span>&bull; <i class="bi bi-geo-alt-fill text-danger me-0.5"></i><strong class="text-dark">{{ selectedJobForVendor?.location || 'Hub' }}</strong></span>
+              <span>&bull; <strong class="text-primary">{{ selectedJobForVendor?.department || 'Operations' }}</strong></span>
+              <span>&bull; <strong class="text-success">{{ selectedJobForVendor?.openPositions || selectedJobForVendor?.openingsCount || 1 }} Openings</strong></span>
+            </div>
+          </div>
+          <button type="button" class="btn-close ms-2 flex-shrink-0" (click)="closeVendorAllocationModal()" aria-label="Close" style="font-size: 9px;"></button>
+        </div>
+      </div>
+
+      <!-- Modal Body (Compact, Maximized Height for Table) -->
+      <div class="modal-body-scroll p-2 bg-white" style="background-color: #ffffff !important;">
+        <!-- Action Strip: Hub Location + Header Channel Dropdown + Bulk Assign + Search -->
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-1.5 mb-1.5 pb-1.5 border-bottom bg-white p-1.5 rounded" style="background-color: #ffffff !important;">
+          <!-- Left: Hub Info Badge -->
+          <div class="d-flex align-items-center gap-1.5">
+            <span class="badge bg-white text-dark border px-2 py-1 d-inline-flex align-items-center gap-1 shadow-2xs" style="font-size: 9px; font-weight: 600;">
+              <i class="bi bi-geo-alt-fill text-danger"></i>
+              <span>Hub: <strong class="text-primary">{{ selectedJobForVendor?.location || 'Hub' }}</strong></span>
+            </span>
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-1.5 py-1" style="font-size: 8.5px; font-weight: 600;">
+              {{ filteredVendorList.length }} Empanelled
+            </span>
+            <span class="badge bg-success-subtle text-success border border-success-subtle px-1.5 py-1" style="font-size: 8.5px; font-weight: 600;">
+              {{ getMappedVendorsCount() }} Allocated
+            </span>
+          </div>
+
+          <!-- Right: Channel Type Dropdown + Bulk Action Buttons + Search Box -->
+          <div class="d-flex align-items-center flex-wrap gap-1.5">
+            <!-- Header Channel Type Dropdown (Saves type on assign) -->
+            <div class="d-flex align-items-center gap-1 bg-white px-1.5 py-0.5 border rounded">
+              <span class="text-muted fw-bold" style="font-size: 9px;">Channel:</span>
+              <select class="form-select form-select-sm border-0 py-0 px-1" 
+                      [(ngModel)]="bulkChannelType" 
+                      (change)="onBulkChannelTypeChange()"
+                      style="font-size: 9.5px; height: 22px; width: 135px; font-weight: 700; color: #3080e8; cursor: pointer;">
+                <option value="Supply Vendors">Supply Vendors</option>
+                <option value="TA">TA (Talent Acquisition)</option>
+              </select>
+            </div>
+
+            <!-- Bulk Assign Selected Button -->
+            <button type="button" 
+                    class="btn btn-sm btn-primary d-inline-flex align-items-center gap-1 shadow-2xs" 
+                    [disabled]="getSelectedVendorsCount() === 0 || isBulkSaving"
+                    (click)="saveBulkAllocation()"
+                    style="font-size: 9px; height: 24px; padding: 2px 10px; background-color: #3080e8; border-color: #3080e8; font-weight: 600; border-radius: 4px;">
+              <span class="spinner-border spinner-border-sm" *ngIf="isBulkSaving" style="width: 8px; height: 8px;"></span>
+              <i class="bi bi-check2-all" *ngIf="!isBulkSaving"></i>
+              <span>Assign Selected ({{ getSelectedVendorsCount() }})</span>
+            </button>
+
+            <!-- Bulk Deallocate Selected Button (when any selected are mapped) -->
+            <button type="button" 
+                    *ngIf="getSelectedMappedCount() > 0"
+                    class="btn btn-sm btn-outline-danger d-inline-flex align-items-center gap-1 shadow-2xs" 
+                    [disabled]="isBulkSaving"
+                    (click)="deallocateBulkAllocation()"
+                    style="font-size: 9px; height: 24px; padding: 2px 8px; font-weight: 600; border-radius: 4px;">
+              <i class="bi bi-trash3"></i>
+              <span>Deallocate ({{ getSelectedMappedCount() }})</span>
+            </button>
+
+            <!-- Search Vendors Input -->
+            <div class="search-box position-relative" style="width: 160px;">
+              <i class="bi bi-search search-icon" style="position: absolute; left: 7px; top: 50%; transform: translateY(-50%); font-size: 8.5px; color: #94a3b8;"></i>
+              <input type="text" 
+                     class="form-control form-control-sm search-input" 
+                     [(ngModel)]="vendorSearchQuery" 
+                     (input)="applyVendorFilter()" 
+                     placeholder="Search vendor..." 
+                     style="padding-left: 22px; height: 24px; font-size: 9px; border-radius: 4px; background-color: #ffffff;" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Vendors Table (Ultra-Clean 5-Column Layout: Checkbox, #, Vendor Name, Status, Action) -->
+        <div class="table-responsive border rounded bg-white" style="max-height: 58vh; overflow-y: auto; overflow-x: hidden; background-color: #ffffff !important;">
+          <table class="table vendor-table align-middle mb-0 w-100 bg-white" style="table-layout: fixed; width: 100%; background-color: #ffffff !important;">
+            <thead class="sticky-top bg-white" style="background-color: #ffffff !important;">
+              <tr style="font-size: 9px; color: #475569; text-transform: uppercase; background-color: #ffffff !important;">
+                <!-- Select All Checkbox -->
+                <th style="width: 34px; background-color: #ffffff !important;" class="text-center">
+                  <input type="checkbox" 
+                         class="form-check-input mt-0 cursor-pointer" 
+                         [checked]="isAllSelected()" 
+                         (change)="toggleSelectAll($event)" 
+                         title="Select All Vendors"
+                         style="width: 13px; height: 13px;" />
+                </th>
+                <th style="width: 28px; background-color: #ffffff !important;" class="text-center">#</th>
+                <th style="width: auto; background-color: #ffffff !important;">VENDOR / AGENCY NAME</th>
+                <th style="width: 100px; background-color: #ffffff !important;" class="text-center">STATUS</th>
+                <th style="width: 120px; background-color: #ffffff !important;" class="text-center">ACTION</th>
+              </tr>
+            </thead>
+            <tbody style="background-color: #ffffff !important;">
+              <tr *ngFor="let v of filteredVendorList; let i = index" style="background-color: #ffffff !important;">
+                <!-- Checkbox -->
+                <td class="text-center" style="width: 34px; background-color: #ffffff !important;">
+                  <input type="checkbox" 
+                         class="form-check-input mt-0 cursor-pointer" 
+                         [(ngModel)]="v.selected" 
+                         style="width: 13px; height: 13px;" />
+                </td>
+
+                <!-- Index -->
+                <td class="text-center text-muted fw-semibold" style="font-size: 9px; width: 28px; background-color: #ffffff !important;">{{ i + 1 }}</td>
+
+                <!-- Vendor Details -->
+                <td style="min-width: 0; background-color: #ffffff !important;">
+                  <div class="d-flex flex-column text-truncate" style="min-width: 0;">
+                    <div class="d-flex align-items-center gap-1.5 text-truncate">
+                      <span class="fw-bold text-dark text-truncate" style="font-size: 10.5px;" [title]="v.vendorName">
+                        {{ v.vendorName }}
+                      </span>
+                      <span *ngIf="v.isMapped === 1 && v.vendorType" 
+                            class="badge px-1 py-0 border flex-shrink-0"
+                            [ngClass]="v.vendorType === 'TA' ? 'bg-primary-subtle text-primary border-primary-subtle' : 'bg-info-subtle text-info border-info-subtle'"
+                            style="font-size: 7.5px;">
+                        {{ v.vendorType }}
+                      </span>
+                    </div>
+                    <div class="d-flex align-items-center gap-1.5 text-muted text-truncate" style="font-size: 9px;">
+                      <span *ngIf="v.vendorCode" class="fw-bold text-secondary flex-shrink-0" style="font-size: 9px; background: transparent;">{{ v.vendorCode }}</span>
+                      <span *ngIf="v.mobile" class="text-truncate"><i class="bi bi-telephone-fill me-0.5" style="font-size: 8px;"></i>{{ v.mobile }}</span>
+                      <span *ngIf="v.email" class="text-truncate">&bull; {{ v.email }}</span>
+                    </div>
+                  </div>
+                </td>
+
+                <!-- Status Badge -->
+                <td class="text-center" style="width: 100px; background-color: #ffffff !important;">
+                  <span *ngIf="v.isMapped === 1" class="badge bg-success-subtle text-success border border-success-subtle fw-semibold d-inline-flex align-items-center gap-0.5" style="font-size: 8.5px; padding: 1.5px 6px;">
+                    <i class="bi bi-check-circle-fill"></i> Allocated
+                  </span>
+                  <span *ngIf="v.isMapped !== 1" class="badge bg-light text-muted border fw-normal" style="font-size: 8.5px; padding: 1.5px 6px;">
+                    Unassigned
+                  </span>
+                </td>
+
+                <!-- Action Buttons: Allocate/Update + Deallocate -->
+                <td class="text-center" style="width: 120px; background-color: #ffffff !important;">
+                  <div class="d-flex align-items-center justify-content-center gap-1">
+                    <button type="button" 
+                            class="btn-allocate" 
+                            [class.btn-allocated]="v.isMapped === 1" 
+                            [disabled]="v.isSaving" 
+                            (click)="saveVendorAllocation(v)"
+                            [title]="v.isMapped === 1 ? 'Update Allocation' : 'Allocate Vendor'">
+                      <span class="spinner-border spinner-border-sm me-0.5" *ngIf="v.isSaving" style="width: 7px; height: 7px;"></span>
+                      <i class="bi" [ngClass]="v.isMapped === 1 ? 'bi-check2' : 'bi-plus-lg'" *ngIf="!v.isSaving"></i>
+                      <span>{{ v.isMapped === 1 ? 'Update' : 'Allocate' }}</span>
+                    </button>
+                    <!-- Deallocate Button (visible when mapped) -->
+                    <button type="button" 
+                            *ngIf="v.isMapped === 1"
+                            class="btn-deallocate" 
+                            [disabled]="v.isSaving" 
+                            (click)="deallocateVendor(v)"
+                            title="Deallocate / Remove Vendor">
+                      <i class="bi bi-trash3"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Empty State -->
+              <tr *ngIf="filteredVendorList.length === 0 && !isLoadingVendors">
+                <td colspan="5" class="text-center py-4 text-muted">
+                  <i class="bi bi-people text-secondary opacity-50" style="font-size: 20px;"></i>
+                  <p class="mb-0 mt-1" style="font-size: 10px;">No vendors mapped to this hub or matching the search query.</p>
+                </td>
+              </tr>
+
+              <!-- Loading Spinner -->
+              <tr *ngIf="isLoadingVendors">
+                <td colspan="5" class="text-center py-4 text-muted">
+                  <div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div>
+                  <span style="font-size: 10px;">Loading empanelled vendors & channels...</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="modal-foot d-flex justify-content-between align-items-center bg-white" style="background-color: #ffffff !important;">
+        <span class="text-muted" style="font-size: 9.5px;">
+          <i class="bi bi-shield-check text-success me-1"></i> Multi-tenant company-scoped vendor allocation.
+        </span>
+        <div class="d-flex align-items-center gap-2">
+          <button type="button" 
+                  class="btn btn-sm btn-outline-primary px-2.5 fw-semibold shadow-xs d-inline-flex align-items-center gap-1"
+                  (click)="openVendorEmailModal()"
+                  [disabled]="getMappedVendorsCount() === 0"
+                  style="font-size: 10px; height: 30px; border-radius: 5px;"
+                  title="Send requisition intimation email to allocated vendors">
+            <i class="bi bi-envelope-paper"></i>
+            <span>Send Email ({{ getMappedVendorsCount() }})</span>
+          </button>
+          <button type="button" class="btn btn-sm btn-primary px-3 fw-semibold shadow-sm" (click)="closeVendorAllocationModal()" style="font-size: 11px; height: 30px; background-color: #3080e8; border-color: #3080e8; border-radius: 5px;">
+            Done
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 6b. Post-Allocation Vendor Intimation Email Modal ── -->
+  <div class="modal-backdrop-custom" *ngIf="showVendorEmailModal" style="z-index: 1000050 !important;" (click)="closeVendorEmailModal()">
+    <div class="modal-box-custom modal-vendor-email-box" (click)="$event.stopPropagation()">
+      
+      <!-- Modal Header -->
+      <div class="modal-head py-2 px-3 text-white" style="background-color: #3080e8 !important;">
+        <div class="d-flex align-items-center justify-content-between w-100">
+          <div class="d-flex align-items-center flex-wrap gap-2">
+            <span class="badge bg-white text-primary" style="font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 3px;">
+              <i class="bi bi-send-fill me-1"></i>EMAIL INTIMATION
+            </span>
+            <span class="badge border" style="font-size: 10px; padding: 2px 7px; background-color: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.3) !important;">
+              {{ selectedJobForVendor?.mrfCode || ('MRF/2026/' + selectedJobForVendor?.reqId) }}
+            </span>
+            <h6 class="modal-title-main mb-0 fw-bold text-white" style="font-size: 12.5px;">
+              Notify Empanelled Vendors &mdash; {{ selectedJobForVendor?.jobTitle }}
+            </h6>
+          </div>
+          <button type="button" class="btn-close btn-close-white ms-2 flex-shrink-0" (click)="closeVendorEmailModal()" aria-label="Close" style="font-size: 9.5px;"></button>
+        </div>
+      </div>
+
+      <!-- Modal Body (Scrollable, Standard Layout) -->
+      <div class="modal-body-scroll p-3" style="max-height: calc(85vh - 120px); overflow-y: auto;">
+        
+        <!-- Locked Primary Recipients (Assigned Vendors) -->
+        <div class="mb-3">
+          <div class="d-flex align-items-center justify-content-between mb-1">
+            <label class="form-label fw-bold mb-0 text-dark" style="font-size: 11px;">
+              <i class="bi bi-lock-fill text-primary me-1"></i>Primary Recipients (Assigned Vendors &bull; Locked):
+            </label>
+            <span class="badge bg-primary-subtle text-primary" style="font-size: 9.5px;">
+              {{ lockedVendorRecipients.length }} Vendor(s) with Email
+            </span>
+          </div>
+
+          <div class="email-chips-container mb-1">
+            <span *ngFor="let rec of lockedVendorRecipients" class="email-chip chip-locked" [title]="rec.email">
+              <i class="bi bi-lock-fill" style="font-size: 9px;"></i>
+              <strong>{{ rec.vendorName }}</strong> &lt;{{ rec.email }}&gt;
+            </span>
+
+            <span *ngIf="lockedVendorRecipients.length === 0" class="text-danger fst-italic" style="font-size: 10.5px;">
+              <i class="bi bi-exclamation-triangle-fill me-1"></i>None of the allocated vendors have an email registered in their master profile.
+            </span>
+          </div>
+
+          <div *ngIf="vendorsWithoutEmailCount > 0" class="alert alert-warning py-1 px-2 mb-0 d-flex align-items-center gap-1.5" style="font-size: 10px; border-radius: 4px;">
+            <i class="bi bi-info-circle-fill text-warning"></i>
+            <span><strong>Note:</strong> {{ vendorsWithoutEmailCount }} allocated vendor(s) have no registered email address in their master profile.</span>
+          </div>
+        </div>
+
+        <!-- Additional Recipients / CC -->
+        <div class="mb-3">
+          <label class="form-label fw-bold mb-1 text-dark" style="font-size: 11px;">
+            <i class="bi bi-person-plus-fill text-secondary me-1"></i>Additional Recipients (Optional):
+          </label>
+          
+          <div class="email-chips-container mb-1.5" *ngIf="additionalEmailRecipients.length > 0">
+            <span *ngFor="let em of additionalEmailRecipients; let idx = index" class="email-chip chip-custom">
+              <i class="bi bi-envelope me-0.5" style="font-size: 9px;"></i>
+              <span>{{ em }}</span>
+              <button type="button" class="chip-remove-btn ms-1" (click)="removeAdditionalEmail(idx)" title="Remove recipient">&times;</button>
+            </span>
+          </div>
+
+          <div class="input-group input-group-sm">
+            <span class="input-group-text bg-white" style="font-size: 10px;"><i class="bi bi-plus-lg text-muted"></i></span>
+            <input type="email" 
+                   class="form-control" 
+                   [(ngModel)]="newAdditionalEmailInput" 
+                   (keyup.enter)="addAdditionalEmail()" 
+                   placeholder="Type email address (e.g. manager@cjdarcl.com) and press Enter or click Add..."
+                   style="font-size: 11px;" />
+            <button class="btn btn-outline-secondary" type="button" (click)="addAdditionalEmail()" style="font-size: 10.5px; font-weight: 600;">
+              Add
+            </button>
+          </div>
+          <small class="text-muted" style="font-size: 9.5px;">Add extra recipients such as Regional Managers, Hiring Managers, or vendor coordinator emails.</small>
+        </div>
+
+        <!-- Email Subject -->
+        <div class="mb-3">
+          <label class="form-label fw-bold mb-1 text-dark" style="font-size: 11px;">
+            <i class="bi bi-chat-left-text me-1 text-primary"></i>Email Subject:
+          </label>
+          <input type="text" class="form-control form-control-sm" [(ngModel)]="vendorEmailSubject" style="font-size: 11px; font-weight: 600;" />
+        </div>
+
+        <!-- Requisition Snapshot Preview Card -->
+        <div class="mb-3">
+          <label class="form-label fw-bold mb-1 text-dark" style="font-size: 11px;">
+            <i class="bi bi-card-checklist me-1 text-success"></i>Requisition Mandate Details (Embedded in Email):
+          </label>
+          <div class="preview-summary-card">
+            <div class="row g-2">
+              <div class="col-6 col-md-4">
+                <span class="text-muted d-block" style="font-size: 9.5px;">ROLE / TITLE</span>
+                <strong class="text-dark" style="font-size: 11px;">{{ selectedJobForVendor?.jobTitle }}</strong>
+              </div>
+              <div class="col-6 col-md-4">
+                <span class="text-muted d-block" style="font-size: 9.5px;">OPERATING LOCATION</span>
+                <strong class="text-dark" style="font-size: 11px;">
+                  <i class="bi bi-geo-alt-fill text-danger me-0.5"></i>{{ selectedJobForVendor?.location || selectedJobForVendor?.locName || 'Corporate Hub' }}
+                </strong>
+              </div>
+              <div class="col-6 col-md-4">
+                <span class="text-muted d-block" style="font-size: 9.5px;">VACANCIES</span>
+                <strong class="text-primary" style="font-size: 11px;">{{ selectedJobForVendor?.openPositions || selectedJobForVendor?.openingsCount || 1 }} Positions</strong>
+              </div>
+              <div class="col-6 col-md-4">
+                <span class="text-muted d-block" style="font-size: 9.5px;">DEPARTMENT</span>
+                <span class="text-dark" style="font-size: 11px;">{{ selectedJobForVendor?.department || 'Operations' }}</span>
+              </div>
+              <div class="col-6 col-md-4">
+                <span class="text-muted d-block" style="font-size: 9.5px;">EXPERIENCE</span>
+                <span class="text-dark" style="font-size: 11px;">{{ selectedJobForVendor?.experienceMin || 0 }} - {{ selectedJobForVendor?.experienceMax || 0 }} Years</span>
+              </div>
+              <div class="col-6 col-md-4">
+                <span class="text-muted d-block" style="font-size: 9.5px;">CHANNEL TYPE</span>
+                <span class="badge bg-primary-subtle text-primary border border-primary-subtle" style="font-size: 9px;">{{ bulkChannelType }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Custom Sourcing Instructions / Recruiter Notes -->
+        <div class="mb-2">
+          <label class="form-label fw-bold mb-1 text-dark" style="font-size: 11px;">
+            <i class="bi bi-pencil-square me-1 text-warning"></i>Recruiter Special Instructions / Sourcing Notes (Optional):
+          </label>
+          <textarea class="form-control form-control-sm" 
+                    rows="3" 
+                    [(ngModel)]="vendorEmailCustomRemarks"
+                    placeholder="e.g. Please prioritize candidates with 3PL supply chain experience and immediate joining availability. Profiles must include verified Aadhaar number..."
+                    style="font-size: 11px;"></textarea>
+          <small class="text-muted" style="font-size: 9.5px;">These instructions will appear in a highlighted callout box in the vendor's email.</small>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="modal-foot d-flex justify-content-between align-items-center py-2 px-3 border-top bg-white" style="background-color: #ffffff !important;">
+        <button type="button" class="btn btn-sm btn-outline-secondary px-3" (click)="closeVendorEmailModal()" [disabled]="isSendingVendorEmails" style="font-size: 11px; height: 32px; border-radius: 5px;">
+          Cancel / Skip Email
+        </button>
+        <button type="button" 
+                class="btn btn-sm btn-primary px-3 fw-semibold shadow-sm d-inline-flex align-items-center gap-1.5" 
+                (click)="sendVendorRequisitionEmails()"
+                [disabled]="isSendingVendorEmails || (lockedVendorRecipients.length === 0 && additionalEmailRecipients.length === 0)"
+                style="font-size: 11px; height: 32px; background-color: #3080e8; border-color: #3080e8; border-radius: 5px;">
+          <span class="spinner-border spinner-border-sm" *ngIf="isSendingVendorEmails" style="width: 10px; height: 10px;"></span>
+          <i class="bi bi-send-fill" *ngIf="!isSendingVendorEmails"></i>
+          <span>Send Intimation Email ({{ lockedVendorRecipients.length + additionalEmailRecipients.length }})</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 7. JOB REQUISITION DETAILS SLIDE-OVER DRAWER (IDENTICAL TO MRF LIST)       -->
+  <!-- ========================================================================= -->
+  <div class="drawer-backdrop" *ngIf="showJobDetailDrawer" (click)="closeJobDetail()"></div>
+
+  <div class="details-drawer bg-white shadow-lg" *ngIf="showJobDetailDrawer && selectedJobForDetail">
+    
+    <!-- Drawer Header (Always Visible at Top) -->
+    <div class="drawer-header p-3 border-bottom d-flex justify-content-between align-items-center bg-white shadow-xs">
+      <div>
+        <div class="d-flex align-items-center gap-1.5 flex-wrap">
+          <span class="badge bg-primary text-white font-monospace fw-bold px-2 py-1" style="font-size: 11.5px;">
+            <i class="bi bi-lock-fill me-1"></i> {{ selectedJobForDetail.mrfCode || ('MRF/2026/' + selectedJobForDetail.reqId) }}
+          </span>
+          <span class="badge fw-bold px-2 py-1" [ngClass]="isJobActive(selectedJobForDetail) ? 'bg-success text-white' : 'bg-warning text-dark'" style="font-size: 11px;">
+            {{ selectedJobForDetail.workflowStatus || selectedJobForDetail.status || 'Active' }}
+          </span>
+        </div>
+        <h5 class="fw-bold text-dark mt-1.5 mb-0" style="font-size: 15px; color: #0f172a;">
+          {{ selectedJobForDetail.jobTitle }}
+        </h5>
+      </div>
+
+      <div class="d-flex align-items-center gap-2">
+        <button type="button" 
+                *ngIf="!isJobActive(selectedJobForDetail) && canUserAct(selectedJobForDetail)"
+                class="btn btn-sm btn-primary-action fw-bold shadow-xs d-inline-flex align-items-center gap-1"
+                (click)="openApprovalFromDetail()"
+                style="font-size: 11px; height: 28px; padding: 0 10px;">
+          <i class="bi bi-shield-check"></i> Review & Approve
+        </button>
+        <button type="button" 
+                *ngIf="!canUserAct(selectedJobForDetail)"
+                class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1"
+                (click)="openApprovalFromDetail()"
+                title="View Approval History"
+                style="font-size: 11px; height: 28px; padding: 0 10px;">
+          <i class="bi bi-clock-history"></i> Approval Trail
+        </button>
+        <a *ngIf="isJobActive(selectedJobForDetail)"
+           [routerLink]="['/dash/recruitment/recruitmentdashboard/pipeline']"
+           [queryParams]="{ reqId: selectedJobForDetail.reqId || selectedJobForDetail.jobId }"
+           (click)="closeJobDetail()"
+           class="btn btn-sm btn-primary-action text-decoration-none d-inline-flex align-items-center gap-1 shadow-xs"
+           style="font-size: 11px; height: 28px; padding: 0 10px;">
+          <i class="bi bi-diagram-3-fill"></i> Pipeline
+        </a>
+        <button type="button" class="btn-close-custom" (click)="closeJobDetail()" aria-label="Close" title="Close Drawer">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Drawer Content Body (Clean White Cards, Ultra-High Contrast Labels) -->
+    <div class="drawer-body p-3">
+      
+      <!-- Section 1: Overview & Location Capacity -->
+      <div class="drawer-card p-3 rounded mb-3 bg-white border border-slate-300 shadow-xs">
+        <div class="drawer-card-title fw-bold text-dark mb-2.5 pb-1 border-bottom" style="font-size: 12px; color: #0f172a;">
+          <i class="bi bi-geo-alt-fill text-danger me-1"></i> Location & Capacity Headroom
+        </div>
+        <div class="row g-2.5" style="font-size: 11.5px;">
+          <div class="col-6">
+            <span class="drawer-field-label">Operating Location:</span>
+            <span class="drawer-field-value text-dark fw-bold">{{ selectedJobForDetail.location || 'All Locations' }}</span>
+          </div>
+          <div class="col-6">
+            <span class="drawer-field-label">Headcount Mandate:</span>
+            <span class="badge bg-primary text-white fw-bold px-2 py-0.5" style="font-size: 11px;">
+              {{ selectedJobForDetail.openPositions || selectedJobForDetail.openingsCount || 1 }} Openings
+            </span>
+          </div>
+          <div class="col-6">
+            <span class="drawer-field-label">Buffer Status:</span>
+            <span class="badge fw-bold px-2 py-0.5" [ngClass]="selectedJobForDetail.isBufferUtilized ? 'bg-warning-subtle text-warning border border-warning' : 'bg-success-subtle text-success border border-success'" style="font-size: 10px;">
+              {{ selectedJobForDetail.isBufferUtilized ? 'Utilizing Buffer Pool (' + selectedJobForDetail.bufferHeadsUtilized + ' heads)' : 'Within Standard Ceilings' }}
+            </span>
+          </div>
+          <div class="col-6">
+            <span class="drawer-field-label">Hiring Type:</span>
+            <span class="badge bg-slate-100 text-slate-900 border border-slate-300 fw-bold px-2 py-0.5" style="color: #0f172a; background-color: #f1f5f9; font-size: 10px;">
+              {{ selectedJobForDetail.hiringType || 'New Position' }}
+            </span>
+          </div>
+          <div class="col-12 pt-1 border-top" *ngIf="selectedJobForDetail.replacedEmpName">
+            <span class="drawer-field-label">Replaced Employee:</span>
+            <span class="drawer-field-value text-dark fw-bold">{{ selectedJobForDetail.replacedEmpName }} ({{ selectedJobForDetail.replacementReason || 'Resignation' }})</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: Organization Hierarchy -->
+      <div class="drawer-card p-3 rounded mb-3 bg-white border border-slate-300 shadow-xs">
+        <div class="drawer-card-title fw-bold text-dark mb-2.5 pb-1 border-bottom" style="font-size: 12px; color: #0f172a;">
+          <i class="bi bi-diagram-3-fill text-primary me-1"></i> Organizational Hierarchy
+        </div>
+        <div class="row g-2.5" style="font-size: 11.5px;">
+          <div class="col-6">
+            <span class="drawer-field-label">Department:</span>
+            <span class="drawer-field-value text-dark fw-bold">{{ selectedJobForDetail.department || 'Operations' }}</span>
+          </div>
+          <div class="col-6">
+            <span class="drawer-field-label">Sub-Department:</span>
+            <span class="drawer-field-value text-dark fw-bold">{{ selectedJobForDetail.subDepartment || '—' }}</span>
+          </div>
+          <div class="col-6">
+            <span class="drawer-field-label">Designation:</span>
+            <span class="drawer-field-value text-dark fw-bold">{{ selectedJobForDetail.designation || 'Specialist' }}</span>
+          </div>
+          <div class="col-6">
+            <span class="drawer-field-label">Service Division:</span>
+            <span class="drawer-field-value text-dark fw-bold">{{ selectedJobForDetail.serviceType || 'Logistics' }}</span>
+          </div>
+          <div class="col-6" *ngIf="selectedJobForDetail.businessVertical">
+            <span class="drawer-field-label">Business Vertical:</span>
+            <span class="drawer-field-value text-dark fw-bold">{{ selectedJobForDetail.businessVertical }}</span>
+          </div>
+          <div class="col-6" *ngIf="selectedJobForDetail.costCenterName">
+            <span class="drawer-field-label">Cost Center:</span>
+            <span class="drawer-field-value text-dark fw-bold">{{ selectedJobForDetail.costCenterName }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 3: Compensation & Terms -->
+      <div class="drawer-card p-3 rounded mb-3 bg-white border border-slate-300 shadow-xs">
+        <div class="drawer-card-title fw-bold text-dark mb-2.5 pb-1 border-bottom" style="font-size: 12px; color: #0f172a;">
+          <i class="bi bi-cash-stack text-success me-1"></i> Compensation & Engagement
+        </div>
+        <div class="row g-2.5" style="font-size: 11.5px;">
+          <div class="col-6">
+            <span class="drawer-field-label">Annual CTC (LPA):</span>
+            <span class="drawer-field-value text-dark fw-bold" style="font-size: 12px;">
+              {{ (selectedJobForDetail.ctcMin || selectedJobForDetail.ctcMax) ? '₹' + (selectedJobForDetail.ctcMin || 0) + ' - ₹' + (selectedJobForDetail.ctcMax || 'Open') + ' LPA' : 'Standard Budget Band' }}
+            </span>
+          </div>
+          <div class="col-6">
+            <span class="drawer-field-label">Experience:</span>
+            <span class="drawer-field-value text-dark fw-bold">
+              {{ (selectedJobForDetail.experienceMin || 0) + ' - ' + (selectedJobForDetail.experienceMax || 'Open') }} Years
+            </span>
+          </div>
+          <div class="col-6">
+            <span class="drawer-field-label">Workplace Type:</span>
+            <span class="drawer-field-value text-dark fw-bold">{{ selectedJobForDetail.workplaceType || 'On-Site' }}</span>
+          </div>
+          <div class="col-6">
+            <span class="drawer-field-label">Employment Type:</span>
+            <span class="drawer-field-value text-dark fw-bold">{{ selectedJobForDetail.employmentType || 'Full-Time' }}</span>
+          </div>
+          <div class="col-6">
+            <span class="drawer-field-label">Priority:</span>
+            <span class="badge fw-bold" [ngClass]="{
+              'bg-danger text-white': selectedJobForDetail.priority === 'High',
+              'bg-warning text-dark': selectedJobForDetail.priority === 'Medium',
+              'bg-success text-white': selectedJobForDetail.priority === 'Low'
+            }" style="font-size: 10px;">
+              {{ selectedJobForDetail.priority || 'Medium' }}
+            </span>
+          </div>
+          <div class="col-6" *ngIf="selectedJobForDetail.noticePeriodMaxDays">
+            <span class="drawer-field-label">Max Notice Period:</span>
+            <span class="drawer-field-value text-dark fw-bold">{{ selectedJobForDetail.noticePeriodMaxDays }} Days</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 4: Diversity & Inclusion (D&I) Mandate -->
+      <div class="drawer-card p-3 rounded mb-3 bg-white border shadow-xs" [ngStyle]="{'border-left': selectedJobForDetail.isDiversityHiring ? '4px solid #7c3aed !important' : '4px solid #64748b !important', 'border-color': selectedJobForDetail.isDiversityHiring ? '#d8b4fe' : '#cbd5e1'}">
+        <div class="drawer-card-title fw-bold text-dark mb-2.5 pb-1 border-bottom d-flex justify-content-between align-items-center" style="font-size: 12px; color: #0f172a;">
+          <span>
+            <i class="bi" [ngClass]="selectedJobForDetail.isDiversityHiring ? 'bi-shield-heart-fill text-purple' : 'bi-people-fill text-secondary'" style="font-size: 13px;"></i>
+            Diversity & Inclusion (D&I) Mandate
+          </span>
+          <span *ngIf="selectedJobForDetail.isDiversityHiring" class="badge fw-bold" style="font-size: 10px; background-color: #f3e8ff !important; color: #6d28d9 !important; border: 1px solid #d8b4fe !important;">
+            <i class="bi bi-shield-check me-1"></i> Affirmative Initiative Active
+          </span>
+          <span *ngIf="!selectedJobForDetail.isDiversityHiring" class="badge fw-bold" style="font-size: 10px; background-color: #f1f5f9 !important; color: #0f172a !important; border: 1px solid #cbd5e1 !important;">
+            <i class="bi bi-people-fill me-1" style="color: #475569;"></i> Standard / Open Pool
+          </span>
+        </div>
+
+        <div class="row g-2.5" style="font-size: 11.5px;">
+          <div class="col-6">
+            <span class="drawer-field-label">Is Diversity Hiring?:</span>
+            <span *ngIf="selectedJobForDetail.isDiversityHiring" class="badge fw-bold px-2.5 py-1 d-inline-flex align-items-center gap-1" style="font-size: 11px; background-color: #f3e8ff !important; color: #6d28d9 !important; border: 1px solid #d8b4fe !important;">
+              <i class="bi bi-check-circle-fill" style="color: #7c3aed;"></i> Yes (Diversity Target)
+            </span>
+            <span *ngIf="!selectedJobForDetail.isDiversityHiring" class="badge fw-bold px-2.5 py-1 d-inline-flex align-items-center gap-1" style="font-size: 11px; background-color: #f1f5f9 !important; color: #0f172a !important; border: 1px solid #cbd5e1 !important;">
+              <i class="bi bi-dash-circle" style="color: #64748b;"></i> No (Standard)
+            </span>
+          </div>
+
+          <div class="col-6">
+            <span class="drawer-field-label">Diversity Category / Type:</span>
+            <span class="drawer-field-value text-dark fw-bold">
+              {{ selectedJobForDetail.diversityCategory || (selectedJobForDetail.isDiversityHiring ? 'Affirmative Action Pool' : 'Not Applicable (Open Pool)') }}
+            </span>
+          </div>
+
+          <div class="col-12" *ngIf="selectedJobForDetail.isDiversityHiring">
+            <div class="p-2 rounded bg-purple-subtle border border-purple-subtle text-purple fw-semibold" style="font-size: 11px;">
+              <i class="bi bi-info-circle-fill me-1"></i> Candidate sourcing priority: <strong>{{ selectedJobForDetail.diversityCategory || 'Diversity & Affirmative Mandate' }}</strong>.
+            </div>
+          </div>
+
+          <div class="col-12" *ngIf="!selectedJobForDetail.isDiversityHiring">
+            <div class="p-2 rounded border border-slate-200 text-slate-700 fw-medium" style="font-size: 10.5px; color: #334155; background-color: #f8fafc;">
+              <i class="bi bi-info-circle me-1"></i> Open recruitment pool across all candidate demographics without quota reservations.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 5: Skills & Educational Requirements -->
+      <div class="drawer-card p-3 rounded mb-3 bg-white border border-slate-300 shadow-xs">
+        <div class="drawer-card-title fw-bold text-dark mb-2.5 pb-1 border-bottom" style="font-size: 12px; color: #0f172a;">
+          <i class="bi bi-mortarboard-fill text-indigo me-1"></i> Skills & Educational Criteria
+        </div>
+        <div class="row g-2.5" style="font-size: 11.5px;">
+          <div class="col-6">
+            <span class="drawer-field-label">Education Level:</span>
+            <span class="drawer-field-value text-dark fw-bold">{{ selectedJobForDetail.educationLevel || 'Any / Not Specified' }}</span>
+          </div>
+          <div class="col-6">
+            <span class="drawer-field-label">Target Start Date:</span>
+            <span class="drawer-field-value text-dark fw-bold">{{ (selectedJobForDetail.targetStartDate | date:'mediumDate') || 'Immediate' }}</span>
+          </div>
+          <div class="col-12" *ngIf="selectedJobForDetail.primarySkills">
+            <span class="drawer-field-label">Primary Skills:</span>
+            <div class="d-flex flex-wrap gap-1 mt-1">
+              <span class="badge bg-primary-subtle text-primary border border-primary-subtle fw-semibold" style="font-size: 10px;">
+                {{ selectedJobForDetail.primarySkills }}
+              </span>
+            </div>
+          </div>
+          <div class="col-12" *ngIf="selectedJobForDetail.secondarySkills">
+            <span class="drawer-field-label">Secondary / Ancillary Skills:</span>
+            <span class="drawer-field-value text-dark fw-bold">{{ selectedJobForDetail.secondarySkills }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 6: Job Description & Specifications -->
+      <div class="drawer-card p-3 rounded mb-3 bg-white border border-slate-300 shadow-xs">
+        <div class="drawer-card-title fw-bold text-dark mb-2 pb-1 border-bottom" style="font-size: 12px; color: #0f172a;">
+          <i class="bi bi-file-text-fill text-primary me-1"></i> Job Description & Scope
+        </div>
+        <p class="text-dark mb-2.5 fw-normal" style="font-size: 11.5px; line-height: 1.5; white-space: pre-line; color: #1e293b;">
+          {{ selectedJobForDetail.jobDescription || 'No description provided.' }}
+        </p>
+
+        <div *ngIf="selectedJobForDetail.responsibilities" class="mb-2.5 pt-2 border-top">
+          <div class="fw-bold text-dark mb-1" style="font-size: 11.5px; color: #0f172a;">Key Responsibilities:</div>
+          <p class="text-dark mb-0 fw-normal" style="font-size: 11px; line-height: 1.5; white-space: pre-line; color: #1e293b;">
+            {{ selectedJobForDetail.responsibilities }}
+          </p>
+        </div>
+
+        <div *ngIf="selectedJobForDetail.qualifications" class="mb-1 pt-2 border-top">
+          <div class="fw-bold text-dark mb-1" style="font-size: 11.5px; color: #0f172a;">Qualifications & Criteria:</div>
+          <p class="text-dark mb-0 fw-normal" style="font-size: 11px; line-height: 1.5; white-space: pre-line; color: #1e293b;">
+            {{ selectedJobForDetail.qualifications }}
+          </p>
+        </div>
+      </div>
+
+      <!-- Section 7: Audit Record -->
+      <div class="p-3 border rounded bg-white border-slate-300 shadow-xs" style="font-size: 11px;">
+        <div class="d-flex justify-content-between py-1 border-bottom">
+          <span class="drawer-field-label">Created By</span>
+          <span class="fw-bold text-dark">{{ selectedJobForDetail.submittedBy || 'Site HR' }}</span>
+        </div>
+        <div class="d-flex justify-content-between py-1 border-bottom">
+          <span class="drawer-field-label">Created Date</span>
+          <span class="fw-bold text-dark">{{ (selectedJobForDetail.createdDate || selectedJobForDetail.postedDate) | date:'dd-MM-yyyy, hh:mm:ss a' }}</span>
+        </div>
+        <div class="d-flex justify-content-between py-1 border-bottom" *ngIf="selectedJobForDetail.updatedBy">
+          <span class="drawer-field-label">Last Updated By</span>
+          <span class="fw-bold text-dark">{{ selectedJobForDetail.updatedBy }}</span>
+        </div>
+        <div class="d-flex justify-content-between py-1" *ngIf="selectedJobForDetail.updatedDate">
+          <span class="drawer-field-label">Last Updated Date</span>
+          <span class="fw-bold text-dark">{{ selectedJobForDetail.updatedDate | date:'dd-MM-yyyy, hh:mm:ss a' }}</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Drawer Footer (Clean Close Only - No Edit) -->
+    <div class="drawer-footer p-3 border-top bg-white d-flex justify-content-between align-items-center shadow-xs">
+      <div>
+        <button type="button" 
+                class="btn btn-outline-secondary btn-sm d-inline-flex align-items-center gap-1"
+                (click)="openApprovalFromDetail()">
+          <i class="bi bi-clock-history"></i> Approval History
+        </button>
+      </div>
+      <button type="button" class="btn btn-outline-dark btn-sm fw-bold px-4" (click)="closeJobDetail()">
+        <i class="bi bi-x-circle me-1"></i> Close
+      </button>
+    </div>
+
+  </div>
+
+  <!-- ── 8. Multi-Tier Approval Workflow & Audit Modal ───────────────────────── -->
+  <div *ngIf="showApprovalModal && selectedJobForApproval" class="approval-modal-backdrop">
+    <div class="approval-modal-dialog">
+      <div class="approval-modal-content shadow-lg">
+
+        <!-- Modal Header (Pinned at Top) -->
+        <div class="approval-modal-header d-flex justify-content-between align-items-center px-3.5 py-2.5 border-bottom bg-white">
+          <div class="d-flex align-items-center gap-2">
+            <div class="modal-icon-badge" style="width: 28px; height: 28px; border-radius: 6px; background: #eff6ff; color: #1d4ed8; display: flex; align-items: center; justify-content: center; font-size: 13px;">
+              <i class="bi bi-shield-check"></i>
+            </div>
+            <div>
+              <div class="d-flex align-items-center gap-2">
+                <span class="fw-bold text-dark" style="font-size: 12.5px;">{{ selectedJobForApproval.mrfCode || selectedJobForApproval.jobCode || 'MRF' }}</span>
+                <span class="badge-stage-level" [ngClass]="getLevelBadgeClass(selectedJobForApproval.workflowStatus || selectedJobForApproval.status)" style="font-size: 9.5px; padding: 2px 7px;">
+                  <i class="bi me-0.5" [ngClass]="getLevelIcon(selectedJobForApproval.workflowStatus || selectedJobForApproval.status)"></i>
+                  {{ getLevelTitle(selectedJobForApproval.workflowStatus || selectedJobForApproval.status) }}
+                </span>
+              </div>
+              <div class="text-secondary fw-semibold text-truncate" style="font-size: 11px; max-width: 420px;">
+                {{ selectedJobForApproval.jobTitle }} &bull; {{ selectedJobForApproval.department || 'Operations' }} &bull; {{ selectedJobForApproval.location || 'Hub' }}
+              </div>
+            </div>
+          </div>
+          <button type="button" class="btn-close-modal" (click)="closeApprovalModal()" aria-label="Close" title="Close Modal">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+
+        <!-- Modal Body (Scrollable History & Details Section) -->
+        <div class="approval-modal-body p-3">
+          
+          <!-- Resubmission / Rejection Alert Banner -->
+          <div *ngIf="hasRejectionHistory(selectedJobForApproval)" class="alert-resubmit-banner p-2.5 rounded mb-3 border shadow-2xs">
+            <div class="d-flex align-items-start gap-2">
+              <i class="bi bi-arrow-repeat text-warning flex-shrink-0 mt-0.5" style="font-size: 14px;"></i>
+              <div style="font-size: 11px;">
+                <strong class="text-dark">Resubmitted MRF Lifecycle Notice:</strong>
+                <span class="text-secondary d-block mt-0.5">
+                  This requisition was previously rejected at 
+                  <strong class="text-danger">{{ selectedJobForApproval.rejectedByLevel || 'L1' }}</strong>
+                  <span *ngIf="selectedJobForApproval.resubmittedDate"> and was edited & resubmitted on {{ selectedJobForApproval.resubmittedDate | date:'dd-MMM-yyyy, hh:mm a' }}</span>.
+                  The full historical audit trail of the previous rejection and changes is preserved below.
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Metrics Strip -->
+          <div class="row g-2 mb-3" style="font-size: 11px;">
+            <div class="col-4">
+              <div class="p-2 rounded bg-light border border-slate-200">
+                <span class="text-muted d-block" style="font-size: 9.5px; font-weight: 600; text-transform: uppercase;">Open Positions</span>
+                <span class="fw-bold text-dark">{{ selectedJobForApproval.openPositions || selectedJobForApproval.openingsCount || 1 }} Heads</span>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="p-2 rounded bg-light border border-slate-200">
+                <span class="text-muted d-block" style="font-size: 9.5px; font-weight: 600; text-transform: uppercase;">Experience</span>
+                <span class="fw-bold text-dark">{{ selectedJobForApproval.experienceMin || 0 }} - {{ selectedJobForApproval.experienceMax || 0 }} Yrs</span>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="p-2 rounded bg-light border border-slate-200">
+                <span class="text-muted d-block" style="font-size: 9.5px; font-weight: 600; text-transform: uppercase;">Hiring Type</span>
+                <span class="fw-bold text-dark">{{ selectedJobForApproval.hiringType || 'New' }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Scrollable Approval History Audit Timeline -->
+          <div class="approval-history-section">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <span class="fw-bold text-dark" style="font-size: 11.5px;">
+                <i class="bi bi-clock-history text-primary me-1"></i> Multi-Tier Approval & Resubmission History
+              </span>
+              <span *ngIf="approvalHistory && approvalHistory.length > 0" class="badge bg-secondary-subtle text-secondary" style="font-size: 9.5px;">
+                {{ approvalHistory.length }} Records
+              </span>
+            </div>
+
+            <div class="history-scroll-box p-2.5 rounded border bg-light shadow-2xs">
+              <!-- Loading spinner -->
+              <div *ngIf="isLoadingHistory" class="text-center py-3 text-secondary" style="font-size: 11px;">
+                <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+                Loading approval trail...
+              </div>
+
+              <!-- Empty state -->
+              <div *ngIf="!isLoadingHistory && (!approvalHistory || approvalHistory.length === 0)" class="text-center py-3 text-muted" style="font-size: 11px;">
+                <i class="bi bi-info-circle me-1"></i> No prior workflow actions recorded yet. Requisition is pending initial evaluation.
+              </div>
+
+              <!-- Timeline of Actions -->
+              <div *ngIf="!isLoadingHistory && approvalHistory && approvalHistory.length > 0" class="timeline-container">
+                <div *ngFor="let item of approvalHistory; let last = last" class="timeline-item pb-2.5 mb-2.5" [class.border-bottom]="!last">
+                  <div class="d-flex justify-content-between align-items-start gap-2">
+                    <div class="d-flex align-items-center gap-1.5 flex-wrap">
+                      <span class="badge fw-bold px-2 py-0.5 rounded-pill" [ngClass]="getHistoryActionBadgeClass(item.action)" style="font-size: 9.5px;">
+                        <i class="bi me-0.5" [ngClass]="getHistoryActionIcon(item.action)"></i>
+                        {{ item.action || 'Evaluated' }}
+                      </span>
+                      <strong class="text-dark" style="font-size: 11px;">{{ item.approverName || item.entryBy || 'Approver' }}</strong>
+                      <span class="text-muted" style="font-size: 10px;">({{ item.approverRole || ('Tier L' + (item.approvalLevel || 1)) }})</span>
+                    </div>
+                    <span class="text-muted text-nowrap" style="font-size: 10px;">
+                      {{ (item.dated || item.entryDate) | date:'dd-MMM-yyyy, hh:mm a' }}
+                    </span>
+                  </div>
+
+                  <div *ngIf="item.remarks" class="history-remarks mt-1.5 p-2 rounded bg-white border border-slate-200 text-dark" style="font-size: 11px; line-height: 1.4;">
+                    <i class="bi bi-chat-left-quote text-secondary me-1"></i> {{ item.remarks }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Reviewer Action Comments Input (When user has action rights) -->
+          <div *ngIf="canUserAct(selectedJobForApproval)" class="action-remarks-box mt-3">
+            <label class="form-label fw-bold text-dark d-flex justify-content-between align-items-center mb-1" style="font-size: 11px;">
+              <span>
+                <i class="bi bi-pencil-square text-primary me-1"></i> Approver Remarks / Rejection Reason:
+              </span>
+              <span class="text-muted fw-normal" style="font-size: 10px;">Required for Rejection</span>
+            </label>
+            <textarea class="form-control" 
+                      rows="2" 
+                      [(ngModel)]="approvalRemarks"
+                      placeholder="Enter review comments or reasons (Mandatory if rejecting)..."
+                      style="font-size: 11px; resize: none;"></textarea>
+          </div>
+
+        </div>
+
+        <!-- Modal Footer (Pinned at Bottom - Always Visible) -->
+        <div class="approval-modal-footer px-3 py-2.5 border-top bg-white d-flex justify-content-between align-items-center">
+          <button type="button" class="btn btn-outline-secondary btn-sm fw-semibold px-3" (click)="closeApprovalModal()">
+            <i class="bi bi-x-circle me-1"></i> Close
+          </button>
+
+          <div *ngIf="canUserAct(selectedJobForApproval)" class="d-flex align-items-center gap-2">
+            <!-- Reject Button -->
+            <button type="button" 
+                    class="btn btn-danger btn-sm fw-bold d-inline-flex align-items-center gap-1 px-3 shadow-2xs"
+                    (click)="submitApproval(false)"
+                    [disabled]="isSubmittingApproval || !approvalRemarks.trim()"
+                    title="Reject and return requisition to Site HR">
+              <span *ngIf="isSubmittingApproval" class="spinner-border spinner-border-sm me-1" role="status"></span>
+              <i *ngIf="!isSubmittingApproval" class="bi bi-x-circle-fill"></i>
+              <span>Reject Requisition</span>
+            </button>
+
+            <!-- Approve Button -->
+            <button type="button" 
+                    class="btn btn-success btn-sm fw-bold d-inline-flex align-items-center gap-1 px-3 shadow-2xs"
+                    (click)="submitApproval(true)"
+                    [disabled]="isSubmittingApproval"
+                    title="Approve and promote to next workflow tier">
+              <span *ngIf="isSubmittingApproval" class="spinner-border spinner-border-sm me-1" role="status"></span>
+              <i *ngIf="!isSubmittingApproval" class="bi bi-check-circle-fill"></i>
+              <span>Approve & Promote</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+

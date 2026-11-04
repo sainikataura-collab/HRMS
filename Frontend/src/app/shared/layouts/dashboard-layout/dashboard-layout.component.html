@@ -1,0 +1,24 @@
+
+    <!-- <div class="loader"></div> -->
+    <div id="app">
+      <div class="main-wrapper main-wrapper-1">
+        <!-- <div class="navbar-bg"></div> -->
+        <app-dashboard-header></app-dashboard-header>
+
+        <div class="main-sidebar sidebar-style-2">
+        <app-dashboard-sidebar></app-dashboard-sidebar>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+
+          <section class="section">
+            <router-outlet></router-outlet>
+          </section>
+        </div>
+        
+        <footer class="main-footer"  *ngIf="!cameraMode">
+        <app-dashboard-footer></app-dashboard-footer>
+        </footer>
+      </div>
+    </div>

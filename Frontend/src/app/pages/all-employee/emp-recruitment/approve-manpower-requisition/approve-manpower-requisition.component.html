@@ -1,0 +1,229 @@
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+            <!-- Header -->
+            <div class="card-header bg-blue">
+                <div class="row w-100">
+                    <div class="col-md-8 ">
+                        <h4>Approved Job Requisition</h4>
+                    </div>
+                    <div class="col-md-4 d-flex justify-content-md-end align-items-center">
+                        <button class="btn btnheader"
+                            routerLink="/dash/emp-recruitment/emp-recruitmentdashboard/ApproveManpowerRequisitionList">
+                            Back
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Body -->
+            <div class="card-body mt-4">
+                <form [formGroup]="ManpowerForm" >
+                    <div class="row row-cols-1 row-cols-md-3 g-3">
+                        <div class="col">
+                            <label>Approval Status <span class="text-danger">*</span></label>
+                            <div class="form-group">
+                                <select class="form-select " formControlName="approvelOrder" >
+                                    <option value="">Select Approval Status</option>
+                                    <option value="1">Approved</option>
+                                    <option value="0">Disapproved</option>
+                                </select>
+                                <span *ngIf="submitted && ManpowerForm.controls['approvelOrder'].invalid"
+                                class="text-danger mt-1" style="font-size: 12px;">
+                                Please select Approval Status
+                            </span>
+                            </div>
+                        </div>
+                        <!-- Remarks -->
+                        <div class="col">
+                            <label>Remarks <span class="text-danger">*</span></label>
+                            <div class="form-group">
+                                <textarea class="form-control" formControlName="remarks" rows="1"
+                                    ></textarea>
+                                      <span *ngIf="submitted && ManpowerForm.controls['remarks'].invalid"
+                                class="text-danger mt-1" style="font-size: 12px;">
+                                Please Enter Remarks
+                            </span>
+                            </div>
+                        </div>
+                            <div class="col  d-flex align-items-center justify-content-end ">
+                                <button type="submit" class="btn btn-primary mx-1" (click)="updateApprove()">Submit</button>
+
+                            </div>
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col-sm-12 col-md-12 col-lg-12 px-0">
+                            <div class="card bg-transparent">
+                                <div class="card-header" style="border-top:2px solid #3080e8">
+                                    <h4 class="text-primary">Job Requisition Details</h4>
+                                </div>
+                                <div class="card-body px-2 m-0   ">
+                                    <div class="row row-cols-1 row-cols-md-3 g-3">
+
+
+
+                                        <!-- Dated -->
+                                        <div class="col">
+                                            <label>Dated</label>
+                                            <input type="date" formControlName="dated" class="form-control"
+                                                [disabled]="true" />
+                                        </div>
+
+                                        <!-- Location -->
+                                        <div class="col">
+                                            <label>For Location</label>
+                                            <ng-select [items]="Location" bindLabel="name" bindValue="value"
+                                                class="w-100" formControlName="fk_locid"></ng-select>
+                                        </div>
+
+                                        <!-- Department -->
+                                        <div class="col">
+                                            <label>Department</label>
+                                            <ng-select [items]="Department" bindLabel="name" bindValue="value"
+                                                class="w-100" formControlName="fk_deptid"></ng-select>
+                                        </div>
+
+                                        <!-- Designation -->
+                                        <div class="col">
+                                            <label>Designation</label>
+                                            <ng-select [items]="Designation" bindLabel="name" bindValue="value"
+                                                class="w-100" formControlName="fk_desgid"></ng-select>
+                                        </div>
+
+                                        <!-- Grade -->
+                                        <div class="col">
+                                            <label>Grade</label>
+                                            <ng-select [items]="Grade" bindLabel="name" bindValue="value" class="w-100"
+                                                formControlName="fk_classid"></ng-select>
+                                        </div>
+
+                                        <!-- Job Title -->
+                                        <div class="col">
+                                            <label>Job Opening For</label>
+                                            <input type="text" class="form-control" formControlName="jobtitle"
+                                                [disabled]="true" />
+                                        </div>
+
+                                        <!-- No of Post -->
+                                        <div class="col">
+                                            <label>No. Of Post</label>
+                                            <input type="number" class="form-control" formControlName="No_of_post"
+                                                [disabled]="true" />
+                                        </div>
+
+                                        <!-- Functional Designation -->
+                                        <div class="col">
+                                            <label>Functional Designation</label>
+                                            <ng-select [items]="Cost" bindLabel="name" bindValue="value" class="w-100"
+                                                formControlName="fk_costcentreid"></ng-select>
+                                        </div>
+
+                                        <!-- Reason of Requirement -->
+                                        <div class="col">
+                                            <label>Reason of Requirement</label>
+                                            <input type="text" class="form-control"
+                                                [value]="getReasonName(ManpowerForm.value.Reason_of_Requirement)"
+                                                disabled />
+                                        </div>
+
+                                        <!-- Reason of Replacement -->
+                                        <div class="col">
+                                            <label>Reason of Replacement</label>
+                                            <input type="text" class="form-control"
+                                                [value]="getReplacementReason(ManpowerForm.value.Reason_of_Replacement)"
+                                                disabled />
+                                        </div>
+
+                                        <!-- Justification -->
+                                        <div class="col">
+                                            <label>Justification of Position</label>
+                                            <input type="text" class="form-control"
+                                                formControlName="Justification_of_Position" [disabled]="true" />
+                                        </div>
+
+                                        <!-- Reports To -->
+                                        <div class="col">
+                                            <label>Position Reports To</label>
+                                            <ng-select [items]="Employee" bindLabel="name" bindValue="value"
+                                                class="w-100" formControlName="Position_Reports_To"></ng-select>
+                                        </div>
+
+                                        <!-- Qualification -->
+                                        <div class="col">
+                                            <label>Educational Qualification</label>
+                                            <ng-select [items]="Qualification" bindLabel="name" bindValue="value"
+                                                formControlName="fk_qualiId" [multiple]="true">
+                                            </ng-select>
+                                        </div>
+
+                                        <!-- Specialization -->
+                                        <div class="col">
+                                            <label>Specialization</label>
+                                            <ng-select [items]="Specialization" bindLabel="name" bindValue="value"
+                                                [multiple]="true" formControlName="fk_specializationId"
+                                                class="w-100"></ng-select>
+                                        </div>
+
+                                        <!-- Experience -->
+                                        <div class="col">
+                                            <label>Experience From</label>
+                                            <input type="text" class="form-control" formControlName="Experience_From"
+                                                [disabled]="true" />
+                                        </div>
+
+                                        <div class="col">
+                                            <label>Experience To</label>
+                                            <input type="text" class="form-control" formControlName="Experience_To"
+                                                [disabled]="true" />
+                                        </div>
+
+                                        <!-- CTC -->
+                                        <div class="col">
+                                            <label>From CTC</label>
+                                            <input type="text" class="form-control" formControlName="CTC_From"
+                                                [disabled]="true" />
+                                        </div>
+
+                                        <div class="col">
+                                            <label>To CTC</label>
+                                            <input type="text" class="form-control" formControlName="CTC_To"
+                                                [disabled]="true" />
+                                        </div>
+
+                                        <!-- Description Fields -->
+                                        <div class="col">
+                                            <label>Roles & Responsibilities</label>
+                                            <textarea class="form-control" formControlName="Roles_Responsibilities"
+                                                [disabled]="true"></textarea>
+                                        </div>
+
+                                        <div class="col">
+                                            <label>Technical Skills</label>
+                                            <textarea class="form-control" formControlName="Technical_Skills"
+                                                [disabled]="true"></textarea>
+                                        </div>
+
+                                        <div class="col">
+                                            <label>Behavioral Skills</label>
+                                            <textarea class="form-control" formControlName="Behavioral_Skills"
+                                                [disabled]="true"></textarea>
+                                        </div>
+
+                                        <div class="col">
+                                            <label>Additional Qualities / Knowledge / Skills</label>
+                                            <textarea class="form-control" formControlName="Additional_Qualities"
+                                                [disabled]="true"></textarea>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

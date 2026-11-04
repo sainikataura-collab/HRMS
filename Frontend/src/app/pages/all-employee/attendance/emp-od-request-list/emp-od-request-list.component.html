@@ -1,0 +1,113 @@
+
+<div class="row m-0">
+  <div class="col-12 px-0 py-0">
+    <div class="card px-0 m-0">
+            <div class="card-header">
+                <div class="row w-100">
+                    <div
+                        class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-between">
+                        <h4 class="mb-0">{{caption}}</h4>
+
+                        <div class="dropdown d-flex align-items-center justify-content-center d-md-none">
+                            <button class="btn bg-transparent text-white px-0 mt-1" type="button"
+                                id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fa-solid fa-bars fs-6"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+
+                                <li *ngIf="showAddButton"><a class="dropdown-item" routerLink="/dash/attendance/attendancedashboard/OD-request">Add</a></li>
+                                <!-- <li><a class="dropdown-item">PDF</a></li> -->
+                            </ul>
+                        </div>
+                    </div>
+
+
+                    <div
+                        class="col-12 col-md-3 all-pickup-point-search-header d-flex align-items-center justify-content-md-end">
+                        <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText" />
+                    </div>
+
+
+                    <div class="col-12 col-md-3 d-flex justify-content-end align-items-center mt-md-0">
+                        <div class="d-none d-md-flex">
+                            <button  *ngIf="showAddButton" class="btn btnheader mx-2" routerLink="/dash/attendance/attendancedashboard/OD-request">Add</button>
+                            <!-- <button class="btn btnheader"><i class="fa-solid fa-file-arrow-down"></i>&nbsp;Download</button>-->
+                        </div> 
+                    </div>
+                </div>
+            </div>
+
+      <div class="card-body px-0  m-2">
+        <div class="table-responsive-md">
+          <table id="exportTable" class="table">
+            <thead>
+              <tr>
+                <th>Sr.No.</th>
+                <th>Request Type</th> 
+                <th>Request Date</th>
+                <th>From Date</th>
+                <th>To date</th>
+                <th>Total days</th>
+                <th>Reason</th>
+                <th>Intime</th>
+                <th>Outtime</th>
+                <th>Hrs</th>
+                 <th>Status</th>
+                <th>Action</th> 
+              </tr>
+            </thead>
+           
+
+            <tbody *ngIf="filteredData().length > 0; else noRecords">
+                            <tr *ngFor="let item of filteredData() | paginate: { itemsPerPage: pageSize, currentPage: pageIndex, totalItems: totalItems }; let i = index">
+                                <td data-label="Sr.No.:">{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+                                <td data-label="Request leavetype:">{{ item.leavetype }}</td> 
+                                <td data-label="Request Date:">{{ item.dated }}</td>
+                                <td data-label="From Date : ">{{ item.fromdate }}</td>
+                                <td data-label="To date: ">{{ item.todate }}</td>
+                                 <td data-label="Total days:">{{ item.totdays }}</td>
+                                  <td data-label="Reason: ">{{ item.remarks }}</td>
+                                  <td data-label="In-Time">{{ item.intime }}</td>
+                                  <td data-label="Out-Time">{{ item.outtime }}</td>
+                                  <td data-label="Total-hrs">{{ item.hrs }}</td>   
+                                   <td data-label="Status"
+                                   [ngClass]="{
+                  'text-success btn-success': item.statusname === 'Approved',
+                  'text-warning btn-warning': item.statusname === 'Pending',
+
+                  'text-danger btn-danger': item.statusname === 'Rejected'
+                  }">{{ item.statusname }}</td>
+                               
+                <td  data-label="Action: "*ngIf="item.statusname === 'Pending'" (click)="onDeleteLeave(item.pk_leaveappid)"><button class="btn btn-sm btn-outline"> <i
+                      class="fa fa-trash"></i></button></td>
+                            
+
+
+                                <!-- <td class="pt-1 pb-0 m-0 d-flex align-items-center justify-content-center">
+                                    <button class="btn btn-sm btn-outline px-1 mx-1 pt-1 pb-0 my-0"><i
+                                            class="fa-regular fa-pen-to-square fw-semibold"></i></button>
+                                    <button class="btn btn-sm btn-outline px-1 mx-1 pt-1 pb-0 my-0"><i
+                                            class="fa fa-trash text-dark"></i></button>
+                                </td> -->
+
+                            </tr>
+
+                        </tbody>
+
+                                    <ng-template #noRecords>
+  <tbody>
+    <tr>
+      <td colspan="8" class="text-center text-muted">No records found.</td>
+    </tr>
+  </tbody>
+</ng-template>
+          </table>
+          
+             <!-- Pagination controls -->
+             <pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

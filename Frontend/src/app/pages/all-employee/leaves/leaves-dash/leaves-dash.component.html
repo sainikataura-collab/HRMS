@@ -1,0 +1,252 @@
+<section class="pt-3">
+  <div class="container-fluid">
+    <!-- Header -->
+
+
+
+    <!--  -->
+
+    <div class=" row  ">
+      <div class="col-sm-12 col-md-12 col-lg-9 pb-2">
+        <p class="fw-semibold small mb-0">
+          <span>Leave Dashboard</span><br>
+          <span class="text-primary fw-semibold">
+            <i class="fa-solid fa-calendar-check"></i> Total Leave Requests:
+          </span>
+          <span class="ps-1 fw-semibold text-primary">{{ totalLeaveRequests }}</span>
+        </p>
+      </div>
+
+
+
+      <div class="col-sm-12 col-md-12  col-lg-3 pb-2">
+
+
+
+
+        <form [formGroup]="filterForm">
+          <div class="row row-cols-2 row-cols-md-2  g-2">
+            <div class="col">
+
+              <ng-select [items]="months" bindLabel="name" bindValue="value" placeholder="Month"
+                formControlName="FkMonthId">
+              </ng-select>
+            </div>
+            <div class="col">
+
+              <ng-select [items]="years" bindLabel="name" bindValue="value" placeholder="Year"
+                formControlName="FkYearId">
+              </ng-select>
+            </div>
+            <!-- <div class="col">
+          <select class="form-select form-select-sm">
+            <option selected>Export</option>
+            <option>PDF</option>
+            <option>Excel</option>
+          </select>
+        </div> -->
+          </div>
+        </form>
+
+      </div>
+    </div>
+
+
+
+
+    <!--  -->
+
+    <div class="row g-3 pt-3">
+      <!-- Left Content -->
+      <div class="col-lg-8">
+
+        <!-- Horizontal Info Cards -->
+        <div class="row g-3">
+          <div class="col-6 col-md-4">
+            <div class="card shadow-sm border-start border-3 border-warning">
+              <div class="card-body small p-0">
+                <p class="fw-semibold mb-1">
+                  <i class="fa-solid fa-hourglass-half text-warning me-1"></i> Pending
+                </p>
+
+                <h6 class="mb-0">
+                  <span class="text-success fs-5 fw-bold" style="cursor: pointer;"
+                    (click)="goToLeaveList('Pending',false)">{{pendingCount}}</span>
+                  <span class="fs-5 fw-bold mx-1">/</span>
+                  <span class="text-warning fs-5 fw-bold fst-italic" style="cursor: pointer;"
+                    (click)="goToLeaveList('Pending')">{{MonthlypendingCount}}</span>
+                </h6>
+                <p class="mb-0 text-dark small lh-sm">Requests awaiting</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-6 col-md-4">
+            <div class="card shadow-sm  border-start border-3 border-success">
+              <div class="card-body small p-0">
+                <p class="fw-semibold mb-1">
+                  <i class="fa-solid fa-check-circle text-success me-1"></i> Approved
+                </p>
+                <h6 class="mb-0">
+                  <!-- <span class="text-success fs-5 fw-bold" style="cursor: pointer;" routerLink="/dash/leaves/leavesdashboard/leavereqlist">{{ approvedCount }}</span> -->
+                  <span class="text-success fs-5 fw-bold" style="cursor: pointer;"
+                    (click)="goToLeaveList('Approved',false)">
+                    {{ approvedCount }}
+                  </span>
+
+                  <span class="fs-5 fw-bold mx-1">/</span>
+
+                  <!-- <span  routerLink="/dash/leaves/leavesdashboard/leavereqlist">{{MonthlyapprovedCount}}</span> -->
+                  <span class="text-warning fs-5 fw-bold fst-italic" style="cursor: pointer;"
+                    (click)="goToLeaveList('Approved')">
+                    {{ MonthlyapprovedCount }}
+                  </span>
+                </h6>
+                <p class="mb-0 text-dark small lh-sm small">Requests approved</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-6 col-md-4">
+            <div class="card shadow-sm border-start border-3 border-danger shadow">
+              <div class="card-body small p-0">
+                <p class="fw-semibold mb-1">
+                  <i class="fa-solid fa-times-circle text-danger me-1"></i> Rejected
+                </p>
+
+                <h6 class="mb-0">
+
+
+                  <span class="text-success fs-5 fw-bold" style="cursor: pointer;"
+                    (click)="goToLeaveList('Rejected',false)">
+                    {{ rejectedCount }}
+                  </span>
+
+
+
+                  <span class="fs-5 fw-bold mx-1">/</span>
+                  <span class="text-warning fs-5 fw-bold fst-italic" style="cursor: pointer;"
+                    (click)="goToLeaveList('Rejected')">{{MonthlyrejectedCount}}</span>
+                </h6>
+                <p class="mb-0 text-dark small lh-sm">Requests rejected</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+
+        <!-- Leave Balance Widget -->
+        <div class="card shadow-sm mt-3 border-top border-2 border-info">
+          <div class="card-body small">
+            <p class="fw-semibold text-info mb-2">
+              <i class="fa-solid fa-chart-pie"></i> Leave Balance Overview
+            </p>
+            <div class="d-flex justify-content-around text-center">
+              <div *ngFor="let leave of leavetakenList">
+                <p class="mb-1 text-muted">{{ leave.shortdesc }}</p>
+                <p class="fw-bold text-dark mb-0">
+                  {{ leave.totalleave }} days
+                </p>
+              </div>
+              <!-- <div>
+                <p class="mb-1 text-muted">Sick Leave</p>
+                <p class="fw-bold text-dark mb-0">{{leaveSL}} days</p>
+              </div> -->
+              <!-- <div>
+                <p class="mb-1 text-muted">Casual Leave</p>
+                <p class="fw-bold text-dark mb-0">{{leaveCL}} days</p>
+              </div> -->
+            </div>
+          </div>
+        </div>
+
+
+        <!-- Table: Recent Leave Requests -->
+        <!-- <div class="card shadow-sm mt-3 border-top border-2 border-primary">
+          <div class="card-body small">
+            <p class="fw-semibold text-primary mb-2"><i class="fa-solid fa-list"></i> Recent Leave Requests</p>
+            <div class="table-responsive">
+              <table class="table table-sm mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>John Doe</td>
+                    <td>Annual</td>
+                    <td>12-Jul</td>
+                    <td>14-Jul</td>
+                    <td><span class="badge bg-success">Approved</span></td>
+                  </tr>
+                  <tr>
+                    <td>Jane Smith</td>
+                    <td>Sick</td>
+                    <td>15-Jul</td>
+                    <td>16-Jul</td>
+                    <td><span class="badge bg-warning text-dark">Pending</span></td>
+                  </tr>
+                  <tr>
+                    <td>Robert Brown</td>
+                    <td>Casual</td>
+                    <td>10-Jul</td>
+                    <td>10-Jul</td>
+                    <td><span class="badge bg-danger">Rejected</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div> -->
+
+      </div>
+
+      <!-- Right Sidebar -->
+      <div class="col-lg-4">
+        <!-- Quick Actions -->
+        <div class="card shadow-sm mb-3 border-top border-2 border-success">
+          <div class="card-body small">
+            <p class="fw-semibold text-success mb-2"><i class="fa-solid fa-bolt"></i> Quick Actions</p>
+            <div class="d-grid gap-2">
+              <button class="btn btn-outline-primary btn-sm small"
+                routerLink="/dash/leaves/leavesdashboard/leavereqlist"><i class="fa-solid fa-plus"></i> New Leave
+                Request</button>
+              <button class="btn btn-outline-success btn-sm small"
+                routerLink="/dash/leaves/leavesdashboard/CompOffrequestList"><i class="fa-solid fa-file-export"></i>
+                Comp Off Request</button>
+              <button class="btn btn-outline-secondary btn-sm small"
+                routerLink="/dash/leaves/leavesdashboard/shortLeaveList"><i class="fa-solid fa-calendar-days"></i> Short
+                Leave
+                Request</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Upcoming Holidays -->
+        <div class="card shadow-sm mb-3 border-top border-2 border-warning">
+          <div class="card-body small">
+            <p class="fw-semibold text-warning mb-2">
+              <i class="fa-solid fa-calendar-day"></i> Upcoming Holidays
+            </p>
+            <ul class="list-group small">
+              <li *ngFor="let holiday of leaveSummary" class="list-group-item d-flex justify-content-between">
+                {{ holiday.holidaytype }}
+                <span>{{ holiday.dated | date:'dd-MMM' }}</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+
+
+
+      </div>
+    </div>
+  </div>
+</section>

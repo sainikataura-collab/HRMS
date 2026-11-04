@@ -1,0 +1,204 @@
+
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+         <!--  -->
+    <div class="card-header bg-blue ">
+        <div class="row w-100 ">
+      <div class="col-sm-12 col-md-6 col-lg-6 ">                    
+        <h4>Previous Tax Details</h4>   
+      </div>
+      
+  </div>
+  
+      
+      </div>
+      <div class="card-body mt-4">
+        <form [formGroup]="EmployeeForm">
+        <div class="row">
+           
+            <div class="col-md-3">
+                <label>Enter Empcode</label>
+                <div class="form-group">
+                    <input type="text"class="form-control"formControlName="empCode">
+                </div>
+            </div>
+            <div class="col-md-1">
+                <button class="btn btn-primary mx-1 mt-4">Search</button>
+            </div>
+            <div class="col-md-4">
+                <label>Employee Code</label>
+           
+                <div class="form-group">
+                  <ng-select id="year" [items]="selects" bindLabel="name" bindValue="value"
+                  formControlName="employeeCode" placeholder="--Select --"
+                  class="w-100"></ng-select>
+                  <div *ngIf="submitted   && EmployeeForm.get('employeeCode')?.invalid" class="text-danger">
+                    employeeCode is required!
+                    </div>
+                </div>  
+            </div>
+            <div class="col-md-4">
+                <label>Employee Name</label>
+                <div class="form-group">
+                    <input type="text"class="form-control"formControlName="employeeName" >
+                </div>
+            </div>
+           
+        </div>
+        
+        <div class="row">
+            <div class="col-md-4">
+                <label>Location</label>
+                <div class="form-group">
+                    <input type="text"class="form-control"formControlName="location">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <label>Department</label>
+                <div class="form-group">
+                    <input type="text"class="form-control"formControlName="department" >
+                </div>
+            </div>
+            <div class="col-md-4">
+                <label>Designation</label>
+                <div class="form-group">
+                    <input type="text"class="form-control"formControlName="designation">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <label>Gross Salary (T)</label>
+                <div class="form-group">
+                    <input type="text"class="form-control"formControlName="gSalary_T">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <label>Gross Salary (NT)</label>
+                <div class="form-group">
+                    <input type="text"class="form-control"formControlName="gSalary_NT" >
+                </div>
+            </div>
+            <div class="col-md-4">
+                <label>Gross HRA (T)</label>
+                <div class="form-group">
+                    <input type="text"class="form-control"formControlName="gHRA_T">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <label>Gross HRA (NT)</label>
+                <div class="form-group">
+                    <input type="text"class="form-control"formControlName="gHRA_NT">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <label>Gross Conveyance (T)</label>
+                <div class="form-group">
+                    <input type="text"class="form-control"formControlName="gConveyance_T" >
+                </div>
+            </div>
+            <div class="col-md-4">
+                <label>Gross Conveyance (NT)</label>
+                <div class="form-group">
+                    <input type="text"class="form-control"formControlName="gConveyance_NT">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <label>Gross Perk (T)</label>
+                <div class="form-group">
+                    <input type="text"class="form-control"formControlName="gPerk_T">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <label>Gross Perk (NT)</label>
+                <div class="form-group">
+                    <input type="text"class="form-control"formControlName="gPerk_NT" >
+                </div>
+            </div>
+            <div class="col-md-4">
+                <label>Gross CEA (T)</label>
+                <div class="form-group">
+                    <input type="text"class="form-control"formControlName="gCEA_T">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <label>Gross CEA (NT)</label>
+                <div class="form-group">
+                    <input type="text"class="form-control"formControlName="gCEA_NT">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <label>Income Tax Paid</label>
+                <div class="form-group">
+                    <input type="text"class="form-control"formControlName="incomeTaxPaid">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <label>Prof. Tax Paid</label>
+                <div class="form-group">
+                    <input type="text"class="form-control"formControlName="profTaxPaid">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+           
+            <div class="col-md-4">
+                <label>Ent. Allowance</label>
+                <div class="form-group">
+                    <input type="text"class="form-control"formControlName="enterAllow">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <label>Deduct From</label>
+           
+                <div class="form-group">
+                  <ng-select id="year" [items]="selects" bindLabel="name" bindValue="value"
+                  formControlName="deductFrom" placeholder="--Select --"
+                  class="w-100"></ng-select>
+                </div>  
+            </div>
+            <div class="col-md-4">
+                <label>From Date</label>
+                <div class="form-group">
+                    <input type="text"class="form-control"formControlName="fromDate" >
+                    <div *ngIf="submitted   && EmployeeForm.get('fromDate')?.invalid" class="text-danger">
+                        fromDate is required!
+                        </div>
+                </div>
+            </div>
+           
+        </div>
+        <div class="row">
+           
+            <div class="col-md-4">
+                <label>To Date</label>
+                <div class="form-group">
+                    <input type="date"class="form-control"formControlName="toDate" >
+                    <div *ngIf="submitted   && EmployeeForm.get('toDate')?.invalid" class="text-danger">
+                        toDate is required!
+                        </div>
+                </div>
+            </div>
+           
+        </div>
+        
+           <div class="modal-footer"> 
+            <button type="submit" class="btn btn-outline-dark mx-1"(click)="resetForm()">Reset</button>
+             <button type="submit" class="btn btn-primary mx-1" (click)="submit()">Save</button>
+
+          </div>
+        </form>
+      </div>
+
+      
+  </div>
+</div>    
+
+</div>

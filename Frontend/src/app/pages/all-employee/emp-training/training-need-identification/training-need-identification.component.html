@@ -1,0 +1,113 @@
+<div class="row">
+  <div class="col-sm-12">
+    <div class="card">
+
+      <!-- Header -->
+      <div class="card-header bg-primary text-white">
+        <h4>Training Needs Identification (TNI Form)</h4>
+      </div>
+
+      <!-- Body -->
+    
+            <div class="card-body mt-4">
+        <form [formGroup]="tniForm" class="row row-cols-1 row-cols-md-3 g-4">
+
+          <!-- Training Topic -->
+       
+
+           <div class="col">
+              <label>Program<span style="color: red;">*</span></label>
+              <ng-select [items]="programddl" bindLabel="name" bindValue="value" formControlName="fk_programId" [multiple]="true"
+                placeholder="-select code-"  (change)="onProgramChange($event)" ></ng-select>
+
+              <!-- Validation message below input field -->
+              <span *ngIf="showError && tniForm.controls['fk_programId'].invalid" class="text-danger mt-1"
+                style="font-size: 12px;">
+                Select Department.
+              </span>
+
+            </div>
+
+             <div class="col">
+              <label>Sub Program<span style="color: red;">*</span></label>
+              <ng-select [items]="subprogramddl" bindLabel="label" bindValue="value" formControlName="fk_subprogramId" [multiple]="true"
+                placeholder="-select code-" ></ng-select>
+
+              <!-- Validation message below input field -->
+              <span *ngIf="showError && tniForm.controls['fk_programId'].invalid" class="text-danger mt-1"
+                style="font-size: 12px;">
+                Select Department.
+              </span>
+
+            </div>
+
+          <!-- Reason -->
+          <div class="col">
+            <label>Reason for Training <span class="text-danger">*</span></label>
+            <ng-select [items]="reasonList" bindLabel="name" bindValue="id"
+              placeholder="--Select Reason--" formControlName="reason" class="w-100">
+            </ng-select>
+            <span *ngIf="showError && tniForm.controls['reason'].invalid" class="text-danger small">
+              Please select Reason.
+            </span>
+          </div>
+
+          <!-- Priority -->
+          <div class="col">
+            <label>Priority <span class="text-danger">*</span></label>
+            <ng-select [items]="priorityList" bindLabel="name" bindValue="id"
+              placeholder="--Select Priority--" formControlName="priority" class="w-100">
+            </ng-select>
+            <span *ngIf="showError && tniForm.controls['priority'].invalid" class="text-danger small">
+              Please select Priority.
+            </span>
+          </div>
+
+          <!-- Proposed Timeline -->
+          <div class="col">
+            <label>Proposed Timeline <span class="text-danger">*</span></label>
+            <input type="datetime-local" class="form-control" formControlName="proposedTimeline">
+            <span *ngIf="showError && tniForm.controls['proposedTimeline'].invalid" class="text-danger small">
+              Please select Proposed Timeline.
+            </span>
+          </div>
+
+          <!-- Target Audience -->
+          <div class="col">
+            <label>Target Audience <span class="text-danger">*</span></label>
+            <ng-select [items]="targetAudienceList" bindLabel="name" bindValue="id"
+              placeholder="--Select Audience--" formControlName="targetAudience" class="w-100">
+            </ng-select>
+            <span *ngIf="showError && tniForm.controls['targetAudience'].invalid" class="text-danger small">
+              Please select Target Audience.
+            </span>
+          </div>
+
+          <!-- Remarks -->
+          <div class="col">
+            <label>Remarks</label>
+            <input type="text" class="form-control" placeholder="Enter remarks (optional)" formControlName="remarks">
+          </div>
+
+          <!-- Attachment -->
+          <div class="col">
+            <label>Attachment</label>
+            <input type="file" class="form-control" (change)="onFileSelected($event)">
+          </div>
+        </form>
+
+        <!-- Buttons -->
+
+        <div class="row">
+          <div class="col d-flex align-items-end justify-content-end pt-4 pb-3">
+            <button type="button" class="btn btn-primary mx-1" (click)="onSubmit()">
+              {{ Isedit ? 'Update' : 'Save' }}
+            </button>
+            <button type="button" class="btn btn-outline-dark mx-1" >Add</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

@@ -1,0 +1,510 @@
+<div class="card">
+    <!-- header -->
+    <div class="card-header bg-primary">
+        <div class="row w-100">
+            <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-between">
+                <h4>{{Isedit ? 'Update Leave Type Master Client' : 'Add Leave Type Master Client' }}</h4>
+            </div>
+            <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+                <button class="btn btnheader" routerLink="/dash/user/userdashboard/Leave-MasterClient_list">
+                    Back
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card Body -->
+    <div class="card-body">
+        <form [formGroup]="LeaveTypeMasterForm">
+            <!-- Row 1 -->
+            <div class="row row-cols-1 row-cols-md-3 g-3">
+                <div class="col">
+                    <label for="LeaveType">Leave Type<span class="text-danger">*</span></label>
+                    <input id="LeaveType" type="text" class="form-control" formControlName="leavetype"
+                        (blur)="onBlurCheckAvailability('LeaveType')">
+                    
+                    <span *ngIf="(showError || LeaveTypeMasterForm.get('leavetype')?.touched) && 
+                                 LeaveTypeMasterForm.get('leavetype')?.invalid && 
+                                 !LeaveTypeMasterForm.get('leavetype')?.errors?.['duplicate']"
+                        class="text-danger mt-1" style="font-size: 12px;">
+                        Please enter Leave Type.
+                    </span>
+                    
+                    <div *ngIf="LeaveTypeMasterForm.get('leavetype')?.errors?.['duplicate']" 
+                         class="text-danger" style="font-size:10px;">
+                        {{ LeaveTypeMasterForm.get('leavetype')?.errors?.['duplicate'] }}
+                    </div>
+                </div>
+
+                <div class="col">
+                    <label for="shortDescription">Short Description<span class="text-danger">*</span></label>
+                    <input id="shortDescription" type="text" class="form-control flex-grow-1"
+                        formControlName="shortdesc" (blur)="onBlurCheckAvailability('ShortDesc')">
+                    
+                    <span *ngIf="(showError || LeaveTypeMasterForm.get('shortdesc')?.touched) && 
+                                 LeaveTypeMasterForm.get('shortdesc')?.invalid && 
+                                 !LeaveTypeMasterForm.get('shortdesc')?.errors?.['duplicate']"
+                        class="text-danger mt-1" style="font-size: 12px;">
+                        Please enter Short description.
+                    </span>
+                    
+                    <div *ngIf="LeaveTypeMasterForm.get('shortdesc')?.errors?.['duplicate']" 
+                         class="text-danger" style="font-size:10px;">
+                        {{ LeaveTypeMasterForm.get('shortdesc')?.errors?.['duplicate'] }}
+                    </div>
+                </div>
+
+                <div class="col">
+                    <label for="leaveNature">Leave Nature<span class="text-danger">*</span></label>
+                    <ng-select id="leaveNature" [items]="LeaveNatureType" bindLabel="name" bindValue="value"
+                        formControlName="leavenature" class="w-100"></ng-select>
+                    
+                    <span *ngIf="(showError || LeaveTypeMasterForm.get('leavenature')?.touched) && 
+                                 LeaveTypeMasterForm.get('leavenature')?.invalid"
+                        class="text-danger mt-1" style="font-size: 12px;">
+                        Please select Leave Nature Type.
+                    </span>
+                </div>
+
+                     <div class="col">
+                    <label for="leaveNature">Client Name<span class="text-danger">*</span></label>
+                    <ng-select [items]="CostCenter" bindLabel="name" bindValue="value"
+                        formControlName="fk_costcentreid" class="w-100"
+                          placeholder="--Select--"></ng-select>
+                    
+                    <span *ngIf="(showError || LeaveTypeMasterForm.get('fk_costcentreid')?.touched) && 
+                                 LeaveTypeMasterForm.get('fk_costcentreid')?.invalid"
+                        class="text-danger mt-1" style="font-size: 12px;">
+                        Please select  Client Name.
+                    </span>
+                </div>
+                <div class="col">
+                    <label for="shortDescription">Remark</label>
+                    <input id="shortDescription" type="text" class="form-control flex-grow-1" formControlName="remarks">
+                </div>
+            </div>
+        </form>
+
+        <!-- Employee Leave Assignment Section -->
+        <div class="bg-primary rounded-1 mt-3 page-seperator">
+            <p class="p-1 text-white ms-4">Leave Type Details</p>
+        </div>
+
+        <form [formGroup]="LeaveTypeDetailsform">
+            <!-- Row 2 -->
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                <div class="col">
+                    <label for="EmpNature">Employee Nature<span class="text-danger">*</span></label>
+                    <ng-select id="EmpNature" [items]="EmpNature" bindLabel="name" bindValue="value"
+                        formControlName="fk_natureid" class="w-100"
+                        placeholder="--Select Employee Nature--"></ng-select>
+                    
+                    <span *ngIf="(showError || LeaveTypeDetailsform.get('fk_natureid')?.touched) && 
+                                 LeaveTypeDetailsform.get('fk_natureid')?.invalid"
+                        class="text-danger mt-1" style="font-size: 12px;">
+                        Please select Employee Nature.
+                    </span>
+                </div>
+
+                <div class="col">
+                    <label for="leavelimitpermonth">Leave Limit in a Month<span class="text-danger">*</span></label>
+                    <input id="leavelimitpermonth" type="number" class="form-control" formControlName="maxlimitinmonth">
+                    
+                    <span *ngIf="(showError || LeaveTypeDetailsform.get('maxlimitinmonth')?.touched) && 
+                                 LeaveTypeDetailsform.get('maxlimitinmonth')?.invalid"
+                        class="text-danger mt-1" style="font-size: 12px;">
+                        Please enter leave limit in month.
+                    </span>
+                </div>
+
+                <div class="col">
+                    <label for="maxleaveperyear">Max Leave Per Year<span class="text-danger">*</span></label>
+                    <input type="number" id="maxleaveperyear" formControlName="maxperyear" class="form-control">
+                    
+                    <span *ngIf="(showError || LeaveTypeDetailsform.get('maxperyear')?.touched) && 
+                                 LeaveTypeDetailsform.get('maxperyear')?.invalid"
+                        class="text-danger mt-1" style="font-size: 12px;">
+                        Please enter max leave per year.
+                    </span>
+                </div>
+
+                <div class="col">
+                    <div class="col-md-4">
+                        <label for="Cashable">Cashable</label>
+                    </div>
+                    <div class="col-md-8">
+                        <input type="checkbox" id="Cashable" formControlName="cashable" class="form-check-input">
+                    </div>
+                </div>
+
+                <div class="col">
+                    <label for="Maxcashable">
+                        Max Cashable
+                        <span *ngIf="LeaveTypeDetailsform.get('cashable')?.value" class="text-danger">*</span>
+                    </label>
+                    <input id="Maxcashable" type="number" class="form-control" formControlName="maxcashable">
+                    
+                    <!-- ✅ FIXED: Show error when cashable is checked AND field is invalid -->
+                    <span *ngIf="LeaveTypeDetailsform.get('cashable')?.value && 
+                                 (showError || LeaveTypeDetailsform.get('maxcashable')?.touched) &&
+                                 LeaveTypeDetailsform.get('maxcashable')?.invalid"
+                        class="text-danger mt-1" style="font-size: 12px;">
+                        Max Cashable is required when Cashable is checked.
+                    </span>
+                </div>
+
+                <div class="col">
+                    <label for="formula">Formula:</label>
+                    <ng-select id="formula" [items]="Formula" bindLabel="name" bindValue="value"
+                        formControlName="fk_formulaid" class="w-100"></ng-select>
+                </div>
+
+                <div class="col">
+                    <label for="amount">Amount:</label>
+                    <input id="amount" type="number" class="form-control" formControlName="amount">
+                </div>
+
+                <div class="col">
+                    <div class="col-md-8">
+                        <label for="CarryForward">Carry Forward</label>
+                    </div>
+                    <div class="col-md-4">
+                        <input type="checkbox" id="CarryForward" formControlName="cf" class="form-check-input">
+                    </div>
+                </div>
+
+                <div class="col">
+                    <label for="cf_max">
+                        Carry Forward Leave Limit
+                        <span *ngIf="LeaveTypeDetailsform.get('cf')?.value" class="text-danger">*</span>
+                    </label>
+                    <input id="cf_max" type="number" class="form-control" formControlName="cf_max">
+                    
+                    <!--  ADDED: Validation message for cf_max -->
+                    <span *ngIf="LeaveTypeDetailsform.get('cf')?.value && 
+                                 (showError || LeaveTypeDetailsform.get('cf_max')?.touched) &&
+                                 LeaveTypeDetailsform.get('cf_max')?.invalid"
+                        class="text-danger mt-1" style="font-size: 12px;">
+                        Carry Forward Leave Limit is required when Carry Forward is checked.
+                    </span>
+                </div>
+
+                <div class="col">
+                    <label for="totalLeaveLimit">
+                        Total Leave Limit
+                        <span *ngIf="LeaveTypeDetailsform.get('cf')?.value" class="text-danger">*</span>
+                    </label>
+                    <input id="totalLeaveLimit" type="number" class="form-control" formControlName="totalleavelimit">
+                    
+                    <!-- ✅ ADDED: Validation message for totalleavelimit -->
+                    <span *ngIf="LeaveTypeDetailsform.get('cf')?.value && 
+                                 (showError || LeaveTypeDetailsform.get('totalleavelimit')?.touched) &&
+                                 LeaveTypeDetailsform.get('totalleavelimit')?.invalid"
+                        class="text-danger mt-1" style="font-size: 12px;">
+                        Total Leave Limit is required when Carry Forward is checked.
+                    </span>
+                </div>
+
+                <div class="col">
+                    <label for="LeaveLPI">Leave Limit Per Instance<span class="text-danger">*</span></label>
+                    <input id="LeaveLPI" type="number" class="form-control" formControlName="leaveLimitPerInstance">
+                    
+                    <span *ngIf="(showError || LeaveTypeDetailsform.get('leaveLimitPerInstance')?.touched) && 
+                                 LeaveTypeDetailsform.get('leaveLimitPerInstance')?.invalid"
+                        class="text-danger mt-1" style="font-size: 12px;">
+                        Please enter Leave Limit Per Instance.
+                    </span>
+                </div>
+
+                <div class="col">
+                    <label for="MaxLeaveHold">Max Leave Hold</label>
+                    <input id="MaxLeaveHold" type="number" class="form-control" formControlName="maxhold">
+                </div>
+
+                <div class="col">
+                    <div class="col-md-10">
+                        <label for="fixedtimesissue">Fixed Times Issue</label>
+                    </div>
+                    <div class="col-md-2">
+                        <input type="checkbox" id="fixedtimesissue" formControlName="fixedtimesissue"
+                            class="form-check-input">
+                    </div>
+                </div>
+
+                <div class="col">
+                    <label for="totaltimesissue">
+                        Total Times Issue
+                        <span *ngIf="LeaveTypeDetailsform.get('fixedtimesissue')?.value" class="text-danger">*</span>
+                    </label>
+                    <input type="number" id="totaltimesissue" formControlName="totaltimesissue" class="form-control">
+                    
+                    <!-- ✅ ADDED: Validation message for totaltimesissue -->
+                    <span *ngIf="LeaveTypeDetailsform.get('fixedtimesissue')?.value && 
+                                 (showError || LeaveTypeDetailsform.get('totaltimesissue')?.touched) &&
+                                 LeaveTypeDetailsform.get('totaltimesissue')?.invalid"
+                        class="text-danger mt-1" style="font-size: 12px;">
+                        Total Times Issue is required when Fixed Times Issue is checked.
+                    </span>
+                </div>
+
+                <div class="col">
+                    <label>Leave Hours</label>
+                    <input type="time" class="form-control" formControlName="shortleave">
+                </div>
+
+                <div class="col">
+                    <div class="col-md-10">
+                        <label for="NegativeBA">Negative Balance Allowed</label>
+                    </div>
+                    <div class="col-md-2">
+                        <input type="checkbox" id="NegativeBA" formControlName="negbalallowed" class="form-check-input">
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="col-md-4">
+                        <label>Weekly Off</label>
+                    </div>
+                    <div class="col-md-8 d-flex gap-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="weeklyOff" id="weekly_club" value="Club"
+                                formControlName="weeklyOff">
+                            <label class="form-check-label" for="weekly_club">Club</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="weeklyOff" id="weekly_cover"
+                                value="Cover" formControlName="weeklyOff">
+                            <label class="form-check-label" for="weekly_cover">Cover</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="weeklyOff" id="weekly_none" value="None"
+                                formControlName="weeklyOff">
+                            <label class="form-check-label" for="weekly_none">None</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="col-md-4">
+                        <label>National Holiday</label>
+                    </div>
+                    <div class="col-md-8 d-flex gap-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="nationalHoliday" id="nh_club"
+                                value="Club" formControlName="nationalHoliday">
+                            <label class="form-check-label" for="nh_club">Club</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="nationalHoliday" id="nh_cover"
+                                value="Cover" formControlName="nationalHoliday">
+                            <label class="form-check-label" for="nh_cover">Cover</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="nationalHoliday" id="nh_none"
+                                value="None" formControlName="nationalHoliday">
+                            <label class="form-check-label" for="nh_none">None</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="col-md-4">
+                        <label for="PfDeduction">PF Deduction</label>
+                    </div>
+                    <div class="col-md-8">
+                        <input type="checkbox" id="PfDeduction" formControlName="pfded" class="form-check-input">
+                    </div>
+                </div>
+
+                <div class="col">
+                    <label>Based On<span class="text-danger">*</span></label>
+                    <ng-select [items]="LeaveBasedOn" bindLabel="name" bindValue="value" formControlName="basedon"
+                        class="w-100"></ng-select>
+                    
+                    <span *ngIf="(showError || LeaveTypeDetailsform.get('basedon')?.touched) && 
+                                 LeaveTypeDetailsform.get('basedon')?.invalid"
+                        class="text-danger mt-1" style="font-size: 12px;">
+                        Please select Based On.
+                    </span>
+                </div>
+
+                <div class="col">
+                    <label for="MinBalanceholdtoencash">
+                        Min. Leave Balance hold to encash<span class="text-danger">*</span>
+                    </label>
+                    <input type="text" id="MinBalanceholdtoencash" formControlName="minlvbaltoencash"
+                        class="form-control">
+                    
+                    <span *ngIf="(showError || LeaveTypeDetailsform.get('minlvbaltoencash')?.touched) && 
+                                 LeaveTypeDetailsform.get('minlvbaltoencash')?.invalid"
+                        class="text-danger mt-1" style="font-size: 12px;">
+                        Please enter Min. Leave Balance to encash.
+                    </span>
+                </div>
+
+                <div class="col">
+                    <div class="col-md-10">
+                        <label for="IsConvertible">Allow conversion to other leave types</label>
+                    </div>
+                    <div class="col-md-2">
+                        <input type="checkbox" id="IsConvertible" formControlName="isconvertible"
+                            class="form-check-input">
+                    </div>
+                </div>
+
+                <div class="col">
+                    <label for="leaveid">
+                        Leave Type
+                        <span *ngIf="LeaveTypeDetailsform.get('isconvertible')?.value" class="text-danger">*</span>
+                    </label>
+                    <ng-select id="leaveid" [items]="LeaveTypeNatureWiseList" bindLabel="name" bindValue="value"
+                        formControlName="leaveid" class="w-100" placeholder="--Select Leave Type--">
+                    </ng-select>
+                    
+                    <!-- ✅ FIXED: Show error when isconvertible is checked AND field is invalid -->
+                    <span *ngIf="LeaveTypeDetailsform.get('isconvertible')?.value && 
+                                 (showError || LeaveTypeDetailsform.get('leaveid')?.touched) && 
+                                 LeaveTypeDetailsform.get('leaveid')?.invalid"
+                        class="text-danger mt-1" style="font-size: 12px;">
+                        Please select Leave Type.
+                    </span>
+                </div>
+
+                <div class="col">
+                    <label for="LeaveTypeP">Leave Processing Type<span class="text-danger">*</span></label>
+                    <ng-select id="LeaveTypeP" [items]="LeaveProcessingType" bindLabel="name" bindValue="value"
+                        formControlName="lvprocessingtype" class="w-100"></ng-select>
+                    
+                    <span *ngIf="(showError || LeaveTypeDetailsform.get('lvprocessingtype')?.touched) && 
+                                 LeaveTypeDetailsform.get('lvprocessingtype')?.invalid"
+                        class="text-danger mt-1" style="font-size: 12px;">
+                        Please select Leave Processing Type.
+                    </span>
+                </div>
+
+                <div class="col">
+                    <div class="col-md-8">
+                        <label for="onprodatabasis">Apply Leave on Pro rata Basis</label>
+                    </div>
+                    <div class="col-md-4">
+                        <input type="checkbox" id="onprodatabasis" formControlName="onprodatabasis"
+                            class="form-check-input">
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="col-md-8">
+                        <label for="creditleavemonthly">Credit leave on a monthly basis</label>
+                    </div>
+                    <div class="col-md-4">
+                        <input type="checkbox" id="creditleavemonthly" formControlName="creditleavemonthly"
+                            class="form-check-input">
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="col-md-8">
+                        <label for="CalculateOnEarned">Calculate On Earned</label>
+                    </div>
+                    <div class="col-md-4">
+                        <input type="checkbox" id="CalculateOnEarned" formControlName="onearnedbasis"
+                            class="form-check-input">
+                    </div>
+                </div>
+
+                <div class="col">
+                    <label for="earnedBasedOn">
+                        Earn Based On
+                        <span *ngIf="LeaveTypeDetailsform.get('onearnedbasis')?.value" class="text-danger">*</span>
+                    </label>
+                    <ng-select id="earnedBasedOn" [items]="earnedBasedOn" bindLabel="name" bindValue="value"
+                        formControlName="earnedBasedOn" placeholder="-- Select Earn Based On --" class="w-100">
+                    </ng-select>
+                    
+                    <!-- ✅ FIXED: Show error when onearnedbasis is checked AND field is invalid -->
+                    <span *ngIf="LeaveTypeDetailsform.get('onearnedbasis')?.value && 
+                                 (showError || LeaveTypeDetailsform.get('earnedBasedOn')?.touched) && 
+                                 LeaveTypeDetailsform.get('earnedBasedOn')?.invalid"
+                        class="text-danger mt-1" style="font-size:12px">
+                        Please select Earn Based On.
+                    </span>
+                </div>
+
+                    <div class="col">
+                    <div class="col-md-8">
+                        <label for="Allowcommonleave">Allow common leave </label>
+                    </div>
+                    <div class="col-md-4">
+                        <input type="checkbox" id="Allowcommonleave" formControlName="Allowcommonleave"
+                            class="form-check-input">
+                    </div>
+                </div>
+
+                    <div class="col">
+                    <label for="commonleavedescription">
+                       Common Leave Description
+                    </label>
+                    <input type="text" id="commonleavedescription" formControlName="commonleavedescription"
+                        class="form-control">
+                    
+                 
+                </div>
+
+            </div>
+        </form>
+
+        <!-- Button Section -->
+        <div class="modal-footer mt-2" *ngIf="isButtonVisible">
+            <button type="button" class="btn btn-primary" (click)="addLeavetypeDetails()">
+                {{ isselectedDetail ? 'Update' : 'Add' }}
+            </button>
+            <button type="reset" (click)="leaveDetailsReset()" class="btn btn-outline-dark mx-1">Reset</button>
+        </div>
+
+        <!-- Table Section -->
+        <div class="table-responsive mt-4">
+            <table class="table table-bordered" id="addrecord">
+                <thead>
+                    <tr>
+                        <th>Sr.No</th>
+                        <th>Employee Nature</th>
+                        <th>Max Per Year</th>
+                        <th>Carry Forward</th>
+                        <th>Leave Limit Per Instance</th>
+                        <th>Fixed Times Issue</th>
+                        <th>Cashable</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let member of LeaveTypeDetails.controls; let i = index" [id]="'row-' + i"
+                        [class.table-primary]="editingIndex === i">
+                        <td>{{ i + 1 }}</td>
+                        <td>{{ getEmpNatureName(member.get('fk_natureid')?.value) }}</td>
+                        <td>{{ member.get('maxperyear')?.value }}</td>
+                        <td>{{ member.get('cf')?.value ? 'Yes' : 'No' }}</td>
+                        <td>{{ member.get('leaveLimitPerInstance')?.value }}</td>
+                        <td>{{ member.get('fixedtimesissue')?.value ? 'Yes' : 'No' }}</td>
+                        <td>{{ member.get('cashable')?.value ? 'Yes' : 'No' }}</td>
+                        <td>
+                            <button class="btn"
+                                (click)="editLeaveType(LeaveTypeMasterForm.get('pk_leaveid')?.value, member.get('fk_natureid')?.value,i)">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                            <button class="btn" (click)="removeLeavetype(i)">
+                                <i class="fa-solid fa fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Footer buttons -->
+        <div class="modal-footer">
+            <button type="submit" class="btn btn-primary mx-1" (click)="Submit()">
+                {{ Isedit ? 'Submit' : 'Submit' }}
+            </button>
+        </div>
+    </div>
+</div>

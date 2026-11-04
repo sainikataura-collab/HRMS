@@ -1,0 +1,80 @@
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+            <div class="card-header bg-primary py-lg-1 mt-0">
+                <div class="row w-100 align-items-center">
+
+                    <!-- Title Section -->
+                    <div class="col-12 col-md-3">
+                        <h4>Rolewise Kra Report</h4>
+                    </div>
+                    <!-- Search Section -->
+                    <!-- <div class="col-12 col-md-7 mt-2 mt-md-0">
+                      <app-common-search (filtersChanged)="handleFilters($event)"></app-common-search>
+                  </div> -->
+
+                </div>
+            </div>
+            <div class="card-body mt-4">
+                <form [formGroup]="ExportExcel" (ngSubmit)="OnView()">
+                    <div class="row row-cols-1 row-cols-md-4">
+                        <div class="col">
+                            <label>Role</label>
+                            <div class="form-group">
+                                <ng-select id="fk_monthId" [items]="RoleName" bindLabel="name" bindValue="value"
+                                    formControlName="role_id" class="w-100"
+                                    placeholder="--Select Role --"></ng-select>
+                                <!-- <span *ngIf="showError && ExportExcel.controls['month'].invalid" class="text-danger mt-1"
+                            style="font-size: 12px;">
+                            Please enter Month.
+                          </span> -->
+                            </div>
+                        </div>
+
+                        <div class="col d-flex align-items-center justify-content-start">
+                            <button type="submit" class="btn btn-primary mx-1">View</button>
+                            <button type="reset" class="btn btn-outline-dark mx-1" (click)="restfrom()">Reset</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <!-- List of Employee -->
+            <div *ngIf="showEmployeeList">
+                <div class="row row-cols-1 row-cols-md-2 p-2">
+                    <div class="col">
+                        <p class="text-dark m-0 d  ps-3 text-primary ">List of Rolewise KRA</p>
+                    </div>
+
+                    <div class="col d-flex align-items-center justify-content-end">
+                        <!-- <button type="submit" class="btn btn-primary mx-1" (click)="downloadExcel()">Export</button>   -->
+                        <button class="btn btn-primary mx-1" (click)="downloadExcel()">
+                            <i class="fa fa-download me-2"></i> Export Excel</button>
+                        <input type="text" class="form-control w-50" placeholder="Search employee..."
+                            placeholder="Search..." [(ngModel)]="searchText" (ngModelChange)="onSearchTextChanged()" />
+                    </div>
+
+                </div>
+
+
+                <div class="table-responsive table-invoice" [ngClass]="{ 'scroll-active': EmployeeList.length > 10 }">
+                    <table class="table table-bordered" id="exportTable">
+                        <thead>
+                            <tr>
+                                <th *ngFor="let col of tableHeaders">{{ col }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr
+                                *ngFor="let item of filteredData()  | paginate: { itemsPerPage: pageSize, currentPage: page, totalItems: totalItems }; let i = index">
+                                <td *ngFor="let col of tableHeaders" [innerHTML]="item[col]"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <pagination-controls (pageChange)="onPageChange($event)" [responsive]="true">
+                    </pagination-controls>
+
+                </div>
+            </div>
+        </div>
+
+    </div>

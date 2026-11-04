@@ -1,0 +1,100 @@
+
+<!-- Loader -->
+<!-- <div *ngIf="isLoading" class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+    <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+</div> -->
+
+<div>
+
+    <div class="row" >
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary">
+                    <div class="row w-100">
+                      <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-between">
+                        <h4>{{Isedit? 'Edit Department':'Department Master'}}</h4>
+                      </div>
+                      <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+                        <button class="btn btnheader" routerLink="/dash/user/userdashboard/DepartmentForm_list">
+                          Back
+                        </button>
+                      </div>
+        
+                    </div>
+                </div>
+    
+                <div class="card-body mt-4">
+                    
+    
+                    <form [formGroup]="departmentForm" (ngSubmit)="submitForm()">
+                        <!-- Department Name -->
+                        <div class="row" class="row row-cols-1 row-cols-md-3 g-4">
+                           
+                            <div class="col">
+                                <label for="department">Department:<span style="color: red;">*</span></label>
+
+                                <input id="department" type="text" class="form-control" formControlName="description" (blur)="checkDesignationAvailability(departmentForm.get('description')?.value)" />
+
+
+                                <span *ngIf="showError && departmentForm.controls['description'].invalid && !departmentForm.get('description')?.errors?.['duplicate']" 
+                                class="text-danger mt-1" style="font-size: 12px;">Please enter Departement </span>
+                
+                                  <!-- Show validation error message from API only if it exists -->
+                                  <div *ngIf="departmentForm.get('description')?.errors?.['duplicate']" 
+                                      class="text-danger" style="font-size:10px;">
+                                      {{ departmentForm.get('description')?.errors?.['duplicate'] }}
+                                  </div>
+    
+                            </div>
+                           <div class="col">
+                                <label for="deptcode">DeptCode:<span style="color: red;">*</span></label>
+
+                                <input id="deptcode" type="text" class="form-control" formControlName="deptcode" (blur)="checkDeptAvailability(departmentForm.get('deptcode')?.value)" />
+
+
+                                <span *ngIf="showError && departmentForm.controls['deptcode'].invalid && !departmentForm.get('deptcode')?.errors?.['duplicate']" 
+                                class="text-danger mt-1" style="font-size: 12px;">Please enter Departement Code </span>
+                
+                                  <!-- Show validation error message from API only if it exists -->
+                                  <div *ngIf="departmentForm.get('deptcode')?.errors?.['duplicate']" 
+                                      class="text-danger" style="font-size:10px;">
+                                      {{ departmentForm.get('deptcode')?.errors?.['duplicate'] }}
+                                  </div>
+    
+                            </div>
+    
+                            <div class="col">
+                                <label for="hodCode" >HOD Code:</label>
+                                <ng-select [items]="allHodCodes" id="hodCode" bindLabel="name" bindValue="value" formControlName="fk_depHodid"  placeholder="-select code-"></ng-select>
+    
+                            </div>
+    
+                            <div class="col">
+                                <label for="isactive" >Active:</label>
+                                <div class="form-group">
+                                    <input type="checkbox" id="isactive" formControlName="active" class="form-check-input" />
+    
+                                </div>
+                            </div>
+                        </div>
+    
+                        <!-- Footer buttons -->
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary mx-1">
+                                {{ Isedit ? 'Update' : 'Save' }}
+                            </button>
+                            <button type="button" class="btn btn-outline-dark mx-1" (click)="resetForm()">Reset</button>
+                            <!-- <button type="submit"  class="btn btn-primary mx-1">Save</button> -->
+    
+                           
+                        </div>
+    
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,141 @@
+<div class="row m-0">
+  <div class="col-12 px-0 py-0">
+    <div class="card px-0 m-0">
+
+      <!-- Header -->
+      <!-- <div class="card-header bg-primary">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-6 col-lg-6 col-9">
+            <h4>Leave Request Approval
+
+    </h4>
+          </div>
+          <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 col-3 d-flex align-items-center justify-content-md-end">
+            <button class="btn btnheader" routerLink="/dash/leaves/leavesdashboard/ApprovedLeaveList">Approved/Disapproved List</button>
+          </div>
+        </div>
+      </div> -->
+       <div class="card-header">
+                <div class="row w-100">
+                    <div
+                        class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-between">
+                        <h4 class="mb-0">Leave/OD Request Approval</h4>
+
+                        <div class="dropdown d-flex align-items-center justify-content-center d-md-none">
+                            <button class="btn bg-transparent text-white px-0 mt-1" type="button"
+                                id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fa-solid fa-bars fs-6"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+
+                                 <li><a class="dropdown-item"  routerLink="/dash/leaves/leavesdashboard/ApprovedLeaveList">Approved/Disapproved List</a></li> 
+                                <!-- <li><a class="dropdown-item">PDF</a></li> -->
+                            </ul>
+                        </div>
+                    </div>
+
+
+                    <!-- <div
+                        class="col-12 col-md-3 all-pickup-point-search-header d-flex align-items-center justify-content-md-end">
+                        <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText" />
+                    </div> -->
+
+
+                    <div class="col-12 col-md-6 d-flex justify-content-end align-items-center mt-md-0">
+                        <div class="d-none d-md-flex">
+                            <button class="btn btnheader mx-2" routerLink="/dash/leaves/leavesdashboard/ApprovedLeaveList">Approved/Disapproved List</button>
+                            <!-- <button class="btn btnheader"><i class="fa-solid fa-file-arrow-down"></i>&nbsp;Download</button>-->
+                        </div> 
+                    </div>
+                </div>
+            </div>
+
+      <!-- Form Body -->
+      <div class="card-body px-0  m-2">
+<form [formGroup]="leaveForm">
+  <div class="row">
+    <!-- Remarks Field -->
+    <div class="col-sm-6 mb-2">
+      <label>Remarks <span class="text-danger">*</span></label>
+      <textarea class="form-control" formControlName="remark" rows="2"></textarea>
+
+      <!-- Show error if remark is empty -->
+      <div *ngIf="leaveForm.get('remark')?.invalid && leaveForm.get('remark')?.touched" class="text-danger small">
+        Remarks is required
+      </div>
+    </div>
+
+    <!-- Buttons -->
+    <div class="col-sm-6 mb-2 d-flex gap-2 align-items-end justify-content-end">
+      <button type="button" class="btn btn-success" (click)="approve('Approved')">Approve</button>
+      <button type="button" class="btn btn-danger" (click)="approve('Disapproved')">Disapprove</button>
+    </div>
+  </div>
+</form>
+
+
+ 
+</div>
+
+<!-- End of Form Body -->
+ <div class="table-responsive-md">
+  <!-- Leave Requests Table -->
+ <table class="table" Id="exportTable">
+    <thead >
+      <tr>
+          <th><input type="checkbox" [checked]="selectAll" (change)="toggleSelectAll($event)"></th>
+        <th>Sr.No.</th>
+        <th>Request Date</th>
+        <th>Leave Type</th>
+        <th>Leave Balance</th>
+        <th>Emp Code</th>
+        <th>Emp Name</th>
+        <th>From Date</th>
+        <th>To Date</th>
+        <th>Total Days</th>
+        <th>Reason</th>
+        <th>Medical Certificate</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of leaveRequests; let i = index">
+  
+        <td data-label="checkbok"><input type="checkbox"   [(ngModel)]="item.isChecked" (change)="onCheckboxChange($event, item)"></td>
+        <!-- <td>{{ i + 1 }}</td>
+
+  <td>{{ item.dated }}</td>
+  <td>{{ item.shortdesc }}</td>
+  <td>{{ item.leaveBalance }}</td>
+  <td>{{ item.empcode }}</td>
+  <td>{{ item.empname }}</td>
+  <td>{{ item.fromdate }}</td>
+  <td>{{ item.todate }}</td>
+  <td>{{ item.totdays }}</td>
+  <td>{{ item.reason }}</td>
+  <td>{{ item.filename || '-' }}</td> -->
+
+      <td data-label="Sr.No. : ">{{ i + 1 }}</td>
+      <td data-label="Request Date: ">{{ item.dated }}</td>
+      
+      <td data-label="Leave Type: ">{{ item.shortdesc }}</td>
+      <td data-label="Leave Balance: ">{{ item.leaveBalance }}</td>
+      <td data-label="Emp Code: ">{{ item.empcode }}</td>
+      <td data-label="Emp Name: ">{{ item.empname }}</td>
+      <td data-label="From Date: ">{{ item.fromdate }}</td>
+      <td data-label="To Date: ">{{ item.todate }}</td>
+      <td data-label="Total Days: ">{{ item.totdays }}</td>
+      
+      <td data-label="Reason : ">{{ item.reason }}</td>
+      <td data-label="Medical Certificate: ">{{ item.filename || '-' }}</td>
+                                 
+
+        
+      </tr>
+
+      
+    </tbody>
+  </table>
+  </div>
+    </div>
+  </div>
+  </div>

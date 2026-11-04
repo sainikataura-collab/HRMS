@@ -1,0 +1,82 @@
+<div class="row">
+    <div class="col-sm-12">
+      <div class="card">
+        <!-- Card Header -->
+        <div class="card-header bg-primary">
+          <div class="row w-100">
+            <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-between">
+              <h4>{{Isedit? 'Edit ZoneMaster':'Zone Master'}}</h4>
+            </div>
+            <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+              <button class="btn btnheader" routerLink="/dash/user/userdashboard/zonemaster_list">
+                Back
+              </button>
+            </div>
+
+          </div>
+      </div>
+  
+        <!-- Card Body -->
+        <div class="card-body mt-3">
+          <form [formGroup]="zoneForm" (ngSubmit)="submitForm()" >
+            <div class="row" class="row row-cols-1 row-cols-md-3 g-4">
+              <!-- Zone Code -->
+              <div class="col">
+                <label for="zoneCode" class="form-label">Zone Code: <span style="color: red;">*</span></label>
+                <input id="zoneCode" type="text" class="form-control" formControlName="zoneCode">
+                <!-- Validation message below input field -->
+                <span *ngIf="showError && zoneForm.controls['zoneCode'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                  Please enter zoneHR.
+                </span> 
+                </div>
+  
+              <!-- Zone Description -->
+              <div class="col">
+                <label for="zoneDescription" class="form-label">Zone Description:<span style="color: red;">*</span></label>
+                <input id="zoneDescription" type="text" class="form-control" formControlName="zoneDescription" (blur)="checkDesignationAvailability(zoneForm.get('zoneDescription')?.value)">
+
+                <span *ngIf="showError && zoneForm.controls['zoneDescription'].invalid && !zoneForm.get('zoneDescription')?.errors?.['duplicate']" 
+                class="text-danger mt-1" style="font-size: 12px;">Please enter ZoneDescription. </span>
+
+                  <!-- Show validation error message from API only if it exists -->
+                  <div *ngIf="zoneForm.get('zoneDescription')?.errors?.['duplicate']" 
+                      class="text-danger" style="font-size:10px;">
+                      {{ zoneForm.get('zoneDescription')?.errors?.['duplicate'] }}
+                  </div>
+              </div>
+
+  
+              <!-- Zone HR -->
+              <div class="col">
+                <label for="fk_hrempid" class="form-label">Zone HR:</label>
+                <ng-select [items]="zoneHR" id="fk_hrempid" bindLabel="name" bindValue="value" formControlName="fk_hrempid"  placeholder="-select code-"></ng-select>
+    
+              </div>
+  
+              <!-- Operation Head -->
+              <div class="col">
+                <label for="fk_headempid" class="form-label">Operation Head:</label>
+
+                <ng-select [items]="operationHead" id="fk_headempid" bindLabel="name" bindValue="value" formControlName="fk_headempid"  placeholder="-select code-"></ng-select>
+                
+              </div>
+            </div>
+  
+
+             <!-- Footer buttons -->
+             <div class="modal-footer">
+              <button type="submit" class="btn btn-primary mx-1">
+                {{ Isedit ? 'Update' : 'Save' }}
+            </button>
+              <button type="button" class="btn btn-outline-dark mx-1" (click)="resetForm()">Reset</button>
+              <!-- <button type="submit"  class="btn btn-primary mx-1">Save</button> -->
+
+             
+          </div>
+           
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  

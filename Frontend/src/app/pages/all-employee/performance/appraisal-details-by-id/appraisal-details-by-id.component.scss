@@ -1,0 +1,53 @@
+
+
+/* Reset spacing on the PDF container */
+#appraisalPdfContent {
+
+  position: relative;
+
+  border:1px solid #2b2e41 dashed !important;
+
+   width:99% !important;
+   margin:auto;
+  }
+
+
+
+
+.small{
+  font-size: 12px;
+}
+
+
+.s-small
+{
+  font-size: 10px;
+}
+
+
+.table td{
+  font-size: 11px;
+  text-align: start !important;
+  
+
+}
+.table th{
+  text-align: start;  
+
+}
+
+
+
+
+
+::ng-deep .custom-content p {
+  font-size: 12px !important;
+  line-height: 1.5;
+  text-align: start !important;
+
+}
+::ng-deep .custom-content2 p {
+  font-size: 11px !important;
+  text-align: start !important;
+  
+}

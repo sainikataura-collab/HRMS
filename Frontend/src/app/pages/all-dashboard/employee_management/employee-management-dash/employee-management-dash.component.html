@@ -1,0 +1,256 @@
+<section>
+  <div class="container">
+    <div class="row border-bottom">
+
+      <!-- Title -->
+      <div class="col-lg-7">
+        <p class="small fw-semibold">
+          <span>Employee Dashboard</span><br>
+          <span class="fw-semibold text-primary">
+            <i class="fa-solid fa-users"></i> Total Employee -
+          </span>
+          <span class="fw-bold text-primary">{{dashboardSummary.TotalEmployee}}</span>
+        </p>
+      </div>
+
+      <!-- Filters -->
+     
+      
+       <form class="col-sm-12 col-md-12 col-lg-5 col-xxl-5" [formGroup]="form">
+              <p class="row row-cols-3 row-cols-md-3 g-2 pt-lg-3">
+            <span class="col"></span>
+            <span class="col">
+            <ng-select [items]="months" bindLabel="name" bindValue="value" formControlName="month" placeholder="Select Month" (change)="onSelectionChange()"></ng-select>
+             </span>
+           <span class="col">
+           <ng-select id="fk_yearId" [items]="years" bindLabel="name" bindValue="value"formControlName="year" placeholder="--Year --" class="w-100" (change)="onSelectionChange()"></ng-select></span>
+        </p>
+             </form>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CARDS ===================== -->
+<section>
+  <div class="container-fluid py-2">
+    <div class="row g-3">
+
+      <!-- LEFT SIDE -->
+      <div class="col-lg-8">
+
+        <!-- Top Cards -->
+        <div class="row row-cols-2 row-cols-md-3 g-3">
+
+          <!-- Total Employees -->
+          <div class="col">
+            <div class="card p-2 border-0 border-start border-3 border-primary rounded-1">
+              <div class="d-flex align-items-center gap-2">
+                <span class="icon-box bg-primary text-white p-1 px-2 rounded-1">
+                  <i class="fas fa-users"></i>
+                </span>
+                <div>
+                  <p class="small fw-semibold mb-0">Total Employee</p>
+                  <span class="fw-bold text-primary">{{dashboardSummary.TotalEmployee}}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- New Joiner -->
+          <div class="col">
+            <div class="card p-2 border-0 border-start border-3 border-success rounded-1">
+              <div class="d-flex align-items-center gap-2">
+                <span class="icon-box bg-success p-1 px-2 rounded text-white">
+                  <i class="fas fa-user-check"></i>
+                </span>
+                <div>
+                  <p class="small fw-semibold mb-0">New Joinee</p>
+                  <span class="fw-bold text-success">{{dashboardSummary.NewJoining}}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Left Joiner -->
+          <div class="col">
+            <div class="card p-2 border-0 border-start border-3 border-warning rounded-1">
+              <div class="d-flex align-items-center gap-2">
+                <span class="icon-box bg-warning p-1 px-2 rounded text-white">
+                  <i class="fas fa-user-clock"></i>
+                </span>
+                <div>
+                  <p class="small fw-semibold mb-0">Left Employee</p>
+                  <span class="fw-bold text-warning">{{dashboardSummary.leftemployee}}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ===== RECENT JOINERS TABLE — recruitment style ===== -->
+
+
+        <div class="row mt-3" style="max-height: 400px;">
+          <div class="col-12">
+            <div class="card rounded-3">
+
+              <div class="card-header ps-2 row row-cols-1 row-cols-md-3"
+                style="border-top: 2px solid #3080e8; border-bottom: 1px solid #cdcfdf;">
+
+                <div class="col d-flex align-items-center gap-2">
+                  <span class="small fw-semibold text-primary">
+                    <i class="fa-solid fa-user-plus me-1"></i> Emp Status
+                  </span>
+                  <span class="badge bg-primary rounded-pill">Current Month</span>
+                </div>
+
+                <div class="col">
+                  <input type="text" class="form-control border-success form-control-sm "
+                    placeholder="Search employee..." [(ngModel)]="searchText" />
+                </div>
+
+                <div class="col d-flex align-items-center justify-content-end">
+                  <button class="btn btn-outline-success btn-sm" (click)="toggleViewAll()">
+                    {{ showAll ? '🔙 Show Less' : '📅 View All' }}
+                  </button>
+                </div>
+
+              </div>
+
+              <div class="card-body p-0 table-responsive" style="max-height: 200px; overflow-y: auto;">
+
+                <div *ngIf="filteredJoiners.length === 0" class="text-center py-5 text-muted small">
+                  <i class="fa-solid fa-users-slash fs-3 mb-2 d-block"></i>
+                  No employees found
+                </div>
+
+                <table class="table table-hover table-borderedless mb-0" *ngIf="filteredJoiners.length > 0">
+                  <thead class="table-light sticky-top bg-white" style="top: -8px;">
+                    <tr class="text-start">
+                      <th>Sr.No.</th>
+                      <th>Employee</th>
+                      <th>Emp Code</th>
+                      <th>Department</th>
+                      <th>Designation</th>
+                      <th>Joining Date</th>
+                     
+                      <th class="text-center">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody >
+                    <tr *ngFor="let emp of filteredJoiners; let i = index" >
+
+                      <td>{{ i + 1 }}</td>
+
+                      <td>
+                      
+                     
+                   {{ emp.name }}
+                          
+                      
+                      </td>
+
+                      <td>
+                        <span class="badge bg-light text-dark border p-1 px-2">{{ emp.empCode }}</span>
+                      </td>
+
+                      <td>
+                        <span class="dept-pill">{{ emp.department }}</span>
+                      </td>
+
+                      <td >{{ emp.designation }}</td>
+
+                      <td class="small">
+                   
+                        {{ emp.joiningDate | date: 'dd MMM yyyy' }}
+                      </td>
+
+                 
+
+                      <td class="text-center"  >
+                        <span class="badge  small p-1 px-2"[ngClass]="{'text-light bg-success': emp.status==='Active','text-light bg-danger' : emp.status==='Left'}">
+                          <i class="fa-solid fa-circle-check me-1"></i> {{ emp.status }}
+
+                          
+                        </span>
+                      </td>
+
+                    </tr>
+
+        
+                  </tbody>
+                </table>
+
+              </div>
+
+              <div class="card-footer text-end py-2 px-3" *ngIf="filteredJoiners.length > 0">
+                <a class="small text-primary fw-semibold text-decoration-none"
+                   routerLink="/dash/adminEmployeeManagement/adminEmployeeManagementdashboard/Employee_list">
+                  View All Employees <i class="fa-solid fa-arrow-right ms-1"></i>
+                </a>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT SIDE — unchanged -->
+      <div class="col-lg-4">
+
+        <!-- Quick Actions -->
+        <div class="card shadow-sm p-3 pt-0 mb-3 border-top border-2 border-success">
+          <p class="fw-semibold text-success small mb-2 mt-2">
+            <i class="fa-solid fa-bolt"></i> Quick Actions
+          </p>
+          <div class="row row-cols-1 row-cols-md-2 g-2">
+            <div class="col">
+              <button class="btn btn-outline-primary btn-sm w-100 small"
+                routerLink="/dash/adminEmployeeManagement/adminEmployeeManagementdashboard/EmployeeMst">
+                <i class="fa-solid fa-plus"></i> New Employee
+              </button>
+            </div>
+            <div class="col">
+              <button class="btn btn-outline-success btn-sm w-100 small"
+                routerLink="/dash/adminEmployeeManagement/adminEmployeeManagementdashboard/changeEmployeePassword">
+                <i class="fa-solid fa-file-export"></i> Change Password
+              </button>
+            </div>
+            <div class="col">
+              <button class="btn btn-outline-secondary btn-sm w-100 small"
+                routerLink="/dash/adminEmployeeManagement/adminEmployeeManagementdashboard/EmployeeReport">
+                <i class="fa-solid fa-gear"></i> Employee Report
+              </button>
+            </div>
+            <div class="col">
+              <button class="btn btn-outline-warning btn-sm w-100 small"
+                routerLink="/dash/adminEmployeeManagement/adminEmployeeManagementdashboard/ExportImportEmpOtherDetails">
+                <i class="fa-solid fa-arrow-up"></i> Import Employee
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chart Card — unchanged -->
+        <div class="card mt-3 shadow-sm">
+          <div class="card-body">
+            <p class="text-primary fw-semibold small text-center mb-2">Employee Overview</p>
+            <div style="position: relative; height: 200px; width: 100%;">
+              <canvas id="empChartdiv"></canvas>
+            </div>
+            <!-- Legend -->
+            <div class="d-flex justify-content-center gap-4 mt-2 small">
+              <span><span class="legend-dot bg-primary"></span> Total: <strong class="text-primary">{{ totalEmployee }}</strong></span>
+              <span><span class="legend-dot bg-success"></span> Joined: <strong class="text-success">{{ newJoiner }}</strong></span>
+              <span><span class="legend-dot bg-warning"></span> Left: <strong class="text-warning">{{ leftJoiner }}</strong></span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,157 @@
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card">
+      <!--  -->
+      <div class="card-header bg-blue ">
+        <div class="row w-100 ">
+          <div class="col-sm-12 col-md-6 col-lg-6 ">
+            <h4>{{pk_slabid ? 'Update Professional Tax Slab' : 'Add Professional Tax Slab' }}</h4>
+          </div>
+          <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+            <button class="btn btnheader" routerLink="/dash/user/userdashboard/professionalTax_list">Back
+            </button>
+          </div>
+        </div>
+
+
+      </div>
+      <div class="card-body mt-4">
+        <form [formGroup]="ProfessionalTaxForm">
+          <div class="row row-cols-1 row-cols-md-3">
+            <div class="col">
+              <label>State<span style="color: red;">*</span></label>
+
+              <div class="form-group">
+                <ng-select id="year" [items]="states" bindLabel="name" bindValue="value" formControlName="fk_stateid"
+                  placeholder="--Select --" class="w-100"></ng-select>
+
+                <span *ngIf="showError && ProfessionalTaxForm.controls['fk_stateid'].invalid" class="text-danger mt-1"
+                  style="font-size: 12px;">
+                  Please enter State
+                </span>
+              </div>
+            </div>
+            <div class="col">
+              <label>Sequence<span style="color: red;">*</span></label>
+              <div class="form-group">
+                <input type="text" class="form-control" formControlName="sno" (keypress)="restrictInput($event)"
+                  maxlength="3">
+                <span *ngIf="showError && ProfessionalTaxForm.controls['sno'].invalid" class="text-danger mt-1"
+                  style="font-size: 12px;">
+                  Please enter Sequence.
+                </span>
+
+              </div>
+            </div>
+            <div class="col">
+              <label>Lower Limit<span style="color: red;">*</span></label>
+              <div class="form-group">
+                <input type="text" class="form-control" formControlName="lowerlimit" maxlength="8"
+                  (keypress)="restrictInputDecimal($event)">
+                <span *ngIf="showError && ProfessionalTaxForm.controls['lowerlimit'].invalid" class="text-danger mt-1"
+                  style="font-size: 12px;">
+                  Please enter Lower Limit.
+                </span>
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Upper Limit<span style="color: red;">*</span></label>
+              <div class="form-group">
+                <input type="text" class="form-control" formControlName="upperlimit" maxlength="8"
+                  (keypress)="restrictInputDecimal($event)">
+                <span *ngIf="showError && ProfessionalTaxForm.controls['upperlimit'].invalid" class="text-danger mt-1"
+                  style="font-size: 12px;">
+                  Please enter Upper Limit.
+                </span>
+              </div>
+            </div>
+              <div class="col">
+              <label>Gender</label>
+
+              <div class="form-group">
+                <ng-select id="year" [items]="genderList" bindLabel="name" bindValue="value" formControlName="gender"
+                  placeholder="--Select --" class="w-100"></ng-select>
+
+             
+              </div>
+            </div>
+            <div class="col">
+              <label>Tax Amount<span style="color: red;">*</span></label>
+              <div class="form-group">
+                <input type="text" class="form-control" formControlName="tax_percent" maxlength="10"
+                  (keypress)="restrictInputDecimal($event)">
+
+                <span *ngIf="showError && ProfessionalTaxForm.controls['tax_percent'].invalid" class="text-danger mt-1"
+                  style="font-size: 12px;">
+                  Please enter Tax Amount.
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="row mt-2">
+            <div class="col-12">
+
+              <p class="text-primary fw-bold">Monthly Tax Amount</p>
+              <div class="card border">
+              <div class="table-responsive">
+                  <table class="table table-bordered text-center mb-0">
+                    <thead>
+                      <tr>
+                        <th>Jan</th>
+                        <th>Feb</th>
+                        <th>Mar</th>
+                        <th>Apr</th>
+                        <th>May</th>
+                        <th>Jun</th>
+                        <th>Jul</th>
+                        <th>Aug</th>
+                        <th>Sep</th>
+                        <th>Oct</th>
+                        <th>Nov</th>
+                        <th>Dec</th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+                      <tr>
+                        <td><input class="form-control" formControlName="Jan_Amt"></td>
+                        <td><input class="form-control" formControlName="Feb_Amt"></td>
+                        <td><input class="form-control" formControlName="Mar_Amt"></td>
+                        <td><input class="form-control" formControlName="Apr_Amt"></td>
+                        <td><input class="form-control" formControlName="May_Amt"></td>
+                        <td><input class="form-control" formControlName="Jun_Amt"></td>
+                        <td><input class="form-control" formControlName="Jul_Amt"></td>
+                        <td><input class="form-control" formControlName="Aug_Amt"></td>
+                        <td><input class="form-control" formControlName="Sep_Amt"></td>
+                        <td><input class="form-control" formControlName="Oct_Amt"></td>
+                        <td><input class="form-control" formControlName="Nov_Amt"></td>
+                        <td><input class="form-control" formControlName="Dec_Amt"></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+              </div>
+
+            </div>
+          </div>
+
+        </form>
+        <div class="row">
+          <div class="col d-flex align-items-end justify-content-end pt-4 pb-3">
+            <button type="submit" class="btn btn-primary mx-1" (click)="onSubmit()">{{pk_slabid ? 'Update' : 'Save'
+              }}</button>
+
+            <button type="button" class="btn btn-outline-dark mx-1" (click)="resetForm()">Reset</button>
+
+          </div>
+
+        </div>
+      </div>
+
+
+    </div>
+  </div>
+
+</div>

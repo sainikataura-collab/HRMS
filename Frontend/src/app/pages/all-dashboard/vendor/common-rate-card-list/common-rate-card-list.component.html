@@ -1,0 +1,97 @@
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <!-- Card Header (Matching StateMaster_list) -->
+      <div class="card-header bg-primary">
+        <div class="row w-100">
+          <!-- Title Section -->
+          <div class="col-sm-6 col-md-6 col-lg-4 d-flex align-items-center justify-content-start">
+            <h4 class="text-white mb-0">Common Rate Card List</h4>
+          </div>
+
+          <!-- Search Section -->
+          <div class="col-sm-12 col-md-6 col-lg-4 d-flex align-items-center justify-content-center">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Search..."
+              [(ngModel)]="searchText"
+              (ngModelChange)="onSearch()"
+              (keyup.enter)="onSearch()" />
+          </div>
+
+          <!-- Action Buttons (Add, Download) -->
+          <div class="col-sm-6 col-md-6 col-lg-4 d-flex align-items-center justify-content-end ms-auto gap-2">
+            <button
+              class="btn btnheader"
+              routerLink="/dash/vendor_management/vendor_managementdashboard/common_rate_card">
+              Add
+            </button>
+            <button
+              class="btn btnheader"
+              (click)="exportToExcel()">
+              Download
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card Body with Table -->
+      <div class="card-body">
+        <div class="table-responsive table-invoice">
+          <table id="exportTable" class="table">
+            <thead>
+              <tr>
+                <th>Sr.No.</th>
+                <th>Client</th>
+                <th>Model</th>
+                <th>FHR ID</th>
+                <th>Location</th>
+                <th>Effective From</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Data Rows with Pagination -->
+              <tr *ngFor="let item of rateCards | paginate: { itemsPerPage: pageSize, currentPage: pageIndex, totalItems: totalItems }; let i = index">
+                <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+                <td>{{ item.ClientName || '-' }}</td>
+                <td>{{ item.ModelName || '-' }}</td>
+                <td>{{ item.FHRID || '-' }}</td>
+                <td>{{ item.LocationName || '-' }}</td>
+                <td>{{ item.EffectiveFrom ? (item.EffectiveFrom | date:'dd-MM-yyyy') : '-' }}</td>
+                <td>
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-outline cursor-pointer"
+                    title="Edit Rate Card"
+                    (click)="onEditClick(item)">
+                    <i class="fa-regular fa-pen-to-square"></i>
+                  </button>
+                </td>
+              </tr>
+
+              <tr *ngIf="!isLoading && (!rateCards || rateCards.length === 0)">
+                <td colspan="7" class="text-center py-4 text-muted fw-semibold">
+                  <i class="fa-solid fa-circle-info me-2"></i>No data found
+                </td>
+              </tr>
+
+              <!-- Loading State Row -->
+              <tr *ngIf="isLoading">
+                <td colspan="7" class="text-center py-4 text-muted">
+                  <div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div>
+                  Loading data...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Pagination controls -->
+          <pagination-controls *ngIf="rateCards.length > 0" (pageChange)="onPageChange($event)"></pagination-controls>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

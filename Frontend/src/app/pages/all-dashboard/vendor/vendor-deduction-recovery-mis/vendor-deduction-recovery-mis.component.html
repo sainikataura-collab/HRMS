@@ -1,0 +1,407 @@
+<div class="container-fluid pt-2">
+  <div class="row">
+    <div class="col-12">
+
+      <!-- FILTER CARD -->
+      <div class="card mb-3 shadow-sm border-0">
+        <div class="card-header bg-primary text-white d-flex align-items-center py-2">
+          <h5 class="mb-0 fs-6">Vendor Deduction & Recovery MIS Filters</h5>
+        </div>
+        <div class="card-body">
+          <form [formGroup]="filterForm" (ngSubmit)="searchReport()" class="row g-2 align-items-end mb-1">
+            
+            <!-- Client -->
+            <div class="col-12 col-sm-6 col-md-4 col-lg-2">
+              <label class="form-label">Client</label>
+              <ng-select [items]="clientList" bindLabel="name" bindValue="value" appendTo="body"
+                placeholder="All Clients" formControlName="client">
+              </ng-select>
+            </div>
+
+            <!-- Model -->
+            <div class="col-12 col-sm-6 col-md-4 col-lg-2">
+              <label class="form-label">Model</label>
+              <ng-select [items]="modelList" bindLabel="name" bindValue="value" appendTo="body"
+                placeholder="All Models" formControlName="model">
+              </ng-select>
+            </div>
+
+            <!-- Location -->
+            <div class="col-12 col-sm-6 col-md-4 col-lg-2">
+              <label class="form-label">Location / Hub</label>
+              <ng-select [items]="locationList" bindLabel="name" bindValue="value" appendTo="body"
+                placeholder="All Hubs" formControlName="location">
+              </ng-select>
+            </div>
+
+            <!-- From Date -->
+            <div class="col-12 col-sm-6 col-md-4 col-lg-2">
+              <label class="form-label">From Date <span class="text-danger">*</span></label>
+              <input type="date" class="form-control" formControlName="fromDate">
+            </div>
+
+            <!-- To Date -->
+            <div class="col-12 col-sm-6 col-md-4 col-lg-2">
+              <label class="form-label">To Date <span class="text-danger">*</span></label>
+              <input type="date" class="form-control" formControlName="toDate">
+            </div>
+
+            <!-- Status Filter -->
+            <div class="col-12 col-sm-6 col-md-4 col-lg-2">
+              <label class="form-label">Recovery Status</label>
+              <ng-select [items]="statusList" bindLabel="label" bindValue="value" appendTo="body"
+                formControlName="recoveryStatus" [clearable]="false">
+              </ng-select>
+            </div>
+
+            <!-- Buttons -->
+            <div class="col-12 d-flex justify-content-end gap-2 mt-2 pt-2 ">
+              <button type="button" class="btn btn-outline-secondary btn-sm px-3" (click)="resetForm()">
+                <i class="fa fa-refresh me-1"></i> Reset
+              </button>
+              <button type="submit" class="btn btn-primary btn-sm px-4">
+                <i class="fa fa-search me-1"></i> Search Report
+              </button>
+            </div>
+
+          </form>
+        </div>
+      </div>
+
+
+
+
+      <!-- EXECUTIVE KPI SUMMARY METRICS -->
+      <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-2 mb-3">
+
+        <!-- 1. Total Logged Penalties -->
+        <div class="col">
+          <div class="card p-2 border-0 border-start border-3 border-primary rounded-1 shadow-sm bg-primary-subtle h-100">
+            <div class="d-flex align-items-center gap-2">
+              <span class="icon-box bg-primary text-white p-1 px-2 rounded-1">
+                <i class="fas fa-file-alt"></i>
+              </span>
+              <div class="overflow-hidden">
+                <p class="small fw-semibold mb-0 text-dark text-truncate" title="Total Logged Penalties">Total Logged Penalties</p>
+                <span class="fw-bold text-primary">{{ totalOriginalAmount | currency:'INR':'symbol':'1.0-0' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Cycle 1 Recovered -->
+        <div class="col">
+          <div class="card p-2 border-0 border-start border-3 border-success rounded-1 shadow-sm bg-success-subtle h-100">
+            <div class="d-flex align-items-center gap-2">
+              <span class="icon-box bg-success text-white p-1 px-2 rounded-1">
+                <i class="fas fa-check-circle"></i>
+              </span>
+              <div class="overflow-hidden">
+                <p class="small fw-semibold mb-0 text-dark text-truncate" title="Cycle 1 Recovered (Source Cycle)">Cycle 1 Recovered</p>
+                <span class="fw-bold text-success">{{ totalCycle1Recovered | currency:'INR':'symbol':'1.0-0' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Cycle 2 Recovered -->
+        <div class="col">
+          <div class="card p-2 border-0 border-start border-3 border-info rounded-1 shadow-sm bg-info-subtle h-100">
+            <div class="d-flex align-items-center gap-2">
+              <span class="icon-box bg-info text-white p-1 px-2 rounded-1">
+                <i class="fas fa-sync-alt"></i>
+              </span>
+              <div class="overflow-hidden">
+                <p class="small fw-semibold mb-0 text-dark text-truncate" title="Cycle 2 Recovered (Carry-Forward)">Cycle 2 Recovered</p>
+                <span class="fw-bold text-info">{{ totalCycle2Recovered | currency:'INR':'symbol':'1.0-0' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. Outstanding Deficits -->
+        <div class="col">
+          <div class="card p-2 border-0 border-start border-3 border-danger rounded-1 shadow-sm bg-danger-subtle h-100">
+            <div class="d-flex align-items-center gap-2">
+              <span class="icon-box bg-danger text-white p-1 px-2 rounded-1">
+                <i class="fas fa-times-circle"></i>
+              </span>
+              <div class="overflow-hidden">
+                <p class="small fw-semibold mb-0 text-dark text-truncate" title="Outstanding Deficits (Pending Balance)">Outstanding Deficits</p>
+                <span class="fw-bold text-danger">{{ totalPendingBalance | currency:'INR':'symbol':'1.0-0' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. Recovery Rate -->
+        <div class="col">
+          <div class="card p-2 border-0 border-start border-3 border-warning rounded-1 shadow-sm bg-warning-subtle h-100">
+            <div class="d-flex align-items-center gap-2">
+              <span class="icon-box bg-warning text-white p-1 px-2 rounded-1">
+                <i class="fas fa-percentage"></i>
+              </span>
+              <div class="overflow-hidden">
+                <p class="small fw-semibold mb-0 text-dark text-truncate" title="Recovery Rate (%)">Recovery Rate</p>
+                <span class="fw-bold text-warning-emphasis">{{ recoveryRate | number:'1.1-1' }}%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+
+
+
+
+
+
+      <!-- DATA TABLE CARD -->
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-white d-flex flex-wrap justify-content-between align-items-center py-2 gap-2">
+          <h5 class="mb-0 fs-6 text-primary"><i class="fa fa-table me-2"></i>Recovery Ledger</h5>
+          
+          <div class="d-flex align-items-center gap-2 flex-wrap">
+            <button class="btn btn-outline-secondary btn-sm" (click)="copyForExcel()" [disabled]="filteredData.length === 0" title="Copy table to clipboard for direct Excel pasting">
+              <i class="fa fa-clipboard me-1"></i> Copy for Excel
+            </button>
+            <button class="btn btn-success btn-sm" (click)="exportExcel()" [disabled]="filteredData.length === 0">
+              <i class="fa fa-file-excel-o me-1"></i> Export XLSX
+            </button>
+            <div style="width: 220px;">
+              <input type="text" class="form-control form-control-sm" placeholder="Search in results..." 
+                [(ngModel)]="searchTerm" (ngModelChange)="applyLocalFilter()" />
+            </div>
+          </div>
+        </div>
+
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-bordered table-striped table-hover mb-0 text-nowrap align-middle" style="font-size: 0.82rem;">
+              <thead class="table-light">
+                <tr>
+                  <th style="width: 60px;">POC</th>
+                  <th>Date</th>
+                  <th>Client</th>
+                  <th>Model</th>
+                  <th>Hub Name</th>
+                  <th>Vehicle Type</th>
+                  <th>Route / Block</th>
+                  <th>FHR ID</th>
+                  <th>Vendor</th>
+                  <th>Deduction Type</th>
+                  <th>Shipment ID</th>
+                  <th class="text-end">Amount (₹)</th>
+                  <th class="text-end">Cycle 1 (₹)</th>
+                  <th class="text-end">Cycle 2 (₹)</th>
+                  <th class="text-end">Recovered (₹)</th>
+                  <th class="text-end">Pending Bal (₹)</th>
+                  <th class="text-center">Status</th>
+                  <th>Remarks</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngIf="filteredData.length === 0">
+                  <td colspan="18" class="text-center text-dark py-4">
+                    No recovery records found for the selected criteria.
+                  </td>
+                </tr>
+                <tr *ngFor="let row of filteredData | paginate: { itemsPerPage: pageSize, currentPage: pageIndex }">
+                  <td class="fw-bold">{{ row.poC_EntryNo }}</td>
+                  <td>{{ row.entryDate | date:'dd-MM-yyyy HH:mm' }}</td>
+                  <td>{{ row.clientName }}</td>
+                  <td>{{ row.modelName }}</td>
+                  <td>{{ row.hubName }}</td>
+                  <td>
+                    <span *ngIf="getVehicleType(row)" class="badge bg-light text-dark border">
+                      <i class="fa fa-truck me-1 text-dark" *ngIf="isFourWheeler(getVehicleType(row))"></i>
+                      <i class="fa fa-motorcycle me-1 text-dark" *ngIf="!isFourWheeler(getVehicleType(row))"></i>
+                      {{ getVehicleType(row) }}
+                    </span>
+                    <span *ngIf="!getVehicleType(row)" class="text-dark">-</span>
+                  </td>
+                  <td>
+                    <span *ngIf="getRoute(row)" class="badge bg-secondary-subtle text-dark border border-secondary-subtle">
+                      {{ getRoute(row) }}
+                    </span>
+                    <span *ngIf="!getRoute(row)" class="text-dark">-</span>
+                  </td>
+                  <td class="fw-bold">{{ row.fhrid }}</td>
+                  <td>
+                    <div class="fw-semibold">{{ row.vendorName }}</div>
+                    <small class="text-dark" *ngIf="row.vendorCode"><code>{{ row.vendorCode }}</code></small>
+                  </td>
+                  <td>
+                    <span>{{ row.deductionType }}</span>
+                    <span *ngIf="isArrearRow(row)" class="badge bg-success-subtle text-success border border-success-subtle ms-1" style="font-size: 10px;">
+                      <i class="fa fa-plus-circle me-1"></i>Payout Credit
+                    </span>
+                  </td>
+                  <td>
+                    <a *ngIf="row.shipmentID && row.shipmentID !== '-'" href="javascript:void(0)" class="text-primary fw-bold text-decoration-none" (click)="openShipmentDetails(row.shipmentID)" title="Click to view full recovery breakdown for this Shipment">
+                      <code>{{ row.shipmentID }}</code> <i class="fa fa-external-link small ms-1"></i>
+                    </a>
+                    <code *ngIf="!row.shipmentID || row.shipmentID === '-'">-</code>
+                  </td>
+                  <td class="text-end fw-bold">{{ row.originalAmount | currency:'INR':'symbol':'1.2-2' }}</td>
+                  <td class="text-end text-primary">{{ row.cycle1_Recovered | currency:'INR':'symbol':'1.2-2' }}</td>
+                  <td class="text-end text-info">{{ row.cycle2_Recovered | currency:'INR':'symbol':'1.2-2' }}</td>
+                  <td class="text-end text-success fw-bold">{{ row.total_Recovered | currency:'INR':'symbol':'1.2-2' }}</td>
+                  <td class="text-end fw-bold" [ngClass]="row.pending_Balance > 0 ? 'text-danger' : 'text-dark'">
+                    {{ row.pending_Balance | currency:'INR':'symbol':'1.2-2' }}
+                  </td>
+                  <td class="text-center">
+                    <span *ngIf="row.recoveryStatus === 'Fully_Recovered'" class="badge bg-success">
+                      Fully Recovered
+                    </span>
+                    <span *ngIf="row.recoveryStatus === 'Partially_Recovered'" class="badge bg-warning text-dark">
+                      Partially Recovered
+                    </span>
+                    <span *ngIf="row.recoveryStatus === 'Pending'" class="badge bg-danger">
+                      Pending Deficit
+                    </span>
+                  </td>
+                  <td class="text-truncate" style="max-width: 180px;" title="{{ row.recoveryRemarks }}">
+                    {{ row.recoveryRemarks || '-' }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Footer Pagination -->
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center py-2" *ngIf="filteredData.length > 0">
+          <small class="text-dark">
+            Showing {{ (pageIndex - 1) * pageSize + 1 }} to {{ pageIndex * pageSize > filteredData.length ? filteredData.length : pageIndex * pageSize }} of {{ filteredData.length }} records
+          </small>
+          <pagination-controls (pageChange)="pageIndex = $event" [maxSize]="7" [responsive]="true" previousLabel="Prev" nextLabel="Next"></pagination-controls>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================= -->
+<!-- SHIPMENT DRILLDOWN RECOVERY MODAL                           -->
+<!-- ============================================================= -->
+<div *ngIf="isShipmentModalOpen" class="modal-backdrop fade show" style="z-index: 1050;"></div>
+<div *ngIf="isShipmentModalOpen" class="modal d-block fade show" tabindex="-1" style="z-index: 1055; background: rgba(0,0,0,0.45); overflow-y: auto;">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content shadow border-0">
+      
+      <!-- Modal Header -->
+      <div class="modal-header bg-primary text-white py-2 px-3">
+        <div class="d-flex align-items-center gap-2">
+          <i class="fa fa-barcode fs-5"></i>
+          <div>
+            <h5 class="modal-title mb-0 fs-6 fw-bold">Shipment Recovery Details: #{{ activeShipmentId }}</h5>
+            <small class="text-white-50">View all vendors and payout cycles associated with this shipment penalty</small>
+          </div>
+        </div>
+        <button type="button" class="btn-close btn-close-white" (click)="closeShipmentDetails()"></button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="modal-body p-3">
+        
+        <div *ngIf="isLoadingShipmentBreakdown" class="text-center py-4">
+          <i class="fa fa-spinner fa-spin fa-2x text-primary mb-2"></i>
+          <p class="text-muted small">Loading shipment recovery records...</p>
+        </div>
+
+        <div *ngIf="!isLoadingShipmentBreakdown && shipmentBreakdownData.length === 0" class="text-center py-4 text-muted">
+          No detailed records found for Shipment #{{ activeShipmentId }}.
+        </div>
+
+        <div *ngIf="!isLoadingShipmentBreakdown && shipmentBreakdownData.length > 0">
+          
+          <!-- Summary KPIs -->
+          <div class="row g-2 mb-3">
+            <div class="col-12 col-md-4">
+              <div class="card p-2 border-0 border-start border-3 border-primary bg-primary-subtle rounded-1 shadow-sm">
+                <span class="small fw-semibold text-dark">Total Deduction Allocated</span>
+                <span class="fs-5 fw-bold text-primary">{{ totalShipmentAllocated | currency:'INR' }}</span>
+                <small class="text-muted">{{ shipmentBreakdownData.length }} vendor share(s)</small>
+              </div>
+            </div>
+            <div class="col-12 col-md-4">
+              <div class="card p-2 border-0 border-start border-3 border-success bg-success-subtle rounded-1 shadow-sm">
+                <span class="small fw-semibold text-dark">Total Recovered in Payouts</span>
+                <span class="fs-5 fw-bold text-success">{{ totalShipmentRecovered | currency:'INR' }}</span>
+                <small class="text-muted">Settled through cycles</small>
+              </div>
+            </div>
+            <div class="col-12 col-md-4">
+              <div class="card p-2 border-0 border-start border-3 border-danger bg-danger-subtle rounded-1 shadow-sm">
+                <span class="small fw-semibold text-dark">Pending Deficit Balance</span>
+                <span class="fs-5 fw-bold text-danger">{{ totalShipmentPending | currency:'INR' }}</span>
+                <small class="text-muted">Carried forward to subsequent cycles</small>
+              </div>
+            </div>
+          </div>
+
+          <!-- Breakdown Table -->
+          <div class="table-responsive border rounded">
+            <table class="table table-bordered table-striped table-hover mb-0 text-nowrap align-middle" style="font-size: 0.83rem;">
+              <thead class="table-light">
+                <tr>
+                  <th>Vendor Code</th>
+                  <th>FHRID</th>
+                  <th>Vendor Name</th>
+                  <th>Hub Name</th>
+                  <th>Cycle Range</th>
+                  <th class="text-end">Split Share (₹)</th>
+                  <th class="text-end">Recovered (₹)</th>
+                  <th class="text-end">Pending Deficit (₹)</th>
+                  <th class="text-center">Status</th>
+                  <th>Remarks</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let row of shipmentBreakdownData">
+                  <td><code>{{ row.vendorCode }}</code></td>
+                  <td class="fw-semibold">{{ row.fhrid }}</td>
+                  <td>{{ row.vendorName }}</td>
+                  <td>{{ row.hubName }}</td>
+                  <td>{{ row.cycle_FromDate | date:'dd-MM-yy' }} to {{ row.cycle_ToDate | date:'dd-MM-yy' }}</td>
+                  <td class="text-end fw-bold">{{ row.splitAmount | currency:'INR' }}</td>
+                  <td class="text-end text-success fw-bold">{{ row.recoveredAmount | currency:'INR' }}</td>
+                  <td class="text-end text-danger fw-bold">{{ row.pendingDeficit | currency:'INR' }}</td>
+                  <td class="text-center">
+                    <span *ngIf="row.recoveryStatus === 'FULLY_RECOVERED'" class="badge bg-success-subtle text-success border border-success-subtle">
+                      🟢 Fully Recovered
+                    </span>
+                    <span *ngIf="row.recoveryStatus === 'PARTIALLY_RECOVERED'" class="badge bg-warning-subtle text-dark border border-warning-subtle">
+                      🟡 Partially Recovered
+                    </span>
+                    <span *ngIf="row.recoveryStatus === 'DEFICIT_CARRIED_FORWARD'" class="badge bg-danger-subtle text-danger border border-danger-subtle">
+                      🔴 Deficit Carried Forward
+                    </span>
+                    <span *ngIf="row.recoveryStatus === 'PENDING_SYNC'" class="badge bg-secondary-subtle text-secondary border">
+                      ⏳ Pending Payout Sync
+                    </span>
+                  </td>
+                  <td><small class="text-muted">{{ row.remarks || '-' }}</small></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="modal-footer py-2 px-3 bg-light border-top">
+        <button type="button" class="btn btn-outline-secondary btn-sm px-3" (click)="closeShipmentDetails()">
+          Close
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>

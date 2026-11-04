@@ -1,0 +1,560 @@
+<section>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+          <div class="card-header bg-blue">
+            <div class="row w-100">
+              <div class="col-sm-12 col-md-6 col-lg-6">
+                <h4>Voter ID Verification</h4>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-body mt-2">
+            <!-- ====================== VIEW MODE ====================== -->
+            <div *ngIf="isViewMode && voterData">
+              <div class="row">
+                <div class="col-md-3">
+                  <label>Voter ID No:</label>
+                  <p>
+                    <strong>{{ voterData.voterNo }}</strong>
+                  </p>
+                </div>
+
+                <div class="col-md-3">
+                  <label>Name:</label>
+                  <p>
+                    <strong>{{ voterData.voterName }}</strong>
+                  </p>
+                </div>
+
+                <div class="col-md-3">
+                  <label>Date of Birth:</label>
+                  <p>
+                    <strong>{{
+                      voterData.voterDOB | date : "dd MMM yyyy"
+                    }}</strong>
+                  </p>
+                </div>
+
+                <div class="col-md-3">
+                  <label>Address:</label>
+                  <p>
+                    <strong>{{ voterData.voterAddress }}</strong>
+                  </p>
+                </div>
+
+                <div class="col-md-4" *ngIf="voterData.voterFrontPhoto">
+                  <label class="fw-semibold">Voter ID Front</label><br />
+                  <img
+                    [src]="voterData.voterFrontPhoto"
+                    alt="Voter Front"
+                    class="img-thumbnail my-2"
+                    style="
+                      width: 300px;
+                      height: 170px;
+                      object-fit: contain;
+                      cursor: pointer;
+                    "
+                  />
+                </div>
+
+                <div class="col-md-4" *ngIf="voterData.voterBackPhoto">
+                  <label class="fw-semibold">Voter ID Back</label><br />
+                  <img
+                    [src]="voterData.voterBackPhoto"
+                    alt="Voter Back"
+                    class="img-thumbnail my-2"
+                    style="
+                      width: 300px;
+                      height: 170px;
+                      object-fit: contain;
+                      cursor: pointer;
+                    "
+                  />
+                </div>
+
+                <div class="col-12 mt-3">
+                  <button type="button" class="btn btn-warning" (click)="editVoter()">
+                    <i class="fas fa-edit me-1"></i> Edit Voter Details
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- ====================== FORM MODE ====================== -->
+            <form
+              *ngIf="!isViewMode"
+              [formGroup]="voterForm"
+              (ngSubmit)="OnSubmit()"
+            >
+              <div class="row">
+                <!-- Voter ID No -->
+                <div class="col-sm-12 col-md-6 col-lg-3">
+                  <label>Voter ID No <span class="text-danger">*</span></label>
+                  <div class="form-group">
+                    <div class="input-group">
+                      <span class="input-group-text"
+                        ><i class="fas fa-id-card"></i
+                      ></span>
+                      <input
+                        type="text"
+                        class="form-control"
+                        formControlName="VoterNo"
+                        style="text-transform: uppercase"
+                        (blur)="checkVoterDuplicate()"
+                      />
+                    </div>
+                    <div
+                      *ngIf="(submitted || validate['VoterNo'].touched) && validate['VoterNo'].errors"
+                      class="col-12"
+                    >
+                      <div
+                        *ngIf="validate['VoterNo'].errors['required']"
+                        class="text-danger"
+                      >
+                        Voter ID No is required.
+                      </div>
+                      <div
+                        *ngIf="validate['VoterNo'].errors['duplicate']"
+                        class="text-danger"
+                      >
+                        {{ validate['VoterNo'].errors['duplicate'] }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Verify Button -->
+                <div
+                  *ngIf="isVoterVerified"
+                  class="col-sm-12 col-md-2 col-lg-1 col-xxl-1"
+                >
+                  <button
+                    type="button"
+                    (click)="verifyVoter()"
+                    class="btn btn-primary mt-lg-4 mb-1 d-flex align-items-center justify-content-center"
+                    [disabled]="!voterForm.get('VoterNo')?.value || Isverifyvoter || isVerifying"
+                  >
+                    <span *ngIf="!isVerifying"> Verify </span>
+                    <span *ngIf="isVerifying">
+                      <span class="spinner-border spinner-border-sm me-2"></span>
+                    </span>
+                  </button>
+                </div>
+
+                <!-- Name -->
+                <div class="col-sm-12 col-md-6 col-lg-4 col-xxl-4">
+                  <label
+                    >Name (As on Voter ID)
+                    <span class="text-danger">*</span></label
+                  >
+                  <div class="form-group">
+                    <div class="input-group">
+                      <span class="input-group-text"
+                        ><i class="fas fa-user"></i
+                      ></span>
+                      <input
+                        type="text"
+                        class="form-control"
+                        formControlName="VoterName"
+                        [readonly]="isVoterVerified"
+                      />
+                    </div>
+                    <div
+                      *ngIf="(submitted || validate['VoterName'].touched) && validate['VoterName'].errors"
+                      class="col-12"
+                    >
+                      <div
+                        *ngIf="validate['VoterName'].errors['required']"
+                        class="text-danger"
+                      >
+                        Voter Name is required.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Date of Birth -->
+                <div class="col-sm-12 col-md-6 col-lg-4 col-xxl-4">
+                  <label
+                    >Date of Birth <span class="text-danger">*</span></label
+                  >
+                  <div class="form-group">
+                    <div class="input-group">
+                      <span class="input-group-text"
+                        ><i class="fas fa-calendar-alt"></i
+                      ></span>
+                      <input
+                        type="date"
+                        class="form-control"
+                        formControlName="VoterDOB"
+                        [readonly]="isVoterVerified"
+                      />
+                    </div>
+                    <div
+                      *ngIf="(submitted || validate['VoterDOB'].touched) && validate['VoterDOB'].errors"
+                      class="col-12"
+                    >
+                      <div
+                        *ngIf="validate['VoterDOB'].errors['required']"
+                        class="text-danger"
+                      >
+                        Date of Birth is required.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row mt-1">
+                <!-- Address -->
+                <div class="col-sm-12 col-md-6 col-lg-6">
+                  <label>Address <span class="text-danger">*</span></label>
+                  <div class="form-group">
+                    <div class="input-group">
+                      <span class="input-group-text"
+                        ><i class="fas fa-map-marker-alt"></i
+                      ></span>
+                      <input
+                        type="text"
+                        class="form-control"
+                        formControlName="VoterAddress"
+                        [readonly]="isVoterVerified"
+                      />
+                    </div>
+                    <div
+                      *ngIf="(submitted || validate['VoterAddress'].touched) && validate['VoterAddress'].errors"
+                      class="col-12"
+                    >
+                      <div
+                        *ngIf="validate['VoterAddress'].errors['required']"
+                        class="text-danger"
+                      >
+                        Address is required.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ================= VOTER ID IMAGES UPLOAD ================= -->
+              <div class="row mt-2">
+                <!-- Front Image -->
+                <div class="col-sm-12 col-md-6 col-lg-6">
+                  <label>Upload Voter ID (Front)</label>
+                  <div class="form-group">
+                    <div class="input-group">
+                      <span class="input-group-text"
+                        ><i class="fas fa-image fa-lg"></i
+                      ></span>
+                      <input
+                        type="file"
+                        #frontFileInput
+                        (change)="onFileSelected($event, 'VoterFrontPhotoFile')"
+                        class="d-none"
+                        accept="image/jpeg,image/jpg,image/png"
+                      />
+                      <input
+                        type="text"
+                        class="form-control"
+                        placeholder="Upload Front Image"
+                        [value]="fileName['VoterFrontPhotoFile'] || ''"
+                        readonly
+                      />
+                      <button
+                        class="browse btn btn-primary px-4"
+                        type="button"
+                        (click)="frontFileInput.click()"
+                        [disabled]="isScanningPerFile['VoterFrontPhotoFile']"
+                      >
+                        <i class="fas fa-image"></i>
+                      </button>
+                    </div>
+
+                    <!-- OCR Scanning State -->
+                    <div *ngIf="isScanningPerFile['VoterFrontPhotoFile']" class="d-flex align-items-center gap-2 mt-2 text-primary">
+                      <div class="spinner-border spinner-border-sm" role="status"></div>
+                      <small class="fw-bold">Scanning Voter ID Front with OCR...</small>
+                    </div>
+
+                    <!-- OCR Error Message -->
+                    <div *ngIf="ocrError['VoterFrontPhotoFile']" class="text-danger small mt-1 fw-semibold">
+                      <i class="fas fa-exclamation-triangle me-1"></i> {{ ocrError['VoterFrontPhotoFile'] }}
+                    </div>
+
+                    <!-- OCR Success Message -->
+                    <div *ngIf="companyConfig?.voterOcr && !isScanningPerFile['VoterFrontPhotoFile'] && !ocrError['VoterFrontPhotoFile'] && voterForm.get('VoterNo')?.value && fileName['VoterFrontPhotoFile']" class="text-success small mt-1 fw-semibold">
+                      <i class="fas fa-check-circle me-1"></i> Voter ID Front scan complete.
+                    </div>
+
+                    <div
+                      *ngIf="submitted && validate['VoterFrontPhotoFile'].errors"
+                    >
+                      <div
+                        *ngIf="validate['VoterFrontPhotoFile'].errors['required']"
+                        class="text-danger"
+                      >
+                        Voter ID Front Photo is required.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Back Image -->
+                <div class="col-sm-12 col-md-6 col-lg-6">
+                  <label>Upload Voter ID (Back)</label>
+                  <div class="form-group">
+                    <div class="input-group">
+                      <span class="input-group-text"
+                        ><i class="fas fa-image fa-lg"></i
+                      ></span>
+                      <input
+                        type="file"
+                        #backFileInput
+                        (change)="onFileSelected($event, 'VoterBackPhotoFile')"
+                        class="d-none"
+                        accept="image/jpeg,image/jpg,image/png"
+                      />
+                      <input
+                        type="text"
+                        class="form-control"
+                        placeholder="Upload Back Image"
+                        [value]="fileName['VoterBackPhotoFile'] || ''"
+                        readonly
+                      />
+                      <button
+                        class="browse btn btn-primary px-4"
+                        type="button"
+                        (click)="backFileInput.click()"
+                        [disabled]="isScanningPerFile['VoterBackPhotoFile']"
+                      >
+                        <i class="fas fa-image"></i>
+                      </button>
+                    </div>
+
+                    <!-- OCR Scanning State -->
+                    <div *ngIf="isScanningPerFile['VoterBackPhotoFile']" class="d-flex align-items-center gap-2 mt-2 text-primary">
+                      <div class="spinner-border spinner-border-sm" role="status"></div>
+                      <small class="fw-bold">Scanning Voter ID Back with OCR...</small>
+                    </div>
+
+                    <!-- OCR Error Message -->
+                    <div *ngIf="ocrError['VoterBackPhotoFile']" class="text-danger small mt-1 fw-semibold">
+                      <i class="fas fa-exclamation-triangle me-1"></i> {{ ocrError['VoterBackPhotoFile'] }}
+                    </div>
+
+                    <!-- OCR Success Message -->
+                    <div *ngIf="companyConfig?.voterOcr && !isScanningPerFile['VoterBackPhotoFile'] && !ocrError['VoterBackPhotoFile'] && voterForm.get('VoterAddress')?.value && fileName['VoterBackPhotoFile']" class="text-success small mt-1 fw-semibold">
+                      <i class="fas fa-check-circle me-1"></i> Voter ID Back scan complete.
+                    </div>
+
+                    <div
+                      *ngIf="submitted && validate['VoterBackPhotoFile'].errors"
+                    >
+                      <div
+                        *ngIf="validate['VoterBackPhotoFile'].errors['required']"
+                        class="text-danger"
+                      >
+                        Voter ID Back Photo is required.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Image Previews -->
+              <div class="row mt-2">
+                <div
+                  *ngIf="previewFrontImage || originalFrontUrl"
+                  class="col-sm-12 col-md-6 col-lg-3"
+                >
+                  <label class="d-block mb-2">{{
+                    previewFrontImage
+                      ? "Front Image Preview:"
+                      : "Current Front Image:"
+                  }}</label>
+                  <img
+                    [src]="previewFrontImage || originalFrontUrl"
+                    alt="Front Preview"
+                class="img-thumbnail w-100"
+            style="max-height: 150px; object-fit: contain;"
+                  />
+                </div>
+
+                <div
+                  *ngIf="previewBackImage || originalBackUrl"
+                  class="col-sm-12 col-md-6 col-lg-3"
+                >
+                  <label class="d-block mb-2">{{
+                    previewBackImage
+                      ? "Back Image Preview:"
+                      : "Current Back Image:"
+                  }}</label>
+                  <img
+                    [src]="previewBackImage || originalBackUrl"
+                    alt="Back Preview"
+                class="img-thumbnail w-100"
+            style="max-height: 150px; object-fit: contain;"
+                  />
+                </div>
+              </div>
+
+              <!-- Save Button -->
+              <div class="row">
+                <div class="col-sm-0 col-md-10 col-lg-10"></div>
+                <div class="col-sm-12 col-md-2 col-lg-2">
+                  <div class="form-group shadow-none">
+                    <button
+                      type="submit"
+                      class="btn btn-primary mt-2 gap-2 d-grid d-md-block px-5"
+                      [disabled]="isScanning"
+                    >
+                      Save
+                    </button>
+                  </div>
+                </div>
+                <div class="col-sm-0 col-md-0 col-lg-0"></div>
+              </div>
+            </form>
+
+            <!-- OTP Modal -->
+            <div
+              class="modal fade"
+              id="otpModal"
+              #otpModal
+              tabindex="-1"
+              aria-hidden="true"
+            >
+              <div class="modal-dialog modal-dialog-centered modal-sm">
+                <div class="modal-content">
+                  <div class="modal-body py-2">
+                    <div class="modal-header p-0">
+                      <p class="modal-title m-0">Verify OTP</p>
+                      <button
+                        type="button"
+                        class="btn-close"
+                        (click)="close_OTP_Modal()"
+                      ></button>
+                    </div>
+                    <p class="fw-semibold lh-base pt-1">
+                      Enter OTP sent to your registered mobile number.
+                    </p>
+                    <div
+                      id="otp"
+                      class="inputs d-flex flex-row justify-content-center mt-2"
+                    >
+                      <input
+                        *ngFor="let d of otp; let i = index"
+                        class="mx-1 my-2 text-center form-control rounded"
+                        type="text"
+                        maxlength="1"
+                        [(ngModel)]="otp[i]"
+                        (keyup)="onKeyUp($event, i)"
+                        style="width: 40px"
+                      />
+                    </div>
+                    <div class="mt-4 d-flex justify-content-center">
+                      <button
+                        class="btn btn-primary"
+                        (click)="SubmitOtpVoter()"
+                        [disabled]="!isOtpComplete()"
+                      >
+                        Validate
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Full View & Rotate Modal (Matching PAN and Aadhaar) -->
+<div
+  *ngIf="showVoterModal && modalImageSrc"
+  class="modal fade show d-block"
+  tabindex="-1"
+  style="background: rgba(0, 0, 0, 0.75); z-index: 1060;"
+  (click)="closeVoterModal()"
+>
+  <div class="modal-dialog modal-dialog-centered modal-lg" (click)="$event.stopPropagation()">
+    <div class="modal-content shadow-lg border-0">
+      <div class="modal-header py-2 bg-light">
+        <h6 class="modal-title mb-0 fw-bold">
+          <i class="fas fa-id-card text-primary me-2"></i>{{ modalImageTitle }}
+        </h6>
+        <div class="d-flex align-items-center gap-2">
+          <div class="btn-group btn-group-sm">
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              (click)="rotateVoterImage(modalImageType, -90)"
+              title="Rotate Left 90°"
+            >
+              <i class="fas fa-undo me-1"></i> Rotate Left
+            </button>
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              (click)="rotateVoterImage(modalImageType, 90)"
+              title="Rotate Right 90°"
+            >
+              <i class="fas fa-redo me-1"></i> Rotate Right
+            </button>
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              (click)="resetVoterImageRotation(modalImageType)"
+              title="Reset Rotation"
+              *ngIf="voterRotations[modalImageType] !== 0"
+            >
+              <i class="fas fa-sync-alt me-1"></i> Reset
+            </button>
+          </div>
+          <button
+            type="button"
+            class="btn-close ms-2"
+            (click)="closeVoterModal()"
+            aria-label="Close"
+          ></button>
+        </div>
+      </div>
+      <div
+        class="modal-body text-center p-3 bg-dark d-flex align-items-center justify-content-center"
+        style="min-height: 440px; max-height: 75vh; overflow: auto;"
+      >
+        <img
+          [src]="modalImageSrc"
+          [alt]="modalImageTitle"
+          [style.transform]="'rotate(' + (voterRotations[modalImageType] || 0) + 'deg)'"
+          style="
+            max-width: 90%;
+            max-height: 65vh;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            border-radius: 6px;
+          "
+        />
+      </div>
+      <div class="modal-footer py-2 bg-light justify-content-between">
+        <small class="text-muted">
+          Current Orientation: <span class="badge bg-primary">{{ voterRotations[modalImageType] || 0 }}°</span>
+        </small>
+        <button
+          type="button"
+          class="btn btn-sm btn-secondary px-3"
+          (click)="closeVoterModal()"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

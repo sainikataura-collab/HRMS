@@ -1,0 +1,67 @@
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <!-- heading -->
+      <div class="card-header bg-blue">
+        <div class="row w-100">
+          <!-- Title Section -->
+          <div class="col-sm-12 col-md-6 col-lg-4 d-flex align-items-center justify-content-start">
+            <h4 class="text-white">Account Master List</h4>
+          </div>
+          <div class="col-sm-12 col-md-6 col-lg-4 d-flex align-items-center justify-content-center">
+            <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText" />
+          </div>
+          <!-- Back Button -->
+          <div class="col-sm-12 col-md-6 col-lg-4 d-flex align-items-center justify-content-end ms-auto gap-2">
+            <button class="btn btn-light" routerLink="/dash/payroll/payrolldashboard/AccountMaster">
+              Add
+            </button>
+            <button class="btn btn-light" (click)="exportToExcel()">
+              Download
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!--  -->
+      <div class="mt-4">
+        <table id="exportTable" class="table table-bordered">
+          <thead>
+            <tr>
+              <th>S.No</th>
+              <th>Code</th>
+              <th>Name Of Account</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="
+                let data of filteredData() | paginate : { itemsPerPage: pageSize, currentPage: page ,totalItems: totalItems };let i = index">
+              <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+              <td>{{ data.code }}</td>
+              <td>{{ data.name }}</td>
+              <td>
+                <button class="btn" (click)="editAccount(this.encryptionService.encryptText(data.pk_account_id))">
+                  <i class="fa-solid fa-pen-to-square"></i>
+                </button>
+                <button class="btn" (click)="deleteAccount(data.pk_account_id)">
+                  <i class="fa fa-trash"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <pagination-controls
+    (pageChange)="onPageChange($event)"
+    [responsive]="true">
+  </pagination-controls>
+
+        <ng-template #noData>
+          <tr>
+            <td colspan="4" class="text-center">No data available</td>
+          </tr>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</div>

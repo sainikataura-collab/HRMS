@@ -1,0 +1,461 @@
+<section>
+  <div class="container">
+    <div class="row border-bottom">
+
+      <!-- Title -->
+      <div class="col-lg-7">
+        <p class="small fw-semibold">
+          <span>Leave Dashboard</span><br>
+          <span class="fw-semibold text-primary">
+            <i class="fa-solid fa-user"></i> Total Employee -
+          </span>
+          <span class="fw-bold text-primary">{{totalEmployee}}</span>
+        </p>
+      </div>
+
+      <!-- Filters -->
+        <form class="col-sm-12 col-md-12 col-lg-5 col-xxl-5" [formGroup]="form">
+              <p class="row row-cols-3 row-cols-md-3 g-2 pt-lg-3">
+            <span class="col"></span>
+            <span class="col">
+            <ng-select [items]="months" bindLabel="name" bindValue="value" formControlName="month" placeholder="Select Month" (change)="onSelectionChange()"></ng-select>
+             </span>
+           <span class="col">
+           <ng-select id="fk_yearId" [items]="years" bindLabel="name" bindValue="value"formControlName="year" placeholder="--Year --" class="w-100" (change)="onSelectionChange()"></ng-select></span>
+        </p>
+             </form>
+
+
+    </div>
+  </div>
+</section>
+
+<!-- ===================== STAT CARDS ===================== -->
+<section>
+  <div class="container-fluid py-2">
+    <div class="row g-3">
+
+      <!-- LEFT SIDE -->
+      <div class="col-lg-8">
+
+        <div class="row row-cols-2 row-cols-md-4 g-3">
+
+          <!-- Total Applied -->
+          <div class="col">
+            <div class="card p-2 border-0 border-start border-3 border-primary rounded-1">
+              <div class="d-flex align-items-center gap-2">
+                <span class="icon-box bg-primary text-white p-1 px-2 rounded-1">
+                  <i class="fas fa-file-alt"></i>
+                </span>
+                <div>
+                  <p class="small fw-semibold mb-0">Total Applied</p>
+                  <span class="fw-bold text-primary">{{ leaveRequests.length }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Approved -->
+          <div class="col">
+            <div class="card p-2 border-0 border-start border-3 border-success rounded-1">
+              <div class="d-flex align-items-center gap-2">
+                <span class="icon-box bg-success text-white p-1 px-2 rounded-1">
+                  <i class="fas fa-check-circle"></i>
+                </span>
+                <div>
+                  <p class="small fw-semibold mb-0">Approved</p>
+                  <span class="fw-bold text-success">{{ approved }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pending -->
+          <div class="col">
+            <div class="card p-2 border-0 border-start border-3 border-warning rounded-1">
+              <div class="d-flex align-items-center gap-2">
+                <span class="icon-box bg-warning p-1 px-2 rounded text-white">
+                  <i class="fas fa-hourglass-half"></i>
+                </span>
+                <div>
+                  <p class="small fw-semibold mb-0">Pending</p>
+                  <span class="fw-bold text-warning">{{ pending }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Rejected -->
+          <div class="col">
+            <div class="card p-2 border-0 border-start border-3 border-danger rounded-1">
+              <div class="d-flex align-items-center gap-2">
+                <span class="icon-box bg-danger p-1 px-2 rounded text-white">
+                  <i class="fas fa-times-circle"></i>
+                </span>
+                <div>
+                  <p class="small fw-semibold mb-0">Rejected</p>
+                  <span class="fw-bold text-danger">{{ rejected }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ===== 3-TAB TABLE CARD ===== -->
+        <div class="row mt-3">
+          <div class="col-12">
+            <div class="card rounded-3">
+
+              <!-- Card Header -->
+              <div class="card-header ps-2 d-flex align-items-center justify-content-between flex-wrap gap-2"
+                style="border-top: 2px solid #3080e8; border-bottom: 1px solid #cdcfdf;">
+
+                <!-- Tabs -->
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+
+                  <button class="btn btn-sm tab-btn"
+                    [ngClass]="activeTab === 'requests' ? 'btn-primary' : 'btn-outline-success'"
+                    (click)="activeTab = 'requests'; showAll = false; searchText = ''">
+                    <i class="fa-solid fa-list me-1"></i>Leave Requests
+                    <span class="badge ms-1 text-dark"
+                      [ngClass]="activeTab === 'requests' ? 'bg-white text-primary ' : 'bg-secondary text-dark'">
+                      {{ leaveRequests.length }}
+                    </span>
+                  </button>
+
+                  <button class="btn btn-sm tab-btn"
+                    [ngClass]="activeTab === 'balance' ? 'btn-primary' : 'btn-outline-success text-dark'"
+                    (click)="activeTab = 'balance'; showAll = false; searchText = ''">
+                    <i class="fa-solid fa-scale-balanced me-1"></i>Leave Balance
+                    <span class="badge ms-1"
+                      [ngClass]="activeTab === 'balance' ? 'bg-white text-primary' : 'bg-secondary text-dark'">
+                      {{ leaveBalances.length }}
+                    </span>
+                  </button>
+
+                  <button class="btn btn-sm tab-btn"
+                    [ngClass]="activeTab === 'upcoming' ? 'btn-primary' : 'btn-outline-success text-dark'"
+                    (click)="activeTab = 'upcoming'; showAll = false; searchText = ''">
+                    <i class="fa-solid fa-calendar-days me-1"></i>Upcoming
+                    <span class="badge ms-1"
+                      [ngClass]="activeTab === 'upcoming' ? 'bg-white text-primary' : 'bg-secondary text-dark'">
+                      {{ upcomingLeaves.length }}
+                    </span>
+                  </button>
+
+                </div>
+
+                <!-- Right Controls -->
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+
+                  <!-- Leave Type filter — Requests tab only -->
+                  <select class="form-select form-select-sm w-auto"
+                    *ngIf="activeTab === 'requests'"
+                    [(ngModel)]="filterLeaveType">
+                    <option value="">All Leave Type</option>
+                    <option>Casual Leave</option>
+                    <option>Sick Leave</option>
+                    <option>Earned Leave</option>
+                    <option>Maternity Leave</option>
+                  </select>
+
+                  <!-- Status filter — Requests tab only -->
+                  <select class="form-select form-select-sm w-auto"
+                    *ngIf="activeTab === 'requests'"
+                    [(ngModel)]="filterStatus">
+                    <option value="">All Status</option>
+                    <option>Approved</option>
+                    <option>Pending</option>
+                    <option>Rejected</option>
+                  </select>
+
+                  <input type="text" class="form-control border-success form-control-sm"
+                    style="width:155px" placeholder="Search employee..."
+                    [(ngModel)]="searchText" />
+
+                  <button class="btn btn-outline-success btn-sm" (click)="toggleViewAll()">
+                    {{ showAll ? '🔙 Less' : '📅 All' }}
+                  </button>
+
+                </div>
+
+              </div><!-- /card-header -->
+
+              <!-- Table Body -->
+              <div class="card-body p-0 table-responsive" style="max-height: 260px; overflow-y: auto;">
+
+                <!-- ════ Leave Requests ════ -->
+                <ng-container *ngIf="activeTab === 'requests'">
+
+                  <div *ngIf="filteredRequests.length === 0"
+                    class="text-center py-5 text-dark small">
+                    <i class="fa-solid fa-inbox fs-3 mb-2 d-block"></i>No leave requests found
+                  </div>
+
+                  <table class="table table-hover mb-0" *ngIf="filteredRequests.length > 0">
+                    <thead class="table-success bg-white sticky-top" style="top:-10px">
+                      <tr>
+                        <th>#</th>
+                        <th>Employee</th>
+                        <th>Emp Code</th>
+                        <th>Department</th>
+                        <th>Leave Type</th>
+                        <th>From</th>
+                        <th>To</th>
+                        <th class="text-center">Days</th>
+                        <th>Reason</th>
+                        <th class="text-center">Status</th>
+                      
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let req of filteredRequests; let i = index">
+
+                        <td>{{ i + 1 }}</td>
+
+                        <td>
+                          <div class="d-flex align-items-center gap-2">
+                            <div class="avatar-circle" [ngClass]="avatarColor(req.name)">
+                              {{ req.name.charAt(0) }}
+                            </div>
+                            <span>{{ req.name }}</span>
+                          </div>
+                        </td>
+
+                        <td>
+                          <span class="badge bg-light text-dark border p-1 px-2">{{ req.empCode }}</span>
+                        </td>
+
+                        <td><span class="dept-pill">{{ req.department }}</span></td>
+
+                        <td>
+                          <span class="badge p-1 px-2" [ngClass]="leaveTypeBadge(req.leaveType)">
+                            {{ req.leaveType }}
+                          </span>
+                        </td>
+
+                        <td>{{ req.fromDate }}</td>
+                        <td>{{ req.toDate }}</td>
+
+                        <td class="text-center">
+                          <span class="badge bg-light text-dark border">{{ req.days }}</span>
+                        </td>
+
+                        <td class="text-dark reason-cell" [title]="req.reason">{{ req.reason }}</td>
+
+                        <td class="text-center">
+                          <span class="badge p-1 px-2" [ngClass]="statusBadge(req.status)">
+                            {{ req.status }}
+                          </span>
+                        </td>
+
+                     
+
+                      </tr>
+                    </tbody>
+                  </table>
+                </ng-container>
+
+                <!-- ════ Leave Balance ════ -->
+                <ng-container *ngIf="activeTab === 'balance'">
+
+                  <div *ngIf="filteredBalance.length === 0"
+                    class="text-center py-5 text-dark small">
+                    <i class="fa-solid fa-inbox fs-3 mb-2 d-block"></i>No balance records found
+                  </div>
+
+                  <table class="table table-hover mb-0" *ngIf="filteredBalance.length > 0">
+                    <thead class="table-light sticky-top" style="top:-1px">
+                      <tr>
+                        <th>#</th>
+                        <th>Employee</th>
+                        <th>Emp Code</th>
+                        <th>Department</th>
+                         <th>Leave Type</th>
+                        <th class="text-center">CurrentYearleave</th>
+                        <th class="text-center">Leaveavailed</th>
+                        <th class="text-center">Balanceleave</th>
+                      
+                        
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let bal of filteredBalance; let i = index">
+                        <td>{{ i + 1 }}</td>
+                        <td>
+                          <div class="d-flex align-items-center gap-2">
+                            <div class="avatar-circle" [ngClass]="avatarColor(bal.name)">
+                              {{ bal.name.charAt(0) }}
+                            </div>
+                            <span>{{ bal.name }}</span>
+                          </div>
+                        </td>
+
+                        <td><span class="badge bg-light text-dark border p-1 px-2">{{ bal.empCode }}</span></td>
+
+                        <td><span class="dept-pill">{{ bal.department }}</span></td>
+                          <td><span class="dept-pill">{{ bal.leavetype }}</span></td>
+
+                        <td class="text-center">
+                          <span class="badge bg-info-subtle text-info fw-semibold">{{ bal.currentyearleaves }}</span>
+                        </td>
+                        <td class="text-center">
+                          <span class="badge bg-purple-subtle text-purple fw-semibold">{{ bal.leaveavailed }}</span>
+                        </td>
+                        <td class="text-center">
+                          <span class="badge bg-warning-subtle text-warning fw-semibold">{{ bal.balanceleave }}</span>
+                        </td>
+                        <!-- <td class="text-center">
+                          <span class="badge bg-primary-subtle text-dark fw-semibold">{{ bal.maternity }}</span>
+                        </td> -->
+                        <!-- <td class="text-center">
+                          <span class="fw-bold text-primary">
+                            {{ bal.casual + bal.sick + bal.earned + bal.maternity }}
+                          </span>
+                        </td> -->
+
+                      </tr>
+                    </tbody>
+                  </table>
+                </ng-container>
+
+                <!-- ════ Upcoming Leaves ════ -->
+                <ng-container *ngIf="activeTab === 'upcoming'">
+
+                  <div *ngIf="filteredUpcoming.length === 0"
+                    class="text-center py-5 text-dark small">
+                    <i class="fa-solid fa-calendar-xmark fs-3 mb-2 d-block"></i>No upcoming leaves found
+                  </div>
+
+                  <table class="table table-hover mb-0" *ngIf="filteredUpcoming.length > 0">
+                    <thead class="table-light sticky-top" style="top:-1px">
+                      <tr>
+                        <th>#</th>
+                        <th>Employee</th>
+                        <th>Emp Code</th>
+                        <th>Department</th>
+                        <th>Leave Type</th>
+                        <th>From</th>
+                        <th>To</th>
+                        <th class="text-center">Days</th>
+                        <th>Reason</th>
+                        <th class="text-center">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let up of filteredUpcoming; let i = index">
+
+                        <td>{{ i + 1 }}</td>
+
+                        <td>
+                          <div class="d-flex align-items-center gap-2">
+                            <div class="avatar-circle" [ngClass]="avatarColor(up.name)">
+                              {{ up.name.charAt(0) }}
+                            </div>
+                            <span>{{ up.name }}</span>
+                          </div>
+                        </td>
+
+                        <td><span class="badge bg-light text-dark border p-1 px-2">{{ up.empCode }}</span></td>
+
+                        <td><span class="dept-pill">{{ up.department }}</span></td>
+
+                        <td>
+                          <span class="badge p-1 px-2" [ngClass]="leaveTypeBadge(up.leaveType)">
+                            {{ up.leaveType }}
+                          </span>
+                        </td>
+
+                        <td>{{ up.fromDate }}</td>
+                        <td>{{ up.toDate }}</td>
+
+                        <td class="text-center">
+                          <span class="badge bg-light text-dark border">{{ up.days }}</span>
+                        </td>
+
+                        <td class="text-dark reason-cell" [title]="up.reason">{{ up.reason }}</td>
+
+                        <td class="text-center">
+                          <span class="badge p-1 px-2" [ngClass]="statusBadge(up.status)">
+                            {{ up.status }}
+                          </span>
+                        </td>
+
+                      </tr>
+                    </tbody>
+                  </table>
+                </ng-container>
+
+              </div><!-- /card-body -->
+
+              <div class="card-footer text-end py-2 px-3">
+                <a class="small text-primary fw-semibold text-decoration-none"
+                  routerLink="/dash/adminLeave/adminLeavedashboard/holidaysMaster_list">
+                  View All Holidays <i class="fa-solid fa-arrow-right ms-1"></i>
+                </a>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /col-lg-8 -->
+
+      <!-- RIGHT SIDE -->
+      <div class="col-lg-4">
+
+        <!-- Quick Actions -->
+        <div class="card shadow-sm p-3 pt-0 mb-3 border-top border-2 border-success">
+          <p class="fw-semibold text-success small mb-2 mt-2">
+            <i class="fa-solid fa-bolt"></i> Quick Actions
+          </p>
+          <div class="row row-cols-1 row-cols-md-2 g-2">
+            <div class="col">
+              <button class="btn btn-outline-primary btn-sm w-100 small"
+                routerLink="/dash/adminLeave/adminLeavedashboard/leaveTransaction">
+                <i class="fa-solid fa-file-circle-plus"></i> Leave Transaction
+              </button>
+            </div>
+            <div class="col">
+              <button class="btn btn-outline-success btn-sm w-100 small"
+                routerLink="/dash/adminLeave/adminLeavedashboard/leave-assessment-Master">
+                <i class="fa-solid fa-user-check"></i> Leave Assignment
+              </button>
+            </div>
+            <div class="col">
+              <button class="btn btn-outline-secondary btn-sm w-100 small"
+                routerLink="/dash/adminLeave/adminLeavedashboard/exportLeave">
+                <i class="fa-solid fa-chart-bar"></i> Leave Report
+              </button>
+            </div>
+            <div class="col">
+              <button class="btn btn-outline-warning btn-sm w-100 small"
+                routerLink="/dash/adminLeave/adminLeavedashboard/export-import-leave">
+                <i class="fa-solid fa-file-import"></i> Import Leave
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Donut Chart -->
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <p class="text-primary fw-semibold small text-center mb-2">Leave Status Overview</p>
+            <div style="position: relative; height: 200px; width: 100%;">
+              <canvas id="leaveChartDiv"></canvas>
+            </div>
+            <div class="d-flex justify-content-center gap-2 mt-2 small flex-wrap">
+              <span><span class="legend-dot bg-success"></span> Approved: <strong class="text-success">{{ approved }}</strong></span>
+              <span><span class="legend-dot bg-warning"></span> Pending: <strong class="text-warning">{{ pending }}</strong></span>
+              <span><span class="legend-dot bg-danger"></span> Rejected: <strong class="text-danger">{{ rejected }}</strong></span>
+            </div>
+          </div>
+        </div>
+
+   
+      </div>
+
+    </div>
+  </div>
+</section>

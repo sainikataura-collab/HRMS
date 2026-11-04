@@ -1,0 +1,164 @@
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+         <!--  -->
+    
+    
+      <div class="card-header bg-blue py-lg-2 mt-0">
+        <div class="row w-100 align-items-center">
+    
+            <!-- Title Section -->
+            <div class="col-12 col-md-3">
+                <h4 class="text-white text-center text-md-start"> {{pk_encashid? 'Update Leave Encashment':'Employee Leave Encashment'}}</h4>
+            </div>
+    
+            <!-- Search Section -->
+            <div class="col-12 col-md-7 mt-2 mt-md-0">
+                <app-common-search (filtersChanged)="handleFilters($event)"></app-common-search>
+            </div>
+    
+            <!-- Button Section -->
+            <div class="col-12 col-md-2 mt-2 mt-md-0 d-flex justify-content-center justify-content-md-end">
+                <button class="btn btnheader" routerLink="/dash/adminLeave/adminLeavedashboard/leaveEncashment_list">
+                    Back
+                </button>
+            </div>
+    
+        </div>
+    </div>
+
+
+
+      <div class="card-body mt-4">
+        <form [formGroup]="leaveEncashForm">
+         
+     
+        <div class="row row-cols-1 row-cols-md-3 g-3">
+            <div class="col">
+                <label for="employeeCode">Employee Code<span style="color: red;">*</span></label>
+                <ng-select  [items]="EmployeeList" bindLabel="name" bindValue="value" formControlName="fk_empid" (change)="onEmpCodeChange($event)" placeholder="--Select --"  [disabled]="Isedit"></ng-select>
+                <span *ngIf="submitted   && leaveEncashForm.get('fk_empid')?.invalid" class="text-danger mt-1" style="font-size: 12px;">
+                  Please choose employee.
+                </span>
+              </div>
+              <div class="col">
+                <label for="employeeName">Employee Name</label>
+                <input id="employeeName" type="text" formControlName="empname" class="form-control"  />
+
+              </div>
+              <div class="col">
+                <label for="designation">Designation</label>
+                <input id="designation" type="text" formControlName="designation" class="form-control" />
+
+              </div>
+              <div class="col">
+                <label for="department">Department:</label>
+                <input id="department" type="text" formControlName="dept" class="form-control" />
+
+              </div>
+              <div class="col">
+                <label>Leave Type <span style="color: red;">*</span></label>           
+                <ng-select id="year" [items]="Leave" bindLabel="name" bindValue="value" formControlName="fk_leaveid" placeholder="--Select --"
+                class="w-100"></ng-select>
+                <span *ngIf="submitted   && leaveEncashForm.get('fk_leaveid')?.invalid" class="text-danger mt-1" style="font-size: 12px;">
+                    Please choose Leave Type.
+                  </span>
+            </div>
+
+            <div class="col">
+                <label>Balance Leaves <span style="color: red;">*</span></label>           
+               
+                    <input type="text"class="form-control"formControlName="balleave" (keypress)="validateNumber($event)" maxlength="9" [readonly]="true" >
+                    <span *ngIf="submitted   && leaveEncashForm.get('balleave')?.invalid" class="text-danger mt-1" style="font-size: 12px;">
+                        Please enter balance leave.
+                      </span>
+             
+            </div>
+  
+            <div class="col">
+                <label>Pay Month <span style="color: red;">*</span></label>  
+                         
+                <ng-select id="Month" [items]="Month" bindLabel="name" bindValue="value"
+                formControlName="fk_monthid" placeholder="--Select --"
+                class="w-100"></ng-select>
+                <span *ngIf="submitted   && leaveEncashForm.get('fk_monthid')?.invalid" class="text-danger mt-1" style="font-size: 12px;">
+                    Please choose month.
+                  </span>
+            </div>
+
+            <div class="col">
+                <label>Year <span style="color: red;">*</span></label>           
+                <ng-select id="Year" [items]="Year" bindLabel="name" bindValue="value"
+                formControlName="fk_yearid" placeholder="--Select --"
+                class="w-100"></ng-select>
+                <span *ngIf="submitted   && leaveEncashForm.get('fk_yearid')?.invalid" class="text-danger mt-1" style="font-size: 12px;">
+                    Please choose year.
+                  </span>
+            </div>
+            <div class="col">
+                <label>Dated<span style="color: red;">*</span></label>           
+                <div class="form-group">
+                    <input type="date" class="form-control" formControlName="dated">
+                    <span *ngIf="submitted   && leaveEncashForm.get('dated')?.invalid" class="text-danger mt-1" style="font-size: 12px;">
+                        Please enter date.
+                      </span>
+                </div>  
+            </div>
+          
+
+           
+          
+            <div class="col">
+                <label>Leave to be Encash <span style="color: red;">*</span></label>           
+                <div class="form-group">
+                    <input type="text"class="form-control"formControlName="totleaveencash" (keypress)="validateNumber($event)" maxlength="9">
+                    <span *ngIf="submitted   && leaveEncashForm.get('totleaveencash')?.invalid" class="text-danger mt-1" style="font-size: 12px;">
+                        Please enter balance leave.
+                      </span>
+                </div>  
+            </div>
+            <div class="col">
+                <label>Ammount<span style="color: red;">*</span></label> 
+                 <!-- <button type="button" class="btn btn-primary btn-sm mx-2" (click)="calculateAmmount()">calculate</button >  -->         
+                 <div class="form-group">
+                     <input type="text"class="form-control"formControlName="amount_N"  [readonly]="true">
+                     <span *ngIf="submitted   && leaveEncashForm.get('amount_N')?.invalid" class="text-danger mt-1" style="font-size: 12px;">
+                         Please enter calculated ammount.
+                       </span>
+                 </div>  
+             </div>
+
+           
+            <div class="col">
+                <label>Remarks</label>           
+                <div class="form-group">
+                 <textarea type="text" class="form-control" formControlName="remarks"></textarea>
+                </div>  
+            </div>
+            
+        </div> 
+
+
+         <!-- Buttons -->
+         
+         <div class="modal-footer">
+
+            <button type="submit" class="btn btn-primary mx-1" (click)="onSubmit()">{{pk_encashid? 'Update':'Save'}}</button>
+            
+            <button   class="btn btn-outline-dark mx-1" (click)="reset()">Reset</button>
+          
+
+            
+      
+         </div>
+        </form>
+       
+       
+    </div>
+
+       
+       
+  </div>
+</div>    
+
+</div>

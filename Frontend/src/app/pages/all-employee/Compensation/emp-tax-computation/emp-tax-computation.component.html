@@ -1,0 +1,143 @@
+<div class="row m-0">
+    <div class="col-12 px-0 py-0">
+        <div class="card px-0 m-0">
+
+
+
+
+            <div class="card-header">
+                <div class="row w-100">
+                    <div
+                        class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-between">
+                        <h4 class="mb-0">Tax Computation</h4>
+
+                    </div>
+
+
+                    <div
+                        class="col-12 col-md-3 all-pickup-point-search-header d-flex align-items-center justify-content-md-end">
+                        <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText" />
+                    </div>
+
+
+                </div>
+            </div>
+
+
+
+
+
+            <div class="card-body px-0  m-2">
+                <p class=" fw-semibold fs-6 text-danger d-flex align-items-center justify-content-center mb-0"
+                    *ngFor="let fy of Finyearlist">
+                    {{ fy.FinancialYear }}
+                </p> <!-- table-responsive-md makes the full table scrollable ONLY above md breakpoint -->
+                <div class="table-responsive-md">
+                    <table Id="exportTable" class="table">
+                        <thead>
+                            <tr>
+                                <th>Sr.No.</th>
+                                <th class="text-start ">DESCRIPTION</th>
+                                <th>AMOUNT</th>
+                                <!-- <th>Description</th>
+
+                                <th>Action</th> -->
+
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let item of filteredData(); let i = index">
+
+                                <td data-label="Sr.No. : ">{{i+1}}</td>
+                                <td data-label="DESCRIPTION : " class="text-start">
+                                    <ng-container *ngIf="item.pk_headId > 0; else plainText">
+                                        <a href="#" class="text-primary" data-bs-toggle="modal"
+                                            data-bs-target="#candidateModal" (click)="openModal(item.pk_headId)"><b>{{
+                                                item.headName }}</b></a>
+
+                                    </ng-container>
+
+                                    <!-- Fallback if not Basic/HRA -->
+                                    <ng-template #plainText>
+                                        <span [innerHTML]="item.headName"></span>
+                                    </ng-template>
+                                </td>
+                                <td data-label="AMOUNT : ">{{item.totalAmount}}</td>
+                            
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+
+
+
+    </div>
+</div>
+
+
+
+
+<!-- Button trigger modal -->
+
+
+<div class="modal fade pt-5 ps-lg-5  " id="candidateModal" tabindex="-1" aria-labelledby="candidateModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+        <div class="modal-content  rounded-3 shadow">
+            <div class="modal-header py-0 m-0 border" *ngIf="Head2List.length > 0"><span>Head Name :</span>&nbsp;&nbsp;
+                <p class="modal-title my-1 text-primary fw-semibold" id="candidateModalLabel">{{ Head2List[0].HeadName
+                    }}</p>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body p-0">
+                <!-- Table -->
+                <table class="table table-bordered table-striped mb-0 text-center">
+                    <thead class="bg-light sticky-top" style="top:-10px">
+                        <tr>
+                            <th>S. No.</th>
+                            <th>MONTH</th>
+                            <th>PAID DAYS</th>
+                            <th>DESCRIPTION</th>
+                            <th>RATE (MONTHLY)</th>
+                            <th>AMOUNT (MONTHLY)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let row of HeadNameDetailsList; let i = index">
+                            <td>{{ i + 1 }}</td>
+                            <td>{{ row.HeadName }}</td>
+                            <td>{{ row.PaidDays }}</td>
+                            <td [ngClass]="{
+  'text-success btn-success': row.DocumentStatus === 'Projected',
+  'text-danger btn-danger': row.DocumentStatus === 'Pay Out',
+
+}">
+                                {{ row.DocumentStatus }}
+                            </td>
+                            <td>{{ row.maxlimit|number:'1.2-2' }}</td>
+                            <td>{{ row.TotalAmount|number:'1.2-2'}}</td>
+                        </tr>
+                    </tbody>
+                    <tfoot class="bg-light">
+                        <tr *ngIf="Head2List.length > 0">
+                            <th colspan="5" class="text-end">Total</th>
+                            <th>{{ Head2List[0].TotalAmount|number:'1.2-2' }}</th>
+                        </tr>
+                    </tfoot>
+                </table>
+
+            </div>
+
+            <div class="modal-footer m-0 p-0">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                <!-- <button type="button" class="btn btn-primary">Understood</button> -->
+            </div>
+        </div>
+    </div>
+</div>

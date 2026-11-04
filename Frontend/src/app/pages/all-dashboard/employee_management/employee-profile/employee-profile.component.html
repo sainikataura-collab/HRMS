@@ -1,0 +1,636 @@
+<section class="py-3 px-2" style="background:#f4f6fb;min-height:100vh;">
+
+
+
+  <div class="container-fluid px-0 px-lg-3">
+
+    <!-- Page Header -->
+    <div class="ep-header" *ngIf="!isModalView">
+      <div>
+        <div class="ep-header-title">
+          <i class="bi bi-person-lines-fill"></i>
+          Employee Profile
+        </div>
+        <div class="ep-header-sub">View complete employee information</div>
+      </div>
+      <a class="ep-back-btn btn"
+        routerLink="/dash/adminEmployeeManagement/adminEmployeeManagementdashboard/Employee_list">
+        <i class="bi bi-arrow-left me-1"></i>Back to List
+      </a>
+    </div>
+
+    <!-- Main Layout -->
+    <div class="row g-0 gx-lg-4" *ngIf="profileData">
+
+      <!-- ─── SIDEBAR ─── -->
+      <div class="col-lg-3 col-md-4">
+        <div class="sidebar-card">
+
+          <!-- Gradient Top -->
+          <div class="sidebar-top">
+            <div class="avatar-ring">
+              <img *ngIf="profileImageUrl" [src]="profileImageUrl" alt="Profile">
+              <i *ngIf="!profileImageUrl" class="bi bi-person avatar-placeholder"></i>
+              <span class="avatar-dot"
+                [style.background]="profileData.basicInfo?.active === 'Yes' ? '#4ade80' : '#f87171'">
+              </span>
+            </div>
+            <div class="emp-name text-truncate px-2" title="{{ profileData.basicInfo?.empname }}">
+              {{ profileData.basicInfo?.empname }}
+            </div>
+            <div class="emp-code">{{ profileData.basicInfo?.empcode }}</div>
+            <div class="badge-desig">{{ profileData.basicInfo?.Designationname || 'N/A' }}</div>
+            <br>
+            <span class="badge-active-pill mt-2"
+              [ngClass]="profileData.basicInfo?.active === 'Yes' ? 'active' : 'inactive'">
+              <span class="dot-status"
+                [style.background]="profileData.basicInfo?.active === 'Yes' ? '#16a34a' : '#dc2626'">
+              </span>
+              {{ profileData.basicInfo?.active === 'Yes' ? 'Active' : 'Inactive' }}
+            </span>
+          </div>
+
+          <!-- Info Rows -->
+          <div class="sidebar-info">
+            <div class="sinfo-row">
+              <div class="sinfo-icon"><i class="bi bi-building"></i></div>
+              <div style="min-width:0">
+                <div class="sinfo-label">Department</div>
+                <div class="sinfo-val">{{ profileData.basicInfo?.Departmentname || 'N/A' }}</div>
+              </div>
+            </div>
+            <div class="sinfo-row">
+              <div class="sinfo-icon"><i class="bi bi-geo-alt"></i></div>
+              <div style="min-width:0">
+                <div class="sinfo-label">Location</div>
+                <div class="sinfo-val">{{ profileData.basicInfo?.Locationname || 'N/A' }}</div>
+              </div>
+            </div>
+            <div class="sinfo-row">
+              <div class="sinfo-icon"><i class="bi bi-calendar3"></i></div>
+              <div style="min-width:0">
+                <div class="sinfo-label">Date of Joining</div>
+                <div class="sinfo-val">{{ profileData.basicInfo?.dateofjoining || 'N/A' }}</div>
+              </div>
+            </div>
+            <div class="sinfo-row">
+              <div class="sinfo-icon"><i class="bi bi-person-check"></i></div>
+              <div style="min-width:0">
+                <div class="sinfo-label">Manager</div>
+                <div class="sinfo-val">{{ profileData.basicInfo?.FunctionalHODName || 'N/A' }}</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ─── MAIN CONTENT ── -->
+      <div class="col-lg-9 col-md-8">
+        <div class="main-card">
+
+          <!-- Tab Nav -->
+      <div class="tab-bar d-flex flex-wrap">
+  <button class="ep-tab-btn"
+    [ngClass]="activeTab === 'personal' ? 'active' : ''"
+    (click)="setActiveTab('personal')">
+    <i class="bi bi-person-vcard"></i> Personal Info
+  </button>
+
+  <button class="ep-tab-btn"
+    [ngClass]="activeTab === 'salary' ? 'active' : ''"
+    (click)="setActiveTab('salary')">
+    <i class="bi bi-currency-rupee"></i> Salary History
+  </button>
+</div>
+
+          <!-- Tab Content -->
+          <div class="tab-content-area">
+
+            <!-- ══════════════════════════════════════
+                 PERSONAL INFO TAB
+            ══════════════════════════════════════ -->
+            <div *ngIf="activeTab === 'personal'">
+
+              <!-- Basic & Employment -->
+              <div class="section-hd">
+                <div class="section-bar"></div>
+                <span class="section-title">Basic &amp; Employment Details</span>
+              </div>
+
+
+              <div class="info-card">
+                <div class="info-card-body">
+                  <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-2">
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">Employee Code</div>
+                      <div class="info-cell-val">{{ profileData.basicInfo?.empcode || 'N/A' }}</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">Manual Emp Code</div>
+                      <div class="info-cell-val">{{ profileData.basicInfo?.manualempcode || 'N/A' }}</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">Father's Name</div>
+                      <div class="info-cell-val">{{ profileData.basicInfo?.fathername || 'N/A' }}</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">Gender</div>
+                      <div class="info-cell-val">{{ profileData.otherInfo?.genderDes || 'N/A' }}</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">Date of Birth</div>
+                      <div class="info-cell-val">{{ profileData.basicInfo?.dateofbirth || 'N/A' }}</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">Date of Joining</div>
+                      <div class="info-cell-val">{{ profileData.basicInfo?.dateofjoining || 'N/A' }}</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">Confirmation Date</div>
+                      <div class="info-cell-val">{{ profileData.basicInfo?.dateOfConfirmation || 'N/A' }}</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">SAF Start Date</div>
+                      <div class="info-cell-val">{{ profileData.basicInfo?.SAFStartDate || 'N/A' }}</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">Contract End Date</div>
+                      <div class="info-cell-val">{{ profileData.basicInfo?.contractenddate || 'N/A' }}</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">Total Experience</div>
+                      <div class="info-cell-val">{{ profileData.basicInfo?.totExperience || 'N/A' }} yrs</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">Active Status</div>
+                      <span class="badge-status"
+                        [ngClass]="profileData.basicInfo?.active === 'Yes' ? 'badge-yes' : 'badge-no'">
+                        {{ profileData.basicInfo?.active || 'N/A' }}
+                      </span>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">CTC</div>
+                      <div class="info-cell-val">₹{{ profileData.basicInfo?.ctc || 'N/A' }}</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">Basic Salary</div>
+                      <div class="info-cell-val">₹{{ profileData.basicInfo?.basic || 'N/A' }}</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">Based On</div>
+                      <div class="info-cell-val">{{ profileData.basicInfo?.basedon || 'N/A' }}</div>
+                    </div></div>
+                  </div>
+
+                  <!-- Left Status Block -->
+                  <ng-container *ngIf="profileData.basicInfo?.employeeleftstatusDes === 'Yes'">
+                    <hr class="ep-divider">
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                      <span class="badge-status badge-left">
+                        <i class="bi bi-door-open me-1"></i>Left Employee
+                      </span>
+                    </div>
+                    <div class="row row-cols-2 row-cols-md-4 g-2">
+                      <div class="col"><div class="info-cell">
+                        <div class="info-cell-label">Resign Date</div>
+                        <div class="info-cell-val">{{ profileData.basicInfo?.resigndate || 'N/A' }}</div>
+                      </div></div>
+                      <div class="col"><div class="info-cell">
+                        <div class="info-cell-label">Relieving Date</div>
+                        <div class="info-cell-val">{{ profileData.basicInfo?.dateOfRelieving || 'N/A' }}</div>
+                      </div></div>
+                      <div class="col"><div class="info-cell">
+                        <div class="info-cell-label">Left Date</div>
+                        <div class="info-cell-val">{{ profileData.basicInfo?.leftdate || 'N/A' }}</div>
+                      </div></div>
+                      <div class="col"><div class="info-cell">
+                        <div class="info-cell-label">Left Remarks</div>
+                        <div class="info-cell-val">{{ profileData.basicInfo?.leftremarks || 'N/A' }}</div>
+                      </div></div>
+                    </div>
+                  </ng-container>
+                </div>
+              </div>
+
+              <!-- Organization & Location -->
+              <div class="section-hd">
+                <div class="section-bar"></div>
+                <span class="section-title">Organization &amp; Location</span>
+              </div>
+              <div class="info-card">
+                <div class="info-card-body">
+                  <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-2">
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">Department</div>
+                      <div class="info-cell-val">
+                        {{ profileData.basicInfo?.Departmentname || 'N/A' }}
+                        <span class="badge bg-warning-subtle bg-opacity-10 text-warning border border-warning ms-1" style="font-size:0.65rem;">
+                          {{ profileData.basicInfo?.dep_active }}
+                        </span>
+                      </div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">Designation</div>
+                      <div class="info-cell-val">{{ profileData.basicInfo?.Designationname || 'N/A' }}</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">Nature</div>
+                      <div class="info-cell-val">{{ profileData.basicInfo?.Naturename || 'N/A' }}</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">Class</div>
+                      <div class="info-cell-val">{{ profileData.basicInfo?.Classname || 'N/A' }}</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">Cost Centre</div>
+                      <div class="info-cell-val">{{ profileData.basicInfo?.Costcentrename || 'N/A' }}</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">Location</div>
+                      <div class="info-cell-val">{{ profileData.basicInfo?.Locationname || 'N/A' }}</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">City</div>
+                      <div class="info-cell-val">{{ profileData.basicInfo?.Cityname || 'N/A' }}</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">Rent City</div>
+                      <div class="info-cell-val">{{ profileData.basicInfo?.RentCity || 'N/A' }}</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">Zone</div>
+                      <div class="info-cell-val">{{ profileData.basicInfo?.ZoneName || 'N/A' }}</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">Operational Div.</div>
+                      <div class="info-cell-val">{{ profileData.basicInfo?.OperationalName || 'N/A' }}</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">Office Name</div>
+                      <div class="info-cell-val">{{ profileData.basicInfo?.officename || 'N/A' }}</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">Group Employee</div>
+                      <div class="info-cell-val">{{ profileData.basicInfo?.groupemployeeDes || 'N/A' }}</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">Accommodation</div>
+                      <div class="info-cell-val">{{ profileData.basicInfo?.AccommodationstatusDes || 'N/A' }}</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">Transfer Status</div>
+                      <div class="info-cell-val">{{ profileData.basicInfo?.transferstatus || 'N/A' }}</div>
+                    </div></div>
+                  </div>
+
+                  <hr class="ep-divider">
+                  <div class="sub-hd">
+                    <i class="bi bi-people"></i>
+                    <span class="sub-hd-txt">Reporting Managers</span>
+                  </div>
+                  <div class="row row-cols-2 row-cols-md-3 g-2">
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">Functional HOD</div>
+                      <div class="info-cell-val">{{ profileData.basicInfo?.FunctionalHODName || 'N/A' }}</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">Administrative HOD</div>
+                      <div class="info-cell-val">{{ profileData.basicInfo?.AdministrativeHODName || 'N/A' }}</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">Functional Rep.</div>
+                      <div class="info-cell-val">{{ profileData.basicInfo?.FunctionalRepName || 'N/A' }}</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">Administrative Rep.</div>
+                      <div class="info-cell-val">{{ profileData.basicInfo?.AdministrativeRepName || 'N/A' }}</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">Coupon HOD</div>
+                      <div class="info-cell-val">{{ profileData.basicInfo?.CouponHODName || 'N/A' }}</div>
+                    </div></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Contact Information -->
+              <div class="section-hd">
+                <div class="section-bar"></div>
+                <span class="section-title">Contact Information</span>
+              </div>
+              <div class="info-card">
+                <div class="info-card-body">
+                  <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-2">
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">Personal Email</div>
+                      <div class="info-cell-val text-truncate" style="font-size:12px">{{ profileData.otherInfo?.PersonalEmail || 'N/A' }}</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">Official Email</div>
+                      <div class="info-cell-val text-truncate" style="font-size:12px">{{ profileData.basicInfo?.email || 'N/A' }}</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">Personal Mobile</div>
+                      <div class="info-cell-val">{{ profileData.otherInfo?.PersonalContactno || 'N/A' }}</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">Official Mobile</div>
+                      <div class="info-cell-val">{{ profileData.otherInfo?.OfficialContactno || 'N/A' }}</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">Corres. Contact</div>
+                      <div class="info-cell-val">{{ profileData.otherInfo?.corresContactNo || 'N/A' }}</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">Permanent Contact</div>
+                      <div class="info-cell-val">{{ profileData.otherInfo?.permanentContactNo || 'N/A' }}</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">Religion</div>
+                      <div class="info-cell-val">{{ profileData.otherInfo?.Religionname || 'N/A' }}</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">Category</div>
+                      <div class="info-cell-val">{{ profileData.otherInfo?.Categoryname || 'N/A' }}</div>
+                    </div></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Financial & Statutory -->
+              <div class="section-hd">
+                <div class="section-bar"></div>
+                <span class="section-title">Financial &amp; Statutory Details</span>
+              </div>
+              <div class="info-card">
+                <div class="info-card-body">
+
+                  <div class="sub-hd">
+                    <i class="bi bi-wallet2"></i>
+                    <span class="sub-hd-txt">Bank &amp; Identity Details</span>
+                  </div>
+                  <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-2">
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">Bank Name</div>
+                      <div class="info-cell-val">{{ profileData.basicInfo?.Bankname || 'N/A' }}</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">Account Number</div>
+                      <div class="info-cell-val">{{ profileData.basicInfo?.bankaccountno || 'N/A' }}</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">IFSC Code</div>
+                      <div class="info-cell-val">{{ profileData.basicInfo?.IFSCCODE || 'N/A' }}</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">PAN Number</div>
+                      <div class="info-cell-val">{{ profileData.basicInfo?.panno || 'N/A' }}</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">UAN Number</div>
+                      <div class="info-cell-val">{{ profileData.basicInfo?.uanNo || 'N/A' }}</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">Aadhaar Number</div>
+                      <div class="info-cell-val">{{ profileData.basicInfo?.adhaarNo || 'N/A' }}</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">PF Number</div>
+                      <div class="info-cell-val">{{ profileData.otherInfo?.pfno || 'N/A' }}</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">ESI Number</div>
+                      <div class="info-cell-val">{{ profileData.otherInfo?.esino || 'N/A' }}</div>
+                    </div></div>
+                  </div>
+
+                  <hr class="ep-divider">
+                  <div class="sub-hd">
+                    <i class="bi bi-shield-check"></i>
+                    <span class="sub-hd-txt">Statutory Applications</span>
+                  </div>
+                  <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-2">
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">PF Applicable</div>
+                      <div class="info-cell-val">{{ profileData.basicInfo?.pf_appkicable || 'N/A' }}</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">ESI Applicable</div>
+                      <div class="info-cell-val">{{ profileData.basicInfo?.esi_applicable || 'N/A' }}</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">Pension Applicable</div>
+                      <div class="info-cell-val">{{ profileData.basicInfo?.pension_applicable || 'N/A' }}</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">Vol PF Applicable</div>
+                      <div class="info-cell-val">{{ profileData.basicInfo?.volpf_applicable || 'N/A' }}</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">PF Max Limit</div>
+                      <div class="info-cell-val">{{ profileData.basicInfo?.pfmaxlimit_applicable || 'N/A' }}</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">Prof. Tax Applicable</div>
+                      <div class="info-cell-val">{{ profileData.basicInfo?.proftax_applicable || 'N/A' }}</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">Vol PF Type / Amt</div>
+                      <div class="info-cell-val">
+                        {{ profileData.basicInfo?.volpfType || '-' }}
+                        <span class="badge bg-warning-subtle bg-opacity-10 text-warning border border-warning ms-1" style="font-size:0.65rem;">
+                          ₹{{ profileData.basicInfo?.volpfTypeAmt || 0 }}
+                        </span>
+                      </div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">PF Fixed Amount</div>
+                      <div class="info-cell-val">₹{{ profileData.basicInfo?.pffixedamount || '0' }}</div>
+                    </div></div>
+                  </div>
+
+                  <hr class="ep-divider">
+                  <div class="sub-hd">
+                    <i class="bi bi-cash-coin"></i>
+                    <span class="sub-hd-txt">Compensation Details</span>
+                  </div>
+                  <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-2">
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">CTC Amount</div>
+                      <div class="info-cell-val">₹{{ profileData.basicInfo?.CTCAmount || '0' }}</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">Variable CTC</div>
+                      <div class="info-cell-val">₹{{ profileData.basicInfo?.VariableCTCAmount || '0' }}</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">Tax Regime</div>
+                      <div class="info-cell-val">{{ profileData.basicInfo?.TaxRegime || 'N/A' }}</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">Joining Bonus</div>
+                      <div class="info-cell-val">₹{{ profileData.basicInfo?.JoiningBonus || '0' }}</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">ESOPS</div>
+                      <div class="info-cell-val">{{ profileData.basicInfo?.ESOPS || '0' }}</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">Retention Bonus / Freq</div>
+                      <div class="info-cell-val">
+                        ₹{{ profileData.basicInfo?.RetentionBonus || '0' }}
+                        <span class="badge bg-warning-subtle bg-opacity-10 text-warning border border-warning ms-1" style="font-size:0.65rem;">
+                          {{ profileData.basicInfo?.RetentionFrequency || '-' }}
+                        </span>
+                      </div>
+                    </div></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Attendance & Misc -->
+              <div class="section-hd">
+                <div class="section-bar"></div>
+                <span class="section-title">Attendance &amp; Miscellaneous Policies</span>
+              </div>
+              <div class="info-card">
+                <div class="info-card-body">
+                  <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-2">
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">Attendance In / Out</div>
+                      <div class="info-cell-val">{{ profileData.basicInfo?.AttInH || '-' }} – {{ profileData.basicInfo?.AttOutH || '-' }}</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">Grace Time</div>
+                      <div class="info-cell-val">{{ profileData.basicInfo?.Gracetime || 'N/A' }}</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">Attendance Source</div>
+                      <div class="info-cell-val">{{ profileData.basicInfo?.attendanceSource || 'N/A' }}</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">Attendance Type</div>
+                      <div class="info-cell-val">{{ profileData.basicInfo?.attendanceType || 'N/A' }}</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">In ESI Cycle</div>
+                      <div class="info-cell-val">{{ profileData.basicInfo?.inESICycle ? 'Yes' : 'No' }}</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">Transport Type</div>
+                      <div class="info-cell-val">{{ profileData.basicInfo?.TransportType || 'N/A' }}</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">OverTime Type</div>
+                      <div class="info-cell-val">{{ profileData.basicInfo?.OverTimeType || 'N/A' }}</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">PLI</div>
+                      <div class="info-cell-val">{{ profileData.basicInfo?.PLI || '0' }}</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">Debit Card</div>
+                      <div class="info-cell-val">{{ profileData.basicInfo?.Debit_Card || 'N/A' }}</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">Advance Limit</div>
+                      <div class="info-cell-val">₹{{ profileData.basicInfo?.Advance_Limit || '0' }}</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">Is Reverse</div>
+                      <div class="info-cell-val">{{ profileData.basicInfo?.isreverse ? 'Yes' : 'No' }}</div>
+                    </div></div>
+                    <div class="col"><div class="info-cell">
+                      <div class="info-cell-label">Remarks</div>
+                      <div class="info-cell-val">{{ profileData.basicInfo?.remarks || 'N/A' }}</div>
+                    </div></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Qualification -->
+              <div class="section-hd">
+                <div class="section-bar"></div>
+                <span class="section-title">Qualification Details</span>
+              </div>
+              <div class="info-card" style="overflow:hidden">
+                <table class="ep-table">
+                  <thead>
+                    <tr>
+                      <th>Qualification</th>
+                      <th>Passing Year</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let qual of profileData.qualificationDetails">
+                      <td style="font-weight:600">{{ qual.qualification }}</td>
+                      <td><span class="year-badge">{{ qual.passyear }}</span></td>
+                    </tr>
+                    <tr *ngIf="!profileData.qualificationDetails || profileData.qualificationDetails.length === 0">
+                      <td colspan="2">
+                        <div class="empty-state">
+                          <i class="bi bi-mortarboard"></i>
+                          No qualification records available.
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+            </div>
+            <!-- END Personal Tab -->
+
+
+            <!-- ══════════════════════════════════════
+                 SALARY HISTORY TAB
+            ══════════════════════════════════════ -->
+            <div *ngIf="activeTab === 'salary'">
+
+              <div class="section-hd">
+                <div class="section-bar"></div>
+                <span class="section-title">Recent Salary Payouts</span>
+              </div>
+
+              <div class="info-card" style="overflow:hidden">
+                <table class="ep-table">
+                  <thead>
+                    <tr>
+                      <th>Process Date</th>
+                      <th>Month / Year</th>
+                      <th class="text-end">Gross Salary</th>
+                      <th class="text-end">Deductions</th>
+                      <th class="text-end">Net Pay</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let sal of profileData.salaryHistory">
+                      <td>{{ sal.dated }}</td>
+                      <td><span class="month-badge">{{ sal.fk_monthId }}/{{ sal.fk_yearId }}</span></td>
+                      <td class="text-end amt-green">₹{{ sal.GrossTotal | number:'1.2-2' }}</td>
+                      <td class="text-end amt-red">₹{{ sal.TotalDeductions | number:'1.2-2' }}</td>
+                      <td class="text-end amt-blue">₹{{ sal.NetPay | number:'1.2-2' }}</td>
+                    </tr>
+                    <tr *ngIf="!profileData.salaryHistory || profileData.salaryHistory.length === 0">
+                      <td colspan="5">
+                        <div class="empty-state">
+                          <i class="bi bi-inbox"></i>
+                          No salary history available.
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+            </div>
+            <!-- END Salary Tab -->
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>

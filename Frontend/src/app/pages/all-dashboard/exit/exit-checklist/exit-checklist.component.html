@@ -1,0 +1,107 @@
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card">
+      <div class="card-header bg-blue">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-6 col-lg-6"><h4>Exit Checklist</h4></div>
+          <div class="col-sm-12 col-md-6 col-lg-6 d-flex align-items-center justify-content-md-end">
+            <button class="btn btnheader" routerLink="/dash/exit/exitdashboard/admin_resignation_list">Back</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-body mt-4">
+
+        <!-- Employee Info -->
+        <div class="row row-cols-1 row-cols-md-3 mb-4">
+          <div class="col">
+            <label>Employee Code</label>
+            <div class="form-group">
+              <input type="text" class="form-control flex-grow-1" [value]="empInfo.empCode" readonly>
+            </div>
+          </div>
+          <div class="col">
+            <label>Employee Name</label>
+            <div class="form-group">
+              <input type="text" class="form-control flex-grow-1" [value]="empInfo.empName" readonly>
+            </div>
+          </div>
+          <div class="col">
+            <label>Last Working Day</label>
+            <div class="form-group">
+              <input type="text" class="form-control flex-grow-1" [value]="empInfo.lwd" readonly>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-primary rounded-1 page-seperator mb-3">
+          <p class="p-1 text-white ms-4 mb-0">Exit Activities Checklist</p>
+        </div>
+
+        <form [formGroup]="checklistForm">
+          <div class="table-responsive table-invoice">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th style="width:40px">#</th>
+                  <th>Activity</th>
+                  <th style="width:170px">Status</th>
+                  <th style="width:170px">Completed By</th>
+                  <th style="width:160px">Completed Date</th>
+                  <th>Remarks</th>
+                </tr>
+              </thead>
+              <tbody formArrayName="items">
+                <tr *ngFor="let item of items.controls; let i = index" [formGroupName]="i">
+                  <td>{{ i + 1 }}</td>
+                  <td class="align-middle">
+                    <strong>{{ getGroup(i).get('activity')?.value }}</strong>
+                  </td>
+                  <td>
+                    <ng-select
+                      [items]="statusOptions"
+                      bindLabel="name"
+                      bindValue="value"
+                      formControlName="status"
+                      [clearable]="false"
+                      placeholder="-- Select --"
+                      class="w-100">
+                    </ng-select>
+                    <span *ngIf="submitted && getGroup(i).get('status')?.invalid"
+                      class="text-danger" style="font-size:11px;">Required</span>
+                  </td>
+                  <td>
+                    <input type="text" class="form-control form-control-sm"
+                      formControlName="completedBy" placeholder="Name">
+                  </td>
+                  <td>
+                    <input type="date" class="form-control form-control-sm"
+                      formControlName="completedDate">
+                  </td>
+                  <td>
+                    <input type="text" class="form-control form-control-sm"
+                      formControlName="remarks" placeholder="Remarks">
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </form>
+
+        <!-- All Done Banner -->
+        <div class="alert alert-success mt-3 d-flex align-items-center gap-2" *ngIf="allDone()">
+          <span style="font-size:20px;">✅</span>
+          <strong>All exit activities completed. Employee can be fully relieved.</strong>
+        </div>
+
+        <!-- Buttons -->
+        <div class="row">
+          <div class="col d-flex align-items-end justify-content-end pt-4 pb-3">
+            <button type="submit" class="btn btn-primary mx-1" (click)="submitForm()">Save Checklist</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

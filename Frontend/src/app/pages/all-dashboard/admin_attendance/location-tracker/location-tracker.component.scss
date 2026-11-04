@@ -1,0 +1,217 @@
+:host {
+  display: block;
+}
+
+/* ========================================================
+   HrBook Theme & Container
+   ======================================================== */
+.location-tracker-card {
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.transition-all {
+  transition: all 0.2s ease-in-out;
+}
+
+.shadow-xs {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.btn-xs {
+  font-size: 0.72rem;
+  padding: 0.2rem 0.5rem;
+  line-height: 1.25;
+}
+
+/* ========================================================
+   Tracking Status Indicator Dot with Pulse
+   ======================================================== */
+.status-indicator-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  display: inline-block;
+
+  &.dot-active {
+    background-color: #10b981;
+    box-shadow: 0 0 8px #10b981;
+    animation: liveDotPulse 2s infinite ease-in-out;
+  }
+
+  &.dot-inactive {
+    background-color: #ef4444;
+    box-shadow: 0 0 4px #ef4444;
+  }
+}
+
+@keyframes liveDotPulse {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.9);
+    opacity: 0.8;
+  }
+}
+
+/* ========================================================
+   Ola Maps Container & Canvas Styling (Responsive Web & Mobile)
+   ======================================================== */
+.map-canvas-wrapper {
+  width: 100%;
+  transition: all 0.3s ease;
+}
+
+#olamapContainer {
+  width: 100%;
+  height: 540px;
+  background-color: #f1f5f9;
+  position: relative;
+  transition: height 0.3s ease;
+}
+
+/* Expanded state for Map */
+.map-canvas-wrapper.map-expanded #olamapContainer {
+  height: 720px;
+}
+
+/* Radar pulse animation for Live Pin */
+@keyframes pulse {
+  0% {
+    transform: scale(0.6);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+.live-pulsing-marker {
+  cursor: pointer;
+}
+
+/* Prevent canvas overflow inside card */
+::ng-deep {
+  .olamaps-canvas-container,
+  .maplibregl-canvas {
+    outline: none;
+    border-radius: 0 0 4px 4px;
+  }
+
+  .olamaps-ctrl-bottom-right,
+  .maplibregl-ctrl-bottom-right {
+    font-size: 10px;
+  }
+}
+
+/* ========================================================
+   Telemetry Details & History Table
+   ======================================================== */
+.telemetry-panel {
+  background-color: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+}
+
+.history-table-container {
+  max-height: 290px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Custom Scrollbar */
+.table-responsive::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+.table-responsive::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+.table-responsive::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+.table-responsive::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* ========================================================
+   Responsive Breakpoints: Tablets & Mobile Devices
+   ======================================================== */
+@media (max-width: 991px) {
+  #olamapContainer {
+    height: 420px;
+  }
+
+  .map-canvas-wrapper.map-expanded #olamapContainer {
+    height: 600px;
+  }
+
+  .telemetry-panel {
+    margin-top: 0.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .card-header {
+    padding-top: 0.75rem !important;
+    padding-bottom: 0.75rem !important;
+
+    h4 {
+      font-size: 1.15rem;
+    }
+  }
+
+  /* Full-width mode switcher on mobile */
+  .w-100-mobile {
+    width: 100% !important;
+    display: flex !important;
+
+    button {
+      flex: 1;
+      padding: 0.45rem 0.6rem !important;
+      font-size: 0.82rem;
+      text-align: center;
+    }
+  }
+
+  #olamapContainer {
+    height: 340px !important;
+  }
+
+  .map-canvas-wrapper.map-expanded #olamapContainer {
+    height: 520px !important;
+  }
+
+  .history-table-container {
+    max-height: 250px !important;
+  }
+}
+
+@media (max-width: 576px) {
+  #olamapContainer {
+    height: 300px !important;
+  }
+
+  .map-canvas-wrapper.map-expanded #olamapContainer {
+    height: 460px !important;
+  }
+
+  .card-body {
+    padding: 0.75rem !important;
+  }
+
+  .telemetry-panel {
+    padding: 0.85rem !important;
+  }
+
+  .btn {
+    min-height: 38px;
+  }
+}

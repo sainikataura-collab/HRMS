@@ -1,0 +1,104 @@
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card">
+
+      <div class="card-header bg-primary">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-between">
+            <h4 class="">{{Isedit ? 'Update Travel Mode Master' : 'Travel Mode Master' }}</h4>
+          </div>
+          <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+            <!--    <button class="btn btnheader" routerLink="/dash/payroll/payrolldashboard/FunctionalList">Back</button>
+           -->    
+            <button class="btn btnheader" routerLink="/dash/travel_expense/travel_expensedashboard/travel_mode_master_list"  >Back</button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- main header close -->
+
+      <!--  -->
+
+      <div class="card-body mt-4">
+        <form class="row row-cols-1 row-cols-md-3 g-4" [formGroup]="TravelMaster">
+
+
+
+
+
+          <div class="col">
+            <label for="Description">Travel Mode Name<span style="color: red;">*</span></label>
+            <!-- <input id="Description" type="text" class="form-control" formControlName="description" (blur)="checkDuplicate(TravelMaster.get('description')?.value)"/>
+          -->
+            <input id="Description" type="text" class="form-control" formControlName="description" />
+
+            <span
+              *ngIf="showError &&TravelMaster.controls['description'].invalid && !TravelMaster.get('description')?.errors?.['duplicate']"
+              class="text-danger mt-1 lh-base" style="font-size: 12px;">
+              Please enter Travel Mode.
+            </span>
+
+            <div *ngIf="TravelMaster.get('description')?.errors?.['duplicate']" class="text-danger lh-base"
+              style="font-size:10px;">
+              {{ TravelMaster.get('description')?.errors?.['duplicate'] }}
+            </div>
+
+
+          </div>
+
+
+          <div class="col">
+            <label >
+              Remark
+            </label><span style="color: red;">*</span>
+            <input type="text" name="remarks" formControlName="remarks" class="form-control">
+
+            <span *ngIf="showError && TravelMaster.controls['remarks'].invalid" class="text-danger mt-1"
+              style="font-size: 12px;">
+              Please enter Remark.
+            </span>
+          </div>
+
+
+          <div class="col d-flex justify-content-start  align-items-center">
+
+
+            <input id="isActive" checked type="checkbox"  formControlName="isActive">&nbsp;
+            <label for="isActive" >
+              isActive
+            </label>
+          </div>
+
+          <!-- Anjali 11 feb  -->
+            <div class="col d-flex justify-content-start  align-items-center">
+
+
+            <input id="isAir" checked type="checkbox"  formControlName="isAir">&nbsp;
+            <label for="isAir" >
+              is Air
+            </label>
+          </div>
+
+
+
+        </form>
+        <!-- Buttons -->
+        <div class="modal-footer">
+          <button class="btn btn-primary mx-1" (click)="onSubmit()">{{ Isedit ? 'Update' : 'Save'
+            }}</button>
+          <button type="reset" class="btn btn-outline-dark mx-1">Reset</button>
+
+        </div>
+      </div>
+
+
+
+
+
+
+
+
+    </div>
+  </div>
+</div>

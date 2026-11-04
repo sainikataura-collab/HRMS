@@ -1,0 +1,545 @@
+body{
+  /* background: linear-gradient( #e3ecf0,#c2e4f3); */
+  /* background:url(/images/bg_home_svg.png) no-repeat; */
+  /* background: linear-gradient( to right, #daeaf0,#f3d7ca); */
+  /* background-color: #ffffff !important; */
+  
+
+  
+  
+ 
+ 
+ margin: 0;
+ padding: 0;
+ }
+
+ html{
+  scroll-behavior: smooth;
+ }
+
+
+ 
+ h1,h2,h3,h4,h5,h6,p,ul,li,a,button,table,tr,td,th,span{
+    font-family: "Work Sans", sans-serif;
+    font-style: normal;
+} 
+
+
+
+
+
+  /* --------sociel media icon add website style----------------- */
+
+  /* Fixed/sticky icon bar (vertically aligned 50% from the top of the screen) */
+  .icon-bar {
+    position: fixed;
+    top: 63%;
+    transform: translateY(-50%);
+  }
+  
+  /* Style the icon bar links */
+  .icon-bar a {
+    display: block;
+    text-align: center;
+    padding: 9px;
+    transition: all 0.3s ease;
+    color: white;
+    font-size: 20px;
+    /* border-radius: 30%; */
+    margin-top: 0.2rem;
+  }
+  
+  /* Style the social media icons with color, if you want */
+  .icon-bar a:hover {
+    /* background-color: #25211e; */
+    /* transform: scaleX(2.1); */
+    transform: rotateZ(180deg);
+  }
+  
+  .facebook {
+    background: #ff6701;
+    color: white;
+  }
+  
+  .twitter {
+    background: #25211e;
+    color: white;
+  }
+  .linkedin {
+    background: #ff6701;
+    color: white;
+  }
+
+  .instagram {
+    background: #25211e;
+    color: white;
+  }
+
+
+  @media only screen and (max-width: 800px) {
+    .icon-bar{
+   display: none !important;
+    
+     }
+   }
+
+
+
+
+
+/* Header section style Empower logics Home page */
+
+.first-header-col{
+    /* background-color: #f6f7fa !important; */
+    /* background-color: #004c68; */
+    /* background: linear-gradient( #ffffff,#f5f6f7); */
+   
+}
+
+.nav-item{
+    padding-left: 20px !important;
+    font-weight: 400;
+    
+ 
+}
+.nav-item-first a{
+    padding-left: 5px;
+    padding-right: 5px;
+    color: #2b2e41;
+      
+    
+}
+
+.nav-item .login{
+  color: #2b2e41; 
+  border: 1px solid #2b2e41;
+}
+
+.nav-item .login:hover{
+  /* color: #fff;  */
+  border: 1px solid #ff6701;
+}
+
+
+.nav-item-first a:hover{
+    /* background-color: white; */
+    border-radius: 3px;
+    /* transform: scale(1.03); */
+    font-weight: 500;
+    color: #ffffff;
+    /* box-shadow: 0.5px 0.5px 0.5px #f3d7ca;   */
+    background-color: #ff6701;
+   
+    
+}
+
+
+
+@media only screen and (max-width: 500px) {
+    .first-header-button{
+   margin-right: 3%;
+   /* margin-top: 1%; */
+    
+     }
+   }
+
+@media only screen and (max-width: 800px) {
+    .second-header-button{
+   display: none !important;
+    
+     }
+   }
+
+  
+
+   @media only screen and (min-width: 1200px) {
+    .space-navbar-header{
+padding-left: 130px !important;
+    
+     }
+   }
+
+   .navbar-brand img{
+    height: 45px !important;
+    width: 110% !important;
+    background-size: cover !important;
+   }
+
+  
+
+   .navbar-brand{
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    margin-left: 50px;
+   }
+
+
+
+   @media only screen and (max-width: 1200px) {
+    .navbar-brand{
+ padding-right: 0px !important;
+ margin-left: 10px;
+
+     }
+   }
+
+
+   .navbar{
+    padding-top: 5px !important;
+    padding-bottom: 5px !important;
+   }
+
+
+   @media only screen and (max-width: 500px) {
+    .navbar{
+   padding-top: 5px;
+   padding-bottom: 0px !important;
+     }
+   }
+
+
+  
+
+   
+.navbar.sticky {
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  /* background-color: #ffffff80; */
+  
+  filter: invert(0);
+  /* position: sticky; */
+  width: 100%;
+  z-index: 100;
+  /* background:linear-gradient( #ffffff,#f1f6f8); */
+  color: #000;
+  opacity: 1;
+
+} 
+
+
+
+   @media only screen and (min-width: 1000px) {
+    .header-offcanvas{
+ display: none !important;
+     }
+   }
+ 
+   /* Slider section style Empower logics Home page */
+
+.slider-section-home{
+  /* background: url('/light/images-new/bg_home_svg1.png') no-repeat; */
+  /* background: url('/light/images-new/bg-image2.png') no-repeat; */
+  /* background-size: cover; */
+  /* background: url(/light/images-new/pattern3.png)no-repeat; */
+  /* background: url(/light/images-new/background3.jpg) no-repeat; */
+  /* background: url(/light/images-new/background8.jpg) no-repeat; */
+  background: url(/light/images-new/background8.jpg) no-repeat;
+  /* background: url(/light/images-new/background9.jpg) no-repeat; */
+ 
+
+
+ 
+}
+
+.slider-section-home h2{
+  font-size: 4rem;
+  padding-top: 25%;
+}
+
+@media only screen and (max-width: 1200px) {
+  .slider-section-home h2{
+font-size: 3.7rem;
+   }
+ }
+
+ @media only screen and (max-width: 800px) {
+  .slider-section-home h2{
+font-size: 4rem;
+padding-top: 7%;
+   }
+ }
+
+ @media only screen and (max-width: 500px) {
+  .slider-section-home h2{
+font-size: 2.7rem;
+padding-top: 20%;
+   }
+ }
+
+ .slider-section-home img{
+  height:450px;
+  width:100% ;
+  padding-top: 0%;
+ }
+
+ .slider-section-home img:hover{
+transform: scale(1.1);
+transition: 1s;
+ }
+
+
+ @media only screen and (max-width: 1200px) {
+  .slider-section-home img{
+   height:370px ;
+   width: 100%;
+   }
+ }
+
+ @media only screen and (max-width: 500px) {
+  .slider-section-home img{
+   height:auto ;
+   width: 100%;
+   padding-bottom: 20%;
+   padding-top: 5%;
+   }
+ }
+
+
+
+ /* -------banner-bottom-services---------------- */
+
+ .banner-bottom-services a p{
+  color:#25211e;
+ }
+
+ .banner-bottom-services p i{
+  color: #ff6701;
+ }
+
+ .banner-bottom-services p i:hover{
+  color:#25211e;
+  transform: rotateZ(90deg);
+ }
+
+
+ /*  --------Our Services ------------*/
+
+ .our-services{
+  color: linear;
+ }
+
+
+ .our-services h5{
+  background: linear-gradient(to right, #f16b23, 
+  #ff6701,#ff6701, #5a5c6b); 
+-webkit-text-fill-color: transparent; 
+-webkit-background-clip: text;
+ }
+
+ @media only screen and (max-width: 500px) {
+  .our-services h5{
+padding-top: 0px !important;
+padding-bottom: 20px !important;
+
+   }
+ }
+
+ .our-services h6{
+  color: #2b2e41;
+ }
+
+ .our-services p{
+  color: #2b2e41;
+ }
+
+ .our-services .card{
+  /* box-shadow: 0.5px 0.5px 0.5px 0.5px #2b2e41; */
+  border:none;
+ }
+
+
+ .our-services .card:hover{
+  transform: scaleY(1.05);
+  transform: translateY(5);
+ }
+
+
+
+
+
+ /* 
+
+/* --owl  carousel slider style home page */
+.owl-carousel-1 img{
+  height: 60px; 
+  border: 1px solid #e7af8f;
+ box-shadow: 0.5px 2px 2px 0px #ffffff;
+ border-radius: 5px;
+ width: 70%;
+}
+
+.owl-carousel-2 img{
+  height: 140px; 
+  border: 1px solid #e7af8f;
+ box-shadow: 0.5px 2px 2px 0px #ffffff;
+ border-radius: 5px;
+}
+
+ .owl-carousel img {
+  display: block;
+  width: 100%;
+
+ 
+}
+
+
+.owl-carousel .active:after{
+  content: none;
+}
+
+
+
+
+/* ----- Ecommerce-Integration-section----- */
+
+.Ecommerce-Integration-section h2{
+  color:#f16b23;
+
+}
+
+@media only screen and (max-width: 500px) {
+  .Ecommerce-Integration-section h2{
+padding: 0px !important;
+
+
+   }
+ }
+.Ecommerce-Integration-section h6{
+  color:#2b2e41;
+
+}
+
+
+
+/* ---------- email-subscribe section ------------ */
+.email-subscribe h2{
+  color: #f16b23;
+}
+
+.email-subscribe p{
+  color: #2b2e41;
+  padding-top: 10px;
+}
+
+
+.email-subscribe button{
+  background-color: #f16a23;
+   margin-top: 2px; 
+   margin-bottom: 2px;
+   /* box-shadow: 0.5px 2px 2px 0px #ffffff; */
+}
+.email-subscribe button:hover{
+ background-color: #2b2e41;
+ transform: scale(1.01);
+ transition: 0.4s;
+}
+
+
+/* ----About us style */
+
+.aboutus h2{
+  color: #f16b23;
+}
+
+.aboutus p span::first-letter{
+font-size: 2rem !important;
+color: #f16a23;
+}
+
+
+/* ------Enhance-your-customer section style home page ------ */
+
+
+.Enhance-your-customer h6{
+  font-size: 49px;
+  font-weight: bold;
+  background: linear-gradient(to right, #2b2e41, 
+  #2b2e41,#ff6701, #5a5c6b); 
+-webkit-text-fill-color: transparent; 
+-webkit-background-clip: text;
+}
+
+
+@media only screen and (max-width: 500px) {
+  .Enhance-your-customer h6{
+font-size: 25px;
+
+   }
+ }
+
+.Enhance-your-customer p{
+  font-size: 40px;
+  font-weight:600;
+
+  background: linear-gradient(to right,  #ff6701, 
+  #2b2e41, #5a5c6b); 
+-webkit-text-fill-color: transparent; 
+-webkit-background-clip: text;
+/* text-align: center; */
+border-bottom: 2px solid #2b2e41;
+width: fit-content;
+}
+
+@media only screen and (max-width: 500px) {
+  .Enhance-your-customer p{
+font-size: 22px;
+padding: 0;
+
+   }
+ }
+
+
+
+/* footer top images */
+
+ .footer-top-image{
+  background-image: url(/light/images-new/footer_bg.png);
+  background-repeat: no-repeat;
+  -webkit-filter: grayscale(20%) !important; /* Safari 6.0 - 9.0 */
+  filter: grayscale(90%) !important;
+}
+
+.footer-top-image p{
+  color: #115180;
+   
+}
+
+
+
+   /*  Footer Section style Empower logics Home Page */
+
+   footer{
+    background-color: #25211e;
+    /* background: linear-gradient(to bottom, #2b2e41,#0e0c0b,#0e0c0b,#3a2c23); */
+   }
+
+   footer li{
+    list-style-type: none;
+    color: white;
+    line-height: 1.9;
+   }
+   footer a{
+    text-decoration: none;
+   }
+
+  .footer-social-media img{
+    margin-left: 5px;
+    margin: 3px;
+  }
+
+
+  /* ------ */
+
+  .service-sec .title-heading{
+    color: #ff6701;
+  }
+
+  .service-sec{
+    padding: 80px 0px 0px 0px;
+    background-color: whitesmoke;
+  }
+
+  
+
+
+

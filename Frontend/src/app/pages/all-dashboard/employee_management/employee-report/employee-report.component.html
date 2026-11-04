@@ -1,0 +1,132 @@
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+            <div class="card-header bg-primary py-lg-1 mt-0">
+                <div class="row w-100 align-items-center">
+
+                    <!-- Title Section -->
+                    <div class="col-12 col-md-3">
+                        <h4>Employee Report</h4>
+                    </div>
+                    <!-- Search Section -->
+                    <div class="col-12 col-md-7 mt-2 mt-md-0">
+                        <app-common-search (filtersChanged)="handleFilters($event)"></app-common-search>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body mt-4">
+                <form [formGroup]="ExportExcel" (ngSubmit)="OnSubmit()">
+                    <div class="row row-cols-1 row-cols-md-4">
+                        <div class="col">
+                            <label>Month</label>
+                            <div class="form-group">
+                                <ng-select id="fk_monthId" [items]="months" bindLabel="name" bindValue="value"
+                                    formControlName="fk_monthId" class="w-100"
+                                    placeholder="--Select Month --"></ng-select>
+                              
+                            </div>
+                        </div>
+                        <div class="col">
+                            <label>Year</label>
+                            <div class="form-group">
+                                <ng-select id="fk_yearId" [items]="years" bindLabel="name" bindValue="value"
+                                    formControlName="fk_yearId" placeholder="--Select Year --"
+                                    class="w-100"></ng-select>
+                               
+                            </div>
+                        </div>
+                        <div class="col" *ngIf="isContractApplicable">
+                            <label>Contractor Name</label>
+
+                            <div class="form-group">
+                                <ng-select id="year
+                  " [items]="CostCenter" bindLabel="name" bindValue="value" formControlName="fk_costcentreid"
+                                    placeholder="--Select --" class="w-100"></ng-select>
+
+                            </div>
+                        </div>
+
+                        <div class="col">
+                            <label>Export Type</label>
+                            <div class="form-group">
+                                <ng-select id="ExportType" [items]="ExportTypelist" bindLabel="name" bindValue="value"
+                                    formControlName="ExportType" placeholder="--Select --" class="w-100"></ng-select>
+                              
+                            </div>
+                        </div>
+
+
+                     
+
+
+                    </div>
+                    <div class="row row-cols-1 row-cols-md-12">
+                        <div class="col d-flex align-items-center justify-content-end">
+                            <button type="submit" class="btn btn-primary mx-1">View</button>
+                            <button type="reset" class="btn btn-outline-dark mx-1" (click)="restfrom()">Reset</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+
+            <!-- List of Employee -->
+            <div *ngIf="EmployeeList.length > 0">
+                <div class="row row-cols-1 row-cols-md-2 p-2">
+                    <div class="col">
+                        <p class="text-dark m-0 d  ps-3 text-primary ">List of Employee</p>
+                    </div>
+
+                    <div class="col d-flex align-items-center justify-content-end">
+                      
+                       
+
+                         <button class="btn btn-primary mx-1" (click)="downloadExcel()" [disabled]="isExporting">
+                            <!-- <i class="fa fa-download me-2"></i> Export Excel -->
+                            <i *ngIf="!isExporting" class="fa fa-download me-2"></i>
+                            <i *ngIf="isExporting" class="fa fa-spinner fa-spin me-2"></i>
+                            {{ isExporting ? 'Wait...' : 'Export Excel' }}
+
+                        </button>
+
+                        <input type="text" class="form-control w-50" placeholder="Search employee..."
+                            placeholder="Search..." [(ngModel)]="searchText" />
+                    </div>
+
+                </div>
+
+
+                <div class="table-responsive table-invoice" [ngClass]="{ 'scroll-active': EmployeeList.length > 10 }">
+                    <table class="table table-bordered" id="exportTable">
+                        <thead>
+                            <tr>
+                              
+                                <th *ngFor="let col of tableHeaders">{{ col }}</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            <tr
+                                *ngFor="let item of filteredData() | paginate: { itemsPerPage: pageSize, currentPage: pageIndex, totalItems: totalCount } let i = index">
+                                <!-- /start jyti code -->
+
+                            
+                                <!-- end jyti code -->
+                                <td *ngFor="let col of tableHeaders">{{ item[col] }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <pagination-controls (pageChange)="onpagechange($event)" totalItems="totalCount"
+                        itemsPerPage="pageSize">
+                    </pagination-controls>
+                </div>
+            </div>
+        </div>
+
+    
+
+    </div>
+
+</div>

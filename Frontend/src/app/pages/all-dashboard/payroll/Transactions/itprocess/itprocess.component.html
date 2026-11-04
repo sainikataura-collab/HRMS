@@ -1,0 +1,291 @@
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card">
+      <div class="card-header bg-primary py-lg-1 mt-0">
+        <div class="row w-100 align-items-center">
+          <div class="col-12 col-md-3">
+            <h4>IT Process</h4>
+          </div>
+          <div class="col-12 col-md-7 mt-2 mt-md-0">
+            <app-common-search (filtersChanged)="handleFilters($event)"></app-common-search>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-body mt-4">
+        <form [formGroup]="ITProcessForm" (ngSubmit)="onSubmit()">
+          <div class="row row-cols-1 row-cols-md-3">
+            <div class="col">
+              <label>Month</label>
+              <div class="form-group">
+                <ng-select
+                  id="month"
+                  [items]="months"
+                  bindLabel="name"
+                  bindValue="value"
+                  formControlName="FkMonthId"
+                  placeholder="--Select --"
+                  class="w-100"
+                ></ng-select>
+                <span
+                  *ngIf="showError && ITProcessForm.controls['FkMonthId'].invalid"
+                  class="text-danger mt-1"
+                  style="font-size: 12px;"
+                >
+                  Please enter Month.
+                </span>
+              </div>
+            </div>
+
+
+            <div class="col">
+              <label>Year</label>
+              <div class="form-group">
+                <ng-select
+                  id="year"
+                  [items]="years"
+                  bindLabel="name"
+                  bindValue="value"
+                  formControlName="FkYearId"
+                  placeholder="--Select --"
+                  class="w-100"
+                ></ng-select>
+                <span
+                  *ngIf="showError && ITProcessForm.controls['FkYearId'].invalid"
+                  class="text-danger mt-1"
+                  style="font-size: 12px;"
+                >
+                  Please enter Year.
+                </span>
+              </div>
+            </div>
+
+
+            <div class="col">
+              <label>Status</label>
+              <div class="form-group">
+                <ng-select
+                  id="month"
+                  [items]="DocStatusList"
+                  bindLabel="name"
+                  bindValue="value"
+                  formControlName="DocStatus"
+                  placeholder="--Select --"
+                  class="w-100"
+                ></ng-select>
+
+              </div>
+            </div>
+    
+
+       
+          </div>
+          <div class="col d-flex align-items-end justify-content-end pt-4 pb-3">
+            <button type="submit" class="btn btn-primary mx-1">View</button>
+            <button type="reset" class="btn btn-outline-dark mx-1">Reset</button>
+          </div>
+        </form>
+
+        <div class="container mt-4" *ngIf="processData && (
+          (processData.unProcessedList?.length > 0) ||
+          (processData.processedList?.length > 0) ||
+          (processData.lockedList?.length > 0)
+        )">
+          <div class="row">
+            <div class="col-12 col-md-4 mb-3">
+              <div class="card" style="height: 40px; border: 1px solid #ffc107; box-shadow: none; border-left: 5px solid #ffc107;">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                  <p class="card-title">Unprocessed IT: &nbsp;<b>{{ this.UnprocessedCount }}</b></p>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-12 col-md-4 mb-3">
+              <div class="card" style="height: 40px; border: 1px solid green; box-shadow: none; border-left: 5px solid #28a745;">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                  <p class="card-title">Processed IT:&nbsp;<b>{{ this.processedCount }}</b></p>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-12 col-md-4 mb-3">
+              <div class="card" style="height: 40px; border: 1px solid #dc3545; box-shadow: none; border-left: 5px solid #dc3545;">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                  <p class="card-title">Locked IT:&nbsp;<b>{{ this.lockedCount }}</b></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- IT Process Lists -->
+        <div class="container mt-4" *ngIf="processData && (
+          (processData.unProcessedList?.length > 0) ||
+          (processData.processedList?.length > 0) ||
+          (processData.lockedList?.length > 0)
+        )">
+          <!-- Unprocessed -->
+          <div class="d-flex justify-content-between align-items-center mt-4 mb-2">
+            <p class="text-primary m-0">Unprocessed IT</p>
+            <input
+              type="text"
+              class="form-control w-auto"
+              placeholder="Search employee..."
+              [(ngModel)]="searchTextUnprocessed"
+              (input)="filterData('unprocessed')"
+            />
+          </div>
+          <div class="table-responsive">
+            <table class="table table-bordered table-sm">
+              <thead>
+                <tr>
+                  <th>select</th>
+                  <th>Sr.</th>
+                  <th>Emp Code</th>
+                  <th>Name</th>
+                  <th>Location</th>
+                  <th>Department</th>
+                  <th>Designation</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngIf="filteredUnprocessedList?.length === 0">
+                  <td colspan="7" class="text-center">No records found</td>
+                </tr>
+                <tr *ngFor="let emp of filteredUnprocessedList | paginate: { id:'unprocessed',itemsPerPage: pageSize1, currentPage: pageIndex1,totalItems:UnprocessedCount }; let i = index">
+                  <td>
+                    <input type="checkbox"
+                           [checked]="selectedempcodeProcessed.includes(emp.empCode)"
+                           (change)="EmpProcessed(emp.empCode, $event)" />
+                  </td>
+                  <td>{{ (pageIndex1 - 1) * pageSize1 + i + 1 }}</td>
+                  <td>{{ emp.empCode }}</td>
+                  <td>{{ emp.empName }}</td>
+                  <td>{{ emp.location }}</td>
+                  <td>{{ emp.department }}</td>
+                  <td>{{ emp.designation }}</td>
+                </tr>
+              </tbody>
+            </table>
+            <pagination-controls
+              *ngIf="UnprocessedCount > 0"
+              id="unprocessed"
+              (pageChange)="UnprocessedPageChange($event)"
+              totalItems="unProcessedCount"
+              itemsPerPage="pageSize1"
+            ></pagination-controls>
+          </div>
+
+          <!-- Processed -->
+          <div class="d-flex justify-content-between align-items-center mt-4 mb-2">
+            <p class="text-primary m-0">Processed IT</p>
+            <input
+              type="text"
+              class="form-control w-auto"
+              placeholder="Search employee..."
+              [(ngModel)]="searchTextProcessed"
+              (input)="filterData('processed')"
+            />
+          </div>
+          <div class="table-responsive" style="overflow-x: auto;">
+            <table class="table table-bordered table-sm min-width-table">
+              <thead>
+                <tr>
+                  <th>select</th>
+                  <th>Sr.</th>
+                  <th>Emp Code</th>
+                  <th>Name</th>
+                  <th>Location</th>
+                  <th>Department</th>
+                  <th>Designation</th>
+                  
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngIf="filteredProcessList?.length === 0">
+                  <td colspan="14" class="text-center">No records found</td>
+                </tr>
+                <tr *ngFor="let emp of filteredProcessList | paginate: { id:'processed',itemsPerPage: pageSize2, currentPage: pageIndex2, totalItems:processedCount }; let i = index">
+
+                  <td>
+                    <input type="checkbox"
+                           [checked]="selectedempcodeUnProcessed.includes(emp.empCode)"
+                           (change)="EmpUnProcessed(emp.empCode, $event)" />
+                  </td>
+                  <td>{{ (pageIndex2 - 1) * pageSize2 + i + 1 }}</td>
+                  <td>{{ emp.empCode }}</td>
+                  <td>{{ emp.empName }}</td>
+                  <td>{{ emp.location }}</td>
+                  <td>{{ emp.department }}</td>
+                  <td>{{ emp.designation }}</td>
+                  
+                 
+                </tr>
+              </tbody>
+            </table>
+            <pagination-controls
+              *ngIf="processedCount > 0"
+              id="processed"
+              (pageChange)="ProcessedPageChange($event)"
+              totalItems="processedCount"
+              itemsPerPage="pageSize2"
+            ></pagination-controls>
+          </div>
+
+          <!-- Locked -->
+          <div class="d-flex justify-content-between align-items-center mt-4 mb-2">
+            <p class="text-primary m-0">Locked IT</p>
+            <input
+              type="text"
+              class="form-control w-auto"
+              placeholder="Search employee..."
+              [(ngModel)]="searchTextLocked"
+              (input)="filterData('Locked')"
+            />
+          </div>
+          <div class="table-responsive">
+            <table class="table table-bordered table-sm">
+              <thead>
+                <tr>
+                  <th>Sr.</th>
+                  <th>Emp Code</th>
+                  <th>Name</th>
+                  <th>Location</th>
+                  <th>Department</th>
+                  <th>Designation</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngIf="filteredLockedList?.length === 0">
+                  <td colspan="7" class="text-center">No records found</td>
+                </tr>
+                <tr *ngFor="let emp of filteredLockedList | paginate: {id:'locked', itemsPerPage: pageSize3, currentPage: pageIndex3,totalItems:lockedCount}; let i = index">
+                  <td>{{ (pageIndex3 - 1) * pageSize3 + i + 1 }}</td>
+                  <td>{{ emp.empCode }}</td>
+                  <td>{{ emp.empName }}</td>
+                  <td>{{ emp.location }}</td>
+                  <td>{{ emp.department }}</td>
+                  <td>{{ emp.designation }}</td>
+                </tr>
+              </tbody>
+            </table>
+            <pagination-controls
+              *ngIf="lockedCount > 0"
+              id="locked"
+              (pageChange)="LockedPageChange($event)"
+              totalItems="lockedCount"
+              itemsPerPage="pageSize3"
+            ></pagination-controls>
+          </div>
+
+          
+        <div class="col d-flex align-items-end justify-content-end flex-wrap gap-2 pt-4 pb-3">
+          <button type="button" class="btn btn-success" (click)="postProcessData()">Process</button>
+          <button type="button" class="btn btn-danger" (click)="deleteProcessData()">Un-Process</button>
+        </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

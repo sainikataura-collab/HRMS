@@ -1,0 +1,74 @@
+<div *ngIf="!isChildRouteActive()">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-primary">
+          <div class="row w-100 d-flex align-items-center justify-content-between">
+            <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-between">
+              <h4 class="mb-0 text-white">General Master</h4>
+            </div>
+
+            <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-center">
+              <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText"
+                (ngModelChange)="applyFilter()" />
+            </div>
+
+            <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-md-end">
+              <select [(ngModel)]="pageSize" (change)="onPageSizeChange()"
+                class="form-control w-100 rounded-1 py-0 my-0 mx-2"
+                style="max-width: 120px; height: calc(1.25rem + 6px);">
+                <option *ngFor="let size of pageSizeOptions" [value]="size">
+                  Show {{ size }} items
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <div class="table-responsive table-invoice">
+            <table id="exportTable" class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>Code Type</th>
+                  <th>Used In</th>
+                  <th>Active</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  *ngFor="let g of filteredMaster | paginate: { itemsPerPage: pageSize, currentPage: pageNumber, totalItems: totalItems };">
+                  <td>{{ g.codeType }}</td>
+                  <td>{{ g.usedIn }}</td>
+                  <td>
+                    <span class="badge" [ngClass]="{'bg-success': g.active, 'bg-danger': !g.active}">
+                      {{ g.active ? 'Yes' : 'No' }}
+                    </span>
+                  </td>
+                  <td>
+                    <button class="btn btn-sm btn-outline" (click)="Inert(g.codeTypeId, g.codeType, g.isCodeRequired)">
+                      <i class="fa-solid fa-plus" style="color:#3c8dbc; font-size: 14px;"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline mx-1" (click)="viewDetails(g.codeTypeId, g.codeType)">
+                      <i class="fa-solid fa-eye" style="color:#3c8dbc; font-size: 14px;"></i>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+              <ng-template #noData>
+                <tr>
+                  <td colspan="4" class="text-center text-muted">No records found</td>
+                </tr>
+              </ng-template>
+            </table>
+            <pagination-controls (pageChange)="onPageChange($event)">
+            </pagination-controls>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<router-outlet *ngIf="isChildRouteActive()"></router-outlet>

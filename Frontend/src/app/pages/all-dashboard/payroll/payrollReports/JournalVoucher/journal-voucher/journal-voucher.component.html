@@ -1,0 +1,61 @@
+<div class="row mt-2">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+            <!-- Heading -->
+            <div class="card-header bg-blue">
+                <div class="row w-100">
+                    <div class="col-sm-12 col-md-12 col-lg-12">
+                        <h4 class="">Export Journal Voucher</h4>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-md-6 col-lg-6 d-flex align-items-center justify-content-end ms-auto gap-2">
+                    <button class="btn btn-light"><i class=""></i> Goto List</button>
+                </div>
+            </div>
+            <!-- form Start -->
+            <div class="card-body mt-4">
+                <form [formGroup]="departmentForm">
+                    <div class="row mt-2">
+                        <div class="col-md-4">
+                            <label for="LeaveNatureType" class="">Month</label>
+                            <ng-select id="LeaveNatureType" [items]="Month" bindLabel="name" bindValue="value"
+                                formControlName="Month" placeholder="--Select Month--"
+                                class="w-100"></ng-select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="LeaveNatureType" class="">Year</label>
+                            <ng-select id="LeaveNatureType" [items]="Year" bindLabel="name" bindValue="value"
+                                formControlName="Year" placeholder="--Select Year--"
+                                class="w-100"></ng-select>
+                        </div>
+                        <div class="col-md-4">
+                            <label>Location</label>
+                            <ng-select [items]="Location" bindLabel="name" bindValue="value" [multiple]="true"
+                                [(ngModel)]="selectedLocations" [closeOnSelect]="false"
+                                placeholder="--Select Locations--" class="w-100">
+                                <!-- Custom Checkbox for Select All -->
+                                <ng-template ng-option-tmp let-item="item" let-index="index">
+                                    <div *ngIf="index === 0">
+                                        <input type="checkbox" (change)="toggleSelectAll($event)"
+                                            [checked]="isAllSelected()" />
+                                        <strong>Select All</strong>
+                                    </div>
+                                    <div *ngIf="index !== 0">
+                                        <input type="checkbox" [checked]="selectedLocations.includes(item.value)"
+                                            (change)="toggleLocation(item.value)" />
+                                        {{ item.name }}
+                                    </div>
+                                </ng-template>
+                            </ng-select>
+                        </div>
+                    </div>
+                    <div class="modal-footer mt-2">
+                        <button type="button" class="btn btn-primary mx-1">Export</button>
+                      </div>
+                </form>
+            </div>
+
+
+        </div>
+    </div>
+</div>

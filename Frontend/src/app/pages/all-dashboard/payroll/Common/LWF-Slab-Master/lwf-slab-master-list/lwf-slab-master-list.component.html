@@ -1,0 +1,100 @@
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <!--  -->
+      <div class="card-header bg-primary">
+        <div class="row w-100">
+          <!-- Title Section -->
+            <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-between">
+            <h4 class="text-white">LWF Slab List</h4>
+          </div>
+
+
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-center">
+            <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText" (ngModelChange)="onSearch()" />
+          </div>
+          <!-- Back Button -->
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-end">
+            <button class="btn btn-light" routerLink="/dash/user/userdashboard/Lwf_Slab_Master">
+              Add
+            </button>
+
+            <button class="btn btn-light" routerLink="/dash/user/userdashboard/Lwf_Slab_Master">
+              Download
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!--  -->
+      <div class="card-body">
+        <div class="row g-4">
+          <div class="col-md-4"><label>State</label>
+            <ng-select id="state" [items]="states" bindLabel="name" bindValue="value" placeholder="--Select State--"
+              [(ngModel)]="fk_stateid" (change)="onStateChange(fk_stateid)" class="w-100">
+            </ng-select>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive table-invoice">
+          <table Id="exportTable" class="table">
+
+            <thead>
+              <tr>
+                <th>Sr.</th>
+                <th>State Name</th>
+                <th>Effective Type</th>
+                <th>Effective From</th>
+                <th>Slab Order</th>
+                <th>Employee Amount</th>
+                <th>Employer Amount</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+
+            <tbody
+              *ngIf="(filteredData() | paginate: { itemsPerPage: pageSize, currentPage: pageIndex, totalItems: totalItems }).length > 0; else noData">
+              <tr
+                *ngFor="let item of filteredData() | paginate: { itemsPerPage: pageSize, currentPage: pageIndex, totalItems: totalItems }; let i = index">
+                <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+                <td>{{ item.description }}</td>
+                <td>{{ item.effectT }}</td>
+                <td>{{ item.mmyyyy }}</td>
+                <td>{{ item.sno }}</td>
+                <td>{{ item.amt }}</td>
+                <td>{{ item.emrmultiple }}</td>
+                <td>
+                  <button class="btn btn-sm btn-outline" (click)="isUpdate(item.pk_slabid)">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                  </button>
+                  <button class="btn">
+                    <i class="fa-solid fa-trash" (click)="deleteLWF(item.pk_slabid)"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+
+            <!-- Message shown when no data is available -->
+            <ng-template #noData>
+              <tbody>
+                <tr>
+                  <td colspan="7" class="text-center">No records found</td>
+                </tr>
+              </tbody>
+            </ng-template>
+
+
+
+          </table>
+
+
+          <pagination-controls (pageChange)="onPageChange($event)">
+          </pagination-controls>
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

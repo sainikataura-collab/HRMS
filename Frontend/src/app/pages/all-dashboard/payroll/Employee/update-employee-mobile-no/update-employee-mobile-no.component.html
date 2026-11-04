@@ -1,0 +1,105 @@
+
+
+
+<!-- main header close -->
+
+
+
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card">
+      <!-- Header Section -->
+      <!-- <div class="card-header bg-blue">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-6 col-lg-6">
+            <h4>Update Employee Mobile No</h4>
+          </div>
+        </div>
+      </div> -->
+<!-- main header  -->
+
+<div class="card-header bg-blue py-lg-1 mt-0">
+  <div class="col-sm-12 col-md-12 col-lg-3 col-12">
+
+      <div class="row w-100">
+          <div class="col-sm-12 col-md-12 col-lg-12 ">
+            <h4>Update Employee Mobile No</h4>
+          </div>
+      </div>
+
+  </div>
+
+  <div class="col-sm-12 col-md-12 col-lg-7 col-12">
+      <div class="row w-100">
+          <div class="col-sm-12 col-md-12 col-lg-12">
+              <app-common-search (filtersChanged)="handleFilters($event)"></app-common-search>
+          </div>
+      </div>
+  </div>
+
+ 
+
+</div>
+
+<!-- main header close -->
+
+
+
+
+        <div class="card-body">
+          <div class="col d-flex align-items-end justify-content-end pt-3 pb-3">
+            <button  class="btn btn-primary mx-1" (click)="showListOnView()">View</button>
+            <button type="button" class="btn btn-outline-dark mx-1"(click)="resetForm()">Reset</button>
+
+            </div>
+      </div> 
+       <!-- Employee List -->
+       <div *ngIf="showEmployeeList">
+
+
+<div class="page-seperator bg-primary mx-2 rounded-1">
+  <p class="text-white ms-4 p-1">List of Employees</p>
+</div>
+
+        <div class="card-body">
+          <div class="table-responsive table-invoice">
+            <form [formGroup]="UpdateEmployeeForm">
+              <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>Sr.</th>
+                    <th>Code</th>
+                    <th>Name</th>
+                    <th>Department</th>
+                    <th>Personal Mobile No</th>
+                    <th>Official Mobile No</th>
+                  </tr>
+                </thead>
+                <tbody formArrayName="employees">
+                  <tr *ngFor="let emp of employees.controls; let i = index" [formGroupName]="i">
+                    <td>{{ i + 1 }}</td>
+                    <td>{{ emp.get('empcode')?.value }}</td>
+                    <td>{{ emp.get('empname')?.value }}</td>
+                    <td>{{ emp.get('depart')?.value }}</td>
+
+                    <td><input type="text" class="form-control" formControlName="personalContactno"maxlength="10"(keypress)="validateNumber($event)"></td>
+                    <td><input type="text" class="form-control" formControlName="officialContactno"maxlength="10"(keypress)="validateNumber($event)"></td>
+                  </tr>
+                </tbody>
+              </table>
+              
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-primary mx-1" (click)="updateEmployeeMobile()">Update</button>
+            </div>
+            </form>
+
+          </div>
+        </div>
+      </div>
+      
+
+     
+    </div>
+  </div>
+
+</div>

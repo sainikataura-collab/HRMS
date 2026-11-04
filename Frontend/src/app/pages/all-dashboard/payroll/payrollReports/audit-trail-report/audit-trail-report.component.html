@@ -1,0 +1,101 @@
+
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+         <!--  -->
+    <div class="card-header bg-blue ">
+        <div class="row w-100 ">
+      <div class="col-sm-12 col-md-6 col-lg-6 ">                    
+        <h4>Employee Search Criteria</h4>   
+      </div>
+    
+  </div>
+  
+      
+      </div>
+      <div class="card-body mt-4">
+        <form [formGroup]="EmployeeForm">
+          <div class="row">
+
+            <app-common-search ></app-common-search>
+        </div>
+        <div class="row row-cols-1 row-cols-md-3">
+        
+            <div class="col">
+              <label>Office Type</label>
+         
+              <div class="form-group">
+                <ng-select id="year" [items]="selects" bindLabel="name" bindValue="value"
+                formControlName="officeType" placeholder="--Select --"
+                class="w-100"></ng-select>
+              </div>  
+          </div>
+    
+                <div class="col">
+                    <label>From date</label>
+                    <div class="form-group">
+                        <input type="date"class="form-control"formControlName="fromDate">
+                    </div>
+                </div>
+                <div class="col">
+                    <label>To Date</label>
+                    <div class="form-group">
+                        <input type="date"class="form-control"formControlName="toDate" >
+                    </div>
+                </div>
+                
+            </div>
+                       
+            <div class="modal-footer"> 
+                <button type="submit" class="btn btn-primary mx-1"(click)="toggleEmployeeList()">Search</button>
+                <button type="submit" class="btn btn-outline-dark mx-1"(click)="resetForm()">Reset</button>
+                 <button type="submit" class="btn btn-primary mx-1">Export</button>
+
+              </div>
+        </form>
+      </div>
+<!-- List of Employee -->
+<div>
+    <div class="card-header">
+      <div class="row w-100 ">
+    <div class="col-sm-12 col-md-6 col-lg-6 ">                    
+      <h4>Employee Details   ng </h4>
+    </div>
+  </div>
+    </div>
+    <div class="card-body"*ngIf="showEmployeeList">
+      <div class="table-responsive table-invoice">
+          <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>Sr.</th>
+                  <th>Code</th>
+                  <th>Name</th>
+                  <th>Department</th>
+                  <th>Designation</th>
+                  <th>User Name</th>
+                  <th>Dated</th>
+                </tr>
+              </thead>
+              <tbody>
+                 <tr>
+                  <td> 1</td>
+                  <td>224</td>
+                  <td>Delhi</td>
+                  <td>sunday</td>
+                  <td>hjbbhjhj</td>
+                  <td>llkjj</td>
+                  <td>02/09/2013</td>
+                </tr> 
+              </tbody>
+            </table>
+  
+           
+        </div>
+  </div>
+</div>
+      
+  </div>
+</div>    
+
+</div>

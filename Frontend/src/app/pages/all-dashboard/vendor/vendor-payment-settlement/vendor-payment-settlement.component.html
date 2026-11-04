@@ -1,0 +1,640 @@
+<div class="row">
+  <div class="col-12">
+    <div class="card shadow-sm border-0">
+
+      <!-- Card Header -->
+      <div class="card-header bg-primary">
+        <div class="row align-items-center">
+          <div class="col">
+            <h4 class="text-white mb-0">
+              <i class="fa fa-money me-2"></i>Vendor Payment Settlement
+            </h4>
+          </div>
+          <div class="col-auto d-flex align-items-center gap-2">
+            <span class="badge bg-light text-primary px-3 py-2 fw-semibold">
+              <i class="fa fa-university me-1"></i>Bank Disbursal & UTR Settlement Workflow
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card Body -->
+      <div class="card-body">
+
+        <!-- Filter Form (Matching Sync Page 1:1) -->
+        <form [formGroup]="filterForm" class="row g-2 align-items-start mb-3">
+
+          <!-- Client -->
+          <div class="col-12 col-sm-6 col-md-3 col-lg-3">
+            <label class="form-label mb-1 small fw-semibold">Select Client <span class="text-danger">*</span></label>
+            <ng-select [items]="clientList" bindLabel="name" bindValue="value"
+              formControlName="clientId" placeholder="-- Select Client --"
+              appendTo="body">
+            </ng-select>
+            <div *ngIf="filterForm.get('clientId')?.touched && filterForm.get('clientId')?.invalid" class="text-danger small mt-1">
+              Client is required.
+            </div>
+          </div>
+
+          <!-- Model -->
+          <div class="col-12 col-sm-6 col-md-3 col-lg-3">
+            <label class="form-label mb-1 small fw-semibold">Select Model <span class="text-danger">*</span></label>
+            <ng-select [items]="modelList" bindLabel="name" bindValue="value"
+              formControlName="modelId" placeholder="-- Select Model --"
+              appendTo="body">
+            </ng-select>
+            <div *ngIf="filterForm.get('modelId')?.touched && filterForm.get('modelId')?.invalid" class="text-danger small mt-1">
+              Model is required.
+            </div>
+          </div>
+
+          <!-- Location -->
+          <div class="col-12 col-sm-6 col-md-3 col-lg-3">
+            <label class="form-label mb-1 small fw-semibold">Location / Hub</label>
+            <ng-select [items]="locationList" bindLabel="name" bindValue="value"
+              formControlName="locationId" placeholder="-- All Locations --"
+              appendTo="body">
+            </ng-select>
+          </div>
+
+          <!-- Vendor (Rich Dropdown matching deduction entry / sync) -->
+          <div class="col-12 col-sm-6 col-md-3 col-lg-3">
+            <label class="form-label mb-1 small fw-semibold">Vendor / FHRID</label>
+            <ng-select [items]="filteredVendors" 
+              bindLabel="displayName" 
+              appendTo="body"
+              placeholder="-- All Vendors --" 
+              formControlName="vendor"
+              [loading]="isVendorsLoading">
+              <ng-template ng-option-tmp let-item="item">
+                <div class="d-flex flex-column py-1 small">
+                  <span class="fw-semibold text-primary small text-truncate">{{ item.vendorCode }} - {{ item.vendorName }}</span>
+                  <small class="text-dark small">FHRID: <strong>{{ item.fhrid }}</strong> | Hub: {{ item.locationName || 'N/A' }}</small>
+                </div>
+              </ng-template>
+              <ng-template ng-label-tmp let-item="item">
+                <span class="small text-truncate"><strong>{{ item.vendorCode }}</strong> - {{ item.vendorName }} ({{ item.fhrid }})</span>
+              </ng-template>
+            </ng-select>
+          </div>
+
+          <!-- Transaction Range -->
+          <div class="col-12 col-sm-6 col-md-4 col-lg-4 mt-2">
+            <label class="form-label mb-1 small fw-semibold">Transaction Range <span class="text-danger">*</span></label>
+            <ng-select [items]="transactionRanges" bindLabel="label" bindValue="value"
+              formControlName="transactionRange" placeholder="-- Select Transaction Range --"
+              appendTo="body">
+            </ng-select>
+            <div *ngIf="filterForm.get('transactionRange')?.touched && filterForm.get('transactionRange')?.invalid" class="text-danger small mt-1">
+              Transaction range is required.
+            </div>
+          </div>
+
+          <!-- Deductions Synced Filter -->
+          <div class="col-12 col-sm-6 col-md-4 col-lg-4 mt-2">
+            <label class="form-label mb-1 small fw-semibold text-dark">
+              <i class="fa fa-refresh me-1 text-primary"></i> Deductions Synced
+            </label>
+            <select class="form-select form-select-sm" formControlName="deductionsSynced" (change)="onSearch()">
+              <option value="">-- All Records (Default) --</option>
+              <option value="1">✓ Deductions Synced Only (Ready)</option>
+              <option value="0">⚠ Not Synced Only (Pending Sync)</option>
+            </select>
+          </div>
+
+          <!-- Filter Action Buttons -->
+          <div class="col-12 col-sm-12 col-md-4 col-lg-4 mt-2">
+            <label class="form-label mb-1 small d-none d-md-block">&nbsp;</label>
+            <div class="d-flex gap-2">
+              <button type="button" id="btn-view-transactions" class="btn btn-primary px-4 fw-semibold" (click)="onSearch()" [disabled]="isLoading">
+                <i class="fa fa-search me-1"></i> View Transactions
+              </button>
+              <button type="button" id="btn-reset-filters" class="btn btn-outline-secondary px-4" (click)="onReset()" [disabled]="isLoading">
+                <i class="fa fa-undo me-1"></i> Reset
+              </button>
+            </div>
+          </div>
+
+        </form>
+
+        <!-- Summary KPI Chips (All on 1 single line matching Screenshot 5) -->
+        <div *ngIf="isLoaded" class="summary-chips-container mb-3">
+          <div class="summary-chip chip-total">
+            <i class="fa fa-users me-1"></i>
+            Total Vendors: <strong>{{ kpiTotalCount }}</strong>
+          </div>
+
+          <div class="summary-chip chip-pending">
+            <i class="fa fa-clock-o me-1"></i>
+            Pending: <strong>{{ kpiPendingCount }}</strong>
+            <span class="ms-1 opacity-75">({{ formatCurrency(kpiTotalPendingAmount) }})</span>
+          </div>
+
+          <div class="summary-chip chip-synced">
+            <i class="fa fa-check-circle me-1"></i>
+            Payment Done: <strong>{{ kpiPaidCount }}</strong>
+            <span class="ms-1 opacity-75" *ngIf="kpiTotalPaidAmount > 0">({{ formatCurrency(kpiTotalPaidAmount) }})</span>
+          </div>
+
+          <div class="summary-chip chip-payable">
+            <i class="fa fa-money me-1"></i>
+            Total Net Payable: <strong>{{ formatCurrency(kpiTotalPendingAmount + kpiTotalPaidAmount) }}</strong>
+          </div>
+
+          <div class="summary-chip chip-synced" *ngIf="kpiSyncedCount > 0">
+            <i class="fa fa-check me-1"></i>
+            Synced: <strong>{{ kpiSyncedCount }}</strong>
+          </div>
+
+          <div class="summary-chip chip-deficit" *ngIf="kpiUnsyncedCount > 0">
+            <i class="fa fa-exclamation-triangle me-1"></i>
+            Un-synced Deductions: <strong>{{ kpiUnsyncedCount }}</strong>
+          </div>
+        </div>
+
+        <!-- Cycle-wide Selection Notification Banners -->
+        <div *ngIf="isAllOnPageSelected && totalRecords > rows.length && !isSelectAllCycle" 
+             class="alert alert-primary py-1 px-3 mb-2 d-flex flex-wrap align-items-center justify-content-between rounded-2 border-0 shadow-sm animate-fade-in">
+          <div class="small fw-semibold text-dark">
+            <i class="fa fa-info-circle me-1 text-primary"></i>
+            All <strong>{{ rows.length }}</strong> vendors on this page are selected.
+          </div>
+          <button type="button" class="btn btn-sm btn-link text-primary fw-bold text-decoration-underline p-0 small" (click)="selectAllAcrossCycle()">
+            Select all {{ kpiPendingCount }} pending vendors in this cycle ({{ formatCurrency(kpiTotalPendingAmount) }})
+          </button>
+        </div>
+
+        <div *ngIf="isSelectAllCycle" 
+             class="alert alert-success py-1 px-3 mb-2 d-flex flex-wrap align-items-center justify-content-between rounded-2 border-0 shadow-sm animate-fade-in">
+          <div class="small fw-semibold text-dark">
+            <i class="fa fa-check-circle me-1 text-success"></i>
+            All <strong>{{ kpiPendingCount }}</strong> pending vendors in this cycle are selected across all pages. (Total Disbursal: <strong>{{ formatCurrency(kpiTotalPendingAmount) }}</strong>)
+          </div>
+          <button type="button" class="btn btn-sm btn-link text-danger fw-semibold text-decoration-underline p-0 small" (click)="clearSelection()">
+            Clear cycle selection
+          </button>
+        </div>
+
+        <!-- Sticky / Floating Multi-Selection Action Bar -->
+        <div *ngIf="selectedCount > 0" class="selection-action-bar shadow-sm d-flex flex-wrap align-items-center justify-content-between mb-2">
+          <div class="d-flex align-items-center gap-2 flex-wrap">
+            <span class="badge bg-primary px-2 py-1 fw-bold">
+              <i class="fa fa-check-square-o me-1"></i> {{ selectedCount }} Selected <span *ngIf="isSelectAllCycle">(All in Cycle)</span>
+            </span>
+            <span class="small text-dark ms-1">Total Selected:</span>
+            <strong class="text-primary fs-6">{{ formatCurrency(selectedTotalAmount) }}</strong>
+            <span *ngIf="selectedUnsyncedCount > 0" class="badge bg-warning text-dark px-2 py-1" title="Selected vendors with unsynced deductions">
+              <i class="fa fa-exclamation-triangle me-1"></i> {{ selectedUnsyncedCount }} Un-synced
+            </span>
+          </div>
+
+          <div class="d-flex align-items-center gap-2 mt-1 mt-md-0">
+            <button type="button" id="btn-record-payment" class="btn btn-emerald btn-sm fw-semibold px-3 shadow-sm" (click)="openPaymentModal()">
+              <i class="fa fa-check-circle me-1"></i> Record Payment (UTR)
+            </button>
+            <button type="button" id="btn-export-selected-csv" class="btn btn-outline-primary btn-sm bg-white fw-semibold px-2 shadow-sm" (click)="exportBankFile()">
+              <i class="fa fa-file-excel-o me-1 text-success"></i> Export Bank Excel
+            </button>
+            <button type="button" id="btn-clear-selection" class="btn btn-light btn-sm text-dark px-2" (click)="clearSelection()">
+              <i class="fa fa-times me-1"></i> Clear
+            </button>
+          </div>
+        </div>
+
+        <!-- Navigation Tabs & Table Controls -->
+        <div *ngIf="isLoaded" class="d-flex flex-wrap align-items-center justify-content-between border-bottom pb-2 mb-3 gap-2">
+          
+          <!-- Status Filter Tabs -->
+          <ul class="nav nav-pills gap-1">
+            <li class="nav-item">
+              <button id="tab-pending" class="nav-link fw-semibold" [class.active]="activeStatusTab === 'Pending'" (click)="onStatusTabChange('Pending')">
+                <i class="fa fa-clock-o me-1 text-warning"></i> Pending Payment
+                <span class="badge bg-warning text-dark ms-1 rounded-pill">{{ kpiPendingCount }}</span>
+              </button>
+            </li>
+            <li class="nav-item">
+              <button id="tab-paid" class="nav-link fw-semibold" [class.active]="activeStatusTab === 'Paid'" (click)="onStatusTabChange('Paid')">
+                <i class="fa fa-check-circle me-1 text-success"></i> Payment Done
+                <span class="badge bg-success ms-1 rounded-pill">{{ kpiPaidCount }}</span>
+              </button>
+            </li>
+            <li class="nav-item">
+              <button id="tab-all" class="nav-link fw-semibold" [class.active]="activeStatusTab === 'All'" (click)="onStatusTabChange('All')">
+                <i class="fa fa-list me-1"></i> All Transactions
+                <span class="badge bg-secondary ms-1 rounded-pill text-dark">{{ kpiTotalCount }}</span>
+              </button>
+            </li>
+          </ul>
+
+          <!-- Search Input & Export Full File Button -->
+          <div class="d-flex align-items-center gap-2">
+            <div class="input-group input-group-sm" style="width: 250px;">
+              <span class="input-group-text bg-white"><i class="fa fa-search text-dark"></i></span>
+              <input type="text" id="input-search-term" class="form-control" [(ngModel)]="searchTerm"
+                placeholder="Search vendor, A/C, UTR..." (keyup.enter)="onSearch()">
+            </div>
+            <button type="button" id="btn-export-full-sheet" class="btn btn-outline-success btn-sm fw-semibold shadow-sm text-nowrap" (click)="exportBankFile()">
+              <i class="fa fa-file-excel-o me-1"></i> Export Excel Sheet
+            </button>
+          </div>
+
+        </div>
+
+        <!-- Transactions Table -->
+        <div *ngIf="isLoaded" class="table-responsive">
+          <table class="table table-hover align-middle settlement-table border shadow-sm">
+            <thead class="table-light">
+              <tr>
+                <th class="text-center" style="width: 45px;">
+                  <input type="checkbox" class="form-check-input"
+                    [checked]="selectAllChecked"
+                    (change)="toggleSelectAll()"
+                    title="Select / Deselect All Pending">
+                </th>
+                <th>Vendor / FHRID</th>
+                <th>Hub / Location</th>
+                <th class="text-nowrap">Vehicle Type</th>
+                <th class="text-nowrap">Route / Block</th>
+                <th>Bank & Account Details</th>
+                <th class="text-end">Gross & Tax Details</th>
+                <th class="text-end">Deductions Breakdown</th>
+                <th class="text-end text-primary fw-bold">Net Disbursal</th>
+                <th class="text-center">Status</th>
+                <th>Payment / UTR Details</th>
+                <th class="text-center" style="width: 90px;">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of rows | paginate: { itemsPerPage: pageSize, currentPage: pageIndex, totalItems: totalRecords }"
+                  [class.table-active]="isRowSelected(row)"
+                  [class.row-paid]="row.Payment_Status === 'Paid'">
+
+                <!-- Checkbox -->
+                <td class="text-center">
+                  <input type="checkbox" class="form-check-input"
+                    *ngIf="row.Payment_Status === 'Pending' && row.Net_Payable > 0"
+                    [checked]="isRowSelected(row)"
+                    (change)="toggleRowSelection(row)">
+                  <span *ngIf="row.Payment_Status === 'Paid'" class="text-success" title="Payment already settled">
+                    <i class="fa fa-check-circle"></i>
+                  </span>
+                  <span *ngIf="row.Payment_Status === 'Pending' && row.Net_Payable <= 0" class="text-dark" title="Net payable is 0.00">
+                    -
+                  </span>
+                </td>
+
+                <!-- Vendor Info -->
+                <td>
+                  <div class="fw-bold text-dark">{{ row.VendorName }}</div>
+                  <div class="d-flex align-items-center gap-2 mt-1">
+                    <span class="badge bg-light text-primary border fw-semibold">{{ row.VendorCode }}</span>
+                    <span class="text-dark small">FHRID: <span class="fw-semibold small">{{ row.FHRID }}</span></span>
+                  </div>
+                </td>
+
+                <!-- Hub / Location -->
+                <td>
+                  <div class="fw-semibold text-dark">{{ row.LocationName || 'N/A' }}</div>
+                  <span class="text-dark small">Hub: {{ row.HubCode || 'N/A' }}</span>
+                  <div class="mt-1">
+                    <span *ngIf="row.IsDeductionsSynced" class="badge-synced" title="Deductions synced for this cycle">
+                      <i class="fa fa-check-circle me-1"></i>Synced
+                    </span>
+                    <span *ngIf="!row.IsDeductionsSynced" class="badge-unsynced" title="Deductions have not been synced yet">
+                      <i class="fa fa-clock-o me-1"></i>Not Synced
+                    </span>
+                  </div>
+                </td>
+
+                <!-- Vehicle Type -->
+                <td>
+                  <span *ngIf="row.Vehicle_Type" class="badge bg-light text-dark border">
+                    <i class="fa fa-motorcycle text-primary me-1" *ngIf="row.Vehicle_Type.toLowerCase().includes('bike')"></i>
+                    <i class="fa fa-truck text-info me-1" *ngIf="row.Vehicle_Type.toLowerCase().includes('van') || row.Vehicle_Type.toLowerCase().includes('truck')"></i>
+                    {{ row.Vehicle_Type }}
+                  </span>
+                  <span *ngIf="!row.Vehicle_Type" class="text-dark small">-</span>
+                </td>
+
+                <!-- Route / Block -->
+                <td>
+                  <span *ngIf="row.Route" class="badge bg-primary-subtle text-primary border border-primary-subtle font-monospace fw-semibold">
+                    {{ row.Route }}
+                  </span>
+                  <span *ngIf="!row.Route" class="text-dark small">-</span>
+                </td>
+
+                <!-- Bank & Account Details -->
+                <td>
+                  <div class="fw-bold text-dark">
+                    <i class="fa fa-university text-dark me-1"></i>{{ row.Vendor_BankName || 'Bank Not Added' }}
+                  </div>
+                  <div class="text-dark small">
+                    A/C: <strong class="text-dark">{{ row.Vendor_AccountNo || 'N/A' }}</strong>
+                  </div>
+                  <div class="text-dark small">
+                    IFSC: <strong class="text-dark">{{ row.Vendor_IFSCCode || 'N/A' }}</strong>
+                  </div>
+                </td>
+
+                <!-- Gross & Tax Breakdown -->
+                <td class="text-end">
+                  <div class="fw-bold text-dark">{{ formatCurrency(row.Gross_Payable) }}</div>
+                  <div *ngIf="row.GST_Amount > 0 || row.GST_Percentage > 0" class="text-muted" style="font-size: 11px;">
+                    + GST ({{ row.GST_Percentage }}%): {{ formatCurrency(row.GST_Amount) }}
+                    <span class="text-dark fw-semibold" *ngIf="row.GST_Amount > 0"> (Post-GST: {{ formatCurrency(row.Total_Payable_After_GST || (row.Gross_Payable + row.GST_Amount)) }})</span>
+                  </div>
+                  <div class="text-danger" style="font-size: 11px;" *ngIf="row.TDS_Amount > 0 || row.Gross_Payable > 0">
+                    - TDS ({{ row.TDS_Percentage || 1 }}%): {{ formatCurrency(row.TDS_Amount) }}
+                  </div>
+                  <div class="text-success fw-semibold mt-1" style="font-size: 11px;" title="Available earnings post GST & TDS for payout/deductions">
+                    Post-TDS: {{ formatCurrency(row.Earnings_Post_GST || (row.Gross_Payable + row.GST_Amount - row.TDS_Amount)) }}
+                  </div>
+                </td>
+
+                <!-- Deductions Breakdown -->
+                <td class="text-end">
+                  <div class="text-danger fw-bold">
+                    {{ row.Total_Deductions > 0 ? ('-' + formatCurrency(row.Total_Deductions)) : '₹0.00' }}
+                  </div>
+                  <div *ngIf="row.CarryForwardDeficit_In > 0" class="text-danger-emphasis" style="font-size: 11px;" title="Deficit brought forward from previous cycle">
+                    Brought Deficit: {{ formatCurrency(row.CarryForwardDeficit_In) }}
+                  </div>
+                  <div *ngIf="row.CarryForwardDeficit_In > 0 && row.Operational_Deductions > 0" class="text-muted" style="font-size: 10px;">
+                    Op Deductions: {{ formatCurrency(row.Operational_Deductions) }}
+                  </div>
+                  <div *ngIf="row.RecoveryPercent != null && row.RecoveryPercent < 100" class="mt-1">
+                    <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle" style="font-size: 10px;" [title]="'Deductions recovery capped at ' + row.RecoveryPercent + '% of available earnings for this vendor'">
+                      Cap: {{ row.RecoveryPercent }}%
+                    </span>
+                  </div>
+                  <div *ngIf="row.CarryForwardDeficit_Out > 0" class="text-danger fw-semibold mt-1" style="font-size: 11px;" title="Unrecovered deficit carried forward to next cycle">
+                    Carry Fwd: {{ formatCurrency(row.CarryForwardDeficit_Out) }}
+                  </div>
+                </td>
+
+                <!-- Net Disbursal -->
+                <td class="text-end">
+                  <div class="fw-bolder text-primary fs-6">
+                    {{ formatCurrency(row.Net_Payable) }}
+                  </div>
+                  <small class="text-muted" style="font-size: 10px;" *ngIf="row.Gross_Payable > 0">
+                    Disbursal
+                  </small>
+                </td>
+
+                <!-- Payment Status Badge -->
+                <td class="text-center">
+                  <span *ngIf="row.Payment_Status === 'Paid'" class="badge bg-success-subtle text-success px-3 py-2 rounded-pill fw-semibold border border-success-subtle">
+                    <i class="fa fa-check-circle me-1"></i> Paid
+                  </span>
+                  <span *ngIf="row.Payment_Status === 'Pending'" class="badge bg-warning-subtle text-warning-emphasis px-3 py-2 rounded-pill fw-semibold border border-warning-subtle">
+                    <i class="fa fa-clock-o me-1"></i> Pending
+                  </span>
+                </td>
+
+                <!-- Settlement Details -->
+                <td>
+                  <div *ngIf="row.Payment_Status === 'Paid'">
+                    <div class="fw-bold text-success font-monospace">
+                      <i class="fa fa-hashtag text-dark me-1"></i>{{ row.Payment_TransactionNo }}
+                    </div>
+                    <div class="text-dark small mt-1">
+                      <i class="fa fa-calendar me-1"></i>{{ row.Payment_Date | date:'dd MMM yyyy' }}
+                      <span *ngIf="row.Payment_Mode" class="badge bg-light text-dark border ms-1">{{ row.Payment_Mode }}</span>
+                    </div>
+                    <div *ngIf="row.Payment_ProcessedByName" class="text-dark small">
+                      By: {{ row.Payment_ProcessedByName }}
+                    </div>
+                  </div>
+                  <div *ngIf="row.Payment_Status === 'Pending'" class="text-dark fst-italic small">
+                    Not Disbursed Yet
+                  </div>
+                </td>
+
+                <!-- Action Button -->
+                <td class="text-center">
+                  <!-- <button *ngIf="row.Payment_Status === 'Paid'"
+                    type="button" class="btn btn-outline-danger btn-sm px-2 py-1"
+                    (click)="openRevertModal(row)" title="Undo / Revert Payment to Pending">
+                    <i class="fa fa-undo me-1"></i> Revert
+                  </button> -->
+                  <button *ngIf="row.Payment_Status === 'Pending' && row.Net_Payable > 0"
+                    type="button" class="btn btn-success btn-sm px-0 py-0 pe-2 "
+                    (click)="openSinglePaymentModal(row)" title="Record Payment for this Vendor">
+                    <i class="fa fa-money me-1"></i> Pay <i class="fa-solid fa-arrow-right pt-1 ps-1"></i>
+                  </button>
+                </td>
+
+              </tr>
+
+              <!-- Empty State -->
+              <tr *ngIf="rows.length === 0">
+                <td colspan="12" class="text-center py-5">
+                  <div class="text-dark">
+                    <i class="fa fa-inbox fa-3x mb-3 text-dark"></i>
+                    <h5>No transactions found for the selected criteria</h5>
+                    <p class="small">Try adjusting your filters or status tab selection.</p>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination Controls -->
+        <div *ngIf="isLoaded && totalRecords > 0" class="d-flex flex-wrap align-items-center justify-content-between mt-3 gap-2">
+          <div class="text-dark small">
+            Showing {{ ((pageIndex - 1) * pageSize) + 1 }} to {{ pageIndex * pageSize > totalRecords ? totalRecords : (pageIndex * pageSize) }} of {{ totalRecords }} records
+          </div>
+          <pagination-controls (pageChange)="onPageChange($event)" [autoHide]="true" [responsive]="true"></pagination-controls>
+        </div>
+
+        <!-- Initial Placeholder State (Matching Vendor Transaction Sync) -->
+        <div *ngIf="!isLoaded" class="text-center py-4 text-dark">
+          <p class="mb-1 text-dark">Select Client, Model and Transaction Range</p>
+          <p class="mb-0 text-dark small">Then click <strong>View Transactions</strong> to review deduction columns and synchronize payables.</p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- Modal: Record Payment (UTR) - Clean High-Contrast (Screenshot 4 & 5 Fix)   -->
+<!-- ========================================================================= -->
+<div class="modal fade show d-block" id="paymentSettlementModal" tabindex="-1" aria-labelledby="paymentSettlementModalLabel"
+  aria-modal="true" role="dialog" style="background: rgba(0, 0, 0, 0.5); z-index: 1055;"
+  *ngIf="showPaymentModal" (click)="$event.target === $event.currentTarget && closePaymentModal()">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 580px;">
+    <div class="modal-content shadow border-0">
+      
+      <!-- Modal Header -->
+      <div class="modal-header small py-2">
+        <p class="modal-title small lh-sm mb-0" id="paymentSettlementModalLabel">
+          <i class="fa fa-university text-primary me-2"></i>
+          <span class="fw-semibold">Record Vendor Payment Settlement</span>
+        </p>
+        <button type="button" id="modalPaymentCloseBtn" class="btn-close" aria-label="Close" (click)="closePaymentModal()" [disabled]="isSubmittingPayment"></button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="modal-body p-3">
+        
+        <!-- High-Contrast Clean Summary Card (100% Readable) -->
+        <div class="bg-light p-3 rounded-2 border mb-3">
+          <div class="row g-2 align-items-center">
+            <div class="col-6">
+              <span class="text-dark small d-block">Targeted Vendors</span>
+              <span class="fw-bold text-dark fs-6">
+                {{ isSelectAllCycle ? kpiPendingCount + ' vendors (All in Cycle)' : selectedCount + ' Selected Vendor(s)' }}
+              </span>
+              <div *ngIf="!isSelectAllCycle && selectedCount === 1 && firstSelectedItem" class="mt-1 small">
+                <span *ngIf="firstSelectedItem.vehicleType && firstSelectedItem.vehicleType !== '0'" class="badge bg-white text-dark border me-1">
+                  {{ firstSelectedItem.vehicleType }}
+                </span>
+                <span *ngIf="firstSelectedItem.route && firstSelectedItem.route !== '0' && firstSelectedItem.route !== '-'" class="badge bg-primary-subtle text-primary border border-primary-subtle font-monospace">
+                  Route: {{ firstSelectedItem.route }}
+                </span>
+              </div>
+            </div>
+            <div class="col-6 text-end">
+              <span class="text-dark small d-block">Total Disbursal Amount</span>
+              <span class="fw-bold text-primary fs-5">
+                {{ formatCurrency(selectedTotalAmount) }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Warning Callout if Un-synced vendors exist in selection -->
+        <div *ngIf="selectedUnsyncedCount > 0" class="alert alert-warning border-0 py-2 px-3 small mb-3 d-flex align-items-center gap-2 rounded-2">
+          <i class="fa fa-exclamation-triangle text-warning fs-5"></i>
+          <span class="text-dark small">
+            <strong>Warning:</strong> {{ selectedUnsyncedCount }} vendor(s) have un-synced deductions.
+          </span>
+        </div>
+
+        <!-- Settlement Entry Form -->
+        <form [formGroup]="paymentForm" class="row g-2">
+
+          <!-- Payment Date -->
+          <div class="col-12 col-sm-6">
+            <label class="form-label mb-1 small fw-semibold">Payment Execution Date <span class="text-danger">*</span></label>
+            <input type="date" class="form-control form-control-sm" formControlName="paymentDate">
+            <div *ngIf="paymentForm.get('paymentDate')?.touched && paymentForm.get('paymentDate')?.invalid" class="text-danger small mt-1">
+              Payment date is required.
+            </div>
+          </div>
+
+          <!-- Payment Mode -->
+          <div class="col-12 col-sm-6">
+            <label class="form-label mb-1 small fw-semibold">Payment Mode <span class="text-danger">*</span></label>
+            <select class="form-select form-select-sm" formControlName="paymentMode">
+              <option *ngFor="let mode of paymentModes" [value]="mode">{{ mode }}</option>
+            </select>
+          </div>
+
+          <!-- Bank Transaction Ref / UTR No -->
+          <div class="col-12">
+            <label class="form-label mb-1 small fw-semibold">
+              Bank Transaction ID / UTR No <span class="text-danger">*</span>
+            </label>
+            <input type="text" class="form-control form-control-sm font-monospace fw-semibold" formControlName="paymentTransactionNo"
+              placeholder="e.g. CMS1234567890 / UTR987654321 / NEFT-20261014-01">
+            <div *ngIf="paymentForm.get('paymentTransactionNo')?.touched && paymentForm.get('paymentTransactionNo')?.invalid" class="text-danger small mt-1">
+              Transaction ID / UTR No is required.
+            </div>
+          </div>
+
+          <!-- Debit Bank Name -->
+          <div class="col-12 col-sm-6">
+            <label class="form-label mb-1 small fw-semibold">Company Debit Bank</label>
+            <select class="form-select form-select-sm" formControlName="paymentBankName">
+              <option [ngValue]="null">-- Select Debit Bank --</option>
+              <option *ngFor="let bank of bankList" [value]="bank">{{ bank }}</option>
+            </select>
+          </div>
+
+          <!-- Debit Account No -->
+          <div class="col-12 col-sm-6">
+            <label class="form-label mb-1 small fw-semibold">Debit Account No</label>
+            <input type="text" class="form-control form-control-sm" formControlName="paymentAccountNo"
+              placeholder="Corporate bank account no">
+          </div>
+
+          <!-- Remarks -->
+          <div class="col-12">
+            <label class="form-label mb-1 small fw-semibold">Settlement Remarks <span class="text-dark" style="font-size: 10px;">(optional)</span></label>
+            <textarea class="form-control form-control-sm" rows="2" formControlName="paymentRemarks"
+              placeholder="Enter notes or audit remarks for this batch..."></textarea>
+          </div>
+
+          <!-- Buttons aligned right (Matching Screenshot 4) -->
+          <div class="col-12 d-flex justify-content-end mt-3">
+            <button type="button" class="btn btn-secondary btn-sm mx-1" (click)="closePaymentModal()" [disabled]="isSubmittingPayment">Close</button>
+            <button type="button" class="btn btn-primary btn-sm" (click)="submitPayment()" [disabled]="isSubmittingPayment">
+              <i *ngIf="!isSubmittingPayment" class="fa fa-check me-1"></i>
+              <i *ngIf="isSubmittingPayment" class="fa fa-spinner fa-spin me-1"></i>
+              {{ isSubmittingPayment ? 'Processing...' : 'Confirm & Disburse Payment' }}
+            </button>
+          </div>
+
+        </form>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- Modal: Revert Payment to Pending                                          -->
+<!-- ========================================================================= -->
+<div class="modal fade show d-block" id="revertPaymentModal" tabindex="-1" aria-labelledby="revertPaymentModalLabel"
+  aria-modal="true" role="dialog" style="background: rgba(0, 0, 0, 0.5); z-index: 1055;"
+  *ngIf="showRevertModal" (click)="$event.target === $event.currentTarget && closeRevertModal()">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 480px;">
+    <div class="modal-content shadow border-0">
+      
+      <!-- Modal Header -->
+      <div class="modal-header small py-2">
+        <p class="modal-title small lh-sm mb-0" id="revertPaymentModalLabel">
+          <i class="fa fa-undo text-danger me-2"></i>
+          <span class="fw-semibold text-danger">Revert Payment to Pending</span>
+        </p>
+        <button type="button" id="modalRevertCloseBtn" class="btn-close" aria-label="Close" (click)="closeRevertModal()" [disabled]="isSubmittingRevert"></button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="modal-body p-3">
+        <div class="alert alert-warning border-0 py-2 px-3 small mb-2">
+          <i class="fa fa-exclamation-triangle me-1"></i>
+          This will cancel the settlement and set the status back to <strong>Pending</strong>.
+        </div>
+
+        <div class="bg-light p-2 rounded small mb-2 border">
+          <div>Vendor: <strong>{{ revertingTxn?.VendorName }}</strong> ({{ revertingTxn?.VendorCode }})</div>
+          <div>Amount: <strong class="text-primary">{{ formatCurrency(revertingTxn?.Net_Payable) }}</strong></div>
+          <div>Current UTR: <span class="badge bg-dark font-monospace text-dark">{{ revertingTxn?.Payment_TransactionNo }}</span></div>
+        </div>
+
+        <div>
+          <label class="form-label mb-1 small fw-semibold">Reason for Revert <span class="text-dark" style="font-size: 10px;">(optional)</span></label>
+          <textarea class="form-control form-control-sm" rows="2" [(ngModel)]="revertRemarks"
+            placeholder="e.g. Bank payout returned due to wrong IFSC, UTR entered by mistake..."></textarea>
+        </div>
+
+        <!-- Buttons aligned right -->
+        <div class="col-12 d-flex justify-content-end mt-3">
+          <button type="button" class="btn btn-secondary btn-sm mx-1" (click)="closeRevertModal()" [disabled]="isSubmittingRevert">Close</button>
+          <button type="button" class="btn btn-danger btn-sm" (click)="submitRevert()" [disabled]="isSubmittingRevert">
+            <i class="fa fa-undo me-1"></i> Revert Payment
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

@@ -1,0 +1,151 @@
+<div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-primary">
+          <div class="row w-100">
+            <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-between">
+              <h4>Employee Search</h4>
+            </div>
+            <!-- <div class="col-sm-6 col-md-6 col-lg-2 d-flex align-items-center justify-content-end ms-auto gap-2">
+              <button class="btn btn-light" routerLink="/dash/payroll/payrolldashboard/leave-assessment-list">
+                 Goto List
+              </button>
+            </div> -->
+          </div>
+        </div>
+        <div class="card-body">
+          <form [formGroup]="ApprovalForm"  >
+            <div class="row mb-3">
+              <app-common-search ></app-common-search>
+          </div>
+            <!-- Employee Search Section -->
+            <div class="row">
+                <!-- <div class="col-12 col-md-4 mb-3">
+                    <div class="form-group position-relative">
+                      <label for="code">Code:</label>
+                      <input id="code" type="text" formControlName="code" class="form-control" (input)="showSuggestions = true" />
+                      <ul class="list-group position-absolute w-100" *ngIf="showSuggestions" style="max-height: 200px; overflow-y: auto; z-index: 999;">
+                        <li class="list-group-item" *ngFor="let emp of filteredPendingList" (click)="selectCode(emp.empCode)">
+                          {{ emp.empCode }} - {{ emp.empName }}
+                        </li>
+                      </ul>
+                    </div>
+                  </div> -->
+                  
+              <!-- <div class="col-12 col-md-4 mb-3">
+                <div class="form-group">
+                  <label for="name">Name:</label>
+                  <input id="name" type="text" formControlName="name" class="form-control" />
+                </div>
+              </div> -->
+              <!-- <div class="col-12 col-md-4 mb-3">
+                <div class="form-group">
+                  <label for="status">Status:</label>
+                  <input id="status" type="text" formControlName="status" class="form-control" />
+                </div>
+              </div> -->
+            </div>
+  
+            <div class="row">
+              <!-- <div class="col-12 col-md-4 mb-3">
+                <div class="form-group">
+                  <label for="location">Location:</label>
+                  <ng-select [items]="locations" bindLabel="name" formControlName="location"></ng-select>
+                </div>
+              </div> -->
+              <!-- <div class="col-12 col-md-4 mb-3">
+                <div class="form-group">
+                  <label for="department">Department:</label>
+                  <ng-select [items]="departments" bindLabel="name" formControlName="department"></ng-select>
+                </div>
+              </div> -->
+                
+              <div class="col-12 col-md-4 mb-3">
+                <div class="form-group">
+                  <label for="financialYear">Financial Year:</label>
+                  <ng-select [items]="financialYears" bindLabel="year" formControlName="financialYear"></ng-select>
+                </div>
+              </div>
+              
+              <div class="col-12 col-md-4 d-flex justify-content-between mb-3">
+                 <!-- Button Section -->
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-outline-dark mx-1" (click)="clearFilters()">Clear</button>
+                        <button type="submit" class="btn btn-primary mx-1" (click)="search()">Search</button>
+                    </div>
+              </div>
+            </div>
+          </form>
+  
+          <!-- Employee Leave Assignment Section -->
+          <div class="page-seperator bg-primary mx-2 rounded-1">
+            <p class="text-white ms-4 p-1">List of Pending Rent Detail</p>
+          </div>
+  
+          <div class="row mx-1">
+            <div class="col-12">
+                <div class="table-responsive">
+                    <table class="table  table-bordered">
+                      <thead class="text-white">
+                        <tr>
+                            <th>Sr No.</th>
+                            <th>Dated</th>
+                            <th>FinancialYear</th>
+                            <th>Amount</th>
+                            <th>Empcode</th>
+                            <th>Emp Name</th>
+                            <th>Branch</th>
+                            <th>Open File</th>
+                            <th>View</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let employee of filteredPendingList; let i = index">
+                          <td>{{ i + 1 }}</td>
+                          <td>{{ employee.Date }}</td>
+                          <td>{{ employee.section }}</td>
+                          <td>{{ employee.amount }}</td>
+                          <td>{{ employee.empCode}}</td>
+                          <td>{{ employee.empName }}</td>
+                          <td>{{ employee.branch}}</td>
+                          <td>{{ employee.file}}</td>
+                          <td><a [href]="employee.file" target="_blank">Download</a></td>
+                          <!-- <td><button class="btn btn-info">View</button></td> -->
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+            </div>
+          </div>
+  
+          <div class="page-seperator bg-primary mx-2 rounded-1">
+            <p class="text-white ms-4 p-1">List of Approved Rent Detail</p>
+          </div>
+  
+          <div class="row mx-1">
+            <div class="col-12">
+              <div class="table-responsive">
+                <table class="table table-invoice table-border">
+                  <thead>
+                    <tr>
+                      <th>Sr No.</th>
+                      <th>Dated</th>
+                      <th>FinancialYear</th>
+                      <th>Amount</th>
+                      <th>Empcode</th>
+                      <th>Emp Name</th>
+                      <th>Branch</th>
+                      <th>Open File</th>
+                      <th>View</th>
+                    </tr>
+                  </thead>
+                </table>
+              </div>
+            </div>
+          </div>
+  
+        </div>
+      </div>
+    </div>
+  </div>
+  

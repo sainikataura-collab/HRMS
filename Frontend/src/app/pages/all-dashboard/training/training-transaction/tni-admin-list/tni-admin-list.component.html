@@ -1,0 +1,141 @@
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+
+      <!-- 🔹 Filters Section -->
+      <div class="card-header bg-primary text-white">
+        <div class="row w-100">
+          <div class="col-md-2">
+            <select class="form-control" [(ngModel)]="filter.status" (change)="getList()">
+              <option value="">All Status</option>
+              <option value="P">Pending</option>
+              <option value="A">Approved</option>
+              <option value="R">Rejected</option>
+              <option value="H">Hold</option>
+            </select>
+          </div>
+
+          <div class="col-md-2">
+            <select class="form-control" [(ngModel)]="filter.priority" (change)="getList()">
+              <option value="">All Priority</option>
+              <option value="H">High</option>
+              <option value="M">Medium</option>
+              <option value="L">Low</option>
+            </select>
+          </div>
+
+          <div class="col-md-2">
+            <input type="date" class="form-control" [(ngModel)]="filter.proposedTimeline" (change)="getList()" />
+          </div>
+
+          <div class="col-md-2">
+            <input type="date" class="form-control" [(ngModel)]="filter.proposedTimeline" (change)="getList()" />
+          </div>
+
+          <div class="col-md-3">
+             <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText"/>
+          </div>
+          <!-- <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-center">
+            </div> -->
+
+         
+        </div>
+      </div>
+
+      <!-- 🔹 Table -->
+      <div class="card-body">
+        <div class="table-responsive table-invoice">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>S.&nbsp;No.</th>
+                <th>EmpName</th>
+                <th>Program</th>
+                <th>SubProgram</th>
+                <th>Resaon</th>
+                <th>Priority</th>
+                <th>Status</th>
+                <th> proposed&nbsp;Date</th>
+                <th>ADD Comment</th>
+                <th>Action</th>
+
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngIf="data.length === 0">
+                <td colspan="7" class="text-center">No data available</td>
+              </tr>
+              <!-- <tr *ngFor="let item of filteredData(); let i = index">
+                <td>{{ (pageindex - 1) * pagesize + i + 1 }}</td> -->
+
+                 <tr *ngFor=" let item of filteredData() | paginate : { itemsPerPage: pagesize, currentPage: pageindex ,totalItems: totalCount };let i = index">
+                    <td>{{(pageindex-1)* pagesize+i+1}}</td>
+
+                <td>{{ item.empName }}</td>
+                <td>{{ item.programName }}</td>
+           
+                <td>{{ item.subProgramName }}</td>
+                <td>{{ item.reason }}</td>
+                <td>{{ item.priority }}</td>
+                <td>{{ item.status }}</td>
+                <!-- <td>{{ item.createdDate | date:'dd-MM-yyyy' }}</td> -->
+                <td>{{ item.proposedTimeline | date:'dd-MM-yyyy' }}</td>
+                <td>
+                  <input type="text" [(ngModel)]="item.adminComment"
+                    [placeholder]="item.adminComment ? '' : 'Enter comment'" class="form-control form-control-sm" />
+                  <!-- Optional: show existing comment below input -->
+
+                </td>
+
+
+                
+                <td class="d-flex align-items-center justify-content-between">
+                  
+                  <!-- Action Buttons (visible only if NOT approved) -->
+                  <ng-container *ngIf="item.status !== 'A' && item.status !== 'PL' && item.status !== 'Completed' ">
+                    <button class="btn btn-sm btn-outline-primary mx-1 btn-sm" [disabled]="item.status === 'R' "
+                      (click)="takeAction(item.pk_TNIId, item.tniLineId, 'Approve', item.adminComment)">
+                      Approve
+                    </button>
+
+                    <button class="btn btn-sm btn-outline-danger btn-sm mx-1" [disabled]="item.status === 'R' || item.status === 'A' || item.status === 'Completed' "
+                      (click)="takeAction(item.pk_TNIId, item.tniLineId, 'Reject', item.adminComment)">
+                      Reject
+                    </button>
+
+                    <button class="btn btn-sm btn-outline-warning btn-sm mx-1" [disabled]="item.status === 'R' || item.status === 'H'  || item.status === 'Completed'"
+                      (click)="takeAction(item.pk_TNIId, item.tniLineId, 'Hold', item.adminComment)">
+                      Hold
+                    </button>
+
+                  </ng-container>
+
+                  <!-- Planning Button (only if approved) -->
+                  <button *ngIf="item.status  === 'A'" class="btn btn-sm btn-outline-primary" disabled >
+                    Approved
+                  </button>
+
+                    <!-- Show Schedule Here button only if planned (PL) -->
+                  <button *ngIf="item.status === 'PL'" class="btn btn-sm btn-outline-success" disabled >
+                    planned
+                  </button>
+                    <!-- Show Schedule Here button only if planned (Scheduled) -->
+                  <button *ngIf="item.status === 'Completed'" class="btn btn-sm btn-outline-success" disabled >
+                    Completed
+                  </button>
+                </td>
+
+
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- 🔹 Pagination -->
+          <pagination-controls (pageChange)="onPageChange($event)" [responsive]="true"></pagination-controls>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

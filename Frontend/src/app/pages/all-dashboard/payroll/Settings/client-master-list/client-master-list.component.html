@@ -1,0 +1,130 @@
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header bg-primary"> <!-- ✅ bg-primary like Bank Master -->
+        <div class="row w-100">
+
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-between">
+            <h4>List of Clients</h4>
+          </div>
+
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-center">
+            <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText"
+              (ngModelChange)="onSearchTextChanged()" />
+          </div>
+
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-md-end">
+            <button class="btn btnheader mx-1" (click)="exportToExcel()">
+              <i class="fa fa-file-excel"></i> Export
+            </button>
+            <button class="btn btnheader mx-1" routerLink="/dash/user/userdashboard/clientMaster">
+              Add Client
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="card-body">
+        <div class="table-responsive table-invoice">
+          <table class="table"> <!-- ✅ same as Bank Master, no table-bordered -->
+            <thead>
+              <tr>
+                <th>Sr.No</th>
+                <th>Logo</th>
+                <th>Client Code</th>
+                <th>Client Name</th>
+                <th>Grouping</th>
+                <th>Contact Person</th>
+                <th>Phone</th>
+                <th>Email ID</th>
+                <th>Location</th>
+                <th>Created By</th>
+                <th>Created Date</th>
+                <th>Updated By</th>
+                <th>Updated Date</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of filteredMaster
+                | paginate : { itemsPerPage: pageSize, currentPage: page, totalItems: totalItems }; 
+                let i = index">
+
+                <td>{{ (page - 1) * pageSize + i + 1 }}</td> <!-- ✅ page same as Bank Master -->
+                <td>
+                  <img [src]="clientLogoMap[item.pk_cost_centre_id] || (item.client_LogoPath && imageMap[item.client_LogoPath]) || (item.Client_LogoPath && imageMap[item.Client_LogoPath]) || 'assets/Image/Logo/empower.jpeg'" width="60" height="40"
+                    style="object-fit: contain; border-radius: 4px; cursor: pointer;" alt="Client Logo"
+                    data-bs-toggle="modal" data-bs-target="#clientLogoModal" (click)="openLogoModal(item)" />
+                </td>
+                <td>{{ item.clientCode }}</td>
+                <td>{{ item.clientName }}</td>
+                <td>{{ item.grouping }}</td>
+                <td>{{ item.contactPerson }}</td>
+                <td>{{ item.phone }}</td>
+                <td>{{ item.emailID }}</td>
+                <td>{{ item.location || '-' }}</td>
+                <td>{{ item.createdBy || '-' }}</td>
+                <td>{{ item.createdDate ? (item.createdDate | date: 'dd-MMM-yyyy') : '-' }}</td>
+                <td>{{ item.modifiedBy || item.updatedBy || '-' }}</td>
+                <td>{{ (item.modifiedDate || item.updatedDate) ? ((item.modifiedDate || item.updatedDate) | date: 'dd-MMM-yyyy') : '-' }}</td>
+                <td>
+                  <!-- ✅ exact same button pattern as Bank Master -->
+                  <button class="btn" (click)="edit(encryptionService.encryptText(item.pk_cost_centre_id.toString()))" title="Edit">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                  </button>
+                  <button class="btn" (click)="deleteRecord(item.pk_cost_centre_id)" title="Delete">
+                    <i class="fa fa-trash"></i>
+                  </button>
+                  <button class="btn btn-sm btn-primary ms-1" data-bs-toggle="modal" data-bs-target="#clientLogoModal"
+                    (click)="openLogoModal(item)" title="Upload Client Logo">
+                    <i class="fa-solid fa-upload"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Client Logo Upload Modal -->
+          <div class="modal fade" id="clientLogoModal" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header px-4 py-2 pb-0">
+                  <p class="modal-title">
+                    Upload Client Logo
+                  </p>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal">
+                  </button>
+                </div>
+                <div class="modal-body text-center">
+                  <!-- Preview -->
+                  <img [src]="previewLogo" alt="Client Logo Preview" width="120" height="120" class="border rounded mb-3" style="object-fit: contain;">
+                  <!-- File input -->
+                  <input type="file" class="form-control" accept=".jpg,.jpeg,.png" (change)="onLogoSelected($event)">
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-dark" data-bs-dismiss="modal">
+                    Close
+                  </button>
+                  <button type="button" class="btn btn-primary" (click)="uploadLogo()">
+                    Upload
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <pagination-controls (pageChange)="onPageChange($event)" [responsive]="true">
+          </pagination-controls>
+
+          <ng-template #noData>
+            <tr>
+              <td colspan="14" class="text-center">No data available</td>
+            </tr>
+          </ng-template>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

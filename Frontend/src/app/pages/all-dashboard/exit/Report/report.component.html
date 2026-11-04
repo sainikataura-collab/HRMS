@@ -1,0 +1,209 @@
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+            <div class="card-header bg-primary py-lg-1 mt-0">
+                <div class="row w-100 align-items-center">
+                    <!-- Title Section -->
+                    <div class="col-12 col-md-3">
+                        <h4 class="text-white mb-0">Exit Report</h4>
+                    </div>
+                    <!-- Search Section -->
+                    <div class="col-12 col-md-7 mt-2 mt-md-0">
+                        <app-common-search (filtersChanged)="handleFilters($event)"></app-common-search>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body mt-4">
+                <form [formGroup]="ExportExcel" (ngSubmit)="OnSubmit()">
+                    <div class="row row-cols-1 row-cols-md-4 g-3">
+                        <div class="col">
+                            <label>From Date <span class="text-danger">*</span></label>
+                            <div class="form-group">
+                                <input type="date" class="form-control" formControlName="fromDate">
+                                <small class="text-danger mt-1 d-block"
+                                    *ngIf="submitted && ExportExcel.get('fromDate')?.invalid">
+                                    From Date is required.
+                                </small>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <label>To Date <span class="text-danger">*</span></label>
+                            <div class="form-group">
+                                <input type="date" class="form-control" formControlName="toDate">
+                                <small class="text-danger mt-1 d-block"
+                                    *ngIf="submitted && ExportExcel.get('toDate')?.invalid">
+                                    To Date is required.
+                                </small>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <label>Contractor Name</label>
+                            <div class="form-group">
+                                <ng-select id="contractorName" [items]="contractors" bindLabel="name" bindValue="value"
+                                    formControlName="contractorName" class="w-100"
+                                    placeholder="--Select --"></ng-select>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <label>Export Type <span class="text-danger">*</span></label>
+                            <div class="form-group">
+                                <ng-select id="exportType" [items]="exportTypeList" bindLabel="name" bindValue="value"
+                                    formControlName="exportType" class="w-100" placeholder="--Select --"></ng-select>
+                                <small class="text-danger mt-1 d-block"
+                                    *ngIf="submitted && ExportExcel.get('exportType')?.invalid">
+                                    Export Type is required.
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col d-flex align-items-center justify-content-end">
+                            <button type="submit" class="btn btn-primary mx-1">View</button>
+                            <button type="reset" class="btn btn-outline-dark mx-1" (click)="restfrom()">Reset</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- List of Employee -->
+            <div *ngIf="filteredResignations.length > 0">
+                <div class="row p-2 align-items-center">
+
+                    <div class="col-12 col-lg-5">
+                        <p class="text-dark m-0 ps-3 text-primary fw-semibold">
+                            {{
+                            submittedExportType === 'resignation' ? 'List of Resignations' :
+                            submittedExportType === 'interview' ? 'List of Exit Interviews' :
+                            submittedExportType === 'due' ? 'List of Due Clearances' :
+                            submittedExportType === 'nodue' ? 'List of No Due Declarations' :
+                            submittedExportType === 'fnf' ? 'List of F&F' : ''
+                            }}
+                        </p>
+                    </div>
+                    <div class="col-12 col-lg-7 d-lg-flex align-items-center justify-content-end">
+                        <button class="btn btn-primary mx-1" (click)="downloadExcel()" [disabled]="isExporting">
+                            <i *ngIf="!isExporting" class="fa fa-download me-2"></i>
+                            <i *ngIf="isExporting" class="fa fa-spinner fa-spin me-2"></i>
+                            {{ isExporting ? 'Wait...' : 'Export Excel' }}
+                        </button>
+                        <input type="text" class="form-control search-employee ms-2" placeholder="Search..."
+                            [(ngModel)]="searchText" (ngModelChange)="applyFilters()" style="max-width: 250px;" />
+                    </div>
+                </div>
+
+                <div class="table-responsive table-invoice px-3 mb-5"
+                    [ngClass]="{ 'scroll-active': filteredResignations.length > 10 }">
+                    <table class="table table-bordered table-hover" id="exportTable">
+                        <thead>
+                            <tr>
+                                <th *ngFor="let header of tableHeaders" [class.text-center]="header === 'action'">
+                                    {{ formatHeaderLabel(header) }}
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr
+                                *ngFor="let item of filteredResignations | paginate: { itemsPerPage: pageSize, currentPage: pageIndex, totalItems: totalCount }">
+                                <td *ngFor="let header of tableHeaders" [class.text-center]="header === 'action'"
+                                    class="align-middle">
+                                    <ng-container [ngSwitch]="header">
+
+                                        <!-- Resignation Date -->
+                                        <ng-container *ngSwitchCase="'resignationDate'">
+                                            {{ item.resignationDate ? (item.resignationDate | date:'dd-MM-yyyy') : '' }}
+                                        </ng-container>
+
+                                        <!-- Expected LWD -->
+                                        <ng-container *ngSwitchCase="'expectedLWD'">
+                                            {{ item.expectedLWD ? (item.expectedLWD | date:'dd-MM-yyyy') : '' }}
+                                        </ng-container>
+
+                                        <!-- Notice Period Served -->
+                                        <ng-container *ngSwitchCase="'isNoticePeriodServed'">
+                                            {{ item.isNoticePeriodServed ? 'Yes' : 'No' }}
+                                        </ng-container>
+
+                                        <!-- Status Badge -->
+                                        <ng-container *ngSwitchCase="'status'">
+                                            <span class="badge" [ngClass]="{
+                                                'bg-warning': item.status === 1,
+                                                'bg-info': item.status === 2,
+                                                'bg-secondary': item.status === 3,
+                                                'bg-success': item.status === 4,
+                                                'bg-danger': item.status === 5
+                                            }">
+                                                {{
+                                                item.status === 1 ? 'Pending' :
+                                                item.status === 2 ? 'Retain' :
+                                                item.status === 3 ? 'Withdraw' :
+                                                item.status === 4 ? 'Accepted' :
+                                                item.status === 5 ? 'Rejected' : ''
+                                                }}
+                                            </span>
+                                        </ng-container>
+
+                                        <!-- Exit Interview Status Badge -->
+                                        <ng-container *ngSwitchCase="'exitInterviewStatus'">
+                                            <span class="badge"
+                                                [ngClass]="(item.exitInterviewStatus === 'Completed' || item.exitInterviewStatus === 'Submitted') ? 'bg-success' : 'bg-warning'">
+                                                {{ item.exitInterviewStatus || 'Pending' }}
+                                            </span>
+                                        </ng-container>
+
+                                        <!-- Due Clearance Status Badge -->
+                                        <ng-container *ngSwitchCase="'dueClearanceStatus'">
+                                            <span class="badge"
+                                                [ngClass]="item.dueClearanceStatus === 'Completed' ? 'bg-success' : (item.dueClearanceStatus === 'In Progress' ? 'bg-info' : 'bg-warning')">
+                                                {{ item.dueClearanceStatus || 'Pending' }}
+                                            </span>
+                                        </ng-container>
+
+                                        <!-- No Due Declaration Status Badge -->
+                                        <ng-container *ngSwitchCase="'noDueDeclarationStatus'">
+                                            <span class="badge"
+                                                [ngClass]="(item.noDueDeclarationStatus === 'Approved' || item.noDueDeclarationStatus === 'Reviewed') ? 'bg-success' : (item.noDueDeclarationStatus === 'Submitted' ? 'bg-info' : 'bg-warning')">
+                                                {{ item.noDueDeclarationStatus || 'Pending' }}
+                                            </span>
+                                        </ng-container>
+
+                                        <!-- Action Column -->
+                                        <ng-container *ngSwitchCase="'action'">
+                                            <button
+                                                class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1"
+                                                (click)="handleSingleDownload(item)" title="Download">
+                                                <i class="fa fa-download"></i>
+                                            </button>
+                                        </ng-container>
+
+                                        <!-- Default cell rendering -->
+                                        <ng-container *ngSwitchDefault>
+                                            {{ item[header] }}
+                                        </ng-container>
+
+                                    </ng-container>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+
+                <pagination-controls (pageChange)="onpagechange($event)" totalItems="totalCount"
+                    itemsPerPage="pageSize">
+                </pagination-controls>
+            </div>
+
+            <div *ngIf="submitted && filteredResignations.length === 0" class="p-4 text-center text-muted">
+                {{
+                submittedExportType === 'resignation' ? 'No resignation records found matching the selected filters.' :
+                submittedExportType === 'interview' ? 'No exit interview records found matching the selected filters.' :
+                submittedExportType === 'due' ? 'No due clearance records found matching the selected filters.' :
+                submittedExportType === 'nodue' ? 'No no due declaration records found matching the selected filters.':
+                submittedExportType === 'fnf' ? 'No F&F records found matching the selected filters.' : 'No records
+                found matching the selected filters.'
+                }}
+
+            </div>
+        </div>
+    </div>
+</div>

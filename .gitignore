@@ -23,12 +23,20 @@ bazel-out/
 connect.lock
 coverage/
 
+# Runtime Uploads & Generated Documents
+WebAPI/Uploads/
+WebAPI/wwwroot/uploads/
+WebAPI/wwwroot/OfferLetters/
+
 # Android build
-android/app/build/
-android/.gradle/
-android/build/
-android/captures/
+**/android/app/build/
+**/android/.gradle/
+**/android/build/
+**/android/captures/
 local.properties
+*.apk
+*.aab
+
 
 # OS / Editor
 .DS_Store
@@ -36,3 +44,4 @@ Thumbs.db
 *.swp
 *.bak
 *~
+

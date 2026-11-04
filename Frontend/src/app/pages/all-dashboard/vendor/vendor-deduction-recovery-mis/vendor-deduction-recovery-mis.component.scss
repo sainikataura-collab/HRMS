@@ -1,0 +1,30 @@
+.fs-9 {
+  font-size: 0.72rem !important;
+}
+
+.table th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.table td {
+  white-space: nowrap;
+}
+
+input[type="date"].form-control {
+  min-height: 38px;
+  height: 38px;
+  font-size: 0.875rem;
+}
+
+:host ::ng-deep .ng-select .ng-select-container {
+  min-height: 38px;
+  height: 38px;
+}
+
+.icon-box {
+  font-size: 16px;
+  min-width: 32px;
+  text-align: center;
+}

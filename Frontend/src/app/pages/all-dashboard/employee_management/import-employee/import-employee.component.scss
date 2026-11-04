@@ -1,0 +1,32 @@
+.card-header{
+    background-color: #3080e8;
+  
+    font-weight: bold;
+  }
+  .ngx-pagination .current {
+  padding: .1875rem .625rem;
+  background:  #3080e8 !important;
+  color: #fefefe;
+  cursor: default;
+  }
+  .btn:hover{
+    background-color: #2b2e41 !important;
+    color:white !important;
+  }
+
+  .table td {
+    white-space: nowrap;
+  }
+  
+  .table-responsive {
+    overflow-x: auto;
+  }
+  
+
+  .scroll-active {
+  max-height: 600px; /* or any height */
+  overflow-y: auto;
+  position: relative;
+}
+
+

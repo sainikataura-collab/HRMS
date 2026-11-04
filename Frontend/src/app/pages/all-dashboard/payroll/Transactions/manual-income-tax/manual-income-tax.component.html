@@ -1,0 +1,116 @@
+<div class="row g-2">
+  <!-- 70%: Main Content -->
+  <div [ngClass]="workflowNav.isSidebarOpen ? 'col-sm-12 col-lg-9' : 'col-12'">
+    <div class="card">
+      <div class="card-header bg-primary py-2 px-3 mt-0">
+        <div class="d-flex align-items-center justify-content-between flex-nowrap gap-3 w-100">
+          <div class="d-flex align-items-center flex-shrink-0" style="flex: 1 1 0; min-width: 0;">
+            <h4 class="mb-0 text-white text-nowrap fw-semibold">Manual Income Tax</h4>
+          </div>
+          <div class="d-flex justify-content-center mx-auto" style="width: 100%; max-width: 450px;">
+            <app-common-search class="w-100" (filtersChanged)="handleFilters($event)"></app-common-search>
+          </div>
+          <div class="d-flex align-items-center justify-content-end flex-shrink-0" style="flex: 1 1 0; min-width: 0;">
+          </div>
+        </div>
+      </div>
+
+      <!-- Filter Form -->
+      <div class="card-body">
+        <form [formGroup]="ManualTaxForm" class="row g-3">
+          <div class="row row-cols-1 row-cols-md-3 g-3">
+            <div class="col">
+              <label>Month</label>
+              <div class="form-group">
+                <ng-select [items]="Month" bindLabel="name" bindValue="value" formControlName="fk_monthId"
+                  placeholder="--Select--" class="w-100"></ng-select>
+                <span *ngIf="showError && ManualTaxForm.controls['fk_monthId'].invalid" class="text-danger mt-1"
+                  style="font-size: 12px;">
+                  Please enter Month.
+                </span>
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Year</label>
+              <div class="form-group">
+                <ng-select [items]="Year" bindLabel="name" bindValue="value" formControlName="fk_yearId"
+                  placeholder="--Select--" class="w-100"></ng-select>
+                <span *ngIf="showError && ManualTaxForm.controls['fk_yearId'].invalid" class="text-danger mt-1"
+                  style="font-size: 12px;">
+                  Please enter Year.
+                </span>
+              </div>
+            </div>
+
+            <div class="col d-flex align-items-center justify-content-end pt-4 pb-3">
+              <button type="submit" class="btn btn-primary mx-1" (click)="OnVeiw()">View</button>
+              <button type="button" class="btn btn-outline-dark mx-1" (click)="resetForm()">Reset</button>
+            </div>
+
+          </div>
+        </form>
+      </div>
+
+      <!-- Employee List -->
+      <div *ngIf="showEmployeeList">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mt-4 mb-2">
+            <p class="text-primary m-0"><b>List of Employee(s)</b> </p>
+            <input
+              type="text"
+              class="form-control w-auto"
+              placeholder="Search..." [(ngModel)]="searchText" />
+          </div>
+          <form [formGroup]="ManualTaxForm" class="table-responsive table-invoice" style="height: 500px; overflow-y:auto">
+            <table class="table table-bordered" [ngClass]="{'scroll-active':employees.controls.length > 10}" >
+              <thead class="sticky-top table-secondary "  style="background-color: rgb(250,251,251); top:-2px;">
+                <tr class="sticky-top">
+                  <th>S.No</th>
+                  <th>Employee&nbsp;Code</th>
+                  <th>Employee&nbsp;Name</th>
+                  <th>Location</th>
+                  <th>Department</th>
+                  <th class="m-2">IT </th>
+                  <th>Surcharge</th>
+                  <th>E.Cess&nbsp;Charge</th>
+                </tr>
+              </thead>
+              <tbody formArrayName="employees" class="overflow-auto">
+                <tr *ngFor="let empCtrl of filteredData() ; let i = index" [formGroupName]="i">
+                  <td>{{ i + 1 }}</td>
+                  <td>{{ empCtrl.get('empcode')?.value }}</td>
+                  <td>{{ empCtrl.get('empname')?.value }}</td>
+                  <td>{{ empCtrl.get('location')?.value }}</td>
+                  <td>{{ empCtrl.get('department')?.value }}</td>
+                  <td>
+                    <input type="number" formControlName="it" class="form-control" min="0" step="0.01" />
+                  </td>
+                  <td>
+                    <input type="number" formControlName="csurCharge" class="form-control" min="0" step="0.01" />
+                  </td>
+                  <td>
+                    <input type="number" formControlName="eCessCharge" class="form-control" min="0" step="0.01" />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </form>
+          <div class="col model-footer d-flex align-items-center justify-content-end mt-2 ">
+            <button type="submit" class="btn btn-primary btn-sm mx-1 px-2" (click)="onSubmit()">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 30%: Shared Workflow Navigation Sidebar -->
+  <div class="col-sm-12 col-lg-3" *ngIf="workflowNav.isSidebarOpen">
+    <app-workflow-sidebar currentStep="manual-income-tax" [getContextFn]="getPayrollContext"></app-workflow-sidebar>
+  </div>
+</div>
+
+<!-- Floating Open Button (Bottom-right, when closed) -->
+<button class="btn btn-primary btn-float-fact" type="button" *ngIf="!workflowNav.isSidebarOpen" (click)="workflowNav.toggleSidebar(true)" title="Open Process Actions">
+  <i class="fa fa-sitemap"></i>
+</button>

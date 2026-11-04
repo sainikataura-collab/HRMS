@@ -1,0 +1,29 @@
+.accordion-header .accordion-button:focus{
+border:0px solid blue !important;
+border: none !important;
+}
+
+// Pagination Customization - always align to left
+::ng-deep .ngx-pagination {
+  text-align: left !important;
+  padding-left: 0 !important;
+  margin-bottom: 0;
+
+  li {
+    border-radius: 4px;
+  }
+
+  .current {
+    background: #3080e8 !important;
+    border-radius: 4px;
+    padding: 3px 10px !important;
+    color: #ffffff !important;
+  }
+
+  a:hover {
+    background: #eef5ff !important;
+    color: #3080e8 !important;
+    text-decoration: none;
+    border-radius: 4px;
+  }
+}

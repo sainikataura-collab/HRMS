@@ -1,0 +1,348 @@
+<section>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-12 col-md-12 col-lg-12 col-xxl-12 main-dash-mobileview-gap">
+        <div class="row row-cols-2 row-cols-md-6 g-3 g-lg-4">
+          <a href="#" *ngIf="assignedModules.includes('setting_management')" [routerLink]="['/dash/user/userdashboard']"
+            [queryParams]="{ type: 'user' }">
+            <div class="col pt-lg-3">
+              <div class="card">
+                <div class="card-body">
+                  <p class="text-center pt-3">
+                    <img src="assets/Image/user-hrms.png" class="card-img-top w-75 object-fit-contain"
+                      alt="setting management system" />
+                  </p>
+                  <p class="text-center">
+                    <span class="small pt-2">Setting</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </a>
+
+          <!-- emp managememnt -->
+
+              <a href="#" *ngIf="assignedModules.includes('employee_management')"
+            [routerLink]="['/dash/adminEmployeeManagement/adminEmployeeManagementdashboard']"
+            [queryParams]="{ type: 'adminEmployeeManagement' }">
+            <div class="col pt-lg-3">
+              <div class="card">
+                <div class="card-body">
+                  <p class="text-center pt-2">
+                    <img src="assets/Image/recruitment.png" class="card-img-top w-50 object-fit-contain"
+                      alt="Employee Management">
+                  </p>
+                  <p class="text-center"><span class="small pt-2">Employee Management</span></p>
+                </div>
+              </div>
+            </div>
+          </a>
+
+          <!-- attendance -->
+
+          
+          <a href="#" *ngIf="assignedModules.includes('attendance')"
+            [routerLink]="['/dash/adminAttendance/adminAttendancedashboard']"
+            [queryParams]="{ type: 'adminAttendance' }">
+            <div class="col pt-lg-3">
+              <div class="card">
+                <div class="card-body">
+                  <p class="text-center pt-2">
+                    <img src="assets/Image/employee/attendance21.png" class="card-img-top w-50 object-fit-contain"
+                      alt="Attendance">
+                  </p>
+                  <p class="text-center"><span class="small pt-2">Attendance</span></p>
+                </div>
+              </div>
+            </div>
+          </a>
+
+          <a href="#" *ngIf="assignedModules.includes('leave')" [routerLink]="['/dash/adminLeave/adminLeavedashboard']"
+            [queryParams]="{ type: 'adminLeave' }">
+            <div class="col pt-lg-3">
+              <div class="card">
+                <div class="card-body">
+                  <p class="text-center pt-2">
+                    <img src="assets/Image/employee/leaves2.png" style="width: 60%"
+                      class="card-img-top object-fit-contain" alt="Leave">
+                  </p>
+                  <p class="text-center"><span class="small pt-2">Leave</span></p>
+                </div>
+              </div>
+            </div>
+          </a>
+
+
+
+
+          <!-- payroll -->
+
+          <a href="#" *ngIf="assignedModules.includes('payroll')" [routerLink]="['/dash/payroll/payrolldashboard']"
+            [queryParams]="{ type: 'payroll' }">
+            <div class="col pt-lg-3">
+              <div class="card">
+                <div class="card-body">
+                  <p class="text-center pt-3">
+                    <img src="assets/Image/hrms_payroll.png" class="card-img-top w-75 object-fit-contain"
+                      alt="payroll management system" />
+                  </p>
+                  <p class="text-center">
+                    <span class="small pt-2">Payroll</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </a>
+
+          <!-- hr -->
+
+          <a href="#" *ngIf="assignedModules.includes('hr')" [routerLink]="['/dash/hr/hrdashboard']"
+            [queryParams]="{ type: 'hr' }">
+            <div class="col pt-lg-3">
+              <div class="card">
+                <div class="card-body">
+                  <p class="text-center pt-3">
+                    <img src="assets/Image/hrms-register.png" class="card-img-top w-75 object-fit-contain"
+                      alt="hr management system" />
+                  </p>
+                  <p class="text-center"><span class="small pt-2">HR</span></p>
+                </div>
+              </div>
+            </div>
+          </a>
+
+          <a href="#" *ngIf="assignedModules.includes('recruitment')"
+            [routerLink]="['/dash/recruitment/recruitmentdashboard']" [queryParams]="{ type: 'recruitment' }">
+            <div class="col pt-lg-3">
+              <div class="card">
+                <div class="card-body">
+                  <p class="text-center pt-3">
+                    <img src="assets/Image/user-hrms.png" class="card-img-top w-75 object-fit-contain"
+                      alt="recruitment management system" />
+                  </p>
+                  <p class="text-center">
+                    <span class="small pt-2">Recruitment</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </a>
+
+          <!-- onboarding -->
+
+             <a href="#" *ngIf="assignedModules.includes('on_boarding')"
+            [routerLink]="['/dash/on_boarding/on_boardingdashboard']" [queryParams]="{ type: 'on_boarding' }">
+            <div class="col pt-lg-3">
+              <div class="card">
+                <div class="card-body">
+                  <p class="text-center pt-3">
+                    <img src="assets/Image/hrms_payroll.png" class="card-img-top w-75 object-fit-contain"
+                      alt="On-Boarding management system" />
+                  </p>
+                  <p class="text-center">
+                    <span class="small pt-2">On-Boarding</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </a>
+
+          <a href="#" *ngIf="assignedModules.includes('appraisal')"
+            [routerLink]="['/dash/appraisal/appraisaldashboard']" [queryParams]="{ type: 'appraisal' }">
+            <div class="col pt-lg-3">
+              <div class="card">
+                <div class="card-body">
+                  <p class="text-center pt-3">
+                    <img src="assets/Image/Appraisal.png" class="card-img-top w-75 object-fit-contain"
+                      alt="Performance management system" />
+                  </p>
+                  <p class="text-center">
+                    <span class="small pt-2">Performance</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </a>
+
+
+          
+          <a href="#" *ngIf="assignedModules.includes('travel_expense')"
+            [routerLink]="['/dash/travel_expense/travel_expensedashboard']" [queryParams]="{ type: 'travel_expense' }">
+            <div class="col pt-lg-3">
+              <div class="card">
+                <div class="card-body">
+                  <p class="text-center pt-3">
+                    <img src="assets/Image/hrms_payroll.png" class="card-img-top w-75 object-fit-contain"
+                      alt="travel_expense management system" />
+                  </p>
+                  <p class="text-center"><span class="small pt-2">Travel</span></p>
+
+                </div>
+              </div>
+            </div>
+          </a>
+
+          <a href="#" *ngIf="assignedModules.includes('training')" [routerLink]="['/dash/training/trainingdashboard']"
+            [queryParams]="{ type: 'training' }">
+            <div class="col pt-lg-3">
+              <div class="card">
+                <div class="card-body">
+                  <p class="text-center pt-3">
+                    <img src="assets/Image/training-hrms2.png" class="card-img-top w-75 object-fit-contain"
+                      alt="training management system" />
+                  </p>
+                  <p class="text-center">
+                    <span class="small pt-2">Training</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </a>
+
+
+          <a href="#" *ngIf="assignedModules.includes('exit')" [routerLink]="['/dash/exit/exitdashboard']"
+            [queryParams]="{ type: 'exit' }">
+            <div class="col pt-lg-3">
+              <div class="card">
+                <div class="card-body">
+                  <p class="text-center pt-3">
+                    <img src="assets/Image/Exit.png" class="card-img-top w-75 object-fit-contain"
+                      alt="exit management system" />
+                  </p>
+                  <p class="text-center">
+                    <span class="small pt-2">Exit</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </a>
+
+               <a href="#" *ngIf="assignedModules.includes('task_box')"
+            [routerLink]="['/dash/adminTaskbox/adminTaskboxdashboard']" [queryParams]="{ type: 'adminTaskbox' }">
+            <div class="col pt-lg-3">
+              <div class="card">
+                <div class="card-body">
+                  <p class="text-center pt-2">
+                    <img src="assets/Image/employee/settings.png" class="card-img-top w-50 object-fit-contain"
+                      alt="Admin Taskbox system">
+                  </p>
+                  <p class="text-center"><span class="small pt-2">Taskbox</span></p>
+                </div>
+              </div>
+            </div>
+          </a>
+
+       
+
+          <a href="#" *ngIf="assignedModules.includes('report')" [routerLink]="['/dash/report/reportdashboard']"
+            [queryParams]="{ type: 'report' }">
+            <div class="col pt-lg-3">
+              <div class="card">
+                <div class="card-body">
+                  <p class="text-center pt-3">
+                    <img src="assets/Image/hrms_payroll.png" class="card-img-top w-75 object-fit-contain"
+                      alt="Reports management system" />
+                  </p>
+                  <p class="text-center">
+                    <span class="small pt-2">Reports</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </a>
+
+          <a href="#" *ngIf="assignedModules.includes('visitor')" [routerLink]="['/dash/visitor/visitordashboard']"
+            [queryParams]="{ type: 'visitor' }">
+            <div class="col pt-lg-3">
+              <div class="card">
+                <div class="card-body">
+                  <p class="text-center pt-3">
+                    <img src="assets/Image/visitor.png" class="card-img-top w-50 object-fit-contain"
+                      alt="Visitor system" />
+                  </p>
+                  <p class="text-center">
+                    <span class="small pt-2">Visitor</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </a>
+
+
+     
+      
+
+          <a href="#" *ngIf="assignedModules.includes('org_view')" [routerLink]="['/dash/orgView/orgViewdashboard']"
+            [queryParams]="{ type: 'orgView' }">
+            <div class="col pt-lg-3">
+              <div class="card">
+                <div class="card-body">
+                  <p class="text-center pt-2">
+                    <img src="assets/Image/org-view2.png" class="card-img-top object-fit-contain w-50" alt="Org View">
+                  </p>
+                  <p class="text-center"><span class="small pt-2">Org View</span></p>
+                </div>
+              </div>
+            </div>
+          </a>
+
+
+          
+   <a href="#"  *ngIf="assignedModules.includes('client_billing')"   [routerLink]="['/dash/client_billing/client_billing_dashboard']"
+            [queryParams]="{ type: 'clientbilling' }">
+            <div class="col pt-lg-3">
+              <div class="card">
+                <div class="card-body">
+                  <p class="text-center pt-2">
+                    <img src="assets/Image/client-billing.png" class="card-img-top object-fit-contain w-50" alt="Client View">
+                  </p>
+                  <p class="text-center"><span class="small pt-2">Client Billing</span></p>
+                </div>
+              </div>
+            </div>
+          </a>
+
+
+             <a href="#" *ngIf="assignedModules.includes('vendor')" [routerLink]="['/dash/vendor_management/vendor_managementdashboard']"
+            [queryParams]="{ type: 'vendor' }">
+            <div class="col pt-lg-3">
+              <div class="card">
+                <div class="card-body">
+                  <p class="text-center pt-2">
+                    <img src="assets/Image/org-view2.png" class="card-img-top object-fit-contain w-50" alt="vendor">
+                  </p>
+                  <p class="text-center"><span class="small pt-2">Vendor</span></p>
+                </div>
+              </div>
+            </div>
+          </a>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div *ngIf="showAlert" class="alert border-warning border mt-5 rounded shadow-sm p-3 not-access"
+  style="max-width: 500px; margin: 0 auto" role="alert">
+  <div class="">
+    <!-- Image Section -->
+    <div class="mb-3 mb-md-0 me-md-4 text-center">
+      <img src="assets/Image/no_access.png" alt="No Access" class="img-fluid rounded" />
+    </div>
+
+    <!-- Text Section -->
+    <div class="flex-fill text-center">
+      <h5 class="fw-bold text-danger mb-2">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        Access Denied!
+      </h5>
+
+      <p class="mb-0 small text-dark">
+        You can access this page. Please contact administrator 🙏👨‍💻
+      </p>
+    </div>
+  </div>
+</div>
+
+

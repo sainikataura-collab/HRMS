@@ -1,0 +1,81 @@
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <!--  -->
+      <div class="card-header bg-primary">
+          <div class="row w-100">
+            <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-between">
+              <h4>List of Document Upload</h4>
+              
+            </div>
+            <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-center">
+              <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText"/>
+            </div>
+
+            <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-md-end">
+              <button class="btn btnheader" routerLink="/dash/hr/hrdashboard/Circular-Forms-Uploads">
+                Add
+            </button>
+                <button class="btn btn-light mx-1" >
+                  Download
+                </button>
+            </div>
+          
+          </div>
+        </div>  
+        
+        <!--  -->
+        <div class="card-body">
+          <div class="table-responsive table-invoice">
+            <table Id="exportTable"  class="table">
+              <thead>
+                <tr>
+                    						
+                    <th>S. No.</th>
+                    <th>Circular No.</th>
+                    <th>Name</th>
+                    <th>FileType</th>
+                    <th>Dated</th>
+                    <th>Active</th>
+                    <th>File Name</th>
+                    <th>Action</th>
+
+                    </tr>
+              </thead>
+             
+              <tbody>
+                <tr *ngFor="let item of filteredData()| paginate: { itemsPerPage: pageSize, currentPage: pageIndex ,totalItems:totalItems};let i = index">
+  
+                    <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+                    <td>{{ item.circularno }}</td>
+                    <td>{{ item.circularname }}</td>
+                    <td>{{ item.filetype }}</td>
+                    <td>{{ item.dated }}</td>
+                    <td>{{ item.active ? 'Yes' : 'No' }}</td>
+                    <!-- <td>{{ item.filename }}</td> -->
+                     <td (click)="download(item.filename)" style="cursor: pointer; text-align: center;">
+                        <i *ngIf="item.filename" class="fa fa-eye" aria-hidden="true" title="View/Download Image"></i>
+                      </td>
+
+                    <td>
+                        <button class="btn "><i class="fa fa-pen-to-square" (click)="isUpdate(item.pk_uploadId)" ></i></button>
+                        <button class="btn btn-sm btn-outline"  (click)="delete(item.pk_uploadId)" ><i class="fa-solid fa-trash"></i></button>
+
+                    </td>
+                </tr>
+            </tbody>
+            
+            </table>
+  
+            <!-- Pagination controls -->
+            <pagination-controls
+              (pageChange)="onPageChange($event)"
+              totalItems="totalItems"
+              itemsPerPage="pageSize">
+            </pagination-controls>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+

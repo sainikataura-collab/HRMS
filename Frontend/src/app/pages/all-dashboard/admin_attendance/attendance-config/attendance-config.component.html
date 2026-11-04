@@ -1,0 +1,206 @@
+
+
+
+
+
+
+
+
+
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card">
+
+      <!-- Header -->
+      <div class="card-header bg-primary py-lg-2 mt-0">
+        <div class="row w-100 align-items-center">
+          <div class="col-12 col-md-6">
+            <h4 class="text-white text-center text-md-start">Attendance Configuration</h4>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Body -->
+      <div class="card-body mt-2">
+        <form [formGroup]="AttendanceconfigurationForm" class="row g-3">
+
+          <!-- Row 1 -->
+          <div class="row row-cols-1 row-cols-md-3 g-3">
+
+            <div class="col">
+              <label for="AttendanceProcessType">Attendance Process Type</label>
+              <ng-select id="AttendanceProcessType" formControlName="AttendanceProcessType"
+                [items]="AttendanceProcessTypes" bindLabel="name" bindValue="value" class="w-100"
+                placeholder="--Select Process Type--">
+              </ng-select>
+            </div>
+
+          </div>
+
+          <div class="card-header bg-blue mt-4">
+            <div class="row w-100">
+              <div class="col-md-6">
+                <h4>Monthly Setup</h4>
+              </div>
+            </div>
+          </div>
+
+          <div class="row row-cols-1 row-cols-md-3 g-3">
+
+            <div class="col">
+              <label>Month</label>
+              <div class="form-group">
+                <ng-select [items]="Month" bindLabel="name" bindValue="value" formControlName="fk_monthId"
+                  placeholder="--Select--" class="w-100"></ng-select>
+                <span *ngIf="showError && AttendanceconfigurationForm.controls['fk_monthId'].invalid"
+                  class="text-danger mt-1" style="font-size: 12px;">
+                  Please enter Month.
+                </span>
+              </div>
+            </div>
+            <div class="col">
+              <label>Year</label>
+              <div class="form-group">
+                <ng-select [items]="Year" bindLabel="name" bindValue="value" formControlName="fk_yearId"
+                  placeholder="--Select--" class="w-100"></ng-select>
+                <span *ngIf="showError && AttendanceconfigurationForm.controls['fk_yearId'].invalid"
+                  class="text-danger mt-1" style="font-size: 12px;">
+                  Please enter Year.
+                </span>
+              </div>
+            </div>
+
+            
+            <div class="col">
+              <label>Locked For Apply</label>
+              <div class="form-group">
+                <input type="checkbox" class="form-check-input fs-6" formControlName="isLockedForApply">
+              </div>
+            </div>
+            <div class="col">
+              <label>Locked For Approval</label>
+              <div class="form-group">
+                <input type="checkbox" class="form-check-input fs-6" formControlName="isLockedForApproval">
+              </div>
+            </div>
+
+            <!-- Late Allow -->
+            <div class="col">
+              <label>Late Allow</label>
+              <div class="form-group">
+                <input type="number" class="form-control" (input)="fixNegative('lateAllow')"
+                  formControlName="lateAllow">
+                <span *ngIf="showError && f['lateAllow'].errors?.['min']" class="text-danger" style="font-size:12px">
+                  Value cannot be negative
+                </span>
+              </div>
+            </div>
+
+            <!-- Late Time -->
+            <div class="col">
+              <label>Late Time</label>
+              <div class="form-group">
+                <input type="time" class="form-control" formControlName="lateTime">
+              </div>
+            </div>
+
+            <!-- Late Penalty -->
+            <div class="col">
+              <label>Late Penalty</label>
+              <div class="form-group">
+                <input type="checkbox" class="form-check-input fs-6" formControlName="isLatePenalty">
+              </div>
+            </div>
+
+            <!-- Penalty On - Always visible, but disabled when Late Penalty is unchecked -->
+            <div class="col">
+              <label>Penalty On</label>
+              <div class="form-group">
+                <ng-select placeholder="--Select Penalty On--" [items]="penaltyOnList" bindLabel="name"
+                  bindValue="value" formControlName="penaltyOn" class="w-100">
+                </ng-select>
+                <span *ngIf="showError && f['penaltyOn'].invalid && f['penaltyOn'].errors?.['required']" 
+                  class="text-danger mt-1" style="font-size: 12px;">
+                  Please select Penalty On.
+                </span>
+              </div>
+            </div>
+
+            <!-- Leave Type - Always visible, but disabled when Penalty On is not 1 -->
+            <div class="col">
+              <label>Leave Type</label>
+              <div class="form-group">
+                <ng-select placeholder="--Select Leave Type--" [items]="LeaveTypeNatureWiseList" bindLabel="name"
+                  bindValue="value" formControlName="penaltyLeaveType" class="w-100">
+                </ng-select>
+                <span *ngIf="showError && f['penaltyLeaveType'].invalid && f['penaltyLeaveType'].errors?.['required']" 
+                  class="text-danger mt-1" style="font-size: 12px;">
+                  Please select Leave Type.
+                </span>
+              </div>
+            </div>
+
+            <!-- Late Count -->
+            <div class="col">
+              <label>Late Count</label>
+              <div class="form-group">
+                <input type="number" class="form-control" formControlName="lateCount"
+                  (input)="fixNegative('lateCount')">
+              </div>
+              <span *ngIf="showError && f['lateCount'].errors?.['min']" class="text-danger" style="font-size:12px">
+                Value cannot be negative
+              </span>
+            </div>
+
+            <!-- Deduction -->
+            <div class="col">
+              <label>Deduction</label>
+              <div class="form-group">
+                <input type="number" class="form-control" formControlName="deduction"
+                  (input)="fixNegative('deduction')">
+              </div>
+              <span *ngIf="showError && f['deduction'].errors?.['min']" class="text-danger" style="font-size:12px">
+                Value cannot be negative
+              </span>
+            </div>
+
+            <!-- Sandwich Applicable -->
+            <div class="col">
+              <label>Sandwich Applicable</label>
+              <div class="form-group">
+                <input type="checkbox" class="form-check-input fs-6" formControlName="isSandwichApplicable">
+              </div>
+            </div>
+
+            <!-- Sandwich On - Always visible, but disabled when Sandwich Applicable is unchecked -->
+            <div class="col">
+              <label>Sandwich On</label>
+              <div class="form-group">
+                <ng-select placeholder="--Select Sandwich On--" [items]="sandwichOnList" bindLabel="name"
+                  bindValue="value" formControlName="sandwichOn" class="w-100">
+                </ng-select>
+                <span *ngIf="showError && f['sandwichOn'].invalid && f['sandwichOn'].errors?.['required']" 
+                  class="text-danger mt-1" style="font-size: 12px;">
+                  Please select Sandwich On.
+                </span>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Footer Buttons -->
+          <div class="row mt-3">
+            <div class="col d-flex justify-content-end">
+              <button type="submit" class="btn btn-primary mx-1" (click)="onSubmit()">
+                {{ isEditMode ? 'Update' : 'Submit' }}
+              </button>
+
+              <button type="button" class="btn btn-outline-dark mx-1" (click)="resetForm()">Reset</button>
+            </div>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,73 @@
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <!-- Heading -->
+      <div class="card-header bg-primary">
+        <div class="row w-100">
+          <!-- Title Section -->
+          <div class="col-sm-12 col-md-6 col-lg-4 d-flex align-items-center justify-content-start">
+            <h4 class="text-white">List of Appreciations</h4>
+          </div>
+          <!-- Search Section -->
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-center">
+            <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText" (ngModelChange)="searchText = $event" />
+          </div>
+          <!-- Buttons Section -->
+          <div class="col-sm-12 col-md-6 col-lg-4 d-flex align-items-center justify-content-end ms-auto gap-2">
+            <button class="btn btn-light" routerLink="/dash/hr/hrdashboard/Appreciation_Mst">
+              Add
+            </button>
+            <button class="btn btn-light" (click)="exportToExcel()">
+              Download
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table Section -->
+      <div class="mt-4">
+        <table id="exportTable" class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Sr.</th>
+              <th>Type</th>
+              <th>Employee Name</th>
+              <th>Appreciator Name</th>
+              <th>Appreciation Date</th>
+              <th>Incident Details</th>
+              <th>Open File</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let data of filteredData() | paginate : { itemsPerPage: pageSize, currentPage: pageIndex, totalItems: totalItems }; let i = index">
+              <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+              <td>{{ data.type }}</td>
+              <td>{{ data.empName }}</td>
+              <td>{{ data.apprId }}</td>
+              <td>{{ data.date }}</td>
+              <td>{{ data.incidentDetails }}</td>
+              <td (click)="download(data.filename)" style="cursor: pointer; text-align: center;">
+                <i class="fa fa-eye" aria-hidden="true" title="View/Download Image"></i>
+              </td>
+              
+              
+              <td>
+                <button class="btn" (click)="edit(data.pk_appreciationId)">
+                  <i class="fa-solid fa-pen-to-square"></i>
+                </button>
+                <button class="btn" (click)="delete(data.pk_appreciationId)">
+                  <i class="fa fa-trash"></i>
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="filteredData().length === 0">
+              <td colspan="7" class="text-center">No data available</td>
+            </tr>
+          </tbody>
+        </table>
+        <pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>
+      </div>
+    </div>
+  </div>
+</div>

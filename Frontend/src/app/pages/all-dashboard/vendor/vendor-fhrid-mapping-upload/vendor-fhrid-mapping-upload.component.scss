@@ -1,0 +1,63 @@
+.btn-float-fact {
+  position: fixed !important;
+  bottom: 25px !important;
+  right: 25px !important;
+  width: 46px !important;
+  height: 46px !important;
+  border-radius: 50% !important;
+  z-index: 1050 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: 0 4px 12px rgba(13, 110, 253, 0.4) !important;
+  padding: 0 !important;
+  font-size: 18px !important;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+
+  &:hover {
+    transform: scale(1.08);
+    box-shadow: 0 6px 16px rgba(13, 110, 253, 0.5) !important;
+  }
+}
+
+.file-history-list {
+  max-height: calc(100vh - 280px);
+  overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #a9c2e1;
+    border-radius: 4px;
+  }
+}
+
+.fact-metric-badge {
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+}
+
+.fact-metric-total {
+  background-color: #e7f1ff;
+  color: #0d6efd;
+  border: 1px solid #b6d4fe;
+}
+
+.fact-metric-success {
+  background-color: #e8f5e9;
+  color: #198754;
+  border: 1px solid #a3cfbb;
+}
+
+.fact-metric-failed {
+  background-color: #fde8e8;
+  color: #dc3545;
+  border: 1px solid #f1aeb5;
+}

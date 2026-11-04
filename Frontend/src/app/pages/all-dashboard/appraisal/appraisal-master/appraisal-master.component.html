@@ -1,0 +1,80 @@
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card">
+
+      <!-- Header -->
+      <div class="card-header bg-primary">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-between">
+            <h4>{{ Isedit ? 'Update Appraisal Master' : 'Appraisal Master' }}</h4>
+          </div>
+          <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+            <button class="btn btnheader" routerLink="/dash/appraisal/appraisaldashboard/AppraisalMaster_list">Back</button>
+          </div>
+        </div> 
+      </div>
+
+      <!-- Form Body -->
+      <div class="card-body mt-4">
+        <form class="row row-cols-1 row-cols-md-3 g-4" [formGroup]="AppraisalMaster">
+          <!-- Description -->
+          <div class="col">
+            <label for="description">Description <span style="color: red;">*</span></label>
+            <input type="text" id="description" class="form-control" formControlName="description" (blur)="checkDuplicate(AppraisalMaster.get('description')?.value)">
+            <span *ngIf="showError && AppraisalMaster.controls['description'].invalid && !AppraisalMaster.get('description')?.errors?.['duplicate']"
+              class="text-danger mt-1" style="font-size: 12px;">
+              Please enter description.
+            </span>
+            <div *ngIf="AppraisalMaster.get('description')?.errors?.['duplicate']"
+              class="text-danger lh-base" style="font-size:10px;">
+              {{ AppraisalMaster.get('description')?.errors?.['duplicate'] }}
+            </div>
+          </div>
+
+          <!-- Financial Year -->
+            <div class="col">
+            <label>FinancialYear<span style="color: red;">*</span></label>
+            <div class="form-group">
+              <ng-select [items]="FinancialYearList" bindLabel="name" bindValue="value" formControlName="fk_finid"
+                placeholder="--Select FinancialYear--" class="w-100 small"></ng-select>
+              <span *ngIf="showError && AppraisalMaster.controls['fk_finid'].invalid" class="text-danger mt-1"
+                style="font-size: 12px;">
+                Please enter employee.
+              </span>
+            </div>
+          </div>
+
+          <!-- Review Up To -->
+          <div class="col">
+            <label for="dated">Review Up To <span style="color: red;">*</span></label>
+            <input type="date" id="dated" class="form-control" formControlName="dated">
+            <span *ngIf="showError && AppraisalMaster.controls['dated'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+              Please select review date.
+            </span>
+          </div>
+
+          <!-- Remarks -->
+          <div class="col">
+            <label for="remarks">Remarks</label>
+            <textarea id="remarks" class="form-control" rows="3" formControlName="remarks" placeholder="Enter remarks..."></textarea>
+          </div>
+           <div class="col">
+                <label>IsActive</label>
+                <div class="form-group">
+                    <input type="checkbox"class="form-check-input fs-6" formControlName="active">
+                </div>
+            </div>
+        </form>
+
+        <!-- Buttons -->
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary mx-1" (click)="onSubmit()">
+            {{ Isedit ? 'Update' : 'Save' }}
+          </button>
+          <button type="reset" class="btn btn-outline-dark mx-1" (click)="AppraisalMaster.reset()">Reset</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

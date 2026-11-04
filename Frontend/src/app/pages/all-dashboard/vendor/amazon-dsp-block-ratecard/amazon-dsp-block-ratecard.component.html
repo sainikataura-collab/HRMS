@@ -1,0 +1,170 @@
+<div class="row">
+  <!-- Left Side: Main Upload Form & Imported Grid -->
+  <div [ngClass]="isFactBoxOpen ? 'col-sm-12 col-md-8 col-lg-9' : 'col-12'">
+    <div class="card shadow-sm border">
+
+      <!-- Card Header -->
+      <div class="card-header bg-primary py-2">
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-2 w-100 align-items-center">
+          <div class="col">
+            <h4 class="text-white mb-0">Export/Import Amazon DSP Block Ratecard</h4>
+          </div>
+          <div class="col d-flex align-items-center justify-content-end gap-2">
+            <button type="button" class="btn bg-white text-primary shadow-sm mx-1" (click)="goBack()">
+              <i class="fa fa-arrow-left me-2"></i>Back
+            </button>
+            <button type="button" class="btn bg-white text-primary btn-sm shadow-sm" (click)="exportTemplate()">
+              <i class="fa fa-download me-2"></i>Export Blank Excel
+            </button>
+            <button *ngIf="!isFactBoxOpen" class="btn btn-outline-light btn-sm d-flex align-items-center"
+              (click)="toggleFactBox()" title="Open Fact Box">
+              <i class="bi bi-info-circle me-1"></i> Fact Box
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card Body -->
+      <div class="card-body">
+        <form [formGroup]="blockRateCardImportForm" (ngSubmit)="onSubmit()" class="row g-2 align-items-start mb-4">
+
+          <!-- Select File Input Group with Clear Button -->
+          <div class="col-12 col-sm-12 col-md-6 col-lg-5">
+            <label class="form-label font-weight-bold">Select Block Ratecard Excel File (.xlsx) <span
+                class="text-danger">*</span></label>
+            <div class="input-group">
+              <input type="file" class="form-control" (change)="onFileChange($event)" #fileInput id="fileInput"
+                accept=".xlsx">
+              <button *ngIf="selectedFile" type="button" class="btn btn-outline-danger"
+                (click)="resetFileOnly(); fileInput.value=''">
+                <i class="fa fa-times"></i>
+              </button>
+            </div>
+            <div style="min-height: 20px; font-size: 12px;">
+              <span *ngIf="fileTouched && !selectedFile && !fileFormatError" class="text-danger">
+                File is required.
+              </span>
+              <span *ngIf="fileFormatError" class="text-danger">
+                {{ fileFormatError }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Inline Action Buttons (Import & Reset) -->
+          <div class="col d-flex align-items-center justify-content-end mt-4 pt-2 gap-2">
+            <button type="submit" class="btn btn-primary" [disabled]="isValidatingFile">
+              <i class="fa fa-upload me-1"></i> Import
+            </button>
+            <button type="button" class="btn btn-outline-dark" (click)="resetForm()">
+              <i class="fa fa-refresh me-1"></i> Reset
+            </button>
+          </div>
+
+        </form>
+
+      
+
+        <!-- Filter & Search Bar (Rendered when Excel Data is Loaded/Imported) -->
+        <div class="row mb-2" *ngIf="importedData.length > 0">
+
+          <!-- Search Control -->
+          <div class="col-12 col-md-4 mb-2 mb-md-0">
+            <input type="text" class="form-control" [formControl]="searchControl"
+              placeholder="Search imported records..." />
+          </div>
+
+          <!-- Filter Pills & Export Button -->
+          <div class="col-12 col-md-8">
+            <div class="d-flex flex-wrap gap-2 justify-content-start justify-content-md-end">
+
+              <button class="btn d-flex align-items-center shadow-sm"
+                [ngClass]="currentFilter === 'All' ? 'btn-primary' : 'btn-outline-primary'" (click)="setFilter('All')">
+                <span>All Data</span>
+                <span class="bg-white rounded px-1 ms-2 fw-bold text-primary" style="font-size: 11px;">
+                  {{ importedData.length }}
+                </span>
+              </button>
+
+              <button class="btn d-flex align-items-center shadow-sm"
+                [ngClass]="currentFilter === 'Uploaded' ? 'btn-success' : 'btn-outline-success'"
+                (click)="setFilter('Uploaded')">
+                <span>Uploaded</span>
+                <span class="bg-white rounded px-1 ms-2 fw-bold text-success" style="font-size: 11px;">
+                  {{ uploadedCount }}
+                </span>
+              </button>
+
+              <button class="btn d-flex align-items-center shadow-sm"
+                [ngClass]="currentFilter === 'Not Uploaded' ? 'btn-danger' : 'btn-outline-danger'"
+                (click)="setFilter('Not Uploaded')">
+                <span>Not Uploaded</span>
+                <span class="bg-white rounded px-1 ms-2 fw-bold text-danger" style="font-size: 11px;">
+                  {{ notUploadedCount }}
+                </span>
+              </button>
+
+              <button class="btn btn-primary d-flex align-items-center shadow-sm" (click)="downloadExcel()">
+                <i class="fa fa-download me-2"></i>
+                Export List
+              </button>
+
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Data Table -->
+        <div class="table-responsive mt-4" *ngIf="importedData.length > 0"
+          [ngClass]="{ 'scroll-active': importedData.length > 10 }" style="max-height: 400px; overflow-y: auto;">
+          <table class="table table-bordered table-striped table-hover align-middle">
+            <thead class="sticky-top bg-white">
+              <tr>
+                <th>Status</th>
+                <th>Location</th>
+                <th>Block</th>
+                <th>Vehicle Type</th>
+                <th>Rate</th>
+                <th>Effective Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of filteredData">
+                <td style="white-space: nowrap;" [ngClass]="{
+                      'text-success fw-bold': row.isSuccess === true || row.status === 'Uploaded' || row.status === 'Updated' || row.status === 'Success' || row.status === 'Inserted',
+                      'text-warning fw-bold': row.status === 'Already Exists' || (row.message && row.message.includes('already exists')),
+                      'text-danger fw-bold': row.isSuccess !== true && row.status !== 'Uploaded' && row.status !== 'Updated' && row.status !== 'Success' && row.status !== 'Inserted' && row.status !== 'Already Exists' && (!row.message || !row.message.includes('already exists'))
+                    }">
+                  {{ (row.isSuccess === true || row.status === 'Uploaded' || row.status === 'Updated' || row.status ===
+                  'Success') ? 'Uploaded' : (row.message || row.status || 'Failed') }}
+                </td>
+                <td>{{ row.location || '' }}</td>
+                <td>{{ row.block || '' }}</td>
+                <td>{{ row.vehicleType || '' }}</td>
+                <td>{{ row.rate || '' }}</td>
+                <td>{{ row.effectiveDate || '' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Right Side: Fact Box Sidebar -->
+  <app-fact-box [ngClass]="isFactBoxOpen ? 'col-sm-12 col-md-4 col-lg-3' : ''" [title]="'Fact Box'"
+  [files]="factBoxFiles" 
+  [isLoading]="isLoadingFactBox" 
+  [isOpen]="isFactBoxOpen" 
+  [currentPage]="pageIndex"
+  [itemsPerPage]="pageSize"
+  [totalItems]="totalUploadedFiles"
+  (onPageChange)="onPageChange($event)"
+  (onToggle)="toggleFactBox()" 
+  (onDownload)="downloadFactBoxFile($event)">
+</app-fact-box>
+
+
+
+

@@ -1,0 +1,242 @@
+<section>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-12 col-md-12 col-lg-12">
+
+
+
+
+        <div class="card">
+          <!-- Header -->
+          <div class="card-header bg-primary py-lg-1 mt-0">
+            <div class="row w-100 align-items-center">
+              <div class="col-12">
+                <h4 class="text-white mb-0">{{ isEdit ? 'Edit Experience Details' : 'Experience Details' }}</h4>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card Body -->
+          <div class="card-body px-2 px-lg-4">
+            <form [formGroup]="CandidateExperienceDetailsForm">
+              <div class="g-4 row row-cols-1 row-cols-md-3">
+
+                <!-- Company Name -->
+                <div class="col">
+                  <label for="compname">Company Name<span class="text-danger font-bold">*</span></label>
+                  <input id="compname" type="text" class="form-control" formControlName="compname"
+                    placeholder="Enter company name">
+                  <span *ngIf="showError && CandidateExperienceDetailsForm.controls['compname'].invalid"
+                    class="text-danger mt-1" style="font-size: 12px;">
+                    Please enter Company Name
+                  </span>
+                </div>
+
+                <!-- CTC -->
+                <div class="col">
+                  <label for="ctc">CTC (Annual)<span class="text-danger font-bold">*</span></label>
+                  <input id="ctc" type="number" class="form-control" formControlName="ctc"
+                    placeholder="Enter CTC amount">
+                  <span *ngIf="showError && CandidateExperienceDetailsForm.controls['ctc'].invalid"
+                    class="text-danger mt-1" style="font-size: 12px;">
+                    Please enter CTC
+                  </span>
+                </div>
+
+                <!-- Department -->
+                <div class="col">
+                  <label for="department">Department</label>
+                  <input id="department" type="text" class="form-control" formControlName="department"
+                    placeholder="Enter department name">
+                  <span *ngIf="showError && CandidateExperienceDetailsForm.controls['department'].invalid"
+                    class="text-danger mt-1" style="font-size: 12px;">
+                    Please enter department.
+                  </span>
+                </div>
+
+                <!-- Designation -->
+                <div class="col">
+                  <label for="designation">Designation</label>
+                  <input id="designation" type="text" class="form-control" formControlName="designation"
+                    placeholder="Enter designation/position">
+                  <span *ngIf="showError && CandidateExperienceDetailsForm.controls['designation'].invalid"
+                    class="text-danger mt-1" style="font-size: 12px;">
+                    Please enter designation.
+                  </span>
+                </div>
+
+                <!-- From Date -->
+                <div class="col">
+                  <label for="fromdate">From Date<span class="text-danger font-bold">*</span></label>
+                  <input id="fromdate" type="date" class="form-control" formControlName="fromdate">
+                  <span *ngIf="showError && CandidateExperienceDetailsForm.controls['fromdate'].invalid"
+                    class="text-danger mt-1" style="font-size: 12px;">
+                    Please select From Date
+                  </span>
+                </div>
+
+                <!-- To Date -->
+                <div class="col">
+                  <label for="todate">To Date<span class="text-danger font-bold">*</span></label>
+                  <input id="todate" type="date" class="form-control" formControlName="todate">
+                  <span *ngIf="showError && CandidateExperienceDetailsForm.controls['todate'].invalid"
+                    class="text-danger mt-1" style="font-size: 12px;">
+                    Please select To Date
+                  </span>
+                </div>
+
+                <!-- Profile -->
+                <div class="col">
+                  <label for="profile">Profile/Role</label>
+                  <input id="profile" type="text" class="form-control" formControlName="profile"
+                    placeholder="Enter job profile">
+                  <span *ngIf="showError && CandidateExperienceDetailsForm.controls['profile'].invalid"
+                    class="text-danger mt-1" style="font-size: 12px;">
+                    Please enter profile.
+                  </span>
+                </div>
+
+                <!-- Leaving Reason -->
+                <div class="col">
+                  <label for="leavingreason">Leaving Reason
+                    <!-- <span class="text-danger font-bold">*</span> -->
+                  </label>
+                  <input id="leavingreason" type="text" class="form-control" formControlName="leavingreason"
+                    placeholder="Reason for leaving">
+                  <span *ngIf="showError && CandidateExperienceDetailsForm.controls['leavingreason'].invalid"
+                    class="text-danger mt-1" style="font-size: 12px;">
+                    Please enter leaving reason.
+                  </span>
+                </div>
+
+                <!-- File Upload -->
+                <div class="col">
+                  <label for="file">Upload Document </label>
+                  <input type="file" class="form-control" id="file" (change)="onFileSelect($event)"
+                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+
+                  <div *ngIf="isEdit && existingFileName" class="mt-2">
+                    <label class="text-muted small">Uploaded File:</label><br>
+                    <a [href]="getFileUrl(existingFileName)" target="_blank" class="text-primary">
+                      <i class="fa fa-file"></i> View Document
+                    </a>
+                  </div>
+                </div>
+
+                <!-- Offer Letter Upload -->
+                <div class="col">
+                  <label for="offerletter">Upload Offer Letter</label>
+                  <input type="file" class="form-control" id="offerletter" (change)="onOfferLetterSelect($event)"
+                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+
+                  <div *ngIf="isEdit && existingOfferLetterName" class="mt-2">
+                    <label class="text-muted small">Uploaded Offer Letter:</label><br>
+                    <a [href]="getFileUrl(existingOfferLetterName)" target="_blank" class="text-primary">
+                      <i class="fa fa-file"></i> View Offer Letter
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Form Actions -->
+              <div class="modal-footer mt-3 px-0">
+                <button type="button" class="btn btn-primary mx-1" (click)="submitForm()">
+                  <i class="fa fa-save"></i> {{ isEdit ? 'Update' : 'Save' }}
+                </button>
+                <button type="button" class="btn btn-outline-dark mx-1" (click)="resetForm()">
+                  <i class="fa fa-refresh"></i> Reset
+                </button>
+              </div>
+
+              <!-- Experience List Section -->
+
+
+
+
+              <div class="mb-3 ">
+                <p class="text-primary fs-6 fw-semibold">
+                  <i class="fa fa-list"></i> Experience List
+                </p>
+              </div>
+
+              <!-- Table -->
+              <div class="row">
+                <div class="col-12">
+                  <div class="table-responsive border-top border-2 border-primary">
+                    <table class="table table-bordered table-hover">
+                      <thead class="table-light">
+                        <tr>
+                          <th style="width: 50px;">Sr.No</th>
+                          <th>Company</th>
+                          <th>Department</th>
+                          <th>Designation</th>
+                          <th>From Date</th>
+                          <th>To Date</th>
+                          <th>CTC</th>
+                          <th>Profile</th>
+                          <th style="width: 100px">Document</th>
+                          <th style="width: 100px">Offer Letter</th>
+                          <th style="width: 120px;">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr
+                          *ngFor="let exp of experienceList | paginate: { itemsPerPage: pageSize, currentPage: pageIndex, totalItems: totalItems }; let i = index">
+                          <td class="text-center">{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+                          <td>{{ exp.compname }}</td>
+                          <td>{{ exp.department || '-' }}</td>
+                          <td>{{ exp.designation || '-' }}</td>
+                          <td>{{ exp.fromdate | date:'dd-MM-yyyy' }}</td>
+                          <td>{{ exp.todate | date:'dd-MM-yyyy' }}</td>
+                          <td>₹{{ exp.ctc | number:'1.2-2' }}</td>
+                          <td>{{ exp.profile || '-' }}</td>
+                          <td class="text-center">
+                            <a *ngIf="exp.documentupload" [href]="getFileUrl(exp.documentupload)" target="_blank"
+                              class="btn btn-sm btn-info text-white" title="View Document">
+                              <i class="fa fa-file-pdf"></i>
+                            </a>
+                            <span *ngIf="!exp.documentupload" class="text-muted small">-</span>
+                          </td>
+                          <td class="text-center">
+                            <a *ngIf="exp.offerletter" [href]="getFileUrl(exp.offerletter)" target="_blank"
+                              class="btn btn-sm btn-info text-white" title="View Offer Letter">
+                              <i class="fa fa-file-pdf"></i>
+                            </a>
+                            <span *ngIf="!exp.offerletter" class="text-muted small">-</span>
+                          </td>
+                          <td class="text-center">
+                            <button class="btn btn-sm btn-primary me-1" (click)="isUpdate(exp.pk_cpjobid)" title="Edit">
+                              <i class="fa fa-pen-to-square"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger"
+                              (click)="deleteCandidateExperienceDetails(exp.pk_cpjobid)" title="Delete">
+                              <i class="fa fa-trash"></i>
+                            </button>
+                          </td>
+                        </tr>
+                        <tr *ngIf="experienceList.length === 0">
+                          <td colspan="11" class="text-center text-muted py-4">
+                            <i class="fa fa-info-circle"></i> No experience records found. Please add your work
+                            experience above.
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <!-- Pagination -->
+                  <div class="d-flex justify-content-center mt-3" *ngIf="totalItems > pageSize">
+                    <pagination-controls (pageChange)="onPageChange($event)" previousLabel="Previous" nextLabel="Next">
+                    </pagination-controls>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+
+
+      </div>
+    </div>
+  </div>
+</section>

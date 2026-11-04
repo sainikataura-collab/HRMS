@@ -1,0 +1,112 @@
+<div class="row">
+  <div class="col-12">
+    <div class="card w-100">
+
+      <div class="card-header py-1 bg-primary">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-between">
+            <h4>My Resignations</h4>
+          </div>
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-center">
+            <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText" />
+          </div>
+
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-md-end">
+            <button class="btn btnheader" routerLink="/dash/emp-exit/emp-exitdashboard/resignation_form">
+              Apply Resignation
+            </button>
+            <button class="btn btnheader mx-1" (click)="exportToExcel()">Download</button>
+
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive  ">
+          <table id="exportTable" class="table ">
+            <thead>
+              <tr>
+                <th>Sr.</th>
+                <th>Action</th>
+                <th>Resignation Date</th>
+                <th>Last Working Day</th>
+                <th>Reason</th>
+                <th>Notice Period</th>
+                <th>Notice Period Served</th>
+                <th>Remarks</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of filteredData() 
+              | paginate: { itemsPerPage: pageSize, currentPage: pageIndex, totalItems: totalCount }; let i = index">
+                <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+                <td>
+                  <button type="button" *ngIf="item.status == 1" class="btn btn-sm btn-outline me-2"
+                    (click)="edit(item.pkSepRequestId)">
+                    <i class="fa-regular fa-pen-to-square"></i>
+                  </button>
+
+                  <button type="button" class="btn btn-sm btn-outline "
+                  *ngIf="item.status == 2" [routerLink]="['/dash/emp-exit/emp-exitdashboard/withdrawal',encryptionService.encryptText(item.pkSepRequestId.toString())]">
+                  <i class="fa-solid fa-wallet"></i>
+                </button>
+                  <button type="button" class="btn btn-sm btn-outline me-2" (click)="downloadPdf(item.pkSepRequestId)">
+                    <i class="fa-solid fa-print"></i>
+                  </button>
+                
+                  <!-- <button
+        type="button"
+        class="btn btn-sm btn-outline"
+        (click)="delete(item.pkSepRequestId)">
+        <i class="fa fa-trash"></i>
+      </button> -->
+                </td>
+                <td>{{ item.resignationDate | date:'dd-MM-yyyy' }}</td>
+                <td>{{ item.expectedLWD | date:'dd-MM-yyyy' }}</td>
+                <td>{{ item.reason }}</td>
+                <td>{{ item.noticePeriod }}</td>
+                <td>
+                  <span class="badge" [ngClass]="item.isNoticePeriodServed ? 'bg-success' : 'bg-danger'">
+                    {{ item.isNoticePeriodServed ? 'Yes' : 'No' }}
+                  </span>
+                </td>
+                <td>{{ item.remarks }}</td>
+                <td>
+                  <span class="badge bg-warning" *ngIf="item.status == 1">
+                    Pending
+                  </span>
+
+                  <span class="badge bg-primary" *ngIf="item.status == 2">
+                    Retain
+                  </span>
+
+                  <span class="badge bg-info" *ngIf="item.status == 3">
+                    Withdraw
+                  </span>
+
+                  <span class="badge bg-success" *ngIf="item.status == 4">
+                    Accepted
+                  </span>
+
+                  <span class="badge bg-danger" *ngIf="item.status == 5">
+                    Rejected
+                  </span>
+                </td>
+              </tr>
+              <tr *ngIf="filteredData().length === 0">
+                <td colspan="9" class="text-center py-3">
+                  No resignation data available.
+                </td>
+              </tr>
+            </tbody>
+
+          </table>
+
+
+        </div>
+
+
+      </div>
+    </div>
+  </div>
+</div>

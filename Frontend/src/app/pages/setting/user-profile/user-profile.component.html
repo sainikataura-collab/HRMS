@@ -1,0 +1,737 @@
+<section>
+  <div class="container">
+    <div class="row border-bottom">
+      <div class="col-lg-8">
+        <p class=" fw-semibold">
+          <!-- <span>&nbsp;</span><br> -->
+          <span class="fw-semibold text-success"><i class="fa-solid fa-users"></i> Dashboard</span>
+          <span class="fw-semibold text-success ps-2">|</span>
+        </p>
+      </div>
+      <div class="col-lg-4">
+        <p class="row">
+          <span class="col d-flex align-items-center justify-content-end">
+            <!-- <button class="btn btn-outline-success btn-sm small px-2 mx-1">Export</button>
+            <button class="btn btn-outline-primary btn-sm small px-2 mx-1"> <i class="fa-solid fa-upload"></i>
+              New</button> -->
+            <button class="btn btn-primary btn-sm small px-2 mx-1"> {{ todayDate }} <i
+                class="fa-solid fa-calendar-days"></i></button>
+          </span>
+
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="pt-3 ">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-12 ">
+        <div class="card rounded border-0 shadow-sm  " style="border-top: 3px solid #3080e8;">
+          <div class="card-body">
+
+
+            <!-- profile area -->
+            <div class="row align-items-center ">
+              <!-- Left column: profile photo -->
+              <div class="col-sm-12 col-md-2 col-lg-2 mb-3 mb-md-0">
+                <img src="assets/Image/profile_images.png" class="rounded-circle border animated-border"
+                  alt="Profile Photo" width="130" height="130">
+              </div>
+
+              <!-- Right column: profile details -->
+              <div class="col-sm-12 col-md-10 col-lg-10">
+                <p class="fw-semibold mb-1 small fs-5">{{employeeProfileMst.empName}}</p>
+                <p class="text-muted small mb-2">{{employeeProfileMst.designation}}</p>
+
+                <div class="row">
+                  <div class="col-sm-12 col-lg-6 mb-1">
+                    <i class="fa-solid fa-envelope text-primary me-1"></i>
+                    <span class="small">{{employeeProfileMst.officialEmailID}}</span>
+                  </div>
+                  <div class=" col-sm-12 col-lg-6 mb-1">
+                    <i class="fa-solid fa-phone text-primary me-1"></i>
+                    <span class="small">{{employeeProfileMst.personalMobileNo}}</span>
+                  </div>
+                  <div class="col-sm-12 col-lg-6 mb-1">
+                    <i class="fa-solid fa-building text-primary me-1"></i>
+                    <span class="small">{{employeeProfileMst.department}}</span>
+                  </div>
+                  <div class="col-sm-12 col-lg-6 mb-1">
+                    <i class="fa-solid fa-calendar text-primary me-1"></i>
+                    <span class="small">{{employeeProfileMst.doj}}</span>
+                  </div>
+                </div>
+                <p class="mb-0 small mt-2">
+                  Experience:
+                  {{ employeeProfileMst.experience }}
+                </p>
+              </div>
+            </div>
+
+            <!-- tabs and nav -->
+
+            <div class="row border-top border-1 pt-2">
+              <div class="col-sm-12 col-md-12 col-lg-12">
+                <ul class="nav nav-pills" id="pills-tab" role="tablist">
+
+                  <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="pills-profile-tab" data-bs-toggle="pill"
+                      data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile"
+                      aria-selected="true">Profile</button>
+                  </li>
+
+                  <li class="nav-item" role="presentation">
+                    <button class="nav-link position-relative" id="pills-reporting-tab" data-bs-toggle="pill"
+                      data-bs-target="#pills-reporting" type="button" role="tab" aria-controls="pills-reporting"
+                      aria-selected="false">Reporting
+
+                      <span class="position-absolute start-100 translate-middle text-danger small rounded-pill"
+                        style="top:15px">
+                      
+                      </span>
+                    </button>
+                  </li>
+
+                  <li class="nav-item" role="presentation">
+                    <button class="nav-link position-relative" id="pills-reportees-tab" data-bs-toggle="pill"
+                      data-bs-target="#pills-reportees" type="button" role="tab" aria-controls="pills-reportees"
+                      aria-selected="false">Reportees
+                      <span class="position-absolute start-100 translate-middle text-danger small rounded-pill"
+                        style="top:15px">
+                        
+                      </span></button>
+                  </li>
+
+                  <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="pills-qualification-tab" data-bs-toggle="pill"
+                      data-bs-target="#pills-qualification" type="button" role="tab" aria-controls="pills-qualification"
+                      aria-selected="false">Qualification</button>
+                  </li>
+
+                  <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="pills-exprience-tab" data-bs-toggle="pill"
+                      data-bs-target="#pills-exprience" type="button" role="tab" aria-controls="pills-exprience"
+                      aria-selected="false">Experience</button>
+
+                  <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="pills-letter-tab" data-bs-toggle="pill" data-bs-target="#pills-letter"
+                      type="button" role="tab" aria-controls="pills-letter" aria-selected="false">Letters</button>
+                  </li>
+
+                </ul>
+
+
+              </div>
+            </div>
+
+            <!--  -->
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card border-top border-2 border-primary">
+          <div class="tab-content" id="pills-tabContent">
+
+
+            <!-- first tab profile content -->
+
+
+
+            <div class="tab-pane fade show active pt-1" id="pills-profile" role="tabpanel"
+              aria-labelledby="pills-profile-tab" tabindex="0">
+
+              <div class="card-header border-bottom border-1 pt-0 pb-1" style="border-color: rgb(232, 235, 235);">
+                <p class="py-0 m-0 fw-semibold" style="font-size: 13px;">Personnel Information</p>
+              </div>
+
+
+              <div class="card-body">
+
+
+
+                <form action="">
+                  <div class="row row-cols-1 row-cols-md-3 g-3">
+                    <div class="col">
+                      <label for="" class="">Emp Code</label>
+                      <input type="text" class="form-control" [value]="employeeProfileMst.empCode" readonly>
+                    </div>
+
+                    <div class="col">
+                      <label for="" class="">Father's Name</label>
+                      <input type="text" class="form-control" [value]="employeeProfileMst.fathername" readonly>
+                    </div>
+
+                    <div class="col">
+                      <label for="" class="">
+                        Department</label>
+                      <input type="text" class="form-control" value="Legal" [value]="employeeProfileMst.department" readonly>
+                    </div>
+
+                    <div class="col">
+                      <label for="" class="">
+                        City</label>
+                      <input type="text" class="form-control" value="Mumbai" [value]="employeeProfileMst.city" readonly>
+                    </div>
+
+                    <div class="col">
+                      <label for="" class="">
+                        Location</label>
+                      <input type="text" class="form-control" value="Padartha" [value]="employeeProfileMst.location" readonly>
+                    </div>
+
+                    <div class="col">
+                      <label for="" class="">
+                        Zone</label>
+                      <input type="text" class="form-control" [value]="employeeProfileMst.zone" readonly>
+                    </div>
+
+                    <div class="col">
+                      <label for="" class="">
+                        Nature</label>
+                      <input type="text" class="form-control" [value]="employeeProfileMst.nature" readonly>
+                    </div>
+
+                    <div class="col">
+                      <label for="" class="">
+                        Grade</label>
+                      <input type="text" class="form-control" [value]="employeeProfileMst.grade" readonly>
+                    </div>
+
+                    <div class="col">
+                      <label for="" class="">
+                        Functional Designation</label>
+                      <input type="text" class="form-control" [value]="employeeProfileMst.functionalDesignation" readonly>
+                    </div>
+
+                    <div class="col">
+                      <label for="" class="">
+                        Esic No</label>
+                      <input type="text" class="form-control" [value]="employeeProfileMst.esino" readonly>
+                    </div>
+
+                    <div class="col">
+                      <label for="" class="">
+                        UAN Card</label>
+                      <input type="text" class="form-control" [value]="employeeProfileMst.uanCard" readonly>
+                    </div>
+
+
+                    <div class="col">
+                      <label for="" class=""> Official Mobile No.</label>
+                      <input type="text" class="form-control" [value]="employeeProfileMst.officialMobileNo" readonly>
+                    </div>
+
+                    <div class="col">
+                      <label for="" class=""> Personal Mobile No.</label>
+                      <input type="text" class="form-control" [value]="employeeProfileMst.personalMobileNo" readonly>
+                    </div>
+
+                    <div class="col">
+                      <label for="" class=""> Attendance Source</label>
+                      <input type="text" class="form-control" [value]="employeeProfileMst.attendanceSource" readonly>
+                    </div>
+
+                    <div class="col">
+                      <label for="" class=""> Transport Type</label>
+                      <input type="text" class="form-control" [value]="employeeProfileMst.transportType" readonly>
+                    </div>
+
+                    <div class="col">
+                      <label for="" class=""> In Time</label>
+                      <input type="text" class="form-control" [value]="employeeProfileMst.intime" readonly>
+                    </div>
+
+                    <div class="col">
+                      <label for="" class="">Out Time</label>
+                      <input type="text" class="form-control" [value]="employeeProfileMst.outtime" readonly>
+                    </div>
+
+                    <div class="col">
+                      <label for="" class="">Grace Time</label>
+                      <input type="text" class="form-control" [value]="employeeProfileMst.gracetime" readonly>
+                    </div>
+                  </div>
+
+
+
+
+                  <div class="bg-primary rounded-1 mt-3 page-seperator">
+                    <p class=" text-white ms-4">Bank Details</p>
+                  </div>
+
+                  <div class="row row-cols-1 row-cols-md-3 g-3">
+                    <div class="col">
+                      <label for="" class="">Bank Name</label>
+                      <input type="text" class="form-control" [value]="employeeProfileMst.bankname" readonly>
+                    </div>
+
+                    <div class="col">
+                      <label for="" class="">Account Number</label>
+                      <input type="Number" class="form-control" [value]="employeeProfileMst.accountno" readonly>
+                    </div>
+                    <div class="col">
+                      <label for="" class="">IFSC Code</label>
+                      <input type="text" class="form-control" [value]="employeeProfileMst.ifsccode" readonly>
+                    </div>
+
+                  </div>
+
+
+
+                  <div class="bg-primary rounded-1 mt-3 page-seperator">
+                    <p class=" text-white ms-4">Demographic Details</p>
+                  </div>
+
+
+                  <div class="row row-cols-1 row-cols-md-3 g-3">
+
+                    <div class="col">
+                      <label for="" class="">Personal Mobile Number</label>
+                      <input type="number" class="form-control" [value]="employeeProfileMst.personalMobileNo" readonly>
+                    </div>
+
+                    <div class="col">
+                      <label for="" class="">Personal Email ID</label>
+                      <input type="text" class="form-control" [value]="employeeProfileMst.personalEmailID" readonly>
+                    </div>
+
+                    <div class="col">
+                      <label for="" class="">State</label>
+                      <input type="text" class="form-control" readonly>
+                    </div>
+
+
+                    <div class="col">
+                      <label for="" class="">Country</label>
+                      <input type="text" class="form-control" readonly>
+                    </div>
+
+
+                    <div class="col">
+                      <label>Residential Address</label>
+                      <div class="form-group">
+                        <textarea type="text" class="form-control" formControlName="remarks"
+                          [value]="employeeProfileMst.residentialAddress" readonly></textarea>
+                      </div>
+                    </div>
+
+                    <div class="col">
+                      <label>Permanent Address</label>
+                      <div class="form-group">
+                        <textarea type="text" class="form-control" formControlName="remarks"
+                          [value]="employeeProfileMst.permanentAddress" readonly></textarea>
+                      </div>
+                    </div>
+
+
+                  </div>
+
+
+                  <!-- ✅ Policy Details Section -->
+                  <div *ngIf="employeeProfileMst.policy_app === true" class="mt-4">
+
+                    <div class="bg-primary rounded-1 mt-3 page-seperator">
+                      <p class=" text-white ms-4">Policy Details</p>
+                    </div>
+                    <div class="row row-cols-1 row-cols-md-3 g-3">
+
+                      <div class="col">
+                        <label>Policy No</label>
+                        <input type="text" class="form-control" [value]="employeeProfileMst.policyNo" readonly>
+                      </div>
+
+                      <div class="col">
+                        <label>Policy Date</label>
+                        <input type="date" class="form-control"
+                          [value]="employeeProfileMst.policyDate | date:'yyyy-MM-dd'" readonly>
+                      </div>
+
+                      <div class="col">
+                        <label>Policy Amount</label>
+                        <input type="number" class="form-control" [value]="employeeProfileMst.policy_amount" readonly>
+                      </div>
+
+                      <div class="col">
+                        <label>Policy Valid Till</label>
+                        <input type="date" class="form-control"
+                          [value]="employeeProfileMst.policyTillValid | date:'yyyy-MM-dd'" readonly>
+                      </div>
+
+                    
+
+
+                    </div>
+                       <!-- 🖼 Full-width Policy Image -->
+                    <div class="col-12 mt-3">
+                      <label class="form-label fw-semibold">Policy Card</label>
+
+                      <ng-container *ngIf="employeeProfileMst.policyImageUrl; else noImage">
+                        <img [src]="employeeProfileMst.policyImageUrl" alt="Policy Image" class="w-100 rounded"
+                          style="max-height: 350px; object-fit: contain;">
+                      </ng-container>
+
+                      <ng-template #noImage>
+                        <span class="text-muted">No Image Available</span>
+                      </ng-template>
+                    </div>
+                   
+                  </div>
+
+                </form>
+
+              </div>
+
+
+
+            </div>
+
+
+
+
+            <!-- second tab Reporting content -->
+            <div class="tab-pane fade" id="pills-reporting" role="tabpanel" aria-labelledby="pills-reporting-tab"
+              tabindex="0">
+
+
+              <div class="card-header border-bottom border-1 pt-0 pb-1" style="border-color: rgb(232, 235, 235);">
+                <p class="py-0 m-0 fw-semibold" style="font-size: 13px;">Reporting Information</p>
+
+              </div>
+
+
+              <div class="card-body">
+
+
+                <div class="row">
+
+                  <div class="col-sm-12 col-md-8 col-lg-9"></div>
+                  <div class="col-sm-12 col-md-4 col-lg-3 pt-2 pb-2">
+                    <input type="search" class="form-control" [(ngModel)]="searchText">
+                  </div>
+
+                </div>
+
+                <div class="table-responsive table-invoice">
+                  <table Id="exportTable" class="table">
+                    <thead>
+                      <tr>
+                        <th>Sr&nbsp;No.</th>
+                        <th>Emp Code</th>
+                        <th>Emp&nbsp;Name</th>
+                        <th>Designation</th>
+                        <th>Department</th>
+                        <th>Gender</th>
+                        <th>Reporting&nbsp;Type</th>
+
+
+
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let user of filteredReportingInfo1(); let i = index">
+                        <td>{{ i + 1 }}</td>
+                        <td>{{ user.empCode }}</td>
+                        <td>{{ user.empName }}</td>
+                        <td>{{ user.designation }}</td>
+                        <td>{{ user.department }}</td>
+                        <td>{{ user.gender }}</td>
+                        <td>{{ user.reportingType }}</td>
+                      </tr>
+                    </tbody>
+
+                  </table>
+
+
+
+                  <ng-template #noData>
+                    <tr>
+                      <td colspan="4" class="text-center">No data available</td>
+                    </tr>
+                  </ng-template>
+                </div>
+              </div>
+
+
+            </div>
+
+
+
+            <!-- third tab Reportees content -->
+            <div class="tab-pane fade" id="pills-reportees" role="tabpanel" aria-labelledby="pills-reportees-tab"
+              tabindex="0">
+
+              <div class="card-header border-bottom border-1 pt-0 pb-1" style="border-color: rgb(232, 235, 235);">
+                <p class="py-0 m-0 fw-semibold" style="font-size: 13px;">Reportees Information</p>
+
+              </div>
+
+
+              <div class="card-body">
+
+
+                <div class="row">
+
+                  <div class="col-sm-12 col-md-8 col-lg-9"></div>
+                  <div class="col-sm-12 col-md-4 col-lg-3 pt-2 pb-2">
+                    <input type="search" class="form-control" [(ngModel)]="searchText">
+                  </div>
+
+
+                </div>
+
+                <div class="table-responsive table-invoice">
+                  <table Id="exportTable" class="table">
+                    <thead>
+                      <tr>
+                        <th>Sr&nbsp;No.</th>
+                        <th>Emp Code</th>
+                        <th> Emp Name</th>
+                        <th>Designation</th>
+                        <th>Department</th>
+                        <th>Gender</th>
+                        <th>Reporting Type</th>
+
+
+
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let user of filteredReportingInfo2(); let i = index">
+                        <td>{{ i + 1 }}</td>
+                        <td>{{ user.empCode }}</td>
+                        <td>{{ user.empName }}</td>
+                        <td>{{ user.designation }}</td>
+                        <td>{{ user.department }}</td>
+                        <td>{{ user.gender }}</td>
+                        <td>{{ user.reportingType }}</td>
+                      </tr>
+                    </tbody>
+
+                  </table>
+
+
+
+                  <ng-template #noData>
+                    <tr>
+                      <td colspan="4" class="text-center">No data available</td>
+                    </tr>
+                  </ng-template>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Fourth tab Qualification content -->
+
+
+            <div class="tab-pane fade" id="pills-qualification" role="tabpanel"
+              aria-labelledby="pills-qualification-tab" tabindex="0">
+
+              <div class="card-header border-bottom border-1 pt-0 pb-1" style="border-color: rgb(232, 235, 235);">
+                <p class="py-0 m-0 fw-semibold" style="font-size: 13px;">Qualification Information</p>
+
+              </div>
+
+
+              <div class="card-body">
+
+
+                <div class="row">
+
+                  <div class="col-sm-12 col-md-8 col-lg-9"></div>
+                  <div class="col-sm-12 col-md-4 col-lg-3 pt-2 pb-2">
+                    <input type="search" class="form-control" [(ngModel)]="searchText">
+                  </div>
+
+
+                </div>
+
+                <div class="table-responsive table-invoice">
+                  <table Id="exportTable" class="table">
+                    <thead>
+                      <tr>
+                        <th>Sr&nbsp;No.</th>
+                        <th>Qualification</th>
+                        <th>Subject</th>
+                        <th> Institue</th>
+                        <th>Passing Year</th>
+                        <th>Marks</th>
+                        <th>Division</th>
+
+
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let user of filteredQualifications(); let i = index">
+                        <td>{{ i + 1 }}</td>
+                        <td>{{ user.qualification }}</td>
+                        <td>{{ user.subject }}</td>
+                        <td>{{ user.institute }}</td>
+                        <td>{{ user.passYear }}</td>
+                        <td>{{ user.marks }}</td>
+                        <td>{{ user.division }}</td>
+                      </tr>
+                    </tbody>
+
+                  </table>
+
+
+
+                  <ng-template #noData>
+                    <tr>
+                      <td colspan="4" class="text-center">No data available</td>
+                    </tr>
+                  </ng-template>
+                </div>
+              </div>
+
+            </div>
+
+
+
+
+            <!-- Fifth tab Exprience content -->
+
+
+            <div class="tab-pane fade" id="pills-exprience" role="tabpanel" aria-labelledby="pills-exprience-tab"
+              tabindex="0">
+
+
+              <div class="card-header border-bottom border-1 pt-0 pb-1" style="border-color: rgb(232, 235, 235);">
+                <p class="py-0 m-0 fw-semibold" style="font-size: 13px;">Experience Information</p>
+
+              </div>
+
+
+              <div class="card-body">
+
+
+                <div class="row">
+
+                  <div class="col-sm-12 col-md-8 col-lg-9"></div>
+                  <div class="col-sm-12 col-md-4 col-lg-3 pt-2 pb-2">
+                    <input type="search" class="form-control" [(ngModel)]="searchText">
+                  </div>
+
+
+                </div>
+
+                <div class="table-responsive table-invoice">
+                  <table Id="exportTable" class="table">
+                    <thead>
+                      <tr>
+                        <th>Sr&nbsp;No.</th>
+                        <th>Company Name</th>
+                        <th>Designation</th>
+                        <th> Department</th>
+                        <th>From Date</th>
+                        <th>To Date</th>
+                        <th>Profile</th>
+                        <th>Leaving Reason</th>
+
+
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let user of filteredPreviousJobs(); let i = index">
+                        <td>{{ i + 1 }}</td>
+                        <td>{{ user.compname }}</td>
+                        <td>{{ user.designation }}</td>
+                        <td>{{ user.department }}</td>
+                        <td>{{ user.fromDate }}</td>
+                        <td>{{ user.toDate }}</td>
+                        <td>{{ user.profile }}</td>
+                        <td>{{ user.leavingReason }}</td>
+                      </tr>
+                    </tbody>
+
+                  </table>
+
+
+
+                  <ng-template #noData>
+                    <tr>
+                      <td colspan="4" class="text-center">No data available</td>
+                    </tr>
+                  </ng-template>
+                </div>
+              </div>
+
+
+            </div>
+
+
+
+            <!-- Six tab content -->
+            <div class="tab-pane fade" id="pills-letter" role="tabpanel" aria-labelledby="pills-letter-tab"
+              tabindex="0">
+
+
+              <div class="card-header border-bottom border-1 pt-0 pb-1" style="border-color: rgb(232, 235, 235);">
+                <p class="py-0 m-0 fw-semibold" style="font-size: 13px;">Letters Information</p>
+
+              </div>
+
+
+              <div class="card-body">
+
+
+                <div class="row">
+
+                  <div class="col-sm-12 col-md-8 col-lg-9"></div>
+                  <div class="col-sm-12 col-md-4 col-lg-3 pt-2 pb-2">
+                    <input type="search" class="form-control" [(ngModel)]="searchText">
+                  </div>
+
+
+                </div>
+
+                <div class="table-responsive table-invoice">
+                  <table Id="exportTable" class="table">
+                    <thead>
+                      <tr>
+                        <th>Description</th>
+                        <th>Issue Date</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let user of filteredLetters(); let i = index">
+                        <td>{{ user.letterName }}</td>
+                        <td>{{ user.issueDate }}</td>
+                      </tr>
+                    </tbody>
+
+                  </table>
+
+
+
+                  <ng-template #noData>
+                    <tr>
+                      <td colspan="4" class="text-center">No data available</td>
+                    </tr>
+                  </ng-template>
+                </div>
+              </div>
+
+
+
+
+            </div>
+
+            <!--  -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

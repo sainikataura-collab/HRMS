@@ -1,0 +1,566 @@
+<div class="ats-wizard-page">
+
+  <!-- ── 1. CORPORATE HEADER STRIP (Clean, Zero Prefill, Direct Actions) ────── -->
+  <div class="header-strip d-flex flex-wrap justify-content-between align-items-center mb-2 p-2 px-3 bg-white rounded border">
+    <div class="d-flex align-items-center gap-2">
+      <a routerLink="/dash/recruitment/recruitmentdashboard/job-management" class="btn-back rounded d-flex align-items-center justify-content-center text-dark text-decoration-none" title="Back to Requisitions">
+        <i class="bi bi-arrow-left"></i>
+      </a>
+      <div class="d-flex align-items-center gap-2 flex-wrap">
+        <span class="page-title text-dark fw-bold">MRF Create Wizard</span>
+        <span class="badge-chip bg-primary-subtle text-primary">Manpower Requisition Form (MRF)</span>
+        <span class="badge-chip bg-light text-secondary border">CJ DARCL Logistics</span>
+      </div>
+    </div>
+
+    <!-- Header Action Controls -->
+    <div class="d-flex align-items-center gap-1.5 mt-1 mt-md-0">
+      <button type="button" class="btn btn-outline-secondary btn-sm" (click)="submitRequisition(true)" [disabled]="isSubmitting" style="font-size: 11px; padding: 3px 10px;">
+        <i class="bi bi-file-earmark me-1"></i> Save Draft MRF
+      </button>
+
+      <button type="button" class="btn btn-primary-action fw-semibold shadow-sm" (click)="submitRequisition(false)" [disabled]="isSubmitting">
+        <i class="bi bi-check2-circle me-1" *ngIf="!isSubmitting"></i>
+        <i class="fa fa-spinner fa-spin me-1" *ngIf="isSubmitting"></i>
+        {{ isSubmitting ? 'Submitting MRF...' : 'Submit MRF' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- ── 2. MAIN REQUISITION FORM ─────────────────────────────────────────── -->
+
+  <!-- ── 3. MAIN WORKFLOW GRID ────────────────────────────────────────────── -->
+  <div class="row g-2">
+    
+    <!-- Left Column: Form Details -->
+    <div class="col-12 col-xl-8">
+
+      <!-- Requisition Details Form -->
+
+        <!-- Card 1: Core Requisition Mandate (Service Type, Designation, Skill, Numbers, Location) -->
+        <div class="bento-box mb-2 bg-white rounded border">
+          <div class="bento-box-header d-flex justify-content-between align-items-center p-2 px-3 border-bottom bg-light">
+            <div class="d-flex align-items-center gap-2">
+              <i class="bi bi-briefcase-fill text-primary" style="font-size: 12px;"></i>
+              <span class="fw-bold text-dark" style="font-size: 11.5px;">MRF Mandate & Role Details</span>
+            </div>
+            <span class="badge-mandatory">* Mandatory Fields</span>
+          </div>
+          
+          <div class="p-2 px-3">
+            <div class="row g-2">
+
+              <!-- 1. Job Title -->
+              <div class="col-md-8">
+                <label class="form-label-mini">Requisition Title / Role <span class="text-danger">*</span></label>
+                <input type="text" 
+                       class="form-control form-control-sm" 
+                       [(ngModel)]="jobData.jobTitle" 
+                       placeholder="e.g. Branch Fleet Operations Supervisor">
+              </div>
+
+              <!-- 2. Numbers (Headcount required) -->
+              <div class="col-md-4">
+                <label class="form-label-mini">Numbers / Headcount <span class="text-danger">*</span></label>
+                <div class="input-group input-group-sm">
+                  <input type="number" 
+                         class="form-control text-end fw-bold" 
+                         min="1" 
+                         [(ngModel)]="jobData.openPositions" 
+                         placeholder="0">
+                  <span class="input-group-text">Heads</span>
+                </div>
+              </div>
+
+              <!-- 3. Service Type -->
+              <div class="col-md-6">
+                <label class="form-label-mini">Service Type <span class="text-danger">*</span></label>
+                <ng-select [items]="serviceTypeList" 
+                           [(ngModel)]="jobData.serviceType" 
+                           placeholder="-- Select Service Type --" 
+                           [clearable]="true"
+                           class="custom-ng-select">
+                </ng-select>
+              </div>
+
+              <!-- 4. Designation -->
+              <div class="col-md-6">
+                <label class="form-label-mini">Designation <span class="text-danger">*</span></label>
+                <ng-select [items]="designationList" 
+                           bindLabel="name" 
+                           bindValue="name" 
+                           [(ngModel)]="jobData.designation" 
+                           (change)="onDesignationSelected($event)" 
+                           placeholder="-- Select Designation --" 
+                           [clearable]="true"
+                           class="custom-ng-select">
+                </ng-select>
+              </div>
+
+              <!-- 5. Skill Category -->
+              <div class="col-md-6">
+                <label class="form-label-mini">Skill Category <span class="text-danger">*</span></label>
+                <ng-select [items]="skillCategoryList" 
+                           [(ngModel)]="jobData.skillCategory" 
+                           placeholder="-- Select Skill Category --" 
+                           [clearable]="true"
+                           class="custom-ng-select">
+                </ng-select>
+              </div>
+
+              <!-- 6. Operating Location / Hub -->
+              <div class="col-md-6">
+                <label class="form-label-mini">Operating Location / Hub <span class="text-danger">*</span></label>
+                <ng-select [items]="authorizedLocationList" 
+                           bindLabel="displayName" 
+                           bindValue="name" 
+                           [(ngModel)]="jobData.location" 
+                           (change)="onLocationSelected($event)" 
+                           placeholder="-- Select Operating Hub --" 
+                           [clearable]="true"
+                           class="custom-ng-select">
+                </ng-select>
+              </div>
+
+              <!-- 7. Department -->
+              <div class="col-md-4">
+                <label class="form-label-mini">Department</label>
+                <ng-select [items]="departmentList" 
+                           bindLabel="name" 
+                           bindValue="name" 
+                           [(ngModel)]="jobData.department" 
+                           (change)="onDepartmentSelected($event)" 
+                           placeholder="-- Select Department --" 
+                           [clearable]="true"
+                           class="custom-ng-select">
+                </ng-select>
+              </div>
+
+              <!-- 8. Workplace Policy -->
+              <div class="col-md-4">
+                <label class="form-label-mini">Workplace Mode</label>
+                <ng-select [items]="workplaceTypeList" 
+                           [(ngModel)]="jobData.workplaceType" 
+                           placeholder="-- Select Workplace Mode --" 
+                           [clearable]="false"
+                           class="custom-ng-select">
+                </ng-select>
+              </div>
+
+              <!-- 9. Employment Type -->
+              <div class="col-md-4">
+                <label class="form-label-mini">Employment Type</label>
+                <ng-select [items]="employmentTypeList" 
+                           [(ngModel)]="jobData.employmentType" 
+                           placeholder="-- Select Employment Type --" 
+                           [clearable]="false"
+                           class="custom-ng-select">
+                </ng-select>
+              </div>
+
+              <!-- ── Location Capacity & Real-Time Headroom Ribbon ──────────── -->
+              <div class="col-12" *ngIf="selectedLocationObj">
+                <div class="p-2 px-3 rounded border bg-light d-flex flex-wrap align-items-center justify-content-between gap-2 mt-1">
+                  <div class="d-flex align-items-center gap-3 flex-wrap">
+                    <div>
+                      <small class="text-muted d-block" style="font-size: 9.5px; font-weight: 600;">SANCTIONED BASE</small>
+                      <strong class="text-dark" style="font-size: 11.5px;">{{ locBaseDemand }} heads</strong>
+                    </div>
+                    <div class="border-start ps-3">
+                      <small class="text-muted d-block" style="font-size: 9.5px; font-weight: 600;">ACTIVE OCCUPIED</small>
+                      <strong class="text-dark" style="font-size: 11.5px;">{{ locCurrentOccupied }} heads</strong>
+                    </div>
+                    <div class="border-start ps-3">
+                      <small class="text-muted d-block" style="font-size: 9.5px; font-weight: 600;">AVAILABLE BASE</small>
+                      <strong class="text-primary" style="font-size: 11.5px;">{{ locAvailableBase }} heads</strong>
+                    </div>
+                    <div class="border-start ps-3">
+                      <small class="text-muted d-block" style="font-size: 9.5px; font-weight: 600;">STANDBY BUFFER</small>
+                      <strong class="text-info-emphasis" style="font-size: 11.5px;">+{{ locBufferHeads }} heads ({{ selectedLocationObj.bufferPercent }}%)</strong>
+                    </div>
+                    <div class="border-start ps-3">
+                      <small class="text-muted d-block" style="font-size: 9.5px; font-weight: 600;">MAX TOTAL CAP</small>
+                      <strong class="text-success" style="font-size: 11.5px;">{{ locTargetCapacity }} heads</strong>
+                    </div>
+                  </div>
+
+                  <!-- Real-time Status Badge -->
+                  <div>
+                    <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle" *ngIf="isHeadcountZeroOrNegative && !isCapacityExhausted" style="font-size: 10px; padding: 3px 8px;">
+                      <i class="bi bi-info-circle-fill me-1"></i> Specify Headcount (&ge; 1)
+                    </span>
+                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle" *ngIf="isCapacityExhausted" style="font-size: 10px; padding: 3px 8px;">
+                      <i class="bi bi-x-octagon-fill me-1"></i> Capacity Exhausted (0 Heads Available)
+                    </span>
+                    <span class="badge bg-success-subtle text-success border border-success-subtle" *ngIf="isWithinBase && !isCapacityExhausted" style="font-size: 10px; padding: 3px 8px;">
+                      <i class="bi bi-check-circle-fill me-1"></i> Within Sanctioned Base
+                    </span>
+                    <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle" *ngIf="isBufferUtilized && !isCapacityExhausted" style="font-size: 10px; padding: 3px 8px;">
+                      <i class="bi bi-exclamation-triangle-fill me-1 text-warning"></i> Buffer Tapped (+{{ bufferHeadsUtilized }})
+                    </span>
+                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle" *ngIf="isHeadcountExceeded && !isCapacityExhausted" style="font-size: 10px; padding: 3px 8px;">
+                      <i class="bi bi-x-octagon-fill me-1"></i> Exceeds Location Cap
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ── Dynamic Notification 0: Capacity Exhausted (No Headroom Available) ── -->
+              <div class="col-12" *ngIf="isCapacityExhausted">
+                <div class="alert alert-danger mb-0 p-2 px-3 border border-danger d-flex align-items-start gap-2 shadow-sm rounded">
+                  <i class="bi bi-x-octagon-fill text-danger mt-0.5" style="font-size: 15px;"></i>
+                  <div>
+                    <strong class="d-block text-danger" style="font-size: 11.5px;">
+                      Location Capacity Exhausted (0 Available Headroom)
+                    </strong>
+                    <div class="text-dark" style="font-size: 10.5px;">
+                      This hub currently has <strong>0 available headroom</strong> (Active Occupied: <strong>{{ locCurrentOccupied }}</strong> heads &ge; Total Ceiling: <strong>{{ locTargetCapacity }}</strong> heads). No new positions can be added until capacity is increased or existing vacancies open.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ── Dynamic Notification 0.5: Zero / Empty Headcount Prompt ── -->
+              <div class="col-12" *ngIf="isHeadcountZeroOrNegative && !isCapacityExhausted">
+                <div class="alert alert-info mb-0 p-2 px-3 border border-info-subtle d-flex align-items-center gap-2 rounded bg-info-subtle bg-opacity-25">
+                  <i class="bi bi-info-circle-fill text-primary" style="font-size: 14px;"></i>
+                  <div class="text-dark" style="font-size: 10.5px;">
+                    Please enter the required <strong>Headcount / Positions (minimum 1)</strong> to evaluate headroom against the hub's sanctioned base (<strong>{{ locAvailableBase }} heads</strong>) and standby buffer (<strong>+{{ locBufferHeads }} heads</strong>).
+                  </div>
+                </div>
+              </div>
+
+              <!-- ── Dynamic Notification 1: Buffer Contingency Active ──────── -->
+              <div class="col-12" *ngIf="isBufferUtilized && !isCapacityExhausted">
+                <div class="alert alert-warning mb-0 p-2 px-3 border border-warning d-flex align-items-start gap-2 shadow-sm rounded">
+                  <i class="bi bi-exclamation-triangle-fill text-warning mt-0.5" style="font-size: 15px;"></i>
+                  <div>
+                    <strong class="d-block text-dark" style="font-size: 11.5px;">
+                      Buffer Contingency Notification: Headcount Taps into Standby Buffer (+{{ bufferHeadsUtilized }} heads)
+                    </strong>
+                    <div class="text-secondary" style="font-size: 10.5px;">
+                      This requisition requests <strong>{{ requestedCount }}</strong> positions at <strong>{{ selectedLocationObj?.name }}</strong>, which exceeds the remaining base headroom (<strong>{{ locAvailableBase }}</strong> heads) by <strong>{{ bufferHeadsUtilized }}</strong> head(s). The excess is being drawn from the location's Standby Buffer pool (+{{ locBufferHeads }} heads). 
+                      <span class="text-dark fw-bold">Operating Head / Corporate HR Buffer approval will be required to approve this requisition.</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ── Dynamic Notification 2: Exceeds Maximum Capacity (Blocked) -->
+              <div class="col-12" *ngIf="isHeadcountExceeded && !isCapacityExhausted">
+                <div class="alert alert-danger mb-0 p-2 px-3 border border-danger d-flex align-items-start gap-2 shadow-sm rounded">
+                  <i class="bi bi-x-octagon-fill text-danger mt-0.5" style="font-size: 15px;"></i>
+                  <div>
+                    <strong class="d-block text-danger" style="font-size: 11.5px;">
+                      Maximum Location Capacity Limit Exceeded!
+                    </strong>
+                    <div class="text-dark" style="font-size: 10.5px;">
+                      The maximum additional headcount that can be added to <strong>{{ selectedLocationObj?.name }}</strong> is <strong>{{ locAvailableTotal }}</strong> head(s) (Available Base: {{ locAvailableBase }} + Standby Buffer: {{ locBufferHeads }} = Total Cap: {{ locTargetCapacity }}). 
+                      Your request of <strong>{{ requestedCount }}</strong> heads exceeds the ceiling by <strong>{{ requestedCount - locAvailableTotal }}</strong> head(s). You must reduce the headcount count to proceed.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ── Dynamic Notification 3: Within Sanctioned Base (Normal) ── -->
+              <div class="col-12" *ngIf="isWithinBase && !isCapacityExhausted">
+                <div class="alert alert-success mb-0 p-2 px-3 border border-success d-flex align-items-center gap-2 rounded bg-success-subtle bg-opacity-25">
+                  <i class="bi bi-check-circle-fill text-success" style="font-size: 14px;"></i>
+                  <div class="text-dark" style="font-size: 10.5px;">
+                    <strong>Within Sanctioned Base Demand:</strong> Requisition for <strong>{{ requestedCount }}</strong> position(s) is fully covered under the sanctioned base demand. Remaining base headroom after this request: <strong>{{ locAvailableBase - requestedCount }}</strong> head(s).
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2: Type of Hiring (New / Replacement) & Diversity Hiring Option -->
+        <div class="bento-box mb-2 bg-white rounded border">
+          <div class="bento-box-header d-flex justify-content-between align-items-center p-2 px-3 border-bottom bg-light">
+            <div class="d-flex align-items-center gap-2">
+              <i class="bi bi-person-lines-fill text-primary" style="font-size: 12px;"></i>
+              <span class="fw-bold text-dark" style="font-size: 11.5px;">Hiring Type & Diversity Configuration</span>
+            </div>
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle" style="font-size: 9.5px;">
+              CJ DARCL Policy
+            </span>
+          </div>
+
+          <div class="p-2 px-3">
+            <div class="row g-2">
+
+              <!-- Type of Hiring Segmented Selector -->
+              <div class="col-md-6">
+                <label class="form-label-mini">Type of Hiring <span class="text-danger">*</span></label>
+                <div class="btn-group w-100" role="group">
+                  <button type="button" 
+                          class="btn btn-sm btn-outline-primary" 
+                          [class.active]="jobData.hiringType === 'New'" 
+                          (click)="setHiringType('New')" 
+                          style="font-size: 11px;">
+                    <i class="bi bi-plus-circle me-1"></i> New Requirement
+                  </button>
+                  <button type="button" 
+                          class="btn btn-sm btn-outline-primary" 
+                          [class.active]="jobData.hiringType === 'Replacement'" 
+                          (click)="setHiringType('Replacement')" 
+                          style="font-size: 11px;">
+                    <i class="bi bi-arrow-repeat me-1"></i> Replacement (Backfill)
+                  </button>
+                </div>
+              </div>
+
+              <!-- Diversity Hiring Option Toggle -->
+              <div class="col-md-6">
+                <label class="form-label-mini">Diversity Hiring Option</label>
+                <div class="p-1 px-2 border rounded d-flex align-items-center justify-content-between bg-light" style="height: 28px;">
+                  <div class="d-flex align-items-center gap-1.5">
+                    <input type="checkbox" 
+                           class="form-check-input m-0" 
+                           id="diversityToggle" 
+                           [(ngModel)]="jobData.isDiversityHiring" 
+                           style="width: 14px; height: 14px;">
+                    <label class="form-check-label text-dark fw-semibold cursor-pointer mb-0 ms-2" for="diversityToggle" style="font-size: 11px;">
+                      Diversity Hiring Priority
+                    </label>
+                  </div>
+                  <span class="badge bg-info-subtle text-info border border-info-subtle" style="font-size: 9px;" *ngIf="jobData.isDiversityHiring">
+                    Active Preference
+                  </span>
+                </div>
+              </div>
+
+
+              <!-- Conditional: Diversity Category Field -->
+              <div class="col-12" *ngIf="jobData.isDiversityHiring">
+                <div class="p-2 border rounded bg-info-subtle bg-opacity-25 mt-1">
+                  <div class="row g-2 align-items-center">
+                    <div class="col-md-6">
+                      <label class="form-label-mini text-dark">Diversity Category</label>
+                      <ng-select [items]="diversityCategoryList" 
+                             [(ngModel)]="jobData.diversityCategory" 
+                             placeholder="-- Select Diversity Category --" 
+                             [clearable]="true"
+                             class="custom-ng-select">
+                      </ng-select>
+                    </div>
+                    <div class="col-md-6">
+                      <small class="text-muted d-block" style="font-size: 10px;">
+                        <i class="bi bi-info-circle text-primary me-1"></i>
+                        Candidates matching this diversity target will be highlighted with special priority during screening.
+                      </small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 3: Experience & Compensation Bracket -->
+        <div class="bento-box mb-2 bg-white rounded border">
+          <div class="bento-box-header d-flex justify-content-between align-items-center p-2 px-3 border-bottom bg-light">
+            <div class="d-flex align-items-center gap-2">
+              <i class="bi bi-cash-stack text-primary" style="font-size: 12px;"></i>
+              <span class="fw-bold text-dark" style="font-size: 11.5px;">Experience & Compensation Bracket</span>
+            </div>
+            <span class="badge bg-light text-secondary border" style="font-size: 9.5px;">INR (₹)</span>
+          </div>
+
+          <div class="p-2 px-3">
+            <div class="row g-2">
+              
+              <!-- Experience Bracket -->
+              <div class="col-md-6">
+                <label class="form-label-mini">Experience Bracket (Years)</label>
+                <div class="d-flex align-items-center gap-1">
+                  <div class="input-group input-group-sm flex-grow-1">
+                    <span class="input-group-text bg-light text-muted fw-semibold">Min</span>
+                    <input type="number" class="form-control" [(ngModel)]="jobData.experienceMin" placeholder="0">
+                    <span class="input-group-text bg-light text-muted">Yrs</span>
+                  </div>
+                  <span class="text-muted small fw-bold px-1">—</span>
+                  <div class="input-group input-group-sm flex-grow-1">
+                    <span class="input-group-text bg-light text-muted fw-semibold">Max</span>
+                    <input type="number" class="form-control" [(ngModel)]="jobData.experienceMax" placeholder="0">
+                    <span class="input-group-text bg-light text-muted">Yrs</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Annual CTC Bracket -->
+              <div class="col-md-6">
+                <label class="form-label-mini">Annual CTC Compensation (₹)</label>
+                <div class="d-flex align-items-center gap-1">
+                  <div class="input-group input-group-sm flex-grow-1">
+                    <span class="input-group-text bg-light text-muted fw-semibold">₹ Min</span>
+                    <input type="number" class="form-control" [(ngModel)]="jobData.ctcMin" placeholder="0">
+                  </div>
+                  <span class="text-muted small fw-bold px-1">—</span>
+                  <div class="input-group input-group-sm flex-grow-1">
+                    <span class="input-group-text bg-light text-muted fw-semibold">₹ Max</span>
+                    <input type="number" class="form-control" [(ngModel)]="jobData.ctcMax" placeholder="0">
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 4: Description, Responsibilities & AI Draft -->
+        <div class="bento-box mb-2 bg-white rounded border">
+          <div class="bento-box-header d-flex justify-content-between align-items-center p-2 px-3 border-bottom bg-light">
+            <div class="d-flex align-items-center gap-2">
+              <i class="bi bi-file-earmark-text text-primary" style="font-size: 12px;"></i>
+              <span class="fw-bold text-dark" style="font-size: 11.5px;">Job Overview & Candidate Specifications</span>
+            </div>
+            <button type="button" class="btn btn-outline-primary btn-sm py-0 px-2 fw-semibold" style="font-size: 10.5px;" (click)="generateAiDescription()" [disabled]="isAiGenerating">
+              <i class="bi bi-stars me-1 text-primary"></i>
+              {{ isAiGenerating ? 'Drafting...' : 'AI Auto-Draft' }}
+            </button>
+          </div>
+
+          <div class="p-2 px-3">
+            <div class="row g-2">
+              
+              <div class="col-12">
+                <label class="form-label-mini">Role Overview & Operational Scope</label>
+                <textarea class="form-control" 
+                          rows="3" 
+                          [(ngModel)]="jobData.jobDescription" 
+                          placeholder="Describe the operational responsibility, key reporting lines, and SLA expectations..."></textarea>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label-mini">Key Responsibilities</label>
+                <textarea class="form-control small" 
+                          rows="2" 
+                          [(ngModel)]="jobData.responsibilities" 
+                          placeholder="• Fleet dispatch & scheduling&#10;• Route turnaround monitoring&#10;• Daily MIS reconciliation"></textarea>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label-mini">Qualifications & Skill Requirements</label>
+                <textarea class="form-control small" 
+                          rows="2" 
+                          [(ngModel)]="jobData.qualifications" 
+                          placeholder="• Minimum Graduate / Diploma&#10;• Knowledge of GPS & Fleet Tracking&#10;• Strong team supervision skills"></textarea>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+      <!-- Action Footer (Direct Submission) -->
+      <div class="d-flex justify-content-between align-items-center p-2 px-3 bg-white rounded border">
+        <a routerLink="/dash/recruitment/recruitmentdashboard/job-management" 
+           class="btn btn-outline-secondary btn-sm px-3" 
+           style="font-size: 11px;">
+          <i class="bi bi-arrow-left me-1"></i> Cancel & Return
+        </a>
+
+        <div class="d-flex gap-1.5">
+          <button type="button" 
+                  class="btn btn-outline-primary btn-sm px-3 fw-semibold" 
+                  (click)="submitRequisition(true)" 
+                  [disabled]="isSubmitting">
+            <i class="bi bi-save me-1"></i> Save as Draft
+          </button>
+
+          <button type="button" 
+                  class="btn btn-primary-action btn-sm px-3 fw-bold shadow-sm" 
+                  (click)="submitRequisition(false)" 
+                  [disabled]="isSubmitting">
+            <i class="bi bi-send-fill me-1" *ngIf="!isSubmitting"></i>
+            {{ isSubmitting ? 'Submitting...' : 'Submit Manpower Requisition' }}
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right Column: Live Requisition Preview & Stage Summary -->
+    <div class="col-12 col-xl-4">
+      
+      <!-- Live Card Preview Hero -->
+      <div class="p-2 px-3 mb-2 rounded text-white" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); box-shadow: 0 2px 6px rgba(15, 23, 42, 0.15);">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+          <span class="text-uppercase fw-bold text-white-50" style="font-size: 9px; letter-spacing: 0.5px;">Requisition Live Card</span>
+          <span class="badge" [ngClass]="jobData.hiringType === 'New' ? 'bg-success' : 'bg-warning text-dark'" style="font-size: 8.5px;">
+            {{ jobData.hiringType === 'New' ? 'New Requisition' : 'Replacement' }}
+          </span>
+        </div>
+
+        <h6 class="fw-bold mb-1 text-white text-truncate" style="font-size: 12.5px;">
+          {{ jobData.jobTitle || 'Role Title (Pending Input)' }}
+        </h6>
+        
+        <div class="text-white-50 small mb-2 text-truncate" style="font-size: 10px;">
+          <i class="bi bi-geo-alt me-1"></i> {{ jobData.location || 'Location Not Selected' }} • {{ jobData.serviceType || 'Service Type' }}
+        </div>
+
+        <!-- High-Contrast Live Tags -->
+        <div class="d-flex flex-wrap gap-1 mb-2">
+          <span class="live-tag" *ngIf="jobData.designation">
+            <i class="bi bi-person-badge me-0.5"></i> {{ jobData.designation }}
+          </span>
+          <span class="live-tag" *ngIf="jobData.skillCategory">
+            <i class="bi bi-gear me-0.5"></i> {{ jobData.skillCategory }}
+          </span>
+          <span class="live-tag" *ngIf="jobData.openPositions">
+            <i class="bi bi-people me-0.5"></i> {{ jobData.openPositions }} Heads
+          </span>
+          <span class="live-tag bg-success text-white" *ngIf="isWithinBase">
+            <i class="bi bi-check-circle me-0.5"></i> Within Base
+          </span>
+          <span class="live-tag bg-warning text-dark fw-bold" *ngIf="isBufferUtilized">
+            <i class="bi bi-exclamation-triangle-fill me-0.5"></i> Buffer (+{{ bufferHeadsUtilized }})
+          </span>
+          <span class="live-tag bg-danger text-white fw-bold" *ngIf="isHeadcountExceeded">
+            <i class="bi bi-x-octagon-fill me-0.5"></i> Cap Exceeded
+          </span>
+          <span class="live-tag" *ngIf="jobData.workplaceType">
+            {{ jobData.workplaceType }}
+          </span>
+          <span class="live-tag bg-info text-dark" *ngIf="jobData.isDiversityHiring">
+            <i class="bi bi-shield-check me-0.5"></i> Diversity: {{ jobData.diversityCategory || 'Priority' }}
+          </span>
+        </div>
+
+        <div class="pt-1.5 border-top border-white border-opacity-10 d-flex justify-content-between align-items-center" style="font-size: 10px;">
+          <span class="text-white-50">Estimated CTC:</span>
+          <strong class="text-white" *ngIf="jobData.ctcMin || jobData.ctcMax">
+            ₹ {{ jobData.ctcMin ? (jobData.ctcMin | number) : '0' }} - {{ jobData.ctcMax ? (jobData.ctcMax | number) : '0' }}
+          </strong>
+          <span class="text-white-50" *ngIf="!jobData.ctcMin && !jobData.ctcMax">Not specified</span>
+        </div>
+      </div>
+
+      <!-- Requisition Submission Card -->
+      <div class="bg-white rounded border mb-2 p-2 px-3">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+          <span class="fw-bold text-dark" style="font-size: 11px;">
+            <i class="bi bi-info-circle text-primary me-1"></i> Requisition Guidelines
+          </span>
+          <span class="badge bg-primary-subtle text-primary border" style="font-size: 9px;">Direct Submit</span>
+        </div>
+        <p class="text-muted mb-0" style="font-size: 10.5px;">
+          Specify the role requirements, headcount demand, location, and salary benchmarks. Submitted requisitions are automatically assigned and routed for approval in compliance with CJ DARCL governance.
+        </p>
+      </div>
+
+      <!-- Audit Notice Strip -->
+      <div class="bg-white rounded border p-2 px-3 text-muted" style="font-size: 10px;">
+        <i class="bi bi-shield-check text-success me-1"></i>
+        All raised requisitions are automatically versioned and routed for approval in compliance with CJ DARCL governance.
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

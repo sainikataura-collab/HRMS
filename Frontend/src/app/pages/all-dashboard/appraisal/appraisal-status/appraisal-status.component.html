@@ -1,0 +1,303 @@
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+
+
+            <div class="card-header bg-primary py-1">
+                <div class="row w-100">
+                    <div
+                        class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-between">
+                        <h4>Appraisal Status</h4>
+                    </div>
+                    <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-center">
+                        <input type="text" class="form-control" placeholder="Search employee..." placeholder="Search..."
+                            [(ngModel)]="searchText" (ngModelChange)="onSearchTextChanged()" />
+                    </div>
+                    <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-md-end">
+
+                        <button class="btn btnheader mx-1" (click)="downloadExcel()">
+                            Export Excel
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- List of Employee -->
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-12 col-md-12 col-lg-12">
+                        <div class="table-responsive table-invoice"
+                            [ngClass]="{ 'scroll-active': StatusList.length > 10 }">
+                            <table class="table table-bordered" id="exportTable">
+                                <thead>
+                                    <!-- <tr>
+                                 <th>Action</th>
+                                <th *ngFor="let col of tableHeaders">{{ col }}</th>
+                            </tr> -->
+                                    <ng-container *ngFor="let col of tableHeaders; let i = index">
+                                        <th>{{ col }}</th>
+                                        <!-- Insert Action column after "Sr No" -->
+                                        <ng-container *ngIf="col === 'SrNo'">
+                                            <th>Action</th>
+                                        </ng-container>
+                                    </ng-container>
+                                </thead>
+                                <tbody>
+                                    <!-- <tr
+                                *ngFor="let item of filteredData() | paginate: { itemsPerPage: pageSize, currentPage: page, totalItems: totalItems }; let i = index">
+                                <td *ngFor="let col of tableHeaders" [innerHTML]="item[col]"></td>
+                            </tr> -->
+
+                                    <!-- <tr
+                                *ngFor="let item of filteredData() | paginate: { itemsPerPage: pageSize, currentPage: page, totalItems: totalItems }; let i = index">
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-outline-danger">
+                                        <i class="fa fa-file-pdf"></i>
+                                    </button>
+                                </td>
+                                <td *ngFor="let col of tableHeaders">
+
+                                  
+                                    <ng-container *ngIf="col === 'status'; else defaultColumn">
+                                        <span class="badge" [ngClass]="{
+          'bg-danger py-1 small m-0': item[col] === 'Draft',
+          'bg-warning py-1 small m-0': item[col] === 'Submitted',
+          'bg-success py-1 small m-0': item[col] === 'Approved'
+        }">
+                                            {{ item[col] }}
+                                        </span>
+                                    </ng-container>
+
+
+
+                                    
+                                    <ng-template #defaultColumn>
+                                        <span [innerHTML]="item[col]"></span>
+                                    </ng-template>
+
+                                </td>
+                            </tr> -->
+
+                                    <tr
+                                        *ngFor="let item of filteredData() | paginate: { itemsPerPage: pageSize, currentPage: page, totalItems: totalItems }">
+                                        <ng-container *ngFor="let col of tableHeaders">
+                                            <!-- Render each cell -->
+                                            <td>
+                                                <ng-container *ngIf="col === 'status'; else defaultColumn">
+                                                    <span class="badge" [ngClass]="{
+            'bg-danger py-1 small m-0': item[col] === 'Draft',
+            'bg-warning py-1 small m-0': item[col] === 'Submitted',
+            'bg-success py-1 small m-0': item[col] === 'Approved'
+          }">
+                                                        {{ item[col] }}
+                                                    </span>
+                                                </ng-container>
+                                                <ng-template #defaultColumn>
+                                                    <span [innerHTML]="item[col]"></span>
+                                                </ng-template>
+                                            </td>
+
+                                            <!-- Insert icon column after Sr No -->
+                                            <ng-container *ngIf="col === 'SrNo'">
+                                                <td class="text-center">
+                                                    <button class="btn text-dark px-0"
+                                                        (click)="viewEmployeePDFData(item.empcode)">
+                                                        <i class="fa fa-download"></i>
+                                                    </button>
+                                                </td>
+                                            </ng-container>
+                                        </ng-container>
+                                    </tr>
+
+                                </tbody>
+                            </table>
+                            <pagination-controls (pageChange)="onPageChange($event)" [responsive]="true">
+                            </pagination-controls>
+
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- pdf download -->
+                <div class="row d-none">
+                    <div class="col-sm-12 col-md-12 col-lg-12">
+                        <div class="payslip ">
+                            <div id="pdf-content" class="border border-dark px-2" *ngIf="employeePDFData">
+                                <!-- src/app/pay-slip/pay-slip.component.html -->
+                                <!-- <div class="payslip-container1  border-top border-2 border-primary rounded"> -->
+
+
+                                <div class="row row-cols-1 row-cols-md-3 g-0 pb-0 border-dark border-bottom">
+                                    <!-- Logo Section -->
+                                    <div class="col d-flex align-items-start  justify-content-start ps-4">
+
+                                        <img src="assets/Image/Logo/logo.png" alt="Logo" height="30" width="50"
+                                            style="object-fit: contain; " class="align-content-center mt-3">
+
+
+
+                                    </div>
+
+                                    <div class="col">
+                                        <div class="comapny">
+                                            <p
+                                                class="fw-semibold text-center small text-center lh-sm text-dark pt-lg-2">
+                                                Empower Logics</p>
+                                            <p class="text-center small s-small text-center lh-sm text-dark">
+                                                Employee Appraisal Status</p>
+                                        </div>
+                                    </div>
+                                    <!-- Right Side Info -->
+                                    <div class="col d-flex align-items-center justify-content-end">
+                                        <div class="pe-lg-2 text-center">
+                                            <p class="text-dark small lh-sm pt-lg-2">Date:
+                                                {{employeePDFData.dated}}</p>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row row-cols-1 row-cols-md-2  g-0 pb-0 border-bottom border-dark">
+
+
+
+                                    <div class="col">
+                                        <table style="width: 100%; font-size: 12px; border-collapse: collapse;">
+                                            <tr>
+                                                <td style="padding: 4px; font-weight: bold; text-align: start;">Employee
+                                                    Name:</td>
+                                                <td style="padding: 4px; text-align: start;">:</td>
+                                                <td style="padding: 4px; text-align: start;">{{
+                                                    employeePDFData.empname
+                                                    }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding: 4px; font-weight: bold; text-align: start;">Employee
+                                                    Code:</td>
+                                                <td style="padding: 4px; text-align: start;">:</td>
+                                                <td style="padding: 4px; text-align: start;">{{
+                                                    employeePDFData.empcode
+                                                    }}</td>
+                                            </tr>
+
+                                        </table>
+                                    </div>
+
+
+
+
+
+                                    <div class="col">
+                                        <table style="width: 100%; font-size: 12px; border-collapse: collapse;">
+                                            <tr>
+                                                <td style="padding: 4px; font-weight: bold; text-align: start;">
+                                                    Appraisal Year
+                                                </td>
+                                                <td style="padding: 4px; text-align: start;">:</td>
+                                                <td style="padding: 4px; text-align: start;">{{
+                                                    employeePDFData.AppraisalYear }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding: 4px; font-weight: bold; text-align: start;">
+                                                    Status
+                                                </td>
+                                                <td style="padding: 4px; text-align: start;">:</td>
+                                                <!-- <td style="padding: 4px; text-align: start;">{{
+                                                    employeePDFData.status }}</td>
+                                            </tr> -->
+
+                                                <td style="padding: 4px; text-align: start;">
+                                                    <span class="badge py-1 small m-0" [ngClass]="{
+          'bg-danger': employeePDFData.status === 'Draft',
+          'bg-warning': employeePDFData.status === 'Submitted',
+          'bg-success': employeePDFData.status === 'Approved'
+        }">
+                                                        {{ employeePDFData.status }}
+                                                    </span>
+                                                </td>
+
+
+                                        </table>
+                                    </div>
+
+
+                                </div>
+
+
+                                <div class="row pt-lg-3 ">
+
+                                    <div class="col-sm-12 col-md-12 col-lg-12 ">
+
+
+
+
+
+
+
+                                        <!-- </div> -->
+                                        <div class="row ">
+                                            <div class="col-12">
+                                                <p class="text-dark m-0 d  ps-3 text-primary small  fw-semibold">Score</p>
+                                            </div>
+                                        </div>
+
+                                        <div class="row row-cols-1 row-cols-md-3 g-3 p-3 pt-1 ">
+                                 
+                                                <div class="col" style="background-color: none;">
+                                                 <p class="d-flex align-items-center justify-content-around border rounded-1"><span class=" fw-semibold small">  kra Score : </span><span class="small">{{employeePDFData.kraScore}}</span></p>
+                                                </div>
+                                                <div class="col" style="background-color: none;">
+                                                 <p class="d-flex align-items-center justify-content-around border rounded-1"><span class=" fw-semibold small">  Behavioral Score : </span><span class="small"> {{employeePDFData.behavioralScore}}</span></p>
+                                                </div>
+                                                <div class="col" style="background-color: none;">
+                                                 <p class="d-flex align-items-center justify-content-around border rounded-1"><span class=" fw-semibold small">   Final Score : </span><span class="small">{{employeePDFData.finalScore}}</span></p>
+                                                </div>
+
+                                        </div>
+
+
+                                        <div class="row row-cols-1 row-cols-md-1 g-0 border-top border-dark">
+                                            <div class="col">
+                                                 <p class="text-dark m-0 d  ps-3 text-primary  fw-semibold small">Manager Comments</p>
+                                                 <p class="small px-3 lh-base">{{employeePDFData.managerComments}}</p>
+                                            </div>
+                                        </div>
+
+                                        <div class="row row-cols-1 row-cols-md-1 g-0 border-top border-dark">
+                                            <div class="col">
+                                                 <p class="text-dark m-0 d  ps-3 text-primary  fw-semibold small">Employee Comments	</p>
+                                                 <p class="small px-3 lh-base">{{employeePDFData.employeeComments}}</p>
+                                            </div>
+                                        </div>
+
+                                        <div class="row row-cols-1 row-cols-md-1 g-0 border-top border-dark">
+                                            <div class="col">
+                                                 <p class="text-dark m-0 d  ps-3 text-primary  fw-semibold small">Remarks</p>
+                                                 <p class="small px-3 lh-base">{{employeePDFData.remarks}}</p>
+                                            </div>
+                                        </div>
+
+
+
+
+
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+
+
+            </div>
+
+
+
+        </div>
+
+    </div>

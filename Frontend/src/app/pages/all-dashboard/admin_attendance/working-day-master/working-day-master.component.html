@@ -1,0 +1,124 @@
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+      <div class="card">
+   
+    <!--  -->
+    <div class="card-header bg-blue ">
+      <div class="row w-100 ">
+    <div class="col-sm-12 col-md-6 col-lg-6 "> 
+      <h4 class="">{{pk_holidayid ? 'Update Working Day Master' : 'Add Working Day Master' }}</h4>
+
+       
+    </div>
+    <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+        <button class="btn btnheader" routerLink="/dash/adminAttendance/adminAttendancedashboard/WorkingDayMaster_list">Back
+          </button>
+      </div>
+
+</div>
+
+</div>
+     
+    <!--  -->
+
+    <div class="card-body mt-4">
+        <form [formGroup]="holidayForm"class="row row-cols-1 row-cols-md-3 g-4" >
+            <!-- Year Dropdown -->
+              <div class="col"><label>Year<span style="color: red;">*</span></label>
+                <ng-select id="year" [items]="years" bindLabel="name" bindValue="value"
+                formControlName="fk_yearid" placeholder="--Select Year--"
+                class="w-100"></ng-select>
+                <span *ngIf="showError && holidayForm.controls['fk_yearid'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                  Please enter Year
+                </span>
+              </div>
+            
+             <!--Location-->
+           <!-- Location -->
+<div class="col">
+  <label>Location</label>
+ 
+  <ng-select 
+    [items]="Location" 
+    bindLabel="name" 
+    bindValue="value" 
+    [multiple]="true"
+    [closeOnSelect]="false"
+    placeholder="--Select Locations--" 
+    class="w-100 small"
+    formControlName="fk_locid"
+    [disabled]="Isedit"
+   >  
+   <!-- Disable in update mode -->
+  
+    <!-- Custom Template for Displaying Selected Items -->
+    <ng-template ng-multi-label-tmp>
+      <span>{{ getLocationDisplayText() || "--Select Locations--" }}</span>
+    </ng-template>
+  
+    <!-- Custom Checkbox for Select All -->
+    <ng-template ng-option-tmp let-item="item" let-index="index">
+      <div *ngIf="index === 0">
+        <input type="checkbox" (change)="toggleSelectAll()" [checked]="isAllSelected()" class="form-check-input fs-6 mx-1" />
+        <strong>&nbsp;Select All</strong>
+      </div>
+      <div *ngIf="index !== 0">
+        <input type="checkbox" [checked]="selectedLocations.includes(item.value)"
+               (change)="toggleLocation(item.value)" class="form-check-input fs-6 mx-1"/>
+        {{ item.name }}
+      </div>
+    </ng-template>
+  
+  </ng-select> 
+</div>
+
+            
+            
+          
+            <!-- Holiday Name -->
+              <div class="col"><label>Working Day Name<span style="color: red;">*</span></label>
+                <input type="text" class="form-control" formControlName="holidaytype">
+                <span *ngIf="showError && holidayForm.controls['holidaytype'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                  Please enter Holiday Name.
+                </span>
+              </div>
+               <!-- Dated Field -->
+               <div class="col"><label>Working  Date<span style="color: red;">*</span></label>
+                <input type="date" class="form-control" formControlName="dated">
+                
+                <span *ngIf="showError && holidayForm.controls['dated'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                  Please enter Dated
+                </span>
+              </div>
+            
+               
+            <!-- National Holiday Checkbox -->
+              <!-- <div class="col">
+                <label>Is National Holiday</label><br>
+                <input type="checkbox"formControlName="isNH" class="form-check-input fs-6 mx-1">
+              </div> -->
+        
+ <!-- Working day Checkbox -->
+            <!-- <div class="col">
+            <label>Is Working day</label><br>
+            <input type="checkbox"formControlName="IsWorkingDay" class="form-check-input fs-6 mx-1">
+              </div> -->
+
+
+          </form>
+          <div class="row">
+            <div class="col d-flex align-items-end justify-content-end pt-4 pb-3">
+              <button type="button" class="btn btn-primary  mx-1"(click)="onSubmit()">{{ pk_holidayid ? 'Update' : 'Save' }}</button> 
+
+                <button type="button" class="btn btn-outline-dark mx-1"(click)="resetForm()">Reset</button>
+            </div>
+        </div>
+    </div>
+
+
+
+
+      
+</div>
+</div>
+</div> 

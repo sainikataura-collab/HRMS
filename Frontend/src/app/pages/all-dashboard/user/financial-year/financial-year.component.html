@@ -1,0 +1,54 @@
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+
+      <!-- Header: Financial Year Master -->
+      <div class="card-header bg-blue">
+        <div class="row w-100">
+          <div class="col-md-6">
+ 
+            <h4>{{Isedit? 'Update Financial Year Master': 'Financial Year Master' }}</h4>
+          </div>
+          <div class="col-md-6 d-flex align-items-center justify-content-end">
+            <button class="btn btnheader" routerLink="/dash/user/userdashboard/financialYear_list">Back</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Financial Year Form -->
+      <div class="card-body mt-4">
+        <form [formGroup]="financialDetails">
+          <div class="row">
+            <div class="col-md-4">
+              <label>From Date <span class="text-danger">*</span></label>
+              <input type="date" class="form-control" formControlName="date1">
+              <span *ngIf="showError && financialDetails.controls['date1'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                Please enter From Date.
+              </span>
+            </div>
+
+            <div class="col-md-4">
+              <label>To Date <span class="text-danger">*</span></label>
+              <input type="date" class="form-control" formControlName="date2">
+              <span *ngIf="showError && financialDetails.controls['date2'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                Please enter To Date.
+              </span>
+            </div>
+
+            <div class="col-md-4 d-flex align-items-end justify-content-end">
+              <button type="submit" class="btn btn-primary mx-1" (click)="onSubmit()"> {{ Isedit ? 'Update' : 'Save' }}</button>
+
+              <button type="button" class="btn btn-outline-dark mx-1" >Reset</button>
+              
+              <!-- <button type="button" class="btn btn-secondary mx-1" >View</button> -->
+
+            </div>
+          </div>
+        </form>
+      </div>
+
+
+
+    </div>
+  </div>
+</div>

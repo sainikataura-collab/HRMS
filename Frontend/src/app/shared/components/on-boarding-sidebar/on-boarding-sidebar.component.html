@@ -1,0 +1,80 @@
+<aside id="sidebar-wrapper">
+  <div class="sidebar-brand">
+    <a routerLink="/on_boarding/basicInfo" queryParamsHandling="preserve">
+      <img src="assets/Image/Logo/logo.png" class="header-logo" />
+      <span class="logo-name ps-3">HRMS</span>
+    </a>
+  </div>
+
+  <!-- Verification Steps Tracker -->
+  <ul class="sidebar-menu">
+    <li class="menu-header d-flex justify-content-between align-items-center">
+      <span>VERIFICATION PROGRESS</span>
+      <span class="badge rounded-pill bg-success text-white" style="font-size: 11px; font-weight: 700; background-color: #10B981 !important;">
+        {{ completionPercentage }}%
+      </span>
+    </li>
+
+    <!-- Visual Progress Bar Indicator -->
+    <li class="px-3 pb-2 mb-2" *ngIf="totalVisibleStepsCount > 0">
+      <div class="progress" style="height: 6px; background: #e2e8f0; border-radius: 4px; overflow: hidden;">
+        <div 
+          class="progress-bar bg-success progress-bar-striped progress-bar-animated" 
+          role="progressbar" 
+          [style.width.%]="completionPercentage" 
+          [attr.aria-valuenow]="completionPercentage" 
+          aria-valuemin="0" 
+          aria-valuemax="100"
+          style="transition: width 0.4s ease; background-color: #10B981 !important;">
+        </div>
+      </div>
+      <div class="d-flex justify-content-between text-muted mt-1" style="font-size: 10px; font-weight: 500;">
+        <span>{{ completedStepsCount }} of {{ totalVisibleStepsCount }} completed</span>
+        <span class="text-success fw-bold" *ngIf="completionPercentage === 100">All Done!</span>
+        <span class="text-secondary" *ngIf="completionPercentage < 100">{{ totalVisibleStepsCount - completedStepsCount }} remaining</span>
+      </div>
+    </li>
+
+    <!-- Dynamic Menu Items Based on Company Config -->
+    <ng-container *ngFor="let item of visibleMenuItems; let i = index">
+      <!-- Step Item -->
+      <li
+        class="step-item"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: false }"
+        [class.completed]="item.completed"
+      >
+        <a
+          class="nav-link"
+          [routerLink]="item.route"
+          queryParamsHandling="preserve"
+        >
+          <div class="step-indicator">
+            <div class="step-circle" [class.completed]="item.completed">
+             
+             
+              <small class="step-number">{{ i + 1 }}</small>
+              <span class="checkmark">✓</span>
+            </div>
+            <div
+              class="step-line"
+              *ngIf="i < visibleMenuItems.length - 1"
+            ></div>
+          </div>
+          <div class="step-content d-flex align-items-center justify-content-around">           
+            <span >
+              {{ item.label }} <span class=" text-warning text-end" *ngIf="item.mandatory">✦</span>
+            </span> 
+            <!-- <span class="badge rounded-pill text-bg-primary">{{item.mandatory}}</span> -->
+             
+     
+          </div>
+        </a>
+      </li>
+    </ng-container>
+
+    <li class="d-flex align-items-center justify-content-center mt-4">
+      <img src="assets/Image/training-hrms2.png" class="w-75" alt="" />
+    </li>
+  </ul>
+</aside>

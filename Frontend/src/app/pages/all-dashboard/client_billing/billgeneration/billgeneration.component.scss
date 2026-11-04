@@ -1,0 +1,37 @@
+.scroll-active {
+  max-height: 490px;
+  overflow-y: auto;
+  position: relative;
+}
+
+.table-invoice {
+  max-height: 490px;
+  overflow-y: auto;
+}
+
+.table thead {
+
+  position: sticky;
+  top: 0;
+  background: #f8f9fa;
+  /* Or match your theme */
+  z-index: 2;
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+.table td {
+  white-space: nowrap;
+}
+
+.table th {
+  white-space: nowrap;
+}
+
+.form-control-sm{
+  font-size: 0.65rem !important;
+  font-weight: 500 !important;
+
+}

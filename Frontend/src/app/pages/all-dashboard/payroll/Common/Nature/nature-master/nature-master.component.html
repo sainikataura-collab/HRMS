@@ -1,0 +1,56 @@
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card">
+ 
+  <!--  -->
+  <div class="card-header bg-blue ">
+    <div class="row w-100 ">
+  <div class="col-sm-12 col-md-6 col-lg-6  ">
+     <h4 class="">{{pk_natureid ? 'Update   Nature Master' : 'Add  Nature Master' }}</h4></div>
+  <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+    <button class="btn btnheader" routerLink="/dash/user/userdashboard/natureMaster_list">Back
+      </button>
+  </div>
+
+</div>
+
+</div>
+   
+  <!--  -->
+
+  <div class="card-body mt-4">
+    <form [formGroup]="natureFrom"class="row row-cols-1 row-cols-md-3 g-4">
+     
+     
+          <div class="col"><label>Nature Name<span style="color: red;">*</span></label>
+              <div class="form-group">
+                  <input  type="text" class="form-control flex-grow-1" formControlName="nature"maxlength="15">
+                  <span *ngIf="showError && natureFrom.controls['nature'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                    Please enter Nature Name
+                  </span>
+                  <div *ngIf="natureFrom.get('nature')?.errors?.['duplicate']" 
+                      class="text-danger" style="font-size:10px;">
+                      {{ natureFrom.get('nature')?.errors?.['duplicate'] }}
+                  </div>
+              </div>                
+          </div>
+       
+
+    </form>
+    <div class="row">
+      <div class="col d-flex align-items-end justify-content-end pt-4 pb-3">
+        <button type="button" class="btn btn-primary  mx-1"(click)="onSubmit()">{{ pk_natureid ? 'Update' : 'Save' }}</button> 
+
+          <button type="button" class="btn btn-outline-dark mx-1"(click)="resetForm()">Reset</button>
+                
+      </div>
+  </div>
+  </div>
+
+
+
+
+    
+</div>
+</div>
+</div> 

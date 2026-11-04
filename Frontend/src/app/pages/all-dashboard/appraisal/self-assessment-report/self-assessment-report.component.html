@@ -1,0 +1,76 @@
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card">
+      <div class="card-header bg-primary py-lg-1 mt-0">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-between">
+            <h4>KRA Assessmant Status</h4>
+          </div>
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-center">
+            <input type="text" class="form-control" placeholder="Search Assessment..." placeholder="Search..."
+              [(ngModel)]="searchText" (ngModelChange)="onSearchTextChanged()" />
+          </div>
+
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-md-end">
+            <button class="btn btnheader" (click)="downloadExcel()">
+              Export Excel
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- List of Employee -->
+
+      <div class="table-responsive table-invoice" [ngClass]="{ 'scroll-active': selfAssessmentList.length > 10 }">
+        <table class="table table-bordered" id="exportTable">
+          <thead>
+
+            <ng-container *ngFor="let col of tableHeaders; let i = index">
+              <th>{{ col }}</th>
+              <!-- Insert Action column after "Sr No" -->
+              <ng-container *ngIf="col === 'SrNo'">
+                <th>Action</th>
+              </ng-container>
+            </ng-container>
+          </thead>
+          <tbody>
+            <tr
+  *ngFor="let item of filteredData() | paginate: { itemsPerPage: pageSize, currentPage: page, totalItems: totalItems }">
+  <ng-container *ngFor="let col of tableHeaders">
+    <!-- Render each cell -->
+    <td>
+      <ng-container *ngIf="col === 'Status'; else defaultColumn">
+        <span class="badge" [ngClass]="{
+          'bg-danger py-1 small m-0': item[col] === 'Pending at RM',
+          'bg-warning py-1 small m-0': item[col] === 'Pending at HOD',
+          'bg-success py-1 small m-0': item[col] === 'Approved'
+        }">
+          {{ item[col] }}
+        </span>
+      </ng-container>
+      <ng-template #defaultColumn>
+        <span [innerHTML]="item[col]"></span>
+      </ng-template>
+    </td>
+
+    <!-- Insert icon column after Sr No -->
+    <ng-container *ngIf="col === 'SrNo'">
+      <td class="text-center">
+        <button
+          class="btn text-dark px-0"
+          >
+          <i class="fa fa-download"></i>
+        </button>
+      </td>
+    </ng-container>
+  </ng-container>
+</tr>
+
+          </tbody>
+        </table>
+        <pagination-controls (pageChange)="onPageChange($event)" [responsive]="true">
+        </pagination-controls>
+      </div>
+    </div>
+  </div>
+</div>

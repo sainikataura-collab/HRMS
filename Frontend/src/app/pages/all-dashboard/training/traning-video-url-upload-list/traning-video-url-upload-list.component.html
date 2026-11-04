@@ -1,0 +1,66 @@
+<div class="row">
+    <div class="col-12">
+      <div class="card">
+        <!--  -->
+        <div class="card-header bg-primary">
+            <div class="row w-100">
+              <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-between">
+                <h4>Video URL Upload Details</h4>
+                
+              </div>
+              <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-center">
+                <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText"/>
+              </div>
+  
+              <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-md-end">
+                <button class="btn btnheader" routerLink="/dash/payroll/payrolldashboard/video-url-upload">
+                  Add
+              </button>
+                  <!-- <button class="btn btn-light mx-1" (click)="exportToExcel()">
+                    Download
+                  </button> -->
+              </div>
+            
+            </div>
+          </div>  
+          <!--  -->
+          <div class="card-body">
+            <div class="table-responsive table-invoice">
+              <table Id="exportTable"  class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>Sr.No.</th>
+                    <th>Appication Name</th>
+                    <th>Topic Name</th>
+                    <th>URL	</th>
+                    <!-- <th>Thumbnails</th> -->
+                    <th>Is Active</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Paginate filtered data -->
+                    <tr *ngFor="let item of  filteredData() | paginate: { itemsPerPage: pageSize, currentPage: pageIndex ,totalItems:totalItems};let i = index">
+  
+                    <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+                    <td>{{item.application}}</td>
+                    <td>{{item.topic}}</td>
+                    <td>{{item.url}}</td>               
+                    <!-- <td>{{item.thumbnails}}</td>                -->
+                    <td>{{item.isActive}}</td>               
+                    <td>
+                      <button class="btn btn-sm btn-outline"(click)="isUpdate(item.pk_TrainingId)"><i class="fa-solid fa-pen-to-square" ></i></button>
+                      <button class="btn btn-sm btn-outline"  (click)="delete(item.pk_TrainingId)" ><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+               <pagination-controls (pageChange)="onPageChange($event)" >
+          </pagination-controls>
+    
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  

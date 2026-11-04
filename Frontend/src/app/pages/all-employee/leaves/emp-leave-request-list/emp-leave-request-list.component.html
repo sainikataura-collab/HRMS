@@ -1,0 +1,97 @@
+<div class="row m-0">
+  <div class="col-12 px-0 py-0">
+    <div class="card px-0 m-0">
+
+
+      
+      <div class="card-header">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-between">
+            <h4 class="mb-0">{{ caption }}  </h4>
+              <button  *ngIf="showAddButton" class="btn btnheader mx-0 mb-1 d-lg-none" routerLink="/dash/leaves/leavesdashboard/leaverequest"> Apply</button>
+
+          </div>
+
+
+          <div class="col-12 col-md-3 all-pickup-point-search-header d-flex align-items-center justify-content-md-end">
+            <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText" />
+            
+          </div>
+
+
+          <div class="col-12 col-md-3 d-flex justify-content-md-center align-items-center mt-md-0">
+            <div class="d-none d-md-flex">
+              <button  *ngIf="showAddButton" class="btn btnheader mx-2" routerLink="/dash/leaves/leavesdashboard/leaverequest"> Apply</button>
+             
+            </div>
+          </div>
+
+          
+        </div>
+      </div>
+
+
+      <div class="card-body px-0  m-2">
+        <!-- table-responsive-md makes the full table scrollable ONLY above md breakpoint -->
+        <div class="table-responsive-md">
+          <table Id="exportTable" class="table">
+            <thead>
+              <tr>
+                <th>Sr.No.</th>
+                <th>Request Date</th>
+                <th>Leave Type</th>
+                <th>Total days</th>
+                <th>From Date</th>
+                <th>To date</th>
+                
+                <th>Remarks</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody *ngIf="filteredData().length > 0; else noRecords">
+
+              <tr
+                *ngFor="let item of filteredData() | paginate: { itemsPerPage: pageSize, currentPage: pageIndex, totalItems: totalItems }; let i = index">
+                <td data-label="Sr.No. : ">{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+                <td data-label="Request Date : ">{{ item.dated }}</td>
+                <td data-label="Leave Type : ">{{ item.leavetype }}</td>
+                <td data-label="Total days: ">{{ item.totdays }}</td>
+                <td data-label="From Date : ">{{ item.fromdate }}</td>
+                <td data-label="To date : ">{{ item.todate }}</td>
+                
+
+                <td data-label="Remarks: " class="remark-text-mobile">{{ item.remarks }}</td>
+                <td data-label="Status: " [ngClass]="{
+      'text-success  btn-success': item.statusname === 'Approved',
+      'text-warning btn-warning': item.statusname === 'Pending',
+      'text-danger btn-danger': item.statusname === 'Cancelled',
+    }">
+
+                  {{ item.statusname }}</td>
+
+                <td  data-label="Action: "*ngIf="item.statusname === 'Pending'" (click)="onDeleteLeave(item.pk_leaveappid)"><button class="btn btn-sm btn-outline"> <i
+                      class="fa fa-trash"></i></button></td>
+
+
+              </tr>
+
+            </tbody>
+
+            <ng-template #noRecords>
+              <tbody>
+                <tr>
+                  <td colspan="8" class="text-center text-muted">No records found.</td>
+                </tr>
+              </tbody>
+            </ng-template>
+          </table>
+          <!-- Pagination controls -->
+          <pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>
+        </div>
+      </div>
+
+
+    </div>
+  </div>
+</div>

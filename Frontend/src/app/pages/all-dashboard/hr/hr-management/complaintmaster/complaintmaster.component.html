@@ -1,0 +1,166 @@
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+            <div class="card-header bg-blue py-lg-1 mt-0">
+                <div class="col-sm-12 col-md-12 col-lg-3 col-12">
+              
+                    <div class="row w-100">
+                        <div class="col-sm-12 col-md-12 col-lg-12 ">
+                            <h4 class="">Employee Complaint Master</h4>
+                        </div>
+                    </div>
+                </div>
+              
+                <div class="col-sm-12 col-md-12 col-lg-7 col-12">
+                    <div class="row w-100">
+                        <div class="col-sm-12 col-md-12 col-lg-12">
+                            <app-common-search (filtersChanged)="handleFilters($event)"></app-common-search>
+                        </div>
+                       
+                    </div>
+                </div>
+
+
+                <div class="col-sm-12 col-md-12 col-lg-2 col-12">
+                    <div class="col-sm-12 col-md-12 col-lg-12  d-flex align-items-center justify-content-md-end">
+                      <button class="btn btnheader" routerLink="/dash/hr/hrdashboard/HR_Employee_Complaint_Mst_list">
+                           GoToList
+                        </button>
+                    </div>
+                    </div>
+              </div>
+            <!-- NextFrom---------- -->
+            <div class="card-body mt-4">
+                <form [formGroup]="ComplaintmasterForm">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label>Employee Code</label>
+                            <div class="form-group">
+                                <ng-select id="year" [items]="EmployeeList" bindLabel="name" bindValue="value"
+                                    formControlName="EmpCode" placeholder="--Select --" class="w-100"></ng-select>
+                                <div *ngIf="submitted   && ComplaintmasterForm.get('EmpCode')?.invalid"
+                                    class="text-danger">
+                                    EmployeeCode is required!
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label>Date of Complaint</label>
+                            <div class="form-group">
+                                <input type="date" class="form-control" formControlName="ComplaintDate">
+                                <div *ngIf="submitted   && ComplaintmasterForm.get('ComplaintDate')?.invalid"
+                                    class="text-danger">
+                                    Date of Complaint is required!
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label>Details of Incident</label>
+                            <div class="form-group">
+                                <input type="text" class="form-control" formControlName="detailsInc">
+                                <div *ngIf="submitted   && ComplaintmasterForm.get('detailsInc')?.invalid"
+                                    class="text-danger">
+                                    Details of Incident is required!
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label>By Raised Complaint</label>
+                            <div class="form-group">
+                                <ng-select id="year" [items]="EmployeeList" bindLabel="name" bindValue="value"
+                                    formControlName="raisdComp" placeholder="--Select --"
+                                    class="w-100"></ng-select>
+                                <div *ngIf="submitted   && ComplaintmasterForm.get('raisdComp')?.invalid"
+                                    class="text-danger">
+                                    By Raised Complaint is required!
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label>Comments of the Person Against whom Complaint</label>
+                            <div class="form-group">
+                                <input type="text" class="form-control"
+                                    formControlName="CommPersion">
+
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label>Comments of Person who has Raised the Complaint</label>
+                            <div class="form-group">
+                                <input type="text" class="form-control"
+                                    formControlName="CommPersonRaised">
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label>Comments of First Reporting</label>
+                            <div class="form-group">
+                                <input type="text" class="form-control" formControlName="CommfirstReport">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label>Comments of Second Reporting</label>
+                            <div class="form-group">
+                                <input type="text" class="form-control" formControlName="CommSecoundReport">
+
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label>Comments of HOD</label>
+                            <div class="form-group">
+                                <input type="text" class="form-control" formControlName="CommHOD">
+
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label>Comments of Manager - OD</label>
+                            <div class="form-group">
+                                <input type="text" class="form-control" formControlName="CommManager">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label>Comments of GM HR</label>
+                            <div class="form-group">
+                                <input type="text" class="form-control" formControlName="CommGMHR">
+
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label>Comments of Management</label>
+                            <div class="form-group">
+                                <input type="text" class="form-control" formControlName="CommManagemant">
+
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label>Final Desicion</label>
+                            <div class="form-group">
+                                <input type="text" class="form-control" formControlName="FinalDesion">
+
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Buttons -->
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary mx-1" (click)="onSubmit()">
+                            {{ isEditMode  ? 'Update' : 'Save' }}
+                        </button>
+                        <button type="submit" class="btn btn-outline-dark mx-1" (click)="resetForm()">Reset</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+
+</div>

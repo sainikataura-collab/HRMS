@@ -1,0 +1,114 @@
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card">
+
+      <!-- Header -->
+      <div class="card-header bg-blue">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-6 col-lg-6 col-9">
+            <h4>Resignation Approval</h4>
+          </div>
+          <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 col-3 d-flex align-items-center justify-content-md-end">
+            <button class="btn btnheader" routerLink="/dash/emp-exit/emp-exitdashboard/resignation_approval_list">Back</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Body -->
+      <div class="card-body mt-4">
+        <form [formGroup]="approvalForm">
+
+          <div class="row row-cols-1 row-cols-md-3">
+
+            <div class="col">
+              <label>Resignation Date</label>
+              <div class="form-group">
+                <input type="text" class="form-control" formControlName="resignationDate" readonly />
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Expected Last Working Day</label>
+              <div class="form-group">
+                <input type="text" class="form-control" formControlName="expectedLWD" readonly />
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Notice Period (Days)</label>
+              <div class="form-group">
+                <input type="text" class="form-control" formControlName="noticePeriod" readonly />
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Notice Period Served</label>
+              <div class="form-group">
+                <input type="text" class="form-control"
+                  [value]="approvalForm.get('isNoticePeriodServed')?.value ? 'Yes' : 'No'" readonly />
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Reason</label>
+              <div class="form-group">
+                <input type="text" class="form-control" formControlName="reason" readonly />
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Employee Remarks</label>
+              <div class="form-group">
+                <textarea class="form-control" formControlName="remarks" rows="1" readonly></textarea>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="page-seperator bg-primary mx-2 rounded-1">
+            <p class="text-white ms-4 p-1 mb-0">Resignation Approval</p>
+          </div>
+
+          <div class="row row-cols-1 row-cols-md-3 mx-2 my-1">
+
+            <div class="col">
+              <label>Approval Status <span style="color: red;">*</span></label>
+              <div class="form-group">
+                <ng-select
+                  [items]="approvalStatusList"
+                  bindLabel="name"
+                  bindValue="id"
+                  formControlName="status"
+                  placeholder="--Select--"
+                  class="w-100">
+                </ng-select>
+                <span *ngIf="submitted && approvalForm.get('status')?.invalid" class="text-danger mt-1" style="font-size: 12px;">
+                  Please select Approval Status.
+                </span>
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Approval Remarks <span style="color: red;">*</span></label>
+              <div class="form-group">
+                <textarea class="form-control" formControlName="approvalRemarks" rows="1" placeholder="Enter Approval Remarks"></textarea>
+                <span *ngIf="submitted && approvalForm.get('approvalRemarks')?.invalid" class="text-danger mt-1" style="font-size: 12px;">
+                  Please enter Approval Remarks.
+                </span>
+              </div>
+            </div>
+
+          </div>
+
+        </form>
+
+        <div class="col-12 d-flex align-items-end justify-content-end mt-4">
+          <button type="button" class="btn btn-primary mx-1" (click)="submit()">Submit</button>
+          <button type="reset" class="btn btn-outline-dark mx-1">Reset</button>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>

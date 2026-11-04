@@ -1,0 +1,183 @@
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+
+    <div class="card">
+
+      <!-- Header -->
+      <div class="card-header bg-primary py-lg-1">
+        <div class="row w-100 align-items-center">
+
+          <!-- Title -->
+          <div class="col-12 col-md-4">
+            <h4>Update Audit Log</h4>
+          </div>
+
+          <!-- Download Action Button -->
+          <div class="col-12 col-md-8 text-md-end mt-2 mt-md-0">
+            <button class="btn btn-sm btnheader mx-1 bg-white text-primary shadow-sm fw-semibold"
+              (click)="exportToExcel()" title="Export Excel">
+              <i class="fas fa-file-excel text-primary me-1"></i> Download
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Card Body -->
+      <div class="card-body my-2 px-3">
+
+        <form (ngSubmit)="onSearch()">
+
+          <div class="row row-cols-1 row-cols-md-4 row-cols-lg-4 g-2 align-items-end">
+
+            <!-- Document Name -->
+            <div class="col">
+              <label class="form-label">
+                Document Name
+              </label>
+              <ng-select [items]="documentNameList" bindLabel="name" bindValue="name"
+                [(ngModel)]="filter.documentName" name="documentName" placeholder="--Select Document Name--">
+              </ng-select>
+            </div>
+
+            <!-- Document Code -->
+            <div class="col">
+              <label class="form-label">
+                Document Code
+              </label>
+              <input type="text" class="form-control" placeholder="Enter Document Code"
+                [(ngModel)]="filter.documentCode" name="documentCode" />
+            </div>
+
+            <!-- Date Range -->
+            <div class="col">
+              <label class="form-label">
+                Date Range
+              </label>
+              <ng-select [items]="dateRangeOptions" bindLabel="label" bindValue="value"
+                [(ngModel)]="dateRangePreset" (change)="onDateRangeChange()" name="dateRangePreset"
+                placeholder="--Select Date Range--">
+              </ng-select>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="col d-flex gap-2">
+              <button type="submit" class="btn btn-primary w-100" [disabled]="isLoading">
+                <i class="fa fa-search me-1"></i> Search
+              </button>
+              <button type="button" class="btn btn-outline-secondary w-100" (click)="onReset()" [disabled]="isLoading">
+                <i class="fa fa-rotate-left me-1"></i> Reset
+              </button>
+            </div>
+
+          </div>
+
+          <!-- Custom Date Range (when Custom Range is selected) -->
+          <div class="row row-cols-1 row-cols-md-4 row-cols-lg-4 g-2 mt-2" *ngIf="dateRangePreset === 'custom'">
+            <div class="col">
+              <label class="form-label">
+                From Date
+              </label>
+              <input type="date" class="form-control" [(ngModel)]="filter.fromDate" name="fromDate" />
+            </div>
+
+            <div class="col">
+              <label class="form-label">
+                To Date
+              </label>
+              <input type="date" class="form-control" [(ngModel)]="filter.toDate" name="toDate" />
+            </div>
+          </div>
+
+        </form>
+
+        <!-- Audit Log Records Section with page-seperator -->
+        <div class="page-seperator rounded-1 mt-4 mb-3 d-flex flex-wrap justify-content-between align-items-center px-3 py-1">
+          <p class="text-white mb-0 fw-semibold">Audit Log Records</p>
+          <div style="width: 250px;">
+            <input type="text" class="form-control form-control-sm bg-white" placeholder="Search in table..."
+              [(ngModel)]="tableSearch" (input)="applyTableFilter()" />
+          </div>
+        </div>
+
+        <!-- Loading Spinner -->
+        <div *ngIf="isLoading" class="text-center py-5">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p class="mt-2 text-muted">Loading audit logs...</p>
+        </div>
+
+        <!-- Table View -->
+        <div *ngIf="!isLoading" class="table-responsive">
+          <table class="table text-center align-middle mb-0">
+            <thead class="table-light">
+              <tr>
+                <th style="width: 50px;">Sr.</th>
+                <th>Document Name</th>
+                <th>Document Code</th>
+                <th>Field Name</th>
+                <th style="min-width: 150px;">Previous Value</th>
+                <th style="min-width: 150px;">Current Value</th>
+                <th>Updated By</th>
+                <th style="min-width: 160px;">Updated Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                *ngFor="let item of filteredLogs | paginate : { itemsPerPage: pageSize, currentPage: pageIndex }; let i = index">
+                <td class="text-center">{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+                <td>
+                  <span class="badge rounded-pill bg-info-subtle text-info border border-info px-2 py-1">
+                    {{ item.documentName || item.DocumentName || '-' }}
+                  </span>
+                </td>
+                <td class="">{{ item.documentCode || item.DocumentCode || '-' }}</td>
+                <td>
+                  <span class="">{{ item.fieldName || item.FieldName || '-' }}</span>
+                </td>
+                <td>
+                  <span
+                    class="badge bg-danger-subtle text-danger border border-danger px-2 py-1 text-wrap text-start">
+                    {{ (item.previousValue !== null && item.previousValue !== undefined ? item.previousValue :
+                    (item.PreviousValue !== null && item.PreviousValue !== undefined ? item.PreviousValue : '-')) }}
+                  </span>
+                </td>
+                <td>
+                  <span
+                    class="badge bg-success-subtle text-success border border-success px-2 py-1 text-wrap text-start">
+                    {{ (item.currentValue !== null && item.currentValue !== undefined ? item.currentValue :
+                    (item.CurrentValue !== null && item.CurrentValue !== undefined ? item.CurrentValue : '-')) }}
+                  </span>
+                </td>
+                <td class="">{{ item.entryByName || item.EntryByName || item.entryBy || item.EntryBy || '-' }}</td>
+                <td class="">
+                  {{ (item.entryDate || item.EntryDate) ? (item.entryDate || item.EntryDate | date: 'dd-MMM-yyyy hh:mm a') : '-' }}
+                </td>
+              </tr>
+
+              <!-- No Data Row -->
+              <tr *ngIf="filteredLogs.length === 0">
+                <td colspan="8" class="text-center py-5 text-muted">
+                  <div class="empty-state py-4">
+                    <i class="fa fa-folder-open fa-3x mb-3 text-primary opacity-50 d-block"></i>
+                    <h6 class="fw-bold text-dark">No records found</h6>
+                    <p class="small text-muted mb-0">Try adjusting your search term</p>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Standard Pagination inside the card footer -->
+        <div class="p-2 mt-2" *ngIf="!isLoading && filteredLogs.length > 0">
+          <pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+</div>

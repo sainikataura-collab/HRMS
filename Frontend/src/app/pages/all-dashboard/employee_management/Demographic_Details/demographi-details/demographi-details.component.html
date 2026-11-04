@@ -1,0 +1,531 @@
+<div class="step-indicator" *ngIf="isFromEmployeeMaster">
+    <!-- Step 1 -->
+    <div class="step" [ngClass]="{'active-step': currentStep === 1, 'completed-step': currentStep > 1}" (click)="goToEmployeeMst()" style="cursor: pointer;">
+        <div class="step-circle">
+            <a (click)="goToEmployeeMst()">1</a>
+        </div>
+        <div class="step-label small"><span class="small">Employee Master</span></div>
+        <div class="step-line" *ngIf="currentStep > 1 || currentStep === 1"></div>
+    </div>
+    <!-- Step 2 -->
+    <div class="step" [ngClass]="{'active-step': currentStep === 2, 'completed-step': currentStep > 2}" (click)="goToAttendance()" style="cursor: pointer;">
+        <div class="step-circle">
+            <a (click)="goToAttendance()">2</a>
+        </div>
+        <div class="step-label small"><span class="small">Shift & Attandance Details</span></div>
+        <div class="step-line" *ngIf="currentStep > 2 || currentStep === 2"></div>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="step" [ngClass]="{'active-step': currentStep === 3,'completed-step': currentStep > 3}" (click)="goToOtherDetails()" style="cursor: pointer;">
+        <div class="step-circle">
+            <a (click)="goToOtherDetails()">3</a>
+        </div>
+        <div class="step-label small"><span class="small">Compliance Details</span></div>
+        <div class="step-line" *ngIf="currentStep > 3 || currentStep === 3"></div>
+    </div>
+    <!-- Step 4 -->
+    <div class="step" [ngClass]="{'active-step': currentStep === 4, 'completed-step': currentStep > 4}" (click)="goTohead()" style="cursor: pointer;">
+        <div class="step-circle">
+            <a (click)="goTohead()">4</a>
+        </div>
+        <div class="step-label small"><span class="small">Salary Details </span></div>
+        <div class="step-line" *ngIf="currentStep > 4 || currentStep === 4"></div>
+    </div>
+    <!-- Step 5 -->
+    <div class="step" [ngClass]="{'active-step': currentStep === 5, 'completed-step': currentStep > 5}" (click)="goToDemographic()" style="cursor: pointer;">
+        <div class="step-circle">
+            <a (click)="goToDemographic()">5</a>
+        </div>
+        <div class="step-label small"><span class="small">Demographic Details</span></div>
+        <div class="step-line" *ngIf="currentStep > 5 || currentStep === 5"></div>
+    </div>
+    <!-- Step 6 -->
+    <div class="step" [ngClass]="{'active-step': currentStep === 6, 'completed-step': currentStep > 6}" (click)="goToQualification()" style="cursor: pointer;">
+        <div class="step-circle">
+            <a (click)="goToQualification()">6</a>
+        </div>
+        <div class="step-label small"><span class="small">Qualification Details</span></div>
+        <div class="step-line" *ngIf="currentStep > 6 || currentStep === 6"></div>
+    </div>
+    <!-- Step 7 -->
+    <div class="step" [ngClass]="{'active-step': currentStep === 7}" (click)="goToExperience()" style="cursor: pointer;">
+        <div class="step-circle">
+            <a (click)="goToExperience()">7</a>
+        </div>
+        <div class="step-label small"><span class="small">Experience Details</span></div>
+    </div>
+</div>
+
+<!-- Tab Content -->
+<div class="tab-content" *ngIf="isFromEmployeeMaster">
+</div>
+
+<div class="row mt-2">
+    <div [ngClass]="isFactBoxOpen ? 'col-sm-12 col-md-8 col-lg-9' : 'col-12'">
+        <div class="card mt-lg-3 border-top border-2 border-primary" *ngIf="isFromEmployeeMaster">
+            <div class="row row-cols-1 row-cols-md-4 g-3 pt-1 px-3">
+                <div class="col">
+                    <p class="small" style="font-size: 12px;"><span>Emp Code : </span> <span style="color:red;">{{
+                            EmployeeMasterForm.value.empcode || EmployeeMasterForm.value.employeeCode }}</span> </p>
+                </div>
+
+                <div class="col">
+                    <p class="small " style="font-size: 12px;"><span>Emp Name : </span> <span style="color:red;">{{
+                            EmployeeMasterForm.value.empname }}</span> </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-2">
+            <!-- Main Header -->
+            <div class="card-header bg-blue d-flex justify-content-between align-items-center flex-wrap">
+                <div class="d-flex align-items-center">
+                    <h4 class="text-white mb-0">{{ isEditMode ? 'Update Demographic Details' : 'Demographic Details' }}</h4>
+                </div>
+                <div class="d-flex align-items-center justify-content-end gap-2">
+                    <button *ngIf="fk_empid && !isFactBoxOpen" class="btn btn-outline-light btn-sm d-flex align-items-center"
+                        (click)="toggleFactBox()" title="Open Audit Log">
+                        <i class="fa fa-history me-1"></i> Audit Log
+                    </button>
+                    <button class="btn btn-light" (click)="onBack()">
+                        Back
+                    </button>
+                </div>
+            </div>
+
+            <!-- Card Body -->
+            <div class="card-body mt-4">
+                <form class="row row-cols-1 row-cols-md-3" [formGroup]="EmployeeMasterForm" (ngSubmit)="onSubmit()">
+                    <div class="col" *ngIf="!isFromEmployeeMaster">
+                        <label>Employee Code<span style="color: red;">*</span></label>
+                        <div class="form-group">
+                            <ng-select [items]="EmployeeList" id="employeeCode" bindLabel="name" bindValue="value"
+                                formControlName="fk_empid" placeholder="--Select Employee Code--"
+                                (change)="onEmployeeSelect($event)"
+                                class="w-100"></ng-select>
+                            <span class="text-danger mt-1" style="font-size: 12px;"
+                                *ngIf="showerror && EmployeeMasterForm.controls['fk_empid'].invalid">
+                                Please select employee code.
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label>Gender<span style="color: red;">*</span></label>
+                        <div class="form-group">
+                            <ng-select id="gender" [items]="genders" bindLabel="name" bindValue="value"
+                                formControlName="gender" placeholder="--Select Gender--" class="w-100"></ng-select>
+                            <span class="text-danger mt-1" style="font-size: 12px;"
+                                *ngIf="showerror && EmployeeMasterForm.controls['gender'].invalid">
+                                Please select gender.
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label>Department<span style="color: red;">*</span></label>
+                        <div class="form-group">
+                            <input type="text" class="form-control flex-grow-1" formControlName="dept">
+                            <span class="text-danger mt-1" style="font-size: 12px;"
+                                *ngIf="showerror && EmployeeMasterForm.controls['department'].invalid">
+                                Please enter department.
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label>Category</label>
+                        <div class="form-group">
+                            <ng-select id="category" [items]="category" bindLabel="name" bindValue="value"
+                                formControlName="fk_catid" placeholder="--Select category--" class="w-100"></ng-select>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label>Designation<span style="color: red;">*</span></label>
+                        <div class="form-group">
+                            <input type="text" class="form-control flex-grow-1" formControlName="designation">
+                            <span class="text-danger mt-1" style="font-size: 12px;"
+                                *ngIf="showerror && EmployeeMasterForm.controls['designation'].invalid">
+                                Please enter designation.
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label>Religion<span style="color: red;">*</span></label>
+                        <div class="form-group">
+                            <ng-select id="Religion" [items]="Religion" bindLabel="name" bindValue="value"
+                                formControlName="fk_religionid" placeholder="--Select Religion--"
+                                class="w-100"></ng-select>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label>Employee Name</label>
+                        <div class="form-group">
+                            <input type="text" class="form-control flex-grow-1" formControlName="empname">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label>Payment Mode</label>
+                        <div class="form-group">
+                            <ng-select id="paymentMode" [items]="paymentModes" bindLabel="name" bindValue="value"
+                                formControlName="paymode" placeholder="--Select Paymode--" class="w-100"></ng-select>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label>Father's Name</label>
+                        <div class="form-group">
+                            <input type="text" class="form-control flex-grow-1" formControlName="fathername">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label>Marital Status</label>
+                        <div class="form-group">
+                            <ng-select id="maritalStatus" [items]="maritalStatuses" bindLabel="name" bindValue="value"
+                                formControlName="maritalstatus" placeholder="--Select Marital Status--"
+                                class="w-100"></ng-select>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label>Spouse Name</label>
+                        <div class="form-group">
+                            <input type="text" class="form-control flex-grow-1" formControlName="spousename">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label>Marriage Date</label>
+                        <div class="form-group">
+                            <input type="date" class="form-control flex-grow-1" formControlName="marriagedate">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label>No. Of Children</label>
+                        <div class="form-group">
+                            <input type="number" class="form-control flex-grow-1" formControlName="totchild">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label>Emergency Contact Person</label>
+                        <div class="form-group">
+                            <input type="text" class="form-control flex-grow-1" formControlName="emrcontactpername">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label>Relation</label>
+                        <div class="form-group">
+                            <input type="text" class="form-control flex-grow-1" formControlName="relation">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label>Emergency Person Contact No.</label>
+                        <div class="form-group">
+                            <input type="text" class="form-control flex-grow-1" formControlName="emrcontactno"
+                                (keypress)="validateNumber1($event)" maxlength="10">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label>ESI Number</label>
+                        <div class="form-group">
+                            <input type="text" class="form-control flex-grow-1" formControlName="esino">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label>ESI Dispensary Name</label>
+                        <div class="form-group">
+                            <input type="text" class="form-control flex-grow-1" formControlName="esidispname">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label>License No.</label>
+                        <div class="form-group">
+                            <input type="text" class="form-control flex-grow-1" formControlName="licenseno">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label>Blood Group</label>
+                        <div class="form-group">
+                            <ng-select id="bloodGroup" [items]="bloodGroups" bindLabel="name" bindValue="value"
+                                formControlName="fk_bgroupid" placeholder="--Select Bloodgroup--"
+                                class="w-100"></ng-select>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label>Height</label>
+                        <div class="form-group">
+                            <input type="text" class="form-control flex-grow-1" formControlName="height"
+                                (keypress)="validateNumber($event)" maxlength="2">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label>Permanent Contact No.</label>
+                        <div class="form-group">
+                            <input type="text" class="form-control flex-grow-1" formControlName="permanentContactNo"
+                                (keypress)="validateNumber1($event)" maxlength="10">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label>Current Contact No.</label>
+                        <div class="form-group">
+                            <input type="text" class="form-control flex-grow-1" formControlName="corresContactNo"
+                                (keypress)="validateNumber1($event)" maxlength="10">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label>Reference</label>
+                        <div class="form-group">
+                            <input type="text" class="form-control flex-grow-1" formControlName="reference">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label>Scholarship</label>
+                        <div class="form-group">
+                            <input type="text" class="form-control flex-grow-1" formControlName="scholarships">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label>Identification Mark</label>
+                        <div class="form-group">
+                            <input type="text" class="form-control flex-grow-1" formControlName="IdentificationMarks">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label>Hobbies</label>
+                        <div class="form-group">
+                            <input type="text" class="form-control flex-grow-1" formControlName="hobies">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label>Permanent Address</label>
+                        <div class="form-group">
+                            <textarea class="form-control flex-grow-1" formControlName="permanentAddress"></textarea>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label>Current Address</label>
+                        <div class="form-group">
+                            <textarea class="form-control flex-grow-1" formControlName="corresAddress"></textarea>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label>Remarks</label>
+                        <div class="form-group">
+                            <textarea class="form-control flex-grow-1" formControlName="remarks"></textarea>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label>Recruitment Mode</label>
+                        <div class="form-group">
+                            <ng-select id="recruitmentMode" [items]="recruitmentModes" bindLabel="name"
+                                bindValue="value" formControlName="fk_recmodeid"
+                                placeholder="--Select Recruitment Mode--" class="w-100"></ng-select>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label>Technical Qualification</label>
+                        <div class="form-group">
+                            <input type="text" class="form-control flex-grow-1"
+                                formControlName="technicalQualifications">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label>Total Experience</label>
+                        <div class="form-group">
+                            <input type="number" class="form-control flex-grow-1" formControlName="totalexp"
+                                (keypress)="validateNumber($event)" maxlength="2">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label>Increment Date</label>
+                        <div class="form-group">
+                            <input type="date" class="form-control flex-grow-1" formControlName="incdate">
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Family Details Section -->
+            <div class="card-header">
+                <p class="text-dark m-0 d  ps-3 text-primary ">Employee Family Details</p>
+            </div> 
+            <div class="card-body mt-4">
+                <form [formGroup]="familyMemberForm" (ngSubmit)="onSubmit()">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <label>Member Name<span style="color: red;">*</span></label>
+                            <input type="text" class="form-control" formControlName="membername">
+                            <span class="text-danger" style="font-size: 12px;"
+                                *ngIf="shwerrForfamilydetails && familyMemberForm.controls['Name'].invalid">
+                                Please enter a name.
+                            </span>
+                        </div>
+                        <div class="col-sm-4">
+                            <!-- <label>Relation</label>
+                            <input type="text" class="form-control" formControlName="relation"> -->
+                            <label>Relation</label>
+                            <div class="form-group">
+                                <ng-select id="relation" [items]="Relation" bindLabel="name" bindValue="value"
+                                    formControlName="relation"  placeholder="--Select Relation --" class="w-100"></ng-select>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <label>Qualification</label>
+                            <input type="text" class="form-control" formControlName="qualification">
+                        </div>
+                        <div class="col-sm-4">
+                            <label>Occupation</label>
+                            <input type="text" class="form-control" formControlName="occupation">
+                        </div>
+                        <div class="col-sm-4">
+                            <label>Date Of Birth<span style="color: red;">*</span></label>
+                            <input type="date" class="form-control" formControlName="dob">
+                            <span class="text-danger" style="font-size: 12px;"
+                                *ngIf="shwerrForfamilydetails && familyMemberForm.controls['DOB'].invalid">
+                                Please enter DOB.
+                            </span>
+                        </div>
+                        <div class="col d-flex align-items-end justify-content-end">
+                            <button type="button" class="btn btn-primary" (click)="addFamilyMember()">Add</button>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Family Members Table -->
+                <div class="row">
+                    <div class="col-12 mt-3">
+                        <table class="table table-bordered table-responsive">
+                            <thead>
+                                <tr>
+                                    <th>S. No.</th>
+                                    <th>Member Name</th>
+                                    <th>Relation</th>
+                                    <th>Qualification</th>
+                                    <th>Occupation</th>
+                                    <th>DOB</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let member of familyMembers.controls; let i = index">
+                                    <td>{{ i + 1 }}</td>
+                                    <td>{{ member.get('membername')?.value }}</td>
+                                    <td>{{ member.get('relation')?.value }}</td>
+                                    <td>{{ member.get('qualification')?.value }}</td>
+                                    <td>{{ member.get('occupation')?.value }}</td>
+                                    <td>{{ member.get('dob')?.value }}</td>
+                                    <td>
+                                        <button class="btn" (click)="editMember(i)"><i
+                                                class="fa-solid fa-pen-to-square"></i></button>
+                                        <button class="btn" (click)="removeFamilyMember(i)"><i
+                                                class="fa fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PF Details Section -->
+            <div class="card-header">
+                <p class="text-dark m-0 d  ps-3 text-primary ">Employee Previous PF Details</p>
+            </div>
+            <div class="card-body mt-4">
+                <form class="row row-cols-1 row-cols-md-3" [formGroup]="EmployeeMasterForm" (ngSubmit)="onSubmit()">
+                    <div class="col">
+                        <label>PF Number</label>
+                        <div class="form-group">
+                            <input type="text" class="form-control flex-grow-1" formControlName="pfno">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label>PF Amount</label>
+                        <div class="f        c vsd<nd orm-group">
+                            <input type="number" class="form-control flex-grow-1" formControlName="prev_pf_amt"
+                                (keypress)="validateNumber($event)">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label>Vol PF Amount</label>
+                        <div class="form-group">
+                            <input type="number" class="form-control flex-grow-1" formControlName="prev_volpf_amt"
+                                (keypress)="validateNumber($event)">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label>EPF Amount</label>
+                        <div class="form-group">
+                            <input type="number" class="form-control flex-grow-1" formControlName="prev_epf_amt"
+                                (keypress)="validateNumber($event)">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label>EPS Amount</label>
+                        <div class="form-group">
+                            <input type="number" class="form-control flex-grow-1" formControlName="prev_eps_amt"
+                                (keypress)="validateNumber($event)">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label>Super Annuation</label>
+                        <div class="form-group">
+                            <input type="number" class="form-control flex-grow-1" formControlName="superannuation">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label>SAF Amount</label>
+                        <div class="form-group">
+                            <input type="number" class="form-control flex-grow-1" formControlName="saf"
+                                (keypress)="validateNumber($event)">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label>Gratuity</label>
+                        <div class="form-group">
+                            <input type="number" class="form-control flex-grow-1" formControlName="gratuity">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label>Leave</label>
+                        <div class="form-group">
+                            <input type="number" class="form-control flex-grow-1" formControlName="leave">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label>Loans</label>
+                        <div class="form-group">
+                            <input type="number" class="form-control flex-grow-1" formControlName="loans">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label>Vehicle Detail</label>
+                        <div class="form-group">
+                            <input type="text" class="form-control flex-grow-1" formControlName="Vehicles">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label>SAF Policy No.</label>
+                        <div class="form-group">
+                            <input type="text" class="form-control flex-grow-1" formControlName="SAFPolicyNo">
+                        </div>
+                    </div>
+                    <div class="card-body mt-4">
+                        <div class="row">
+                            <div class="col d-flex align-items-end justify-content-end pt-2 pb-3">
+                                <button type="submit" class="btn btn-primary mx-1">{{ isEditMode ? 'Update' : 'Save'
+                                }}</button>
+                                <button type="reset" class="btn btn-outline-dark mx-1">Reset</button>
+                               
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Side: Employee Master Tab-Wise Audit Log Fact Box -->
+    <app-employee-fact-box 
+        [ngClass]="isFactBoxOpen ? 'col-sm-12 col-md-4 col-lg-3' : ''"
+        [documentId]="fk_empid"
+        [documentName]="'Employee Master - Demographic Details'"
+        [isOpen]="isFactBoxOpen"
+        (onToggle)="toggleFactBox()">
+    </app-employee-fact-box>
+</div>

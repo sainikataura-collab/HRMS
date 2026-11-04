@@ -1,0 +1,259 @@
+<section>
+  <div class="container">
+    <div class="row border-bottom">
+      <div class="col-lg-8">
+        <p class="small fw-semibold">
+          <span>On Boarding Dashboard</span><br>
+          <span class="fw-semibold text-success"><i class="fa-solid fa-users"></i> Total Users:</span>
+          <span class="fw-semibold text-success ps-2">{{ dashboardData?.totalUsers || 0 }}</span>
+        </p>
+      </div>
+
+
+
+      <!--  -->
+
+
+      <!-- <div class="col-lg-4">
+  <div class="row row-cols-2 g-2 pt-lg-3">
+    <div class="col">
+      <select class="form-select form-select-sm" aria-label="Select month">
+        <option value="" selected>Month</option>
+        <option value="1">Jan</option>
+        <option value="2">Feb</option>
+        <option value="3">March</option>
+      </select>
+    </div>
+    <div class="col">
+      <select class="form-select form-select-sm" aria-label="Select year">
+        <option value="" selected>Year</option>
+        <option value="2024">2024</option>
+        <option value="2023">2023</option>
+        <option value="2022">2022</option>
+      </select>
+    </div>
+  </div>
+</div> -->
+
+
+    </div>
+  </div>
+</section>
+
+<!-- Loading Spinner -->
+<div *ngIf="loading" class="text-center py-5">
+  <div class="spinner-border text-primary" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>
+
+<!-- Error Message -->
+<div *ngIf="error" class="alert alert-danger m-3" role="alert">
+  {{ error }}
+  <button class="btn btn-sm btn-outline-danger ms-3" (click)="loadDashboardData()">Retry</button>
+</div>
+
+<!-- Dashboard Content -->
+<section class="py-3" *ngIf="!loading && !error && dashboardData">
+  <div class="container-fluid">
+    <div class="row g-3">
+      <!-- Main grid -->
+      <div class="col-lg-8">
+        <div class="row row-cols-1 row-cols-md-4 g-3">
+          <div class="col">
+            <div class="card shadow-sm border-0 d-flex flex-row align-items-center border-top border-2 border-success">
+              <div class="card-body text-center">
+                <h6 class="fw-bold text-success mb-0">{{ dashboardData.stats.completed }}</h6>
+                <small class="text-muted small">Completed</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="col">
+            <div class="card shadow-sm border-0 d-flex flex-row align-items-center border-top border-2 border-warning">
+              <div class="card-body text-center">
+                <h6 class="fw-bold text-warning mb-0">{{ dashboardData.stats.inProgress }}</h6>
+                <small class="text-muted small">In Progress</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="col">
+            <div class="card shadow-sm border-0 d-flex flex-row align-items-center border-top border-2 border-primary">
+              <div class="card-body text-center">
+                <h6 class="fw-bold text-primary mb-0">{{ dashboardData.stats.initiated }}</h6>
+                <small class="text-muted small">Initiated</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="col">
+            <div class="card shadow-sm border-0 d-flex flex-row align-items-center border-top border-2 border-info">
+              <div class="card-body text-center">
+                <h6 class="fw-bold text-info mb-0">{{ dashboardData.stats.total }}</h6>
+                <small class="text-muted small">Total</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-12">
+            <div class="card shadow-sm border-0 mb-3">
+              <div class="card-body">
+                <p class="fw-semibold text-info small mb-3">
+                  <i class="fa-solid fa-calendar-week"></i> Weekly Summary
+                </p>
+
+                <div class="d-flex justify-content-around mb-2">
+                  <div class="text-center">
+                    <span class="btn btn-outline-dark text-dark px-3 py-2 small">
+                      <i class="fa-solid fa-calendar-check me-1"></i> This Week
+                    </span>
+                    <div class="fw-semibold text-dark mt-1">{{ dashboardData.weeklySummary.thisWeek }}</div>
+                  </div>
+                  <div class="text-center">
+                    <span class="btn btn-outline-success text-success px-3 py-2 small">
+                      <i class="fa-solid fa-calendar-week me-1"></i> Last Week
+                    </span>
+                    <div class="fw-semibold text-success mt-1">{{ dashboardData.weeklySummary.lastWeek }}</div>
+                  </div>
+                  <div class="text-center">
+                    <span class="btn btn-outline-primary px-3 py-2 small">
+                      <i class="fa-solid fa-user-clock me-1"></i> Pending Approvals
+                    </span>
+                    <div class="fw-semibold text-primary mt-1">{{ dashboardData.weeklySummary.pendingApprovals }}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Onboardings Table with View Button -->
+        <div class="card shadow-sm border-top border-primary border-2 mb-3">
+          <div class="card-body">
+            <p class="fw-semibold text-primary small mb-2"><i class="fa-solid fa-table-list"></i> Recent Onboardings</p>
+            <div class="table-responsive small">
+              <table class="table table-bordered mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <!-- <th>Emp ID</th> -->
+                    <th>Name</th>
+                    <th>Dept</th>
+                    <!-- <th>Type</th> -->
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody style="max-height: 250px; overflow-y: auto;">
+                  <tr *ngFor="let user of dashboardData.recentOnboardings">
+                    <!-- <td>{{ user.empId }}</td> -->
+                    <td>{{ user.name }}</td>
+                    <td>{{ user.dept }}</td>
+                    <!-- <td>{{ user.type }}</td> -->
+                    <td><span class="badge" [ngClass]="getStatusClass(user.status)">{{ user.status }}</span></td>
+                    <td>
+                      <button class="btn btn-sm btn-outline-primary" (click)="viewOnboarding(encryptionService.encryptText(user.empId).toString())">
+                        <i class="fa-solid fa-eye"></i> View
+                      </button>
+                      <!--  (click)="viewOnboarding(encryptionService.encryptText(user.empId).toString())" -->
+                    </td>
+                  </tr>
+                  <tr *ngIf="dashboardData.recentOnboardings.length === 0">
+                    <td colspan="6" class="text-center text-muted">No onboarding records found</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="col-lg-4">
+        <!-- Timeline vertical steps -->
+<div class="card shadow-sm border-0 mb-3">
+  <div class="card-body">
+    <p class="fw-semibold text-warning small mb-2 border-bottom border-2 border-warning">
+      <i class="fa-solid fa-timeline"></i> Latest Timeline
+    </p>
+    <div class="small" style="max-height: 350px; overflow-y: auto;">
+      <div class="border-start border-2 ps-3 mb-3" *ngFor="let item of dashboardData.timeline">
+        <!-- Name -->
+        <p class="mb-1 fw-semibold lh-sm" 
+           style="font-size: 0.8rem;"
+           [ngClass]="{
+             'text-success': item.status === 'Completed',
+             'text-primary': item.status === 'In Progress',
+             'text-warning': item.status === 'Initiated'
+           }">
+          <i class="fa-solid fa-user pe-1"></i> {{ item.name }}
+        </p>
+        
+        <!-- Email -->
+        <p class="mb-1 text-info lh-sm" style="font-size: 0.75rem;">
+          <i class="fa-solid fa-envelope pe-2"></i>{{item.email}}
+        </p>
+        
+        <!-- Mobile Number -->
+        <p class="mb-2 text-warning lh-sm" style="font-size: 0.75rem;">
+          <i class="fa-solid fa-phone pe-2"></i> {{item.mobile}}
+        </p>
+        
+        <!-- Details -->
+        <small class=" d-block lh-sm badge text-start w-25 bg-info text-white px-2"  style="font-size: 0.72rem;">{{ item.status }}</small>
+
+  
+
+      </div>
+      
+      <div *ngIf="dashboardData.timeline.length === 0" class="text-muted text-center py-3">
+        No timeline updates
+      </div>
+    </div>
+  </div>
+</div>
+        <!-- Quick Actions -->
+        <!-- <div class="card shadow-sm border-0 mb-3">
+          <div class="card-body">
+            <p class="fw-semibold text-success small mb-2"><i class="fa-solid fa-bolt"></i> Quick Actions</p>
+            <div class="d-grid gap-2">
+              <button class="btn btn-outline-primary btn-sm" (click)="newOnboarding()">
+                <i class="fa-solid fa-plus"></i> New Onboarding
+              </button>
+            
+              <button class="btn btn-outline-secondary btn-sm" (click)="openSettings()">
+                <i class="fa-solid fa-gear"></i> Settings
+              </button>
+            </div>
+          </div>
+        </div> -->
+
+        <!-- Monthly Summary -->
+        <div class="card shadow-sm border-2 border-primary border-top">
+          <div class="card-body">
+            <p class="fw-semibold text-dark small mb-2"><i class="fa-solid fa-calendar-days"></i> Monthly Summary</p>
+            <div class="row text-center small">
+              <div class="col-4 border-end">
+                <p class="mb-1 text-muted">New</p>
+                <p class="fw-semibold text-dark mb-0">{{ dashboardData.monthlySummary.new }}</p>
+              </div>
+              <div class="col-4 border-end">
+                <p class="mb-1 text-muted">Total</p>
+                <p class="fw-semibold text-dark mb-0">{{ dashboardData.monthlySummary.total }}</p>
+              </div>
+              <div class="col-4">
+                <p class="mb-1 text-muted">Cancelled</p>
+                <p class="fw-semibold text-dark mb-0">{{ dashboardData.monthlySummary.cancelled }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+
+      </div>
+    </div>
+  </div>
+</section>

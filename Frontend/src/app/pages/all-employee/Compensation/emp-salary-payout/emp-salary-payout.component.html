@@ -1,0 +1,859 @@
+<div class="row m-0">
+    <div class="col-sm-12 col-md-12 col-lg-12 px-0 py-0">
+        <div class="card px-0 m-0">
+            <!--  -->
+            <div class="card-header" style="border-top:4px solid #3080e8; border-bottom:1px solid #b8bac6;">
+
+                <p class="text-primary fw-semibold mb-0 small-lg">Salary Payout</p>
+
+
+            </div>
+
+
+
+
+            <div class="row px-2 px-lg-4 ">
+                <div class="col-12 tab-content pt-4">
+                    <div class="row row-cols-2 row-cols-sm-1 row-cols-md-6 g-2 g-lg-3">
+                        <div class="col d-flex justify-content-center">
+                            <button class="btn btn-outline-primary w-100 rounded-1" (click)="onTabClick('Salary Slip')"
+                                [ngClass]="{'active': selectedTab === 'Salary Slip'}">
+                                Salary Slip
+                            </button>
+                        </div>
+                        <div class="col d-flex justify-content-center">
+                            <button class="btn btn-outline-primary w-100 rounded-1"
+                                (click)="onTabClick('Salary Summary')"
+                                [ngClass]="{'active': selectedTab === 'Salary Summary'}">
+                                Salary Summary
+                            </button>
+                        </div>
+                        <div class="col d-flex justify-content-center">
+                            <button class="btn btn-outline-primary w-100 rounded-1"
+                                (click)="onTabClick('PF Saving & Income Tax')"
+                                [ngClass]="{'active': selectedTab === 'PF Saving & Income Tax'}">
+                                PF Income Tax
+                            </button>
+                        </div>
+                        <div class="col d-flex justify-content-center">
+                            <button class="btn btn-outline-primary w-100 rounded-1" (click)="onTabClick('Bank')"
+                                [ngClass]="{'active': selectedTab === 'Bank'}">
+                                Bank
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="card-body mt-4 mx-0 px-3 px-lg-4">
+                <form [formGroup]="SalarypayoutForm">
+
+                    <div class="row row-cols-2 row-cols-md-3">
+
+                        <!-- From salary slip -->
+                         
+                        <div class="col" *ngIf="selectedTab === 'Salary Slip'">
+                            <label class="ps-1">Month</label>
+                            <div class="form-group">
+                                <ng-select id="months" [items]="months" bindLabel="name" bindValue="value"
+                                    formControlName="selectedMonth" (change)="onSelectionChange()"
+                                    placeholder="--Select --" class="w-100"></ng-select>
+                            </div>  
+                        </div>
+
+                        <div class="col" *ngIf="selectedTab === 'Salary Slip'">
+                            <label class="ps-1">Year</label>
+                            <div class="form-group">
+                                <ng-select placeholder="Select Year" [items]="years" bindLabel="name" bindValue="value"
+                                    formControlName="selectedYear" (change)="onSelectionChange()">
+                                </ng-select>
+                            </div>
+                        </div>
+                      
+                        <!-- for Others -->
+
+                        <div class="col-12" *ngIf="selectedTab !== 'Salary Slip'">
+                            <label>Financial Year</label>
+                            <div class="form-group mb-1">
+                                <ng-select id="FinancialYear" [items]="FinancialYear" bindLabel="name" bindValue="value"
+                                    formControlName="selectedfinancialYear" (change)="onSelectionChange()"
+                                    placeholder="--Select --" class="w-100"></ng-select>
+                            </div>
+                        </div>
+                        <!--  -->
+
+                    </div>
+
+
+                </form>
+            </div>
+
+            <!-- List of salary slip -->
+            <div class="card-body m-0 " *ngIf="selectedTab === 'Salary Slip' && Employeelist.length>0">
+                <!-- <div class="card-body mt-4" *ngIf="selectedTab === 'Salary Slip' "> -->
+
+
+                <!-- <div class="d-flex justify-content-between align-items-center mt-0 mb-0">
+                    <p class="text-primary m-0 fw-semibold">Salary Slip</p>
+                </div> -->
+
+
+
+                <div class="row row-cols-1 row-cols-md-3 row-cols-lg-5 border border-warning bg-warning-subtle rounded-2 g-1 px-2 py-1 pt-2"
+                    *ngFor="let item of Employeelist">
+
+                    <!-- Employee Name -->
+                    <div class="col">
+                        <p class="small lh-sm d-flex align-items-center">
+                            <i class="fa-solid fa-user text-primary me-1"></i>
+                            <span class="fw-semibold me-1">Employee :</span>
+                            <span>{{ item.EmpName }}</span>
+                        </p>
+                    </div>
+
+                    <!-- Employee Code -->
+                    <div class="col">
+                        <p class="small lh-sm d-flex align-items-center">
+                            <i class="fa-solid fa-id-badge text-primary me-1"></i>
+                            <span class="fw-semibold me-1">Emp Code :</span>
+                            <span>{{ item.EmpCode }}</span>
+                        </p>
+                    </div>
+
+                    <!-- Grade -->
+                    <div class="col">
+                        <p class="small lh-sm d-flex align-items-center">
+                            <i class="fa-solid fa-layer-group text-secondary me-1"></i>
+                            <span class="fw-semibold me-1">Grade :</span>
+                            <span>{{ item.Grade }}</span>
+                        </p>
+                    </div>
+
+                    <!-- Date of Joining -->
+                    <div class="col">
+                        <p class="small lh-sm d-flex align-items-center">
+                            <i class="fa-solid fa-calendar-check text-warning me-1"></i>
+                            <span class="fw-semibold me-1">DOJ :</span>
+                            <span>{{ item.DOJ }}</span>
+                        </p>
+                    </div>
+
+                    <!-- Paid Days -->
+                    <div class="col">
+                        <p class="small lh-sm d-flex align-items-center">
+                            <i class="fa-solid fa-clock text-danger me-1"></i>
+                            <span class="fw-semibold me-1">Paid Days :</span>
+                            <span>{{ item.PaidDays }}</span>
+                        </p>
+                    </div>
+
+                    <!-- Designation -->
+                    <div class="col">
+                        <p class="small lh-sm d-flex align-items-center">
+                            <i class="fa-solid fa-briefcase text-secondary me-1"></i>
+                            <span class="fw-semibold me-1">Designation :</span>
+                            <span class="">{{ item.Designation }}</span>
+                        </p>
+                    </div>
+
+                    <!-- Department -->
+                    <div class="col">
+                        <p class="small lh-sm d-flex align-items-center">
+                            <i class="fa-solid fa-building-user text-info me-1"></i>
+                            <span class="fw-semibold me-1">Department :</span>
+                            <span class="">{{ item.Department }}</span>
+                        </p>
+                    </div>
+
+                    <!-- Location -->
+                    <div class="col">
+                        <p class="small lh-sm d-flex align-items-center">
+                            <i class="fa-solid fa-location-dot text-info me-1"></i>
+                            <span class="fw-semibold me-1">Location :</span>
+                            <span class="">{{ item.Location }}</span>
+                        </p>
+                    </div>
+
+                    <!-- Pay Month -->
+                    <div class="col">
+                        <p class="small lh-sm d-flex align-items-center">
+                            <i class="fa-solid fa-calendar-days text-warning me-1"></i>
+                            <span class="fw-semibold me-1">Pay Month :</span>
+                            <span class="">{{ item.PayMonth }}</span>
+                        </p>
+                    </div>
+
+                    <!-- LWP -->
+                    <div class="col">
+                        <p class="small lh-sm d-flex align-items-center">
+                            <i class="fa-solid fa-ban text-danger me-1"></i>
+                            <span class="fw-semibold me-1">LWP :</span>
+                            <span class="">{{ item.LWP }}</span>
+                        </p>
+                    </div>
+
+                </div>
+
+
+
+
+
+
+
+
+                <div class="row pt-lg-3">
+
+                    <div class="col-sm-12 col-md-12 col-lg-8 py-1 px-0 px-lg-3">
+                        <div class="card-header rounded-1 bg-primary">
+                            <p class="fw-semibold text-white mb-0">Earning</p>
+                        </div>
+                        <div class="">
+                            <table class="table" id="exportTable">
+                                <thead>
+                                    <tr>
+                                        <th>DESCRIPTION</th>
+                                        <th scope="col">ENTITLEMENT</th>
+                                        <th scope="col">EARNING</th>
+                                        <th scope="col">ARREAR</th>
+
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    <tr *ngFor="let item of Amountlist">
+                                        <td data-label="EarningHead">{{item.EarningHead}}</td>
+                                        <td data-label="ENTITLEMENT">{{item.ENTITLEMENT}}</td>
+                                        <td data-label="EARNING">{{item.EARNING}}</td>
+                                        <td data-label="ARREAR">{{item.ARREAR}}</td>
+                                        <!-- <td data-label="DeductionHead : ">{{item.DeductionHead}}</td>
+                                        <td data-label="DeductionAMOUNT : ">{{item.DeductionAMOUNT}} </td> -->
+
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+
+                    <div class="col-sm-12 col-md-12 col-lg-4 py-1 px-0 px-lg-4">
+                        <div class="card-header rounded-1 bg-primary">
+                            <p class="fw-semibold text-white mb-0">Deduction</p>
+                        </div>
+                        <div class="">
+                            <table class="table" id="exportTable2">
+                                <thead>
+                                    <tr>
+
+                                        <th scope="col">DESCRIPTION</th>
+                                        <th scope="col">AMOUNT</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    <tr *ngFor="let item of Amountlist">
+
+                                        <ng-container *ngIf="item.DeductionHead">
+                                            <td data-label="DeductionHead">{{ item.DeductionHead }}</td>
+                                            <td data-label="DeductionAMOUNT">{{ item.DeductionAMOUNT }}</td>
+                                        </ng-container>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+
+
+
+
+
+                    <div class="col-sm-12 col-md-12 col-lg-12 py-1 px-0">
+
+                        <div class="border border-warning bg-warning-subtle rounded-2 row row-cols-1 row-cols-md-3 row-cols-lg-5 g-1 px-2 py-0"
+                            *ngFor="let item of Employeelist">
+
+                            <!-- Bank -->
+                            <div class="col">
+                                <p class="small mb-1 d-flex align-items-center"><i
+                                        class="fa-solid fa-building-columns text-primary me-1"></i> <span
+                                        class="fw-semibold me-1">Bank:</span><span>{{ item.Bankname }}</span></p>
+                            </div>
+
+                            <!-- Account Number -->
+                            <div class="col">
+                                <p class="small mb-1 d-flex align-items-center"><i
+                                        class="fa-solid fa-credit-card text-secondary me-1"></i><span
+                                        class="fw-semibold me-1">Acc No:</span><span>{{ item.Accountno }}</span></p>
+                            </div>
+
+                            <!-- Gross Amount -->
+                            <div class="col">
+                                <p class="small mb-1 d-flex align-items-center"><i
+                                        class="fa-solid fa-indian-rupee-sign text-success me-1"></i><span
+                                        class="fw-semibold me-1">Gross:</span><span>{{ item.TotalGross | number:'1.2-2'
+                                        }}</span></p>
+                            </div>
+
+                            <!-- Total Deduction -->
+                            <div class="col">
+                                <p class="small mb-1 d-flex align-items-center"><i
+                                        class="fa-solid fa-arrow-down text-danger me-1"></i><span
+                                        class="fw-semibold me-1">Deduction:</span><span>{{ item.TotalDeduction |
+                                        number:'1.2-2' }}</span></p>
+                            </div>
+
+                            <!-- Net Amount -->
+                            <div class="col">
+                                <p class="small mb-1 d-flex align-items-center"><i
+                                        class="fa-solid fa-wallet text-dark me-1"></i><span
+                                        class="fw-semibold me-1">Net:</span><span class="fw-bold">{{ item.NetAmount |
+                                        number:'1.2-2' }}</span></p>
+                            </div>
+
+                        </div>
+
+
+                    </div>
+                </div>
+
+
+
+                <div class="row">
+                    <div class="col-12 d-flex align-items-center justify-content-end">
+
+                        <!--  -->
+                        <button class="btn btn-primary mx-1" (click)="downloadAndDisplaySalarySlip()">
+                            <i class="fa fa-download me-2"></i> Download Salary Slip</button>
+                    </div>
+                </div>
+
+
+
+
+                <!----------  download pdf salary payout code ------------------------------------->
+
+                <div class="payslip " style="display: none;">
+                    <div id="pdf-content" class="border border-dark px-2"
+                        *ngIf="salarySlipData.length>0 && isPdfVisible">
+
+
+
+                        <!-- change new ... -->
+                        <div class="row m-0 pb-0 border-dark border-bottom">
+                            <!-- Logo Section -->
+                            <div class="col-1 d-flex align-items-center  justify-content-center ps-4">
+
+                                <img [src]="companyLogo" alt="Logo" height="50" width="60"
+                                    style="object-fit: contain; " class="align-content-center mt-0" (error)="companyLogo='assets/Image/Logo/empower.jpg'">
+
+
+
+                            </div>
+
+                            <div class="col-8">
+                                <div class="comapny">
+                                    <p
+                                        class="fw-semibold text-center small text-center lh-sm lh-sm-custom text-dark pt-lg-2">
+                                        <span>{{salarySlipData[0]?.compname}}</span>
+                                    </p>
+                                    <p *ngIf="salarySlipData[0]?.regno"
+                                        class="text-center small s-small lh-sm-custom text-center lh-sm text-dark">
+                                        <span class="pe-2 fw-semibold">CIN No - : </span>
+                                        <span>{{salarySlipData[0]?.regno}}</span>
+                                    </p>
+                                    <p *ngIf="salarySlipData[0]?.address1"
+                                        class="text-center small s-small text-center lh-sm lh-sm-custom text-dark">
+                                        <span class="pe-2 fw-semibold">Registered Office - : </span>
+                                        <span>{{salarySlipData[0]?.address1}}</span>
+                                    </p>
+
+                                    <p *ngIf="salarySlipData[0]?.address2"
+                                        class="text-center small s-small text-center lh-sm lh-sm-custom text-dark">
+                                        <span class="pe-2 fw-semibold">Corporate office - : </span> <span>
+                                            {{salarySlipData[0]?.address2}}</span>
+                                    </p>
+
+                                    <p class="text-center s-small lh-sm lh-sm-custom text-dark"><span
+                                            *ngIf="salarySlipData[0]?.email" class="fw-semibold">Email:</span><span>
+                                            {{salarySlipData[0]?.email}}</span> <span *ngIf="salarySlipData[0]?.mobile"
+                                            class="fw-semibold ps-2">Contact NO:</span> {{salarySlipData[0]?.mobile}}
+                                        <span></span>
+                                    </p>
+
+                                </div>
+                            </div>
+                            <!-- Right Side Info -->
+                            <div class="col-3 d-flex align-items-center justify-content-end">
+
+                                <div class="pe-lg-2 text-center">
+                                    <p class="text-dark small lh-sm pt-lg-2">
+                                        <!-- <span>Month:</span> -->
+                                        <span class="fw-semibold">{{salarySlipData[0]?.monthyear}}</span>
+                                    </p>
+
+                                </div>
+                            </div>
+                        </div>
+                        <!--  -->
+
+                        <div class="row row-cols-1 row-cols-md-2 g-1 pt-1">
+
+
+
+                            <div class="col">
+                                <table style="width: 100%; font-size: 12px; border-collapse: collapse;">
+                                    <tr>
+                                        <td style="padding: 4px; font-weight: bold; text-align: start;">Employee
+                                            Name:</td>
+                                        <td style="padding: 4px; text-align: start;">:</td>
+                                        <td style="padding: 4px; text-align: start;">{{ salarySlipData[2]?.empname
+                                            }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 4px; font-weight: bold; text-align: start;">Employee
+                                            Code:</td>
+                                        <td style="padding: 4px; text-align: start;">:</td>
+                                        <td style="padding: 4px; text-align: start;">{{ salarySlipData[2]?.empcode
+                                            }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 4px; font-weight: bold; text-align: start;">Grade:</td>
+                                        <td style="padding: 4px; text-align: start;">:</td>
+                                        <td style="padding: 4px; text-align: start;">{{ salarySlipData[2]?.grade }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 4px; font-weight: bold; text-align: start;">Bank Name:
+                                        </td>
+                                        <td style="padding: 4px; text-align: start;">:</td>
+                                        <td style="padding: 4px; text-align: start;">{{ salarySlipData[2]?.bankname
+                                            }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 4px; font-weight: bold; text-align: start;">Account No.:
+                                        </td>
+                                        <td style="padding: 4px; text-align: start;">:</td>
+                                        <td style="padding: 4px; text-align: start;">{{ salarySlipData[2]?.bankacno
+                                            }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 4px; font-weight: bold; text-align: start;">Pan No.:
+                                        </td>
+                                        <td style="padding: 4px; text-align: start;">:</td>
+                                        <td style="padding: 4px; text-align: start;">{{ salarySlipData[2]?.panno }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 4px; font-weight: bold; text-align: start;">Aadhar No.:
+                                        </td>
+                                        <td style="padding: 4px; text-align: start;">:</td>
+                                        <td style="padding: 4px; text-align: start;">{{
+                                            salarySlipData[2]?.costcenter }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+
+
+
+                            <div class="col">
+                                <table style="width: 100%; font-size: 12px; border-collapse: collapse;">
+                                    <tr>
+                                        <td style="padding: 4px; font-weight: bold; text-align: start;">Designation
+                                        </td>
+                                        <td style="padding: 4px; text-align: start;">:</td>
+                                        <td style="padding: 4px; text-align: start;">{{
+                                            salarySlipData[2]?.designation }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 4px; font-weight: bold; text-align: start;">Department
+                                        </td>
+                                        <td style="padding: 4px; text-align: start;">:</td>
+                                        <td style="padding: 4px; text-align: start;">{{
+                                            salarySlipData[2]?.Department }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 4px; font-weight: bold; text-align: start;">Date of
+                                            Joining</td>
+                                        <td style="padding: 4px; text-align: start;">:</td>
+                                        <td style="padding: 4px; text-align: start;">{{ salarySlipData[2]?.doj }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 4px; font-weight: bold; text-align: start;">Date of
+                                            Birth</td>
+                                        <td style="padding: 4px; text-align: start;">:</td>
+                                        <td style="padding: 4px; text-align: start;">{{ salarySlipData[2]?.dateofbirth
+                                            }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 4px; font-weight: bold; text-align: start;">UAN No.</td>
+                                        <td style="padding: 4px; text-align: start;">:</td>
+                                        <td style="padding: 4px; text-align: start;">{{ salarySlipData[2]?.uanNo
+                                            }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 4px; font-weight: bold; text-align: start;">ESI No.</td>
+                                        <td style="padding: 4px; text-align: start;">:</td>
+                                        <td style="padding: 4px; text-align: start;">{{ salarySlipData[2]?.esino }}
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+
+
+                        </div>
+
+
+                        <div class="row pt-lg-3">
+
+                            <div class="col-sm-12 col-md-12 col-lg-12 table-responsive">
+
+
+
+                                <table class="table-responsive px-2"
+                                    style="border-bottom: 1px solid black; width: 100%;">
+                                    <thead>
+                                        <tr style="border-top:1px solid #000; border-bottom: 1px solid #000; font-weight: bold; "
+                                            class="salary-slip px-lg-2">
+                                            <th scope="col">Fixed</th>
+                                            <th scope="col" class="text-end">Rate</th>
+                                            <th scope="col" class="text-end">Earnings</th>
+                                            <th scope="col" class="text-center">Arrears</th>
+                                            <th scope="col">Deduction</th>
+                                            <th scope="col" class="text-end">Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let item of combinedData" class=" salary-slip px-lg-2">
+                                            <td>{{item.pay.Fixed}}</td>
+                                            <td class="text-end">{{item.pay.Rate}}</td>
+                                            <td class="text-end">{{item.pay.Earnings}}</td>
+                                            <td class="text-center">{{item.pay.Arrears}}</td>
+                                            <td>{{item.ded.Fixed}}</td>
+                                            <td class="text-end">{{item.ded.Amount}}</td>
+                                        </tr>
+                                        <tr style="font-weight: bold; border-top: 1px solid black;"
+                                            class="salary-slip px-lg-2">
+                                            <td class="fw-semibold">Total</td>
+
+                                            <td class="text-end">₹ {{salarySlipData[3]?.RateGross}}</td>
+                                            <td class="text-end">₹ {{salarySlipData[3]?.EarnGross}}</td>
+
+                                            <td>&nbsp;</td>
+                                            <td class="fw-semibold text-end">Total Deductions:</td>
+                                            <td class="text-end">₹ {{salarySlipData[3]?.TotalDeductions}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <!-- </div> -->
+
+
+
+
+
+                                <!-- </div> -->
+
+                                <div class="row row-cols-1 row-cols-md-5 pt-1 ">
+                                    <div class="col d-flex align-items-start justify-content-start">
+                                        <p class="fw-semibold small mx-2">Gross Total</p>
+                                    </div>
+                                    <div class="col d-flex align-items-strat justify-content-start">
+                                        <p class="fw-semibold small">₹
+                                            {{salarySlipData[3]?.GrossTotal}}</p>
+                                    </div>
+                                    <div class="col"></div>
+
+                                    <div class="col d-flex align-items-end justify-content-end">
+                                        <p class="fw-semibold small">Net Amount Payable</p>
+                                    </div>
+                                    <div class="col d-flex align-items-end justify-content-center">
+                                        <p class="fw-semibold small">₹
+                                            {{salarySlipData[3]?.NetPay}}</p>
+                                    </div>
+                                </div>
+                                <div class="row">
+
+                                    <div
+                                        class="col-sm-12 col-md-12 col-lg-12 d-flex align-items-start justify-content-start">
+                                        <p class="small mx-2">
+                                            {{salarySlipData[0]?.website}}
+                                        </p>
+                                    </div>
+
+                                </div>
+                                <div class="row row-cols-1 row-cols-md-4">
+                                    <div class="col d-flex align-items-start justify-content-start">
+                                        <p class="small mx-2">Days for Salary : <span class="small">
+                                                {{salarySlipData[3]?.paiddays}}</span></p>
+                                    </div>
+                                    <div class="col d-flex align-items-center justify-content-center">
+                                        <p class="small">
+                                        </p>
+                                    </div>
+                                    <div class="col d-flex align-items-start justify-content-start">
+                                        <p class="small">Lwp Days : <span class="small text-danger">
+                                                {{salarySlipData[3]?.LWP}}</span></p>
+                                    </div>
+                                    <div class="col d-flex align-items-center justify-content-center">
+                                        <p class="small text-danger">
+                                        </p>
+                                    </div>
+                                </div>
+                                <!-- </div> -->
+
+                            </div>
+                            <div class="col-sm-12 col-md-12 col-lg-12 mt-2 table-responsive" *ngIf="LeaveList.length>0">
+                                <!-- <div class="card border-top border-2 border-primary p-0"> -->
+                                <!-- <div class="card-header p-0"> -->
+                                <p class="small fw-semibold mx-2" style="font-size: 13px;">
+                                    Leave Details</p>
+                                <!-- </div> -->
+                                <!-- <div class="card-body"> -->
+                                <table class="table table-responsive">
+                                    <!-- Table Header Row -->
+
+                                    <tr
+                                        style="font-size: 11px;  border-top:1px solid #000; border-bottom: 1px solid #000; font-weight: bold; text-align: left;">
+                                        <th>Leave Type</th>
+                                        <th>Opening</th>
+                                        <th>Availed</th>
+                                        <th>Balance</th>
+                                    </tr>
+
+                                    <!-- Table Data Row -->
+                                    <tbody>
+                                        <tr *ngFor="let item of LeaveList">
+                                            <td> {{item.leavetype}}</td>
+                                            <td> {{item.opbal}}</td>
+                                            <td> {{item.availed}}</td>
+                                            <td> {{item.balance}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <!-- </div> -->
+                                <!-- </div> -->
+                            </div>
+                        </div>
+                        <!-- </div> -->
+                    </div>
+                    <!--  -->
+                </div>
+
+
+
+            </div>
+
+
+            <!-- For PF Saving and Income Tax -->
+            <div class="card-body m-0  px-2"
+                *ngIf="selectedTab === 'PF Saving & Income Tax' && Incometaxlist1.length>0">
+
+                <div class="d-flex justify-content-between align-items-center mt-0 mb-0">
+                    <p class="text-primary m-0 fw-semibold ps-2">PF & Income Tax Month Wise </p>
+                </div>
+                <div class="table-responsive-md">
+                    <table Id="exportTable-Income-Tax-month-wise" class="table">
+                        <thead>
+                            <tr>
+                                <th>Sr.No.</th>
+                                <th>Month</th>
+                                <th>Year</th>
+                                <th>Total</th>
+                                <th>PF&nbsp;Gross</th>
+                                <th>PF</th>
+                                <th>PF&nbsp;Emr</th>
+                                <th>Total&nbsp;PF</th>
+                                <th>Income&nbsp;Tax</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let item of Incometaxlist1; let i = index">
+
+                                <td data-label="Sr.No.">{{i+1}}</td>
+                                <td data-label="fk_monthid">{{item.fk_monthid}}</td>
+                                <td data-label="fk_yearid">{{item.fk_yearid}}</td>
+                                <td data-label="total">{{item.NetAmount}}</td>
+                                <td data-label="PFGross">{{item.PFGross}}</td>
+                                <td data-label="PF">{{item.PF}}</td>
+                                <td data-label="PFEmr">{{item.PFEmr}}</td>
+                                <td data-label="PFAmount">{{item.PFAmount}}</td>
+                                <td data-label="IT">{{item.IT}}</td>
+                            </tr>
+
+                        </tbody>
+                        <tfoot>
+                            <tr class="fw-bold table-info fw-bold d-none d-lg-table-row">
+                                <td colspan="3" class="text-end fw-bold">Totals:</td>
+                                <td class="text-danger">{{ totalNetAmount | number:'1.2-2' }}</td>
+                                <td></td>
+                                <td class="text-danger">{{ totalPF | number:'1.2-2' }}</td>
+                                <td class="text-danger">{{ totalPFEmr | number:'1.2-2' }}</td>
+                                <td class="text-danger">{{ totalPFAmount | number:'1.2-2' }}</td>
+                                <td class="text-danger">{{ totalIncomeTax | number:'1.2-2' }}</td>
+                            </tr>
+                        </tfoot>
+
+
+
+                    </table>
+                </div>
+
+                <!-- Net Amounts -->
+                <div class="row   border-warning bg-warning-subtle rounded-2 w-100  d-lg-none mx-0">
+
+                    <div class="col-12 mx-auto">
+                        <div class=" rounded-1  px-1">
+
+                            <p class="d-flex align-items-center justify-content-between mb-0 small"> <span
+                                    class="fw-bold">Total PF : </span> <span class="fw-bold text-danger"> ₹ {{ totalPF |
+                                    number:'1.2-2' }}</span> </p>
+                            <p class="d-flex align-items-center justify-content-between mb-0 small"> <span
+                                    class="fw-bold">Total PF Emr : </span> <span class="fw-bold text-danger"> ₹ {{
+                                    totalPFEmr | number:'1.2-2' }}</span> </p>
+                            <p class="d-flex align-items-center justify-content-between mb-0 small"> <span
+                                    class="fw-bold">Total(PF + PF EMR): </span> <span class="fw-bold text-danger"> ₹ {{
+                                    totalPFAmount | number:'1.2-2' }}</span> </p>
+                            <p class="d-flex align-items-center justify-content-between mb-0 small"> <span
+                                    class="fw-bold text-warning">Total Income Tax: </span> <span
+                                    class="fw-bold text-warning"> ₹ {{ totalIncomeTax | number:'1.2-2' }}</span> </p>
+                            <p class="d-flex align-items-center justify-content-between mb-0 small"> <span
+                                    class="fw-bold text-success">Total :</span> <span class="fw-bold text-success"> ₹ {{
+                                    totalNetAmount | number:'1.2-2' }}</span> </p>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <!--List of Bank month wise-->
+
+            <div class="card-body m-0" *ngIf="selectedTab === 'Bank' && Incometaxlist1.length>0">
+
+                <div class="d-flex justify-content-between align-items-center mt-0 mb-0">
+                    <p class="text-primary m-0 fw-semibold">Bank Month Wise</p>
+                </div>
+                <div class="">
+                    <table Id="exportTable-Bank-month-wise" class="table">
+                        <thead>
+                            <tr>
+                                <th>Sr.No.</th>
+                                <th>Month</th>
+                                <th>Year</th>
+                                <th>Bank&nbsp;Name</th>
+                                <th>Account&nbsp;No.</th>
+                                <th>Net&nbsp;Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let item of Incometaxlist1; let i = index">
+
+                                <td data-label="Sr.No.">{{i+1}}</td>
+                                <td data-label="fk_monthid">{{item.fk_monthid}}</td>
+                                <td data-label="fk_yearid">{{item.fk_yearid}}</td>
+                                <td data-label="Bankname">{{item.Bankname}}</td>
+                                <td data-label="Accountno">{{item.Accountno}}</td>
+                                <td data-label="NetAmount">{{item.NetAmount}}</td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr class="fw-bold d-none d-lg-table-row">
+
+                                <td colspan="3" class="text-end fw-bold">Totals:</td>
+                                <td class="text-danger"></td>
+                                <td class="text-danger"></td>
+                                <td class="text-danger">{{ totalNetAmount | number:'1.2-2' }}</td>
+
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+
+                <!-- Net Amounts -->
+                <div class="row   border-warning bg-warning-subtle rounded-2 w-100  d-lg-none mx-0">
+
+                    <div class="col-11 mx-auto">
+                        <div class=" rounded-1  px-1">
+                            <p class="d-flex align-items-center justify-content-between mb-0 small"> <span
+                                    class="fw-bold">Total Net Amt. :</span> <span class="fw-bold text-danger"> ₹ {{
+                                    totalNetAmount | number:'1.2-2' }}</span> </p>
+
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+
+            <!--List of salary month wise-->
+            
+            <div class="card-body m-0 pt-0" *ngIf="selectedTab === 'Salary Summary' && Incometaxlist1.length>0">
+                <div class="d-flex justify-content-between align-items-center mt-0 mb-0">
+                    <p class="text-primary m-0 fw-semibold pt-0">Salary month wise</p>
+                </div>
+
+                <div class="">
+                    <table Id="exportTablemonthwise" class="table">
+                        <thead>
+                            <tr>
+                                <th>Sr.No.</th>
+                                <th>Month</th>
+                                <th>Year</th>
+                                <th>TOTAL</th>
+                                <th>DEDUCTION</th>
+                                <th>Net&nbsp;Amount</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr *ngFor="let item of Incometaxlist1; let i = index">
+                                <td data-label="Sr.No.">{{i+1}}</td>
+                                <td data-label="fk_monthid">{{item.fk_monthid}}</td>
+                                <td data-label="fk_yearid">{{item.fk_yearid}}</td>
+                                <td data-label="TotalGros">{{item.TotalGross}}</td>
+                                <td data-label="Deduction">{{item.TotalDeduction}}</td>
+                                <td data-label="NetAmount">{{item.NetAmount}}</td>
+                            </tr>
+                        </tbody>
+
+                        <tfoot>
+                            <tr class="fw-bold table-info fw-bold d-none d-lg-table-row">
+                                <td colspan="3" class="text-end fw-bold">Totals:</td>
+                                <td class="text-danger"></td>
+                                <td class="text-danger"></td>
+                                <td class="text-danger">{{ totalNetAmount | number:'1.2-2' }}</td>
+                            </tr>
+                        </tfoot>
+
+                    </table>
+                </div>
+
+
+
+                <!-- Net Amounts -->
+                <div class="row   border-warning bg-warning-subtle rounded-2 w-100  d-lg-none mx-0">
+
+                    <div class="col-11 mx-auto">
+                        <div class=" rounded-1  px-1">
+                            <p class="d-flex align-items-center justify-content-between mb-0 small"> <span
+                                    class="fw-bold">Total Net Amt. :</span> <span class="fw-bold text-danger"> ₹ {{
+                                    totalNetAmount | number:'1.2-2' }}</span> </p>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <!--  -->
+        </div>
+
+    </div>
+
+</div>

@@ -1,0 +1,225 @@
+.p-0 {
+    padding-left: 0px !important;
+    padding-right: 0px !important;
+  }
+  
+  /* Image Styling */
+  .user-img {
+    width: 45px;
+    height: 45px;
+    object-fit: cover;
+    border-radius: 50%;
+  }
+
+  @media  screen and (max-width:400px){
+    .user-img,progress-circle2{
+        display: none;
+    }
+  }
+  
+  /* Circular Progress Bar */
+  .progress-circle2 {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 3px solid #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    color: black;
+  }
+  
+  /* Dynamic Border Color */
+  .progress-circle2[data-percent="95"] { border-color: #28a745; }
+  .progress-circle2[data-percent="85"] { border-color: #17a2b8; }
+  .progress-circle2[data-percent="70"] { border-color: #ffc107; }
+  .progress-circle2[data-percent="61"] { border-color: #fd7e14; }
+  .progress-circle2[data-percent="58"] { border-color: #dc3545; }
+  
+  /* Progress Text Inside */
+  .progress-circle2:before {
+    content: attr(data-percent) "%";
+    position: absolute;
+    font-size: 12px;
+    text-align: center;
+    line-height: 35px;
+    font-weight: bold;
+  }
+  
+  /* Animation */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .animate-fade-in { animation: fadeIn 0.5s ease-in-out; }
+  
+  /* Card Hover Effect */
+  .card {
+    border-radius: 12px;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  }
+  .card:hover {
+    transform: scale(1.03);
+    box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.15);
+  }
+  
+  .small {
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.small-sm{
+  font-size: 11px !important;
+  font-weight: 500;
+}
+
+// 
+
+/* 🎨 Custom Tabs */
+.nav-tabs-custom .nav-link {
+  color: #6c757d;
+  border: none;
+  border-bottom: 2px solid transparent;
+  transition: all 0.3s ease;
+  padding: 6px 12px;
+}
+.nav-tabs-custom .nav-link.active {
+  color: #3080e8;
+  border-color: #3080e8;
+  background-color: transparent;
+}
+
+/* 👤 Profile / Event image */
+.user-img {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+}
+
+/* 💬 Buttons */
+.btn-outline-primary:hover {
+  background-color: #3080e8;
+  color: white;
+  border-color: #3080e8;
+}
+
+/* 🧭 List Styling */
+.list-group-item {
+  border: none;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background 0.2s ease;
+}
+.list-group-item:hover {
+  background: #f8f9fa;
+}
+
+/* 🪶 Scrollable if >5 items */
+.scrollable-list {
+  max-height: 270px; /* roughly 5 visible rows */
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #c5c5c5 transparent;
+}
+.scrollable-list::-webkit-scrollbar {
+  width: 6px;
+}
+.scrollable-list::-webkit-scrollbar-thumb {
+  background-color: #c5c5c5;
+  border-radius: 10px;
+}
+.scrollable-list::-webkit-scrollbar-thumb:hover {
+  background-color: #999;
+}
+
+// ----------------------
+
+/* Main container styling */
+.recent-activity-list {
+  padding: 0;
+  margin: 0;
+}
+
+/* Each list item */
+.activity-item {
+  background-color: #ffffff;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  padding: 12px 16px;
+  border: 1px solid #e0e0e0;
+  transition: all 0.25s ease-in-out;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+/* Hover effect */
+.activity-item:hover {
+  background-color: #f8f9fa;
+  transform: scale(1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Icon circle */
+.icon-circle {
+  background: linear-gradient(135deg, #007bff, #00a8ff);
+  color: #fff;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+}
+
+/* Display text */
+.activity-text {
+  font-weight: 600;
+  color: #212529;
+ 
+}
+
+/* Time on right */
+.activity-time {
+  color: #6c757dd6;
+  font-size: 0.65rem;
+  font-weight: 550;
+}
+
+
+// unread css
+.unread-badge-3 {
+  background: #fff3cd;
+  color: #b8860b;
+  border: 1px solid #ffe197;
+  transition: 0.3s ease;
+}
+
+.unread-badge-3:hover {
+  background: #dbf7e3;
+  border-color: #198754;
+  color: #198754;
+  cursor: pointer;
+}
+
+/* icon color */
+.unread-dot {
+  font-size: 14px;
+  color: #b8860b;
+  transition: 0.3s ease;
+}
+
+/* Hover icon color + animation */
+.unread-badge-3:hover .unread-dot {
+  color: #198754;
+  animation: bounce 0.6s ease;
+}
+
+/* Bounce keyframes */
+@keyframes bounce {
+  0%   { transform: translateY(0); }
+  40%  { transform: translateY(-4px); }
+  60%  { transform: translateY(2px); }
+  100% { transform: translateY(0); }
+}

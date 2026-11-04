@@ -1,0 +1,132 @@
+ <div class="row mx-0">
+  <div class="col-sm-12 col-lg-12 col-md-12">
+    <div class="card">
+
+      <div class="card-header py-1 bg-primary">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-3 col-lg-3 col-xxl-3 d-flex align-items-center justify-content-between">
+            <h4>F&F Settlements</h4>
+          </div>
+
+          <div class="col-sm-12 col-md-5 col-lg-5">
+            <app-common-search (filtersChanged)="handleFilters($event)"></app-common-search>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-body">
+
+    
+        <div class="d-flex align-items-center justify-content-between mb-2">
+          <p class="text-primary mb-0" style="font-size: 15px;">F&F Pending</p>
+          <input type="text" class="form-control " style="max-width: 260px;" placeholder="Search employee..."
+            [(ngModel)]="searchText1" (keyup)="onSearchBlurPending()"/>
+        </div>
+
+        <div class="table-responsive ">
+          <table id="exportTablePending" class="table">
+            <thead>
+              <tr>
+                <th>Sr.</th>
+                <th>Employee Code</th>
+                <th>Employee Name</th>
+                <th>Department</th>
+                <th>Location</th>
+                <th>Date Of Joining</th>
+                <th>Left Date</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngIf="fnfListPending.length === 0">
+                <td colspan="8" class="text-center">No records found</td>
+              </tr>
+
+              <tr
+                *ngFor="let item of filteredPending()
+                          | paginate: { itemsPerPage: pageSize1, currentPage: pageIndex1, totalItems: totalCount1, id: 'pendingPager' }; let i = index">
+                <td>{{ (pageIndex1 - 1) * pageSize1 + i + 1 }}</td>
+                <td>{{ item.empcode }}</td>
+                <td>{{ item.empname }}</td>
+                <td>{{ item.department }}</td>
+                <td>{{ item.locname }}</td>
+                <td>{{ item.dateofjoining }}</td>
+                <td>{{ item.leftdate }}</td>
+                <td>
+                  <button class="btn btn-sm btn-outline" (click)="processFnF(encryptionService.encryptText(item.pk_empid).toString())">
+                    <i class="fa-regular fa-pen-to-square"></i>
+                    
+                  </button>
+                  
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <pagination-controls id="pendingPager" (pageChange)="onPageChange1($event)">
+
+
+          </pagination-controls>
+        </div>
+
+
+        <div class="d-flex align-items-center justify-content-between mb-2">
+          <p class="text-primary mb-0" style="font-size: 15px;">F&F Processed</p>
+          <input type="text" class="form-control search-emp" style="max-width: 260px;" placeholder="Search employee..."
+            [(ngModel)]="searchText2" (keyup)="onSearchBlurProcessed()" />
+        </div>
+
+        <div class="table-responsive ">
+          <table id="exportTableProcessed" class="table">
+            <thead>
+              <tr>
+                <th>Sr.</th>
+                <th>Employee Code</th>
+                <th>Employee Name</th>
+                <th>Department</th>
+                <th>Location</th>
+                <th>Date Of Joining</th>
+                <th>Left Date</th>
+                <th>Action</th>
+
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngIf="fnfListProcessed.length === 0">
+                <td colspan="8" class="text-center">No records found</td>
+              </tr>
+
+              <tr
+                *ngFor="let item of filteredProcessed()
+                          | paginate: { itemsPerPage: pageSize2, currentPage: pageIndex2, totalItems: totalCount2, id: 'processedPager' }; let i = index">
+                <td>{{ (pageIndex2 - 1) * pageSize2 + i + 1 }}</td>
+                <td>{{ item.empcode }}</td>
+                <td>{{ item.empname }}</td>
+                <td>{{ item.department }}</td>
+                <td>{{ item.locname }}</td>
+                <td>{{ item.dateofjoining }}</td>
+                <td>{{ item.leftdate }}</td>
+                <td>
+                    <button class="btn btn-sm btn-outline"   (click)="downloadPdf(item.pk_empid, item.empcode)">
+                     <i class="fa fa-download me-2"></i>
+                    
+                  </button>
+                </td>
+
+              </tr>
+            </tbody>
+          </table>
+
+          <pagination-controls id="processedPager" (pageChange)="onPageChange2($event)">
+          </pagination-controls>
+
+        </div>
+
+
+      </div>
+    </div>
+  </div>
+</div> 
+
+
+

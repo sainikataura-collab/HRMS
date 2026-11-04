@@ -1,0 +1,243 @@
+<div class="ats-boards-page p-2 px-3">
+  <!-- Corporate Header Strip -->
+  <div class="header-strip d-flex flex-wrap justify-content-between align-items-center mb-2 p-2 px-3 bg-white rounded border">
+    <div class="d-flex align-items-center gap-2">
+      <a routerLink="/dash/recruitment/recruitmentdashboard" class="btn-back rounded d-flex align-items-center justify-content-center text-dark text-decoration-none" title="Back to Dashboard">
+        <i class="bi bi-arrow-left"></i>
+      </a>
+      <div class="d-flex align-items-center gap-2">
+        <span class="page-title text-dark fw-bold" style="font-size: 13px;">Job Board Syndication Hub</span>
+        <span class="badge-chip bg-primary-subtle text-primary">ATS Channels</span>
+        <span class="badge-chip bg-success-subtle text-success">
+          <i class="bi bi-broadcast me-1"></i> {{ getTotalActiveChannels() }} / {{ jobBoards.length }} Active
+        </span>
+      </div>
+    </div>
+    <div class="d-flex align-items-center gap-1 mt-1 mt-md-0">
+      <button class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1" (click)="loadJobBoards()" style="font-size: 10.5px; padding: 3px 8px;">
+        <i class="bi bi-arrow-repeat"></i> Refresh
+      </button>
+      <button class="btn btn-primary-action btn-sm fw-semibold shadow-sm d-flex align-items-center gap-1" (click)="openAddBoardModal()" style="font-size: 10.5px; padding: 3px 10px;">
+        <i class="bi bi-plus-lg"></i> Add Custom Board
+      </button>
+    </div>
+  </div>
+
+  <!-- Key Metrics Strip -->
+  <div class="metrics-grid mb-3">
+    <div class="metric-card">
+      <div>
+        <span class="text-muted d-block metric-label">Active Channels</span>
+        <span class="fw-bold text-dark metric-value">{{ getTotalActiveChannels() }} <span class="text-muted" style="font-size: 10px;">/ {{ jobBoards.length }}</span></span>
+      </div>
+      <div class="metric-icon-box bg-primary-subtle text-primary">
+        <i class="bi bi-broadcast"></i>
+      </div>
+    </div>
+
+    <div class="metric-card">
+      <div>
+        <span class="text-muted d-block metric-label">Active Postings</span>
+        <span class="fw-bold text-dark metric-value">{{ getTotalPostings() }}</span>
+      </div>
+      <div class="metric-icon-box bg-success-subtle text-success">
+        <i class="bi bi-briefcase"></i>
+      </div>
+    </div>
+
+    <div class="metric-card">
+      <div>
+        <span class="text-muted d-block metric-label">Candidates Sourced</span>
+        <span class="fw-bold text-primary metric-value">{{ getTotalCandidatesSourced() }}</span>
+      </div>
+      <div class="metric-icon-box bg-info-subtle text-info">
+        <i class="bi bi-people"></i>
+      </div>
+    </div>
+
+    <div class="metric-card">
+      <div>
+        <span class="text-muted d-block metric-label">Auto Sync Status</span>
+        <span class="fw-bold text-success" style="font-size: 12.5px;">
+          <i class="bi bi-check-circle-fill me-1"></i> Live Active
+        </span>
+      </div>
+      <div class="metric-icon-box bg-warning-subtle text-warning">
+        <i class="bi bi-arrow-repeat"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- Channel Category & Search Filter Bar -->
+  <div class="filter-strip d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3 p-2 px-3 bg-white rounded border">
+    <div class="d-flex flex-wrap align-items-center gap-1">
+      <span class="text-muted fw-semibold me-1" style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px;">Categories:</span>
+      <button *ngFor="let cat of categories" 
+              type="button" 
+              class="cat-filter-pill" 
+              [class.active]="selectedCategory === cat" 
+              (click)="selectedCategory = cat">
+        {{ cat }}
+      </button>
+    </div>
+    <div class="search-box position-relative">
+      <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-2 text-muted" style="font-size: 11px;"></i>
+      <input type="text" 
+             class="form-control form-control-sm ps-4" 
+             [(ngModel)]="searchQuery" 
+             placeholder="Filter job boards..." 
+             style="font-size: 11px; width: 190px; height: 26px;">
+    </div>
+  </div>
+
+  <!-- Job Boards Cards Grid (Distinct CSS Grid with 16px Division Between Cards) -->
+  <div class="boards-grid mb-3">
+    <div class="board-card" 
+         *ngFor="let board of filteredBoards" 
+         [ngClass]="board.isActive ? 'card-active' : 'card-inactive'">
+      <div class="card-body-content">
+        <!-- Header of Board Card -->
+        <div class="d-flex justify-content-between align-items-start mb-2 gap-2">
+          <div class="d-flex align-items-start gap-2 flex-grow-1" style="min-width: 0;">
+            <div class="rounded d-flex align-items-center justify-content-center text-white flex-shrink-0 mt-1" [style.background-color]="board.colorClass" style="width: 26px; height: 26px; font-size: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+              <i class="bi bi-globe"></i>
+            </div>
+            <div class="flex-grow-1" style="min-width: 0;">
+              <div class="fw-bold text-dark text-truncate" [title]="board.boardName" style="font-size: 12.5px; line-height: 1.2;">{{ board.boardName }}</div>
+              <span class="badge-category-pill mt-1" [title]="board.category">{{ board.category }}</span>
+            </div>
+          </div>
+          <button type="button" class="toggle-pill-btn flex-shrink-0" [ngClass]="board.isActive ? 'active' : 'inactive'" (click)="$event.stopPropagation(); toggleBoard(board)" [title]="board.isActive ? 'Click to Disable' : 'Click to Enable'">
+            <span class="toggle-dot"></span>
+            <span class="toggle-text">{{ board.isActive ? 'ON' : 'OFF' }}</span>
+          </button>
+        </div>
+
+        <!-- Board Details Block (High Contrast Separator) -->
+        <div class="board-info-block p-2 rounded mb-2 border">
+          <div class="d-flex justify-content-between align-items-center py-0 mb-1">
+            <span class="label-txt">Integration:</span>
+            <span class="badge" [ngClass]="board.isConfigured ? 'bg-success-subtle text-success border border-success-subtle' : 'bg-warning-subtle text-warning-emphasis border border-warning-subtle'" style="font-size: 9.5px; padding: 2px 6px; font-weight: 600;">
+              {{ board.isConfigured ? 'Connected' : 'Pending' }}
+            </span>
+          </div>
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <span class="label-txt">Active Posts:</span>
+            <strong class="value-txt text-dark">{{ board.totalPostings }}</strong>
+          </div>
+          <div class="d-flex justify-content-between align-items-center">
+            <span class="label-txt">Candidates:</span>
+            <strong class="value-txt text-primary">{{ board.totalSourcedCandidates }}</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions Footer -->
+      <div class="card-footer-strip pt-2 border-top d-flex justify-content-between align-items-center" style="font-size: 9.5px;">
+        <span class="text-muted text-truncate" style="max-width: 100px;">
+          <i class="bi bi-clock me-1"></i>{{ board.lastSyncDate ? (board.lastSyncDate | date:'shortTime') : 'Live' }}
+        </span>
+        <button class="btn btn-outline-secondary btn-sm py-0 px-2 d-flex align-items-center gap-1" (click)="openConfigModal(board)" style="font-size: 9.5px; height: 22px;">
+          <i class="bi bi-gear-fill"></i> Config
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- API Key Config Modal -->
+  <div class="modal-backdrop fade show" *ngIf="showConfigModal" style="background-color: rgba(15, 23, 42, 0.7); z-index: 99998;" (click)="closeConfigModal()"></div>
+  <div class="modal fade show d-block" *ngIf="showConfigModal" tabindex="-1" style="z-index: 99999; top: 65px;">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow-lg rounded-3 overflow-hidden">
+        <div class="modal-header bg-dark text-white p-2 px-3 border-0">
+          <div class="d-flex align-items-center gap-2">
+            <i class="bi bi-shield-lock text-primary" style="font-size: 13px;"></i>
+            <span class="modal-title fw-bold text-white" style="font-size: 12.5px;">Configure API — {{ selectedBoard?.boardName }}</span>
+          </div>
+          <button type="button" class="btn-close btn-close-white" (click)="closeConfigModal()"></button>
+        </div>
+        <div class="modal-body p-3 bg-light" *ngIf="selectedBoard">
+          <!-- Helpful Info Banner for 100% Free / Feed Channels -->
+          <div class="p-2 px-3 rounded border mb-2 bg-primary-subtle border-primary-subtle d-flex align-items-center gap-2" *ngIf="selectedBoard.category.includes('Free') || selectedBoard.category.includes('Direct') || selectedBoard.category.includes('Search')">
+            <i class="bi bi-info-circle-fill text-primary flex-shrink-0" style="font-size: 14px;"></i>
+            <div style="font-size: 10px;" class="text-dark">
+              <strong>100% Automated Syndication:</strong> This channel distributes jobs automatically via your <strong>Aggregator XML Feed</strong> & Google schema. <em>No API keys or tokens are required!</em>
+            </div>
+          </div>
+
+          <div class="mb-2">
+            <label class="form-label fw-semibold text-dark" style="font-size: 10.5px;">Public Portal / Channel URL</label>
+            <input type="text" class="form-control form-control-sm" [(ngModel)]="selectedBoard.syndicationUrl" placeholder="https://jobboard.com/company/hrbook" style="font-size: 11px;">
+          </div>
+          
+          <div class="mb-2">
+            <label class="form-label fw-semibold text-dark" style="font-size: 10.5px;">
+              Enterprise API Client ID <span class="text-muted small fw-normal">(Optional — Only for paid partner contracts)</span>
+            </label>
+            <input type="text" class="form-control form-control-sm" [(ngModel)]="selectedBoard.apiKey" placeholder="Leave empty for free automated syndication" style="font-size: 11px;">
+          </div>
+          
+          <div class="mb-2">
+            <label class="form-label fw-semibold text-dark" style="font-size: 10.5px;">
+              Enterprise API Secret Key <span class="text-muted small fw-normal">(Optional — Only for paid partner contracts)</span>
+            </label>
+            <input type="password" class="form-control form-control-sm" [(ngModel)]="selectedBoard.secretKey" placeholder="Leave empty for free automated syndication" style="font-size: 11px;">
+          </div>
+          
+          <div class="mb-2">
+            <label class="form-label fw-semibold text-dark" style="font-size: 10.5px;">Custom Webhook Dispatch URL <span class="text-muted small fw-normal">(Optional)</span></label>
+            <input type="text" class="form-control form-control-sm" [(ngModel)]="selectedBoard.webhookUrl" placeholder="https://api.hrbook.com/webhooks/syndication" style="font-size: 11px;">
+          </div>
+        </div>
+        <div class="modal-footer p-2 px-3 bg-white border-top d-flex justify-content-between">
+          <button class="btn btn-outline-secondary btn-sm" (click)="closeConfigModal()" style="font-size: 10.5px;">Cancel</button>
+          <button class="btn btn-primary-action btn-sm" (click)="saveConfig()" style="font-size: 10.5px;">Save Channel Settings</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Custom Board Modal -->
+  <div class="modal-backdrop fade show" *ngIf="showAddBoardModal" style="background-color: rgba(15, 23, 42, 0.7); z-index: 99998;" (click)="closeAddBoardModal()"></div>
+  <div class="modal fade show d-block" *ngIf="showAddBoardModal" tabindex="-1" style="z-index: 99999; top: 65px;">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow-lg rounded-3 overflow-hidden">
+        <div class="modal-header bg-dark text-white p-2 px-3 border-0">
+          <div class="d-flex align-items-center gap-2">
+            <i class="bi bi-plus-circle text-primary" style="font-size: 13px;"></i>
+            <span class="modal-title fw-bold text-white" style="font-size: 12.5px;">Register Custom Job Board</span>
+          </div>
+          <button type="button" class="btn-close btn-close-white" (click)="closeAddBoardModal()"></button>
+        </div>
+        <div class="modal-body p-3 bg-light">
+          <div class="mb-2">
+            <label class="form-label fw-semibold text-dark" style="font-size: 10.5px;">Job Board Name <span class="text-danger">*</span></label>
+            <input type="text" class="form-control form-control-sm" [(ngModel)]="newBoard.boardName" placeholder="e.g. Regional Tech Portal" style="font-size: 11px;">
+          </div>
+          <div class="mb-2">
+            <label class="form-label fw-semibold text-dark" style="font-size: 10.5px;">Category</label>
+            <select class="form-select form-select-sm" [(ngModel)]="newBoard.category" style="font-size: 11px;">
+              <option value="General">General Aggregator</option>
+              <option value="Professional">Professional Network</option>
+              <option value="Technical">Technical & Developer</option>
+              <option value="Regional">Regional & Local</option>
+              <option value="Custom Portal">Custom Enterprise Portal</option>
+            </select>
+          </div>
+          <div class="mb-2">
+            <label class="form-label fw-semibold text-dark" style="font-size: 10.5px;">API Key (Optional)</label>
+            <input type="text" class="form-control form-control-sm" [(ngModel)]="newBoard.apiKey" placeholder="Enter API key" style="font-size: 11px;">
+          </div>
+          <div class="mb-2">
+            <label class="form-label fw-semibold text-dark" style="font-size: 10.5px;">Syndication Target URL</label>
+            <input type="text" class="form-control form-control-sm" [(ngModel)]="newBoard.syndicationUrl" placeholder="https://portal.com" style="font-size: 11px;">
+          </div>
+        </div>
+        <div class="modal-footer p-2 px-3 bg-white border-top d-flex justify-content-between">
+          <button class="btn btn-outline-secondary btn-sm" (click)="closeAddBoardModal()" style="font-size: 10.5px;">Cancel</button>
+          <button class="btn btn-primary-action btn-sm" (click)="saveNewBoard()" style="font-size: 10.5px;">Create Channel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

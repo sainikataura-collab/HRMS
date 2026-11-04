@@ -1,0 +1,155 @@
+// .card-header{
+//     background-color: #3080e8;
+  
+//     font-weight: bold;
+//   }
+//   .ngx-pagination .current {
+//   padding: .1875rem .625rem;
+//   background:  #3080e8 !important;
+//   color: #fefefe;
+//   cursor: default;
+//   }
+//   .btn:hover{
+//     background-color: #2b2e41 !important;
+//     color:white !important;
+//   }
+
+
+.scroll-active {
+  max-height: 600px !important; /* or any height */
+  overflow-y: auto;
+  position: relative;
+}
+
+
+.table-invoice.scroll-active {
+  max-height: 600px !important;
+  overflow-y: auto;
+}
+
+.table thead th {
+ 
+  position: sticky;
+  top: 0;
+  background: #f8f9fa; /* Or match your theme */
+  z-index: 2;
+}
+.table-responsive{
+  overflow-x: auto;
+}
+.table td {
+  white-space: nowrap;
+}
+.table th {
+  white-space: nowrap;
+}
+
+.small{
+  font-size: 11px;
+}
+
+.badge {
+    vertical-align: middle;
+    padding: 4px 12px;
+    font-weight: 500;
+    letter-spacing: .3px;
+    border-radius: 30px;
+    font-size: 11px;
+}
+
+
+
+/* src/app/pay-slip/ status component.css */
+
+/* Ensure no extra space on the body */
+body, html {
+  margin: 0;
+  padding: 0;
+}
+
+/* Reset spacing on the PDF container */
+#pdf-content {
+  margin-left:20px  !important;
+  margin-top: 20px !important;
+  margin-right:20px  !important;
+  padding: 0 !important;
+  position: relative;
+
+  border:1px solid #2b2e41 dashed !important;
+
+}
+
+// 
+/* Optional: remove padding from the card if needed */
+.card {
+  margin: 0 !important;
+  padding: 10px; /* Adjust if needed */
+}
+/* HTML page par hide karna */
+
+
+/* Print aur PDF generate karte waqt display karna */
+@media print {
+  #pdf-content {
+    display: block;
+  }
+}
+
+.p-0{
+  padding: 0px !important;
+
+}
+
+.l-small{
+  font-size: 13px;
+}
+
+.small{
+  font-size: 12px;
+}
+
+.Personal-details p{
+  border-bottom: 1px solid rgb(238, 240, 243) !important;
+}
+.Personal-details p span{
+  font-size: 12px;
+}
+
+.modal-body{
+  padding-bottom: 0px;
+  padding-top: 8px;
+}
+
+.fa-eye:hover{
+  color: #3080e8;
+}
+
+.fa-download:hover{
+  color: #3080e8;
+}
+
+.TotalDeductions p{
+  margin-bottom: 0rem !important;
+}
+
+.mat-typography p 
+{
+   margin: 0em !important; 
+}
+.mat-typography p 
+{
+   margin: 0rem !important; 
+}
+
+.mat-typography span 
+{
+   margin: 0em !important; 
+}
+.mat-typography span 
+{
+   margin: 0rem !important; 
+}
+.s-small
+{
+  font-size: 10px;
+}

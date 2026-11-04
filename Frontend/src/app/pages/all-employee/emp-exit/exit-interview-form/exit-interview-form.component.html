@@ -1,0 +1,348 @@
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card">
+
+      <div class="card-header bg-blue">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-6 col-lg-6">
+            <h4>{{ isViewMode ? 'View Exit Interview' : 'Exit Interview Form' }}</h4>
+          </div>
+
+          <div class="col-sm-12 col-md-6 col-lg-6 d-flex align-items-center justify-content-md-end">
+            <button class="btn btnheader" type="button" (click)="back()">
+              Back
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-body mt-4">
+
+        <form [formGroup]="interviewForm">
+
+          <div class="row mb-4" *ngIf="isViewMode">
+            <div class="col-sm-12 col-md-4 col-lg-4">
+              <label>Employee Code</label>
+              <input type="text" class="form-control" formControlName="empcode" readonly>
+            </div>
+
+            <div class="col-sm-12 col-md-4 col-lg-4">
+              <label>Employee Name</label>
+              <input type="text" class="form-control" formControlName="empname" readonly>
+            </div>
+
+            <div class="col-sm-12 col-md-4 col-lg-4">
+              <label>Department</label>
+              <input type="text" class="form-control" formControlName="department" readonly>
+            </div>
+          </div>
+
+          <div class="bg-primary rounded-1 page-seperator mb-3">
+            <p class="p-1 text-white ms-4 mb-0">Primary Reason for Leaving</p>
+          </div>
+
+          <div class="row row-cols-1 row-cols-md-3 mb-4">
+            <div class="col">
+              <div class="form-group">
+
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="r_betterCareer" formControlName="r_betterCareer"
+                    (click)="preventChangeInViewMode($event)">
+                  <label class="form-check-label" for="r_betterCareer">Better Career Opportunity</label>
+                </div>
+
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="r_higherSalary" formControlName="r_higherSalary"
+                    (click)="preventChangeInViewMode($event)">
+                  <label class="form-check-label" for="r_higherSalary">Higher Salary</label>
+                </div>
+
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="r_relocation" formControlName="r_relocation"
+                    (click)="preventChangeInViewMode($event)">
+                  <label class="form-check-label" for="r_relocation">Relocation</label>
+                </div>
+
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="r_personal" formControlName="r_personal"
+                    (click)="preventChangeInViewMode($event)">
+                  <label class="form-check-label" for="r_personal">Personal Reasons</label>
+                </div>
+
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="r_health" formControlName="r_health"
+                    (click)="preventChangeInViewMode($event)">
+                  <label class="form-check-label" for="r_health">Health Issues</label>
+                </div>
+
+              </div>
+            </div>
+
+            <div class="col">
+              <div class="form-group">
+
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="r_education" formControlName="r_education"
+                    (click)="preventChangeInViewMode($event)">
+                  <label class="form-check-label" for="r_education">Higher Education</label>
+                </div>
+
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="r_workEnv" formControlName="r_workEnv"
+                    (click)="preventChangeInViewMode($event)">
+                  <label class="form-check-label" for="r_workEnv">Work Environment</label>
+                </div>
+
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="r_managerial" formControlName="r_managerial"
+                    (click)="preventChangeInViewMode($event)">
+                  <label class="form-check-label" for="r_managerial">Managerial Issues</label>
+                </div>
+
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="r_jobDissatisfaction"
+                    formControlName="r_jobDissatisfaction" (click)="preventChangeInViewMode($event)">
+                  <label class="form-check-label" for="r_jobDissatisfaction">Job Dissatisfaction</label>
+                </div>
+
+              </div>
+            </div>
+
+            <div class="col">
+              <div class="form-group">
+
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="r_workLife" formControlName="r_workLife"
+                    (click)="preventChangeInViewMode($event)">
+                  <label class="form-check-label" for="r_workLife">Work-Life Balance</label>
+                </div>
+
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="r_companyPolicies"
+                    formControlName="r_companyPolicies" (click)="preventChangeInViewMode($event)">
+                  <label class="form-check-label" for="r_companyPolicies">Company Policies</label>
+                </div>
+
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="r_retirement" formControlName="r_retirement"
+                    (click)="preventChangeInViewMode($event)">
+                  <label class="form-check-label" for="r_retirement">Retirement</label>
+                </div>
+
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="r_other" formControlName="r_other"
+                    (click)="preventChangeInViewMode($event)">
+                  <label class="form-check-label" for="r_other">Other:</label>
+                </div>
+
+                <input type="text" class="form-control mt-1" formControlName="r_otherText"
+                  placeholder="Please specify..." *ngIf="interviewForm.get('r_other')?.value" [readonly]="isViewMode">
+
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-primary rounded-1 page-seperator mb-3">
+            <p class="p-1 text-white ms-4 mb-0">Employee Feedback</p>
+          </div>
+
+          <div class="row row-cols-1 row-cols-md-2 mb-4">
+
+            <div class="col mb-3">
+              <label class="fw-semibold">
+                1. How satisfied were you with your job role?<span style="color:red">*</span>
+              </label>
+
+              <div class="d-flex gap-4 mt-1">
+                <div class="form-check" *ngFor="let opt of ratingOptions">
+                  <input class="form-check-input" type="radio" [id]="'q1_'+opt" formControlName="q1_jobRole"
+                    [value]="opt" (click)="preventChangeInViewMode($event)">
+                  <label class="form-check-label" [for]="'q1_'+opt">{{ opt }}</label>
+                </div>
+              </div>
+
+              <input type="text" class="form-control mt-2" formControlName="q1_comments" placeholder="Comments..."
+                [readonly]="isViewMode">
+            </div>
+
+            <div class="col mb-3">
+              <label class="fw-semibold">
+                2. How satisfied were you with your Reporting Manager?<span style="color:red">*</span>
+              </label>
+
+              <div class="d-flex gap-4 mt-1">
+                <div class="form-check" *ngFor="let opt of ratingOptions">
+                  <input class="form-check-input" type="radio" [id]="'q2_'+opt" formControlName="q2_manager"
+                    [value]="opt" (click)="preventChangeInViewMode($event)">
+                  <label class="form-check-label" [for]="'q2_'+opt">{{ opt }}</label>
+                </div>
+              </div>
+
+              <input type="text" class="form-control mt-2" formControlName="q2_comments" placeholder="Comments..."
+                [readonly]="isViewMode">
+            </div>
+
+            <div class="col mb-3">
+              <label class="fw-semibold">
+                3. How satisfied were you with the work environment?<span style="color:red">*</span>
+              </label>
+
+              <div class="d-flex gap-4 mt-1">
+                <div class="form-check" *ngFor="let opt of ratingOptions">
+                  <input class="form-check-input" type="radio" [id]="'q3_'+opt" formControlName="q3_workEnv"
+                    [value]="opt" (click)="preventChangeInViewMode($event)">
+                  <label class="form-check-label" [for]="'q3_'+opt">{{ opt }}</label>
+                </div>
+              </div>
+
+              <input type="text" class="form-control mt-2" formControlName="q3_comments" placeholder="Comments..."
+                [readonly]="isViewMode">
+            </div>
+
+            <div class="col mb-3">
+              <label class="fw-semibold">
+                4. How satisfied were you with salary and benefits?<span style="color:red">*</span>
+              </label>
+
+              <div class="d-flex gap-4 mt-1">
+                <div class="form-check" *ngFor="let opt of ratingOptions">
+                  <input class="form-check-input" type="radio" [id]="'q4_'+opt" formControlName="q4_salary"
+                    [value]="opt" (click)="preventChangeInViewMode($event)">
+                  <label class="form-check-label" [for]="'q4_'+opt">{{ opt }}</label>
+                </div>
+              </div>
+
+              <input type="text" class="form-control mt-2" formControlName="q4_comments" placeholder="Comments..."
+                [readonly]="isViewMode">
+            </div>
+
+            <div class="col mb-3">
+              <label class="fw-semibold">
+                5. Were company policies clearly communicated?<span style="color:red">*</span>
+              </label>
+
+              <div class="d-flex gap-4 mt-1">
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" id="q5_yes" formControlName="q5_policies" value="Yes"
+                    (click)="preventChangeInViewMode($event)">
+                  <label class="form-check-label" for="q5_yes">Yes</label>
+                </div>
+
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" id="q5_no" formControlName="q5_policies" value="No"
+                    (click)="preventChangeInViewMode($event)">
+                  <label class="form-check-label" for="q5_no">No</label>
+                </div>
+              </div>
+
+              <input type="text" class="form-control mt-2" formControlName="q5_comments" placeholder="Comments..."
+                [readonly]="isViewMode">
+            </div>
+
+            <div class="col mb-3">
+              <label class="fw-semibold">
+                6. Did you receive adequate training and support?<span style="color:red">*</span>
+              </label>
+
+              <div class="d-flex gap-4 mt-1">
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" id="q6_yes" formControlName="q6_training" value="Yes"
+                    (click)="preventChangeInViewMode($event)">
+                  <label class="form-check-label" for="q6_yes">Yes</label>
+                </div>
+
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" id="q6_no" formControlName="q6_training" value="No"
+                    (click)="preventChangeInViewMode($event)">
+                  <label class="form-check-label" for="q6_no">No</label>
+                </div>
+              </div>
+
+              <input type="text" class="form-control mt-2" formControlName="q6_comments" placeholder="Comments..."
+                [readonly]="isViewMode">
+            </div>
+
+            <div class="col mb-3">
+              <label class="fw-semibold">
+                7. Did you face any issues with team collaboration?<span style="color:red">*</span>
+              </label>
+
+              <div class="d-flex gap-4 mt-1">
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" id="q7_yes" formControlName="q7_teamIssues" value="Yes"
+                    (click)="preventChangeInViewMode($event)">
+                  <label class="form-check-label" for="q7_yes">Yes</label>
+                </div>
+
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" id="q7_no" formControlName="q7_teamIssues" value="No"
+                    (click)="preventChangeInViewMode($event)">
+                  <label class="form-check-label" for="q7_no">No</label>
+                </div>
+              </div>
+
+              <input type="text" class="form-control mt-2" formControlName="q7_comments"
+                placeholder="If Yes, please explain..." *ngIf="interviewForm.get('q7_teamIssues')?.value === 'Yes'"
+                [readonly]="isViewMode">
+            </div>
+
+            <div class="col mb-3">
+              <label class="fw-semibold">8. What did you like most about the company?</label>
+              <textarea class="form-control mt-1" formControlName="q8_liked" rows="3"
+                placeholder="Share your thoughts..." [readonly]="isViewMode"></textarea>
+            </div>
+
+            <div class="col mb-3">
+              <label class="fw-semibold">9. What improvements would you suggest?</label>
+              <textarea class="form-control mt-1" formControlName="q9_improvements" rows="3"
+                placeholder="Your suggestions..." [readonly]="isViewMode"></textarea>
+            </div>
+
+            <div class="col mb-3">
+              <label class="fw-semibold">
+                10. Would you recommend this company to others?<span style="color:red">*</span>
+              </label>
+
+              <div class="d-flex gap-4 mt-1">
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" id="q10_yes" formControlName="q10_recommend" value="Yes"
+                    (click)="preventChangeInViewMode($event)">
+                  <label class="form-check-label" for="q10_yes">Yes</label>
+                </div>
+
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" id="q10_no" formControlName="q10_recommend" value="No"
+                    (click)="preventChangeInViewMode($event)">
+                  <label class="form-check-label" for="q10_no">No</label>
+                </div>
+
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" id="q10_maybe" formControlName="q10_recommend"
+                    value="Maybe" (click)="preventChangeInViewMode($event)">
+                  <label class="form-check-label" for="q10_maybe">Maybe</label>
+                </div>
+              </div>
+
+              <input type="text" class="form-control mt-2" formControlName="q10_reason" placeholder="Reason..."
+                [readonly]="isViewMode">
+            </div>
+
+          </div>
+        </form>
+
+        <div class="row" *ngIf="!isViewMode">
+          <div class="col d-flex align-items-end justify-content-end pt-4 pb-3">
+            <button type="submit" class="btn btn-primary mx-1" (click)="submitForm()">
+              Submit Feedback
+            </button>
+
+            <button type="reset" class="btn btn-outline-dark mx-1" (click)="resetForm()">
+              Reset
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

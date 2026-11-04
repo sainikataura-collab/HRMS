@@ -1,0 +1,223 @@
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+
+      <!-- 🔹 Header -->
+      <div class="card-header bg-primary">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-between">
+            <h4>Employee Attendance View</h4>
+          </div>
+          <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+            <button class="btn btnheader"
+              routerLink="/dash/emp-training/emp-trainingdashboard/TNI_List_For_Employee">
+              Back
+            </button>
+            
+          </div>
+        </div>
+      </div>
+
+      <!-- 🔹 Body -->
+      <div class="card-body mt-4">
+
+        <!-- Loader -->
+        <div *ngIf="loading" class="text-center text-muted">Loading...</div>
+
+        <!-- Error -->
+        <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+
+        <!-- Training Details & Attendance -->
+        <div *ngIf="!loading && data">
+
+          <!-- <div class="row mb-3">
+            <div class="col-12">
+              <span class="fs-5 fw-bold">{{ data.training.empName }}</span>
+            </div>
+          </div> -->
+
+          <!-- <hr /> -->
+
+          <div class="row row-cols-1 row-cols-lg-2 g-4 mb-4">
+
+
+            <div class="col">
+              <div class="h-100">
+                <div class="card-header bg-light">
+                  <p class="card-title mb-0">Employee Info 👤</p>
+                </div>
+                <div class="card-body">
+                  <p><strong>Employee Name:</strong> {{ data.employeeinfo.empName }}</p>
+                  <p><strong>Employee ID:</strong> {{ data.employeeinfo.fk_empId }}</p>
+                  <!-- <p><strong>Calendar ID:</strong> {{ data.employeeinfo.fk_calendarId }}</p> -->
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="h-100">
+                <div class="card-header bg-light">
+                  <p class="card-title mb-0">Program Details 📚</p>
+                </div>
+                <div class="card-body">
+                  <p><strong>Program:</strong> {{ data.employeeinfo.programName }}</p>
+                  <p><strong>SubProgram:</strong> {{ data.employeeinfo.subProgramName }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <hr />
+          <!-- 📊 Attendance Summary Cards -->
+
+          <div class="row row-cols-1 row-cols-md-4 row-cols-lg-4 g-4 text-center mb-4">
+
+            <div class="col" *ngIf="totalDays >= 0">
+              <div class="card rounded pt-2 border-top border-2 border-success">
+                <h4 class="text-center">
+                  <span class="badge bg-success rounded">
+                    <i class="fas fa-check-circle fs-5 text-white"></i>
+                  </span>
+                </h4>
+                <p class="small text-center fw-semibold">Present<br><span class="fw-semibold text-success">{{
+                    presentCount }}</span></p>
+              </div>
+            </div>
+
+
+            <div class="col">
+              <div class="card rounded pt-2 border-top border-2 border-danger">
+                <h4 class="text-center">
+                  <span class="badge bg-danger rounded">
+                    <i class="fas fa-times-circle fs-5 text-white"></i>
+                  </span>
+                </h4>
+                <p class="small text-center fw-semibold">Absent<br><span class="fw-semibold text-danger">{{ absentCount
+                    }}</span></p>
+              </div>
+            </div>
+
+            <div class="col">
+              <div class="card rounded pt-2 border-top border-2 border-info">
+                <h4 class="text-center">
+                  <span class="badge bg-info rounded">
+                    <i class="fas fa-calendar-days fs-5 text-white"></i>
+                  </span>
+                </h4>
+                <p class="small text-center fw-semibold">Total Days<br><span class="fw-semibold text-info">{{ totalDays
+                    }}</span></p>
+              </div>
+            </div>
+
+
+
+
+
+            <div class="col">
+              <div class="card rounded pt-2 border-top border-2 border-warning">
+                <h4 class="text-center">
+                  <span class="badge bg-warning rounded">
+                    <i class="fas fa-file-signature fs-5 text-white"></i>
+                  </span>
+                </h4>
+                <p class="small text-center fw-semibold">Attendance<br><span class="fw-semibold text-warning">{{
+                    attendancePercentage | number:'1.0-2' }}%</span></p>
+              </div>
+            </div>
+
+
+
+
+          </div>
+
+
+
+
+
+
+
+          <!-- 📝 Detailed Attendance Table -->
+
+
+
+          <div class="row">
+            <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 px-0 mx-0">
+              <div class="card rounded-3">
+
+                <div class="card-header ps-2 row row-cols-1 row-cols-md-3"
+                  style="border-top: 2px solid #3080e8; border-bottom: 1px solid #cdcfdf;">
+
+                  <div class="col">
+                    <span class="small fw-semibold text-primary">Attendance Records</span>
+                  </div>
+
+                  <div class="col ">
+                    <input type="text" class="form-control border-success  " placeholder="Search Candidate"
+                      [(ngModel)]="searchText" />
+                  </div>
+
+
+                  <div class="col d-flex align-items-center justify-content-end"> <button
+                      class="btn btn-outline-success btn-sm" (click)="toggleViewAll()">
+                      {{ showAll ? '🔙 Show Less' : '📅 View All' }}
+                    </button></div>
+
+                </div>
+
+                <div class="card-body p-0 table-responsive">
+                  <table class="table table-hover table-bordered mb-0 table-responsive">
+                    <thead class="table-light">
+                      <tr class="text-start">
+                        <th>Sr.No.</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Status</th>
+
+                      </tr>
+                    </thead>
+
+
+                    <tbody>
+                      <tr *ngFor="let record of filteredAttendances; let i = index">
+                        <td>{{ i + 1 }}</td>
+                        <td>{{ record.attendanceDate | date:'mediumDate' }}</td>
+                        <td>{{ record.attendanceTime | date:'shortTime' }}</td>
+                        <td>
+                          <span class="badge" [ngClass]="getStatusClass(record.attendanceStatus)">
+                            {{ getStatusText(record.attendanceStatus) }}
+                          </span>
+                        </td>
+                      </tr>
+                      <tr *ngIf="filteredAttendances.length === 0">
+                        <td colspan="4" class="text-center text-muted">No attendance records found</td>
+                      </tr>
+                    </tbody>
+
+                  </table>
+                </div>
+
+
+              </div>
+            </div>
+          </div>
+
+
+
+          <!--  -->
+
+
+
+
+
+          <!-- Footer -->
+          <div class="modal-footer mt-3">
+            <button class="btn btn-outline-dark mx-1" type="button"
+              routerLink="/dash/emp-recruitment/emp-recruitmentdashboard/Training_Need_Identification_List_For_Employee">
+              Close
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,111 @@
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+
+            <div class="card-header bg-blue">
+                <div class="row w-100">
+                    <div class="col-sm-12 col-md-12 col-lg-12">
+                        <h4 class="">Approve Regularisation</h4>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-md-6 col-lg-6 d-flex align-items-center justify-content-end ms-auto gap-2">
+                    <!-- <button class="btn btn-light"routerLink="/dash/leaves/leavesdashboard/leavereqlist">
+                        Back
+                    </button> -->
+                </div>
+            </div>
+
+            <div class="card-body mt-4">
+                <form [formGroup]="approvereguForm">
+
+                    <div class="row row-cols-1 row-cols-md-3 ">
+                        <div class="col">
+                            <label>Employee Code</label>
+                            <input type="text" class="form-control" formControlName="empcode" readonly />
+                        </div>
+
+
+
+                        <div class="col">
+                            <label>Employee Name</label>
+                            <input type="text" class="form-control" formControlName="empname" readonly />
+                        </div>
+
+                        <div class="col">
+                            <label>Regularisation Date</label>
+                            <input type="date" class="form-control" formControlName="attenDate" readonly />
+                        </div>
+                        <div class="col">
+                            <label>Regularize Type</label>
+                            <input type="text" class="form-control" formControlName="RegularizeType" readonly />
+                        </div>
+
+                        <div class="col">
+                            <label>In Time</label>
+                            <input type="text" class="form-control" formControlName="Intime" readonly />
+                        </div>
+
+                        <div class="col">
+                            <label>Out Time</label>
+                            <input type="text" class="form-control" formControlName="Outtime" readonly />
+                        </div>
+
+
+                        <div class="col">
+                            <label>Remarks</label>
+                            <textarea class="form-control" formControlName="Remarks" readonly></textarea>
+                        </div>
+
+
+                    </div>
+                    <div class="row w-100 mt-2">
+                        <div class="col-sm-12 col-md-12 col-lg-12">
+                            <label class=""><strong>Approve Detail</strong></label>
+                        </div>
+                    </div>
+                    <hr />
+
+                    <div class="row row-cols-1 row-cols-md-3 ">
+
+
+                        <div class="col">
+                            <label>Approve Status</label>
+                            <div class="form-group">
+                                <ng-select id="ApproveStatus" [items]="Approvestatuslist" bindLabel="name"
+                                    bindValue="value" formControlName="ApproveStatus" placeholder="--Select --"
+                                    class="w-100"></ng-select>
+                                <span *ngIf="showError && approvereguForm.controls['ApproveStatus'].invalid"
+                                    class="text-danger mt-1" style="font-size: 12px;">
+                                    Please select Approve Status.
+                                </span>
+                            </div>
+
+                        </div>
+
+                        <div class="col">
+                            <label>Approve Remarks</label>
+                            <textarea class="form-control" formControlName="ApproveRemarks"></textarea>
+                            <span *ngIf="showError && approvereguForm.controls['ApproveRemarks'].invalid"
+                                class="text-danger mt-1" style="font-size: 12px;">
+                                Please enter Approve Remarks.
+                            </span>
+                        </div>
+                    </div>
+
+
+
+                </form>
+
+                <div class="row">
+                    <div class="col d-flex align-items-end justify-content-end pt-4 pb-3">
+                        <button type="button" class="btn btn-primary  mx-1" (click)="update()">Update</button>
+
+                        <!-- <button type="button" class="btn btn-outline-dark mx-1"(click)="resetForm()">Reset</button> -->
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>

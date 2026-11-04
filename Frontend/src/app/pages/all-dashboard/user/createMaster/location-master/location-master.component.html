@@ -1,0 +1,523 @@
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card">
+      <!--  -->
+      <div class="card-header bg-blue">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-6 col-lg-6">
+            <h4 class="">
+              {{ Isedit ? "Update Location Master" : "Location Master" }}
+            </h4>
+          </div>
+
+          <div
+            class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end"
+          >
+            <button
+              class="btn btnheader"
+              routerLink="/dash/user/userdashboard/locationMaster_list"
+            >
+              Back
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!--  -->
+
+      <div class="card-body mt-4">
+        <form [formGroup]="UserDetails" class="row row-cols-1 row-cols-md-3">
+          <div class="col">
+            <label>Location<span style="color: red">*</span></label>
+            <div class="form-group">
+              <input
+                type="text"
+                class="form-control flex-grow-1"
+                formControlName="locname"
+                (blur)="
+                  checkDesignationAvailability(
+                    UserDetails.get('locname')?.value
+                  )
+                "
+              />
+              <span
+                *ngIf="submited && UserDetails.controls['locname'].invalid && !UserDetails.get('locname')?.errors?.['duplicate']"
+                class="text-danger mt-1"
+                style="font-size: 12px"
+              >
+                Please enter Location.
+              </span>
+              <!-- Show validation error message from API only if it exists -->
+              <div
+                *ngIf="UserDetails.get('locname')?.errors?.['duplicate']"
+                class="text-danger"
+                style="font-size: 10px"
+              >
+                {{ UserDetails.get('locname')?.errors?.['duplicate'] }}
+              </div>
+            </div>
+          </div>
+
+          <div class="col">
+            <label>Location Code</label>
+            <div class="form-group">
+              <input
+                type="text"
+                class="form-control flex-grow-1"
+                formControlName="locationCode"
+                placeholder="Enter Location Code"
+                (blur)="
+                  onLocationCodeChange();
+                  checkLocationCodeAvailability(
+                    UserDetails.get('locationCode')?.value ||
+                      UserDetails.get('code')?.value
+                  )
+                "
+                (change)="
+                  onLocationCodeChange();
+                  checkLocationCodeAvailability(
+                    UserDetails.get('locationCode')?.value ||
+                      UserDetails.get('code')?.value
+                  )
+                "
+              />
+              <div
+                *ngIf="UserDetails.get('locationCode')?.errors?.['duplicate'] || UserDetails.get('code')?.errors?.['duplicate']"
+                class="text-danger mt-1"
+                style="font-size: 11px"
+              >
+                {{ UserDetails.get('locationCode')?.errors?.['duplicate'] || UserDetails.get('code')?.errors?.['duplicate'] }}
+              </div>
+            </div>
+          </div>
+
+          <div class="col">
+            <label>Office Type<span style="color: red">*</span></label>
+
+            <div class="form-group">
+              <ng-select
+                [items]="officetype"
+                bindLabel="name"
+                bindValue="value"
+                formControlName="fk_officeid"
+                placeholder="--Select --"
+                class="w-100"
+              ></ng-select>
+              <span
+                *ngIf="submited && UserDetails.controls['fk_officeid'].invalid"
+                class="text-danger mt-1"
+                style="font-size: 12px"
+              >
+                Please choose Office Type.
+              </span>
+            </div>
+          </div>
+          <div class="col">
+            <label>Zone<span style="color: red">*</span></label>
+
+            <div class="form-group">
+              <ng-select
+                [items]="ZoneList"
+                bindLabel="name"
+                bindValue="value"
+                formControlName="fk_zoneId"
+                placeholder="--Select --"
+                class="w-100"
+              ></ng-select>
+              <span
+                *ngIf="submited && UserDetails.get('fk_zoneId')?.invalid"
+                class="text-danger mt-1"
+                style="font-size: 12px"
+              >
+                Please choose Zone.
+              </span>
+            </div>
+          </div>
+          <div class="col">
+            <label>State</label>
+            <div class="form-group">
+              <ng-select
+                [items]="stateList"
+                bindLabel="name"
+                bindValue="value"
+                formControlName="fk_stateid"
+                placeholder="--Select --"
+                class="w-100"
+              ></ng-select>
+            </div>
+          </div>
+          <div class="col">
+            <label>City<span style="color: red">*</span></label>
+            <div class="form-group">
+              <ng-select
+                [items]="cityList"
+                bindLabel="name"
+                bindValue="value"
+                formControlName="fk_cityid"
+                placeholder="--Select --"
+                class="w-100"
+              ></ng-select>
+              <span
+                *ngIf="submited && UserDetails.controls['fk_cityid'].invalid"
+                class="text-danger mt-1"
+                style="font-size: 12px"
+              >
+                Please choose City.
+              </span>
+            </div>
+          </div>
+          <div class="col">
+            <label>Parent Location</label>
+
+            <div class="form-group">
+              <ng-select
+                [items]="LocationList"
+                bindLabel="name"
+                bindValue="value"
+                formControlName="fk_locid"
+                placeholder="--Select --"
+                class="w-100"
+              ></ng-select>
+              <span
+                *ngIf="submited && UserDetails.controls['fk_locid'].invalid"
+                class="text-danger mt-1"
+                style="font-size: 12px"
+              >
+                Please choose Parent Location.
+              </span>
+            </div>
+          </div>
+          <div class="col">
+            <label>Bonus Based On<span style="color: red">*</span></label>
+
+            <div class="form-group">
+              <ng-select
+                [items]="basedon"
+                bindLabel="name"
+                bindValue="value"
+                formControlName="bonusbasedon"
+                placeholder="--Select --"
+                class="w-100"
+              ></ng-select>
+              <span
+                *ngIf="submited && UserDetails.controls['bonusbasedon'].invalid"
+                class="text-danger mt-1"
+                style="font-size: 12px"
+              >
+                Please choose Based on.
+              </span>
+            </div>
+          </div>
+          <div class="col">
+            <label>Email</label>
+            <div class="form-group">
+              <input
+                type="text"
+                class="form-control flex-grow-1"
+                formControlName="email"
+              />
+            </div>
+          </div>
+          <div class="col">
+            <label>Phone</label>
+            <div class="form-group">
+              <input
+                type="text"
+                class="form-control flex-grow-1"
+                formControlName="phone"
+                (keypress)="validateNumber($event)"
+                maxlength="10"
+              />
+            </div>
+          </div>
+          <div class="col">
+            <label>Fax</label>
+            <div class="form-group">
+              <input
+                type="text"
+                class="form-control flex-grow-1"
+                formControlName="fax"
+              />
+            </div>
+          </div>
+
+          <div class="col">
+            <label>Address</label>
+            <div class="form-group">
+              <textarea
+                class="form-control"
+                formControlName="address"
+              ></textarea>
+            </div>
+          </div>
+          <div class="col">
+            <label>Remarks</label>
+            <div class="form-group">
+              <input
+                type="text"
+                class="form-control flex-grow-1"
+                formControlName="remarks"
+              />
+            </div>
+          </div>
+          <div class="col">
+            <label>Contact Person</label>
+
+            <div class="form-group">
+              <ng-select
+                [items]="EmployeeList"
+                bindLabel="name"
+                bindValue="value"
+                formControlName="fk_ContactempId"
+                placeholder="--Select --"
+                class="w-100"
+              ></ng-select>
+            </div>
+          </div>
+          <div class="col">
+            <label>Latitude</label>
+            <div class="form-group">
+              <input
+                type="text"
+                class="form-control flex-grow-1"
+                formControlName="latitude"
+                (keypress)="validateNumber($event)"
+              />
+            </div>
+          </div>
+          <div class="col">
+            <label>Longitude</label>
+            <div class="form-group">
+              <input
+                type="text"
+                class="form-control flex-grow-1"
+                formControlName="longitude"
+                (keypress)="validateNumber($event)"
+              />
+            </div>
+          </div>
+          <!-- <div class="col"><label>Distance</label>
+                <div class="form-group">
+                    <input  type="text" class="form-control flex-grow-1" formControlName="distance">
+                    
+                </div>                
+            </div> -->
+          <div class="col">
+            <label>Attendance Source</label>
+
+            <div class="form-group">
+              <ng-select
+                [items]="Atsource"
+                bindLabel="name"
+                bindValue="value"
+                formControlName="attendanceSource"
+                placeholder="--Select --"
+                class="w-100"
+              ></ng-select>
+            </div>
+          </div>
+
+          <div class="col">
+            <label>Machine ID</label>
+            <div class="form-group">
+              <input
+                type="text"
+                class="form-control flex-grow-1"
+                formControlName="machineID"
+              />
+            </div>
+          </div>
+
+          <div class="col">
+            <label>Distance</label>
+            <div class="form-group">
+              <input
+                type="text"
+                class="form-control flex-grow-1"
+                formControlName="distance"
+                (keypress)="validateNumber($event)"
+              />
+            </div>
+          </div>
+
+          <ng-container *ngIf="isLMVendorExpense">
+            <div class="col">
+              <label>Area Manager</label>
+              <div class="form-group">
+                <input
+                  type="text"
+                  class="form-control flex-grow-1"
+                  formControlName="amUsername"
+                  placeholder="Enter Area Manager"
+                  (blur)="onAreaManagerChange()"
+                  (change)="onAreaManagerChange()"
+                />
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Area Manager Email</label>
+              <div class="form-group">
+                <div
+                  class="email-chip-container form-control d-flex align-items-center gap-1"
+                  (click)="amEmailInput.focus()"
+                >
+                  <span
+                    *ngFor="
+                      let email of UserDetails.get('areaManagerEmail')?.value;
+                      let i = index
+                    "
+                    class="badge email-chip"
+                  >
+                    {{ email }}
+                    <button
+                      type="button"
+                      class="btn-close btn-close-white small-close ms-1"
+                      (click)="
+                        removeEmailTag('areaManagerEmail', i);
+                        $event.stopPropagation()
+                      "
+                      aria-label="Remove"
+                    ></button>
+                  </span>
+                  <input
+                    type="text"
+                    #amEmailInput
+                    class="border-0 flex-grow-1 bg-transparent email-input"
+                    [placeholder]="
+                      (UserDetails.get('areaManagerEmail')?.value?.length ||
+                        0) > 0
+                        ? ''
+                        : 'Type email & press Enter'
+                    "
+                    (keydown)="
+                      onEmailInputKeydown(
+                        $event,
+                        'areaManagerEmail',
+                        amEmailInput
+                      )
+                    "
+                    (blur)="addEmailTagOnBlur('areaManagerEmail', amEmailInput)"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Regional Manager</label>
+              <div class="form-group">
+                <input
+                  type="text"
+                  class="form-control flex-grow-1"
+                  formControlName="rmUsername"
+                  placeholder="Enter Regional Manager"
+                />
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Regional Manager Email</label>
+              <div class="form-group">
+                <div
+                  class="email-chip-container form-control d-flex align-items-center gap-1"
+                  (click)="rmEmailInput.focus()"
+                >
+                  <span
+                    *ngFor="
+                      let email of UserDetails.get('regionalManagerEmail')
+                        ?.value;
+                      let i = index
+                    "
+                    class="badge email-chip"
+                  >
+                    {{ email }}
+                    <button
+                      type="button"
+                      class="btn-close btn-close-white small-close ms-1"
+                      (click)="
+                        removeEmailTag('regionalManagerEmail', i);
+                        $event.stopPropagation()
+                      "
+                      aria-label="Remove"
+                    ></button>
+                  </span>
+                  <input
+                    type="text"
+                    #rmEmailInput
+                    class="border-0 flex-grow-1 bg-transparent email-input"
+                    [placeholder]="
+                      (UserDetails.get('regionalManagerEmail')?.value?.length ||
+                        0) > 0
+                        ? ''
+                        : 'Type email & press Enter'
+                    "
+                    (keydown)="
+                      onEmailInputKeydown(
+                        $event,
+                        'regionalManagerEmail',
+                        rmEmailInput
+                      )
+                    "
+                    (blur)="
+                      addEmailTagOnBlur('regionalManagerEmail', rmEmailInput)
+                    "
+                  />
+                </div>
+              </div>
+            </div>
+          </ng-container>
+          <div class="col">
+            <label>Is Active</label>
+            <div class="form-group">
+              <input
+                type="checkbox"
+                class="form-check-input fs-6"
+                formControlName="isActive"
+              />
+            </div>
+          </div>
+          <div class="col">
+            <label>Login Allow</label>
+            <div class="form-group">
+              <input
+                type="checkbox"
+                class="form-check-input fs-6"
+                formControlName="loginallow"
+              />
+            </div>
+          </div>
+          <div class="col">
+            <label>Daily Atten. Allow</label>
+            <div class="form-group">
+              <input
+                type="checkbox"
+                class="form-check-input fs-6"
+                formControlName="dailyAttAllow"
+              />
+            </div>
+          </div>
+          <!-- <div class="col"><label>ERP Code</label>
+                <div class="form-group">
+                    <input  type="text" class="form-control flex-grow-1" formControlName="ERPCode">
+                    
+                </div>                
+            </div> -->
+        </form>
+        <div class="row">
+          <div class="col d-flex align-items-end justify-content-end pt-4 pb-3">
+            <button
+              type="submit"
+              class="btn btn-primary mx-1"
+              (click)="onSubmit()"
+            >
+              {{ Isedit ? "Update" : "Save" }}
+            </button>
+            <button type="reset" class="btn btn-outline-dark mx-1">
+              Reset
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,137 @@
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+            <!--  -->
+            <div class="card-header bg-blue ">
+                <div class="row w-100 ">
+                    <div class="col-sm-12 col-md-6 col-lg-6 ">
+                        <h4>Employee Search</h4>
+                    </div>
+                    <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+                        <button class="btn btnheader" routerLink="/dash/hr/hrdashboard/CRD_BudgetIssue_Mst_list">Back
+                        </button>
+                    </div>
+                </div>
+
+
+            </div>
+            <div class="row">
+
+                <app-common-search></app-common-search>
+            </div>
+            <!-- NextFrom---------- -->
+            <div class="card-header bg-blue mt-3 ">
+                <div class="row w-100 ">
+                    <div class="col-sm-12 col-md-6 col-lg-6 ">
+                        <h4>Budget Issue Master</h4>
+                    </div>
+
+                </div>
+
+
+            </div>
+            <div class="card-body mt-4">
+                <form [formGroup]="Budgetissuemasterform">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label>Employee Code</label>
+                            <div class="form-group">
+                                <ng-select id="year" [items]="selects" bindLabel="name" bindValue="value"
+                                    formControlName="EmployeeCode" placeholder="--Select --" class="w-100"></ng-select>
+                                <div *ngIf="submitted   && Budgetissuemasterform.get('EmployeeCode')?.invalid"
+                                    class="text-danger">
+                                    EmployeeCode is required!
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label>Financial Year</label>
+                            <div class="form-group">
+                                <ng-select id="year" [items]="selects" bindLabel="name" bindValue="value"
+                                    formControlName="FinancialYear" placeholder="--Select --" class="w-100"></ng-select>
+                                <div *ngIf="submitted   && Budgetissuemasterform.get('FinancialYear')?.invalid"
+                                    class="text-danger">
+                                    Financial Year is required!
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label>Card Type</label>
+                            <div class="form-group">
+                                <ng-select id="year" [items]="selects" bindLabel="name" bindValue="value"
+                                    formControlName="CardType" placeholder="--Select --" class="w-100"></ng-select>
+                                <div *ngIf="submitted   && Budgetissuemasterform.get('CardType')?.invalid"
+                                    class="text-danger">
+                                    Card Type is required!
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label>Duration of Budget Validity</label>
+                            <div class="form-group">
+                                <ng-select id="year" [items]="selects" bindLabel="name" bindValue="value"
+                                    formControlName="DurationofBudgetValidity" placeholder="--Select --"
+                                    class="w-100"></ng-select>
+                                <div *ngIf="submitted   && Budgetissuemasterform.get('DurationofBudgetValidity')?.invalid"
+                                    class="text-danger">
+                                    Duration of Budget Validity is required!
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label>Budget Type</label>
+                            <div class="form-group">
+                                <ng-select id="year" [items]="selects" bindLabel="name" bindValue="value"
+                                    formControlName="BudgetType" placeholder="--Select --" class="w-100"></ng-select>
+                                <div *ngIf="submitted   && Budgetissuemasterform.get('BudgetType')?.invalid"
+                                    class="text-danger">
+                                    Budget Type is required!
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label>Projected Amount</label>
+                            <div class="form-group">
+                                <ng-select id="year" [items]="selects" bindLabel="name" bindValue="value"
+                                    formControlName="ProjectedAmount" placeholder="--Select --"
+                                    class="w-100"></ng-select>
+                                <div *ngIf="submitted   && Budgetissuemasterform.get('ProjectedAmount')?.invalid"
+                                    class="text-danger">
+                                    Projected Amount is required!
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+
+                            <div class="form-group">
+                                <label>Is Active</label>&nbsp;&nbsp;
+                                <input type="checkbox" class="form-check-input fs-6 mx-1" formControlName="IsActive">
+
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+
+                        </div>
+
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="modal-footer">
+
+                        <button type="submit" class="btn btn-outline-dark mx-1" (click)="resetForm()">Reset</button>
+                        <button type="submit" class="btn btn-primary mx-1" (click)="submit()">Save</button>
+
+
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+
+</div>

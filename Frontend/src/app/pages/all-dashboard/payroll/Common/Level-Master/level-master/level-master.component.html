@@ -1,0 +1,133 @@
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+            <!-- Card Header -->
+            <div class="card-header bg-primary">
+                <div class="row w-100">
+                    <div class="col-sm-6 col-md-6 col-lg-6">
+                        <h4 class="">Level Master</h4>
+                    </div>
+                    <div class="col-sm-6 col-md-6 col-lg-6 d-flex align-items-center justify-content-end">
+                        <button class="btn btn-light" (click)="view()">
+                            Back
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card Body -->
+            <div class="card-body  mt-4">
+
+                <form [formGroup]="levelForm" (ngSubmit)="onSubmit()" >
+                <div  class="row row-cols-1 row-cols-md-3 g-4 level-master">
+                    <div class="col">
+                        <div class="form-group">
+                            <label>Level<span class="text-danger">*</span></label>
+                            <input type="text" class="form-control flex-grow-1" formControlName="Level">
+
+                            <span *ngIf="showError && levelForm.controls['Level'].invalid" class="text-danger mt-1"
+                                style="font-size: 12px;">
+                                Please enter level.
+                            </span>
+
+                        </div>
+                    </div>
+
+
+                    <div class="col">
+
+                        <div class="form-group">
+                            <label for="Description">Name<span class="text-danger">*</span></label>
+                            <input id="Description" type="text" class="form-control flex-grow-1"
+                                formControlName="description">
+                            <div *ngIf="levelForm.get('description')?.errors?.['duplicate']" class="text-danger"
+                                style="font-size:10px;">
+                                {{ levelForm.get('description')?.errors?.['duplicate'] }}
+                            </div>
+                            <span
+                                *ngIf="showError && levelForm.controls['description'].invalid && !levelForm.get('description')?.errors?.['duplicate']"
+                                class="text-danger mt-1" style="font-size: 12px;">
+                                Please enter level description.
+                            </span>
+                            <span *ngIf="levelForm.get('description')?.hasError('maxlength')" class="text-danger mt-1"
+                                style="font-size: 12px;">
+                                Maximum 150 characters allowed.
+                            </span>
+                        </div>
+                    </div>
+
+
+                    <div class="col">
+                        <div class="form-group">
+                            <label>Variable Pay % </label>
+                            <input type="number" class="form-control" formControlName="VariablePayPercent" min="0"
+                                max="100">
+
+                            <span *ngIf="showError && levelForm.controls['VariablePayPercent']?.invalid"
+                                class="text-danger mt-1" style="font-size: 12px;">
+                                Enter valid percentage (0-100).
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        <label>
+
+                            Reimb allowed
+                        </label>
+                        <div class="form-group ps-4   ">
+
+                            <input type="checkbox" formControlName="IsReimbursmentAllowed" class="form-check-input "   (change)="onReimbToggle($event)">
+                        </div>
+                    </div>
+                        <div class="col" *ngIf="levelForm.get('IsReimbursmentAllowed')?.value" >
+        <div class="table-responsive mt-3" style="max-height: 300px; overflow-y: auto;">
+            <table class="table table-bordered">
+                <thead class="sticky-top bg-white">
+                    <tr>
+                        <th>Sr. No.</th> 
+                        <th>Head Name</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+                <tbody formArrayName="ReimbHeads" >
+                    <tr *ngFor="let item of reimbHeadsArray.controls; let i = index" [formGroupName]="i">
+                        <td>{{ i + 1 }}</td>
+                        <td>{{ item.value.headName }}</td>
+                        <td>
+                            <input type="number"
+                                class="form-control"
+                                formControlName="amount"
+                                min="0">
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+                        
+                    <!-- Footer buttons -->
+                    <span class="col"></span>
+                    <!--  -->
+
+                   
+                </div>
+
+                <div class="row">
+                    <div class="col-12 mt-0 pt-0">
+                         <div class="modal-footer mt-0 pt-0 d-flex align-items-center justify-content-end">
+                        <button type="submit" class="btn btn-primary mx-1">{{ isEditMode ? 'Update' : 'Save' }}</button>
+                        <button type="reset" class="btn btn-outline-dark mx-1" (click)="resetForm()">Reset</button>
+                    </div>
+                    </div>
+                </div>
+
+
+</form>
+
+            </div>
+
+
+        </div>
+    </div>
+</div>

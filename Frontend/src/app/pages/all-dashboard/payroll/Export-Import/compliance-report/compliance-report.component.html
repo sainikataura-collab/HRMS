@@ -1,0 +1,119 @@
+
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+            <div class="card-header bg-primary py-lg-1 mt-0">
+                <div class="row w-100 align-items-center">
+                    <!-- Title Section -->
+                    <div class="col-12 col-md-3">
+                        <h4>Compliance Report</h4>
+                    </div>
+                    <!-- Search Section -->
+                    <div class="col-12 col-md-7 mt-2 mt-md-0">
+                        <app-common-search (filtersChanged)="handleFilters($event)"></app-common-search>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body mt-4">
+                <form [formGroup]="ExportExcel" (ngSubmit)="OnSubmit()">
+                    <div class="row row-cols-1 row-cols-md-3">
+                        <!-- Financial Year Field -->
+                        <div class="col">
+                            <label>Financial Year</label>
+                            <div class="form-group">
+                                <ng-select id="fk_finid" [items]="financialYears" bindLabel="name" bindValue="value"
+                                    formControlName="fk_finid" placeholder="--Select Financial Year --"
+                                    class="w-100"></ng-select>
+                                <span *ngIf="showError && ExportExcel.controls['fk_finid'].invalid" 
+                                    class="text-danger mt-1" style="font-size: 12px;">
+                                    Please select Financial Year.
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Contractor Name Field -->
+                        <div class="col" *ngIf="isContractApplicable">
+                            <label>Contractor Name</label>
+                            <div class="form-group">
+                                <ng-select id="fk_costcentreid" [items]="CostCenter" bindLabel="name" bindValue="value" 
+                                    formControlName="fk_costcentreid" placeholder="--Select --" class="w-100"></ng-select>
+                            </div>
+                        </div>
+
+                        <!-- Export Type Field -->
+                        <div class="col">
+                            <label>Export Type</label>
+                            <div class="form-group">
+                                <ng-select id="ExportType" [items]="ExportTypelist" bindLabel="name" bindValue="value"
+                                    formControlName="ExportType" placeholder="--Select --" class="w-100"></ng-select>
+                                <span *ngIf="showError && ExportExcel.controls['ExportType'].invalid" 
+                                    class="text-danger mt-1" style="font-size: 12px;">
+                                    Please select Export Type.
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="row row-cols-1 row-cols-md-12 mt-3">
+                        <div class="col d-flex align-items-center justify-content-end">
+                            <button type="submit" class="btn btn-primary mx-1">View</button>
+                            <button type="reset" class="btn btn-outline-dark mx-1" (click)="restfrom()">Reset</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- List of Compliance Data -->
+            <div *ngIf="EmployeeList.length > 0">
+                <div class="row row-cols-1 row-cols-md-2 p-2">
+                    <div class="col">
+                        <p class="text-dark m-0 ps-3 text-primary fw-semibold">Employee List</p>
+                    </div>
+
+                    <div class="col d-flex align-items-center justify-content-end">
+                        <button class="btn btn-primary mx-1" (click)="onExportClick()"
+                            *ngIf="ExportExcel.get('ExportType')?.value === 1 || 2">
+                            <i class="fa fa-download me-2"></i> Export PDF
+                        </button>
+
+                        <button class="btn btn-primary mx-1" (click)="downloadExcel()" [disabled]="isExporting">
+                            <i *ngIf="!isExporting" class="fa fa-download me-2"></i>
+                            <i *ngIf="isExporting" class="fa fa-spinner fa-spin me-2"></i>
+                            {{ isExporting ? 'Exporting...' : 'Export Excel' }}
+                        </button>
+
+                        <input type="text" class="form-control w-50" placeholder="Search..."
+                            [(ngModel)]="searchText" />
+                    </div>
+                </div>
+
+                <div class="table-responsive table-invoice" [ngClass]="{ 'scroll-active': EmployeeList.length > 10 }">
+                    <table class="table table-bordered table-hover" id="exportTable">
+                        <thead class="table-light">
+                            <tr>
+                                <th *ngFor="let col of tableHeaders">{{ col }}</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr *ngFor="let item of filteredData() | paginate: { itemsPerPage: pageSize, currentPage: pageIndex, totalItems: totalCount }; let i = index">
+                                <td *ngFor="let col of tableHeaders">{{ item[col] }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="d-flex justify-content-center mt-3">
+                        <pagination-controls (pageChange)="onpagechange($event)"></pagination-controls>
+                    </div>
+                </div>
+            </div>
+
+            <!-- No Data Message -->
+            <div *ngIf="submitted && EmployeeList.length === 0 && !showError" class="text-center p-5">
+                <i class="fa fa-info-circle fa-3x text-muted mb-3"></i>
+                <p class="text-muted">No compliance data found for the selected criteria.</p>
+            </div>
+        </div>
+    </div>
+</div>

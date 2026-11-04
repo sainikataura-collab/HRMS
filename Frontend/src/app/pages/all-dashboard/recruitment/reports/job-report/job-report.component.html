@@ -1,0 +1,349 @@
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card">
+
+      <!-- Card Header -->
+      <div class="card-header bg-primary py-lg-1 mt-0">
+        <div class="row w-100 align-items-center">
+          <!-- Title Section -->
+          <div class="col-12 col-md-6">
+            <h4 class="text-white mb-0">Jobs Report</h4>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card Body Filter Form -->
+      <div class="card-body mt-4">
+        <form [formGroup]="filterForm" (ngSubmit)="applyFilters()">
+          <div class="row row-cols-1 row-cols-md-4 g-3">
+
+            <div class="col">
+              <label>Month</label>
+              <div class="form-group">
+                <ng-select [items]="monthList" bindLabel="label" bindValue="value" formControlName="month"
+                  placeholder="--Select Month --" class="w-100">
+                </ng-select>
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Year</label>
+              <div class="form-group">
+                <ng-select [items]="yearList" bindLabel="label" bindValue="value" formControlName="year"
+                  placeholder="--Select Year --" class="w-100">
+                </ng-select>
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Location</label>
+              <div class="form-group">
+                <ng-select [items]="locationList" bindLabel="label" bindValue="value" formControlName="locationId"
+                  placeholder="--Select Location --" class="w-100">
+                </ng-select>
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Department</label>
+              <div class="form-group">
+                <ng-select [items]="departmentList" bindLabel="label" bindValue="value" formControlName="department"
+                  placeholder="--Select Department --" class="w-100">
+                </ng-select>
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Vendor</label>
+              <div class="form-group">
+                <ng-select [items]="vendorList" bindLabel="label" bindValue="value" formControlName="vendorCode"
+                  placeholder="--Select Vendor --" class="w-100">
+                </ng-select>
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Job Status</label>
+              <div class="form-group">
+                <ng-select [items]="statusList" bindLabel="label" bindValue="value" formControlName="workflowStatus"
+                  placeholder="--Select Job Status --" class="w-100">
+                </ng-select>
+              </div>
+            </div>
+
+            <div class="col">
+              <label>From Date</label>
+              <div class="form-group">
+                <input type="date" class="form-control" formControlName="fromDate" />
+              </div>
+            </div>
+
+            <div class="col">
+              <label>To Date</label>
+              <div class="form-group">
+                <input type="date" class="form-control" formControlName="toDate" />
+              </div>
+            </div>
+
+          </div>
+
+          <div class="row row-cols-1 row-cols-md-12 mt-3">
+            <div class="col d-flex align-items-center justify-content-end">
+              <button type="submit" class="btn btn-primary mx-1">View</button>
+              <button type="button" class="btn btn-outline-dark mx-1" (click)="resetFilters()">Reset</button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- List of Jobs Section -->
+      <div>
+        <div class="row p-2 align-items-center">
+          <div class="col-12 col-lg-5">
+            <p class="text-dark m-0 ps-3 text-primary fw-bold">List of Approved Jobs</p>
+          </div>
+
+          <div class="col-12 col-lg-7 d-lg-flex align-items-center justify-content-end">
+            <button class="btn btn-primary mx-1" (click)="exportToExcel()"
+              [disabled]="isExporting || filteredDataList.length === 0">
+              <i *ngIf="!isExporting" class="fa fa-download me-2"></i>
+              <i *ngIf="isExporting" class="fa fa-spinner fa-spin me-2"></i>
+              {{ isExporting ? 'Wait...' : 'Export Excel' }}
+            </button>
+
+            <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText"
+              (ngModelChange)="applyFilters()" style="width: 25%;" />
+          </div>
+        </div>
+
+        <div class="table-responsive table-invoice">
+          <table class="table table-bordered" id="exportTable">
+            <thead>
+              <tr>
+                <th>Sr.</th>
+                <th>Month</th>
+                <th>Job Code</th>
+                <th>Job Title</th>
+                <th>Department</th>
+                <th>Location</th>
+                <th>Vendors</th>
+                <th>Target Positions</th>
+                <th>Status</th>
+                <th>Profiles Submitted</th>
+                <th>Screened</th>
+                <th>Interviewed</th>
+                <th>Offered</th>
+                <th>Joined</th>
+                <th>Pending</th>
+                <th>Fulfillment %</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                *ngFor="let item of filteredDataList | paginate: { itemsPerPage: pageSize, currentPage: pageIndex, totalItems: totalItems }; let i = index">
+                <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+                <td>{{ item.monthYear }}</td>
+                <td><span class="fw-bold text-primary">{{ item.reqCode }}</span></td>
+                <td>{{ item.jobTitle }}</td>
+                <td>{{ item.department }}</td>
+                <td>{{ item.location }}</td>
+                <td>
+                  <span class="badge bg-light text-dark border me-1 mb-1 d-inline-block text-truncate"
+                        style="max-width: 180px; font-size: 11px;"
+                        *ngFor="let v of (item.vendorNames ? item.vendorNames.split(',') : [])"
+                        [title]="v.trim()">
+                    {{ v.trim() }}
+                  </span>
+                  <span *ngIf="!item.vendorNames || item.vendorNames === 'Direct / Walk-In'" class="text-muted small">
+                    Direct / Walk-In
+                  </span>
+                </td>
+                <td><span class="fw-bold">{{ item.targetPositions }}</span></td>
+                <td>
+                  <span class="badge" [ngClass]="getWorkflowBadgeClass(item.workflowStatus)">
+                    {{ item.workflowStatus }}
+                  </span>
+                </td>
+                <td>{{ item.profilesSubmitted }}</td>
+                <td>{{ item.screened }}</td>
+                <td>{{ item.interviewed }}</td>
+                <td>{{ item.offered }}</td>
+                <td><span class="badge bg-success">{{ item.joined }}</span></td>
+                <td>
+                  <span class="badge"
+                    [ngClass]="{'bg-danger': item.pendingPositions > 0, 'bg-success': item.pendingPositions === 0}">
+                    {{ item.pendingPositions }}
+                  </span>
+                </td>
+                <td>{{ item.fulfillmentPct }}%</td>
+                <td>
+                  <button type="button" class="btn btn-link btn-sm text-primary px-0 text-decoration-none"
+                    (click)="openWorkflowDetails(item)" title="View Job Pipeline Details">
+                    <i class="fa fa-eye me-1"></i> View
+                  </button>
+                </td>
+              </tr>
+
+              <!-- No records fallback using global no-result-card -->
+              <tr *ngIf="!filteredDataList.length">
+                <td colspan="17" class="p-0 border-0">
+                  <div class="no-result-card rounded-0">
+                    <div class="icon-box-search">
+                      <i class="fa-regular fa-folder-open"></i>
+                    </div>
+                    <h5>No records found</h5>
+                    <p>Try adjusting your <span>filters</span> or date range</p>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <pagination-controls *ngIf="filteredDataList.length > 0" (pageChange)="onPageChange($event)" [autoHide]="true"
+            totalItems="totalItems" itemsPerPage="pageSize">
+          </pagination-controls>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Job Pipeline Details Modal (Pure Bootstrap 5) -->
+<div class="modal fade show d-block" *ngIf="selectedJob" tabindex="-1"
+  style="background-color: rgba(0, 0, 0, 0.6); z-index: 1060; overflow-y: auto; padding-top: 80px; padding-bottom: 40px;"
+  (click)="closeWorkflowDetails()">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg my-0 mx-auto" style="max-height: calc(100vh - 120px);"
+    (click)="$event.stopPropagation()">
+    <div class="modal-content border-0 shadow">
+
+      <!-- Modal Header (Compact Small Font Size) -->
+      <div class="modal-header bg-primary text-white py-1 px-3">
+        <div class="d-flex align-items-center text-white" style="font-size: 0.90rem; font-weight: 600;">
+          <i class="fa fa-briefcase me-2"></i> Job Pipeline Details: {{ selectedJob.reqCode }} - {{ selectedJob.jobTitle
+          }}
+        </div>
+        <button type="button" class="btn-close btn-close-white btn-sm" (click)="closeWorkflowDetails()"
+          aria-label="Close"></button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="modal-body p-3">
+
+        <!-- Summary Header Row (bg-warning-subtle) -->
+        <div class="bg-warning-subtle border border-warning-subtle rounded p-2 mb-3 small">
+          <div class="row g-2 text-center text-md-start align-items-center">
+            <div class="col-4 border-end border-warning-subtle">
+              <span class="text-dark d-block fw-semibold" style="font-size: 11px;">JOB STATUS</span>
+              <span class="badge mt-1" [ngClass]="getWorkflowBadgeClass(selectedJob.workflowStatus)">
+                {{ selectedJob.workflowStatus }}
+              </span>
+            </div>
+            <div class="col-4 border-end border-warning-subtle">
+              <span class="text-dark d-block fw-semibold" style="font-size: 11px;">TARGET POSITIONS</span>
+              <strong class="text-primary fs-6">{{ selectedJob.targetPositions }}</strong>
+            </div>
+            <div class="col-4">
+              <span class="text-dark d-block fw-semibold" style="font-size: 11px;">HIRING OPENED DATE</span>
+              <span class="text-dark fw-semibold text-truncate d-block">{{ selectedJob.hiringOpenedDate ?
+                (selectedJob.hiringOpenedDate | date:'dd-MM-yyyy') : '-' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Assigned / Sourcing Vendors -->
+        <div class="border border-secondary-subtle rounded p-2 mb-3 bg-light">
+          <span class="text-dark d-block fw-semibold mb-1" style="font-size: 11px;">PARTNER / SOURCING VENDORS</span>
+          <span class="badge bg-white text-dark border me-1 mb-1 d-inline-block"
+                *ngFor="let v of (selectedJob.vendorNames ? selectedJob.vendorNames.split(',') : [])">
+            <i class="fa fa-handshake-o me-1 text-primary"></i> {{ v.trim() }}
+          </span>
+          <span *ngIf="!selectedJob.vendorNames || selectedJob.vendorNames === 'Direct / Walk-In'" class="text-muted small">
+            Direct / Walk-In (No External Staffing Agencies)
+          </span>
+        </div>
+
+        <!-- Job Overview Info Grid -->
+        <div class="row g-3 small mb-3">
+          <div class="col-md-4">
+            <div class="border border-primary-subtle rounded p-2 h-100 bg-primary-subtle text-primary-emphasis">
+              <span class="text-dark d-block fw-semibold" style="font-size: 11px;">DEPARTMENT</span>
+              <strong>{{ selectedJob.department || '-' }}</strong>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="border border-info-subtle rounded p-2 h-100 bg-info-subtle text-info-emphasis">
+              <span class="text-dark d-block fw-semibold" style="font-size: 11px;">LOCATION</span>
+              <strong>{{ selectedJob.location || '-' }}</strong>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="border border-success-subtle rounded p-2 h-100 bg-success-subtle text-success-emphasis">
+              <span class="text-dark d-block fw-semibold" style="font-size: 11px;">FULFILLMENT RATE</span>
+              <strong>{{ selectedJob.fulfillmentPct }}% ({{ selectedJob.joined }} / {{ selectedJob.targetPositions
+                }})</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Candidate Pipeline Funnel Table -->
+        <div class="table-responsive border border-primary-subtle rounded shadow-sm">
+          <table class="table table-sm table-bordered align-middle mb-0 small">
+            <thead class="bg-primary-subtle text-primary-emphasis">
+              <tr>
+                <th style="width: 40%;">Recruitment Stage</th>
+                <th style="width: 30%;" class="text-center">Count</th>
+                <th style="width: 30%;" class="text-center">Status / Metric</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><i class="fa fa-file-alt text-primary me-2"></i> Profiles Submitted</td>
+                <td class="text-center fw-bold">{{ selectedJob.profilesSubmitted }}</td>
+                <td class="text-center text-dark">Total in Pipeline</td>
+              </tr>
+              <tr>
+                <td><i class="fa fa-filter text-info me-2"></i> Screened / Shortlisted</td>
+                <td class="text-center fw-bold">{{ selectedJob.screened }}</td>
+                <td class="text-center text-dark">Passed Initial Review</td>
+              </tr>
+              <tr>
+                <td><i class="fa fa-user-friends text-warning me-2"></i> Interviewed</td>
+                <td class="text-center fw-bold">{{ selectedJob.interviewed }}</td>
+                <td class="text-center text-dark">Evaluated by Panel</td>
+              </tr>
+              <tr>
+                <td><i class="fa fa-envelope-open-text text-dark me-2"></i> Offered</td>
+                <td class="text-center fw-bold">{{ selectedJob.offered }}</td>
+                <td class="text-center text-dark">Offer Letters Issued</td>
+              </tr>
+              <tr>
+                <td><i class="fa fa-user-check text-success me-2"></i> Joined</td>
+                <td class="text-center"><span class="badge bg-success fs-6">{{ selectedJob.joined }}</span></td>
+                <td class="text-center text-success fw-semibold">Onboarding Complete</td>
+              </tr>
+              <tr>
+                <td><i class="fa fa-hourglass-half text-danger me-2"></i> Pending Positions</td>
+                <td class="text-center">
+                  <span class="badge"
+                    [ngClass]="{'bg-danger': selectedJob.pendingPositions > 0, 'bg-success': selectedJob.pendingPositions === 0}">
+                    {{ selectedJob.pendingPositions }}
+                  </span>
+                </td>
+                <td class="text-center text-dark">To be Hired</td>
+              </tr>
+              <tr>
+                <td><i class="fa fa-stopwatch text-dark me-2"></i> Average TAT (Turnaround Time)</td>
+                <td class="text-center fw-bold">{{ selectedJob.avgTatDays }} Days</td>
+                <td class="text-center text-dark">Source to Onboard</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>

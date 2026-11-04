@@ -1,0 +1,84 @@
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card">
+      <div class="card-header bg-blue">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-6 col-lg-6"><h4>Bank &amp; Final Settlement Details</h4></div>
+          <div class="col-sm-12 col-md-6 col-lg-6 d-flex align-items-center justify-content-md-end">
+            <button class="btn btnheader" routerLink="/dash/emp-exit/emp-exitdashboard/resignation_list">Back</button>
+          </div>
+        </div>
+      </div>
+      <div class="card-body mt-4">
+        <form [formGroup]="bankForm" class="row row-cols-1 row-cols-md-3">
+
+          <!-- Employee Info -->
+          <div class="col"><label>Employee Code</label>
+            <div class="form-group"><input type="text" class="form-control" [value]="empInfo.empCode" readonly></div>
+          </div>
+          <div class="col"><label>Employee Name</label>
+            <div class="form-group"><input type="text" class="form-control" [value]="empInfo.empName" readonly></div>
+          </div>
+          <div class="col"><label>Last Working Day</label>
+            <div class="form-group"><input type="text" class="form-control" [value]="empInfo.lwd" readonly></div>
+          </div>
+
+          <!-- Bank Details -->
+          <div class="col"><label for="bankName">Bank Name<span style="color:red">*</span></label>
+            <div class="form-group">
+              <input type="text" id="bankName" class="form-control flex-grow-1" formControlName="bankName" placeholder="e.g. State Bank of India">
+              <span *ngIf="submitted && bankForm.get('bankName')?.invalid" class="text-danger mt-1" style="font-size:12px;">Required.</span>
+            </div>
+          </div>
+          <div class="col"><label for="accountNumber">Account Number<span style="color:red">*</span></label>
+            <div class="form-group">
+              <input type="text" id="accountNumber" class="form-control flex-grow-1" formControlName="accountNumber">
+              <span *ngIf="submitted && bankForm.get('accountNumber')?.invalid" class="text-danger mt-1" style="font-size:12px;">Required.</span>
+            </div>
+          </div>
+          <div class="col"><label for="ifscCode">IFSC Code<span style="color:red">*</span></label>
+            <div class="form-group">
+              <input type="text" id="ifscCode" class="form-control flex-grow-1" formControlName="ifscCode" placeholder="e.g. SBIN0001234">
+              <span *ngIf="submitted && bankForm.get('ifscCode')?.invalid" class="text-danger mt-1" style="font-size:12px;">Required.</span>
+            </div>
+          </div>
+          <div class="col"><label for="panNumber">PAN Number<span style="color:red">*</span></label>
+            <div class="form-group">
+              <input type="text" id="panNumber" class="form-control flex-grow-1" formControlName="panNumber" placeholder="e.g. ABCDE1234F">
+              <span *ngIf="submitted && bankForm.get('panNumber')?.invalid" class="text-danger mt-1" style="font-size:12px;">Required.</span>
+            </div>
+          </div>
+          <div class="col"><label for="uanNumber">UAN Number</label>
+            <div class="form-group">
+              <input type="text" id="uanNumber" class="form-control flex-grow-1" formControlName="uanNumber">
+            </div>
+          </div>
+          <div class="col"><label for="pfNumber">PF Account Number</label>
+            <div class="form-group">
+              <input type="text" id="pfNumber" class="form-control flex-grow-1" formControlName="pfNumber">
+            </div>
+          </div>
+          <div class="col"><label>Gratuity Eligible?<span style="color:red">*</span></label>
+            <div class="form-group d-flex gap-4 mt-1">
+              <div class="form-check">
+                <input class="form-check-input" type="radio" id="grat_yes" formControlName="gratuityEligible" value="Yes">
+                <label class="form-check-label" for="grat_yes">Yes</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" id="grat_no" formControlName="gratuityEligible" value="No">
+                <label class="form-check-label" for="grat_no">No</label>
+              </div>
+            </div>
+          </div>
+
+        </form>
+        <div class="row">
+          <div class="col d-flex align-items-end justify-content-end pt-4 pb-3">
+            <button type="submit" class="btn btn-primary mx-1" (click)="submitForm()">Save Details</button>
+            <button type="reset" class="btn btn-outline-dark mx-1">Reset</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

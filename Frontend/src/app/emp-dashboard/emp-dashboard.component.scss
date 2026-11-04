@@ -1,0 +1,105 @@
+
+
+
+.card:hover{
+   background-color: #3080e8;
+   color: white;
+   transform: scale(1.06);
+  
+   box-shadow: none;
+   
+}
+
+.card:active{
+   background-color: #4a60ba;
+   color: white;
+   transform: scale(1.08);
+}
+
+.card .card-header, .card .card-body, .card .card-footer {
+
+   padding: 0px 0px;
+}
+
+// ------------------------------------------
+
+.hide-sidebar{
+   visibility: hidden !important;
+   display: none !important;
+
+}
+
+.hide-dropsown-list{
+   visibility: hidden !important;
+   display: none !important;
+}
+
+.main-sidebar .sidebar-menu li a {
+   display: none !important;
+}
+
+.sidebar-wrapper{
+   display: none !important;
+}
+
+
+.main-sidebar .sidebar-menu li a {
+   display: none !important;
+}
+
+// card effect
+
+/* Animations */
+@keyframes fadeIn {
+   from { opacity: 0; transform: translateY(20px); }
+   to { opacity: 1; transform: translateY(0); }
+ }
+ @keyframes slideIn {
+   from { opacity: 0; transform: translateX(-20px); }
+   to { opacity: 1; transform: translateX(0); }
+ }
+ .animate-fade-in { animation: fadeIn 0.5s ease-in-out; }
+ .animate-slide-in { animation: slideIn 0.5s ease-in-out; }
+ 
+ /* Card Styling */
+ .card {
+   border-radius: 12px;
+   transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+ }
+ .card:hover {
+   transform: scale(1.03);
+ 
+ }
+
+ .small, small {
+   font-size: .875rem;
+   font-weight: 500;
+ }
+
+ @media screen and (max-width:768px){
+   .main-dash-mobileview-gap{
+      margin-top:0.21rem;
+      margin-bottom: 0.5rem;
+   }
+
+   
+ }
+
+
+//  new add
+@media screen and (max-width:768px){
+   .card p img{
+      height: 50px !important;
+      width:75px !important;
+   }
+
+    .card p span{
+  font-size: 9px !important;
+   }
+}
+
+@media screen and (max-width:390px){
+   .card p{
+   margin-bottom: 0px;
+   }
+}

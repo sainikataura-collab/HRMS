@@ -1,0 +1,78 @@
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card">
+      <div class="card-header bg-blue">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-6 col-lg-6"><h4>Experience Letter</h4></div>
+          <div class="col-sm-12 col-md-6 col-lg-6 d-flex align-items-center justify-content-md-end">
+            <button class="btn btnheader me-2" (click)="printLetter()">Print</button>
+            <button class="btn btnheader" routerLink="/dash/exit/exitdashboard/admin_resignation_list">Back</button>
+          </div>
+        </div>
+      </div>
+      <div class="card-body mt-4">
+
+        <!-- Letter Preview with forced colors -->
+        <div id="expLetterContent"
+          style="max-width:780px; margin:0 auto; padding:40px; border:1px solid #ccc; border-radius:8px;
+                 background-color:#ffffff !important; color:#000000 !important;
+                 font-family:'Times New Roman', Times, serif; font-size:14px; line-height:1.8;">
+
+          <!-- Company Header -->
+          <div style="text-align:center; margin-bottom:20px;">
+            <h5 style="font-size:20px; font-weight:bold; color:#000 !important; margin:0;">{{ companyName }}</h5>
+            <p style="color:#555 !important; font-size:12px; margin:4px 0;">{{ companyAddress }}</p>
+            <hr style="border-top:1px solid #ccc;">
+          </div>
+
+          <!-- Ref & Date -->
+          <div style="display:flex; justify-content:space-between; margin-bottom:16px;">
+            <span style="color:#000 !important;">Date: <strong>{{ today | date:'dd-MMM-yyyy' }}</strong></span>
+            <span style="color:#000 !important;">Ref No: <strong>EL/{{ empData.empCode }}/{{ today | date:'yyyy' }}</strong></span>
+          </div>
+
+          <!-- Subject -->
+          <p style="color:#000 !important; margin:8px 0;">
+            Subject: <strong style="color:#000 !important;">Experience Certificate</strong>
+          </p>
+          <br>
+
+          <!-- Opening -->
+          <p style="color:#000 !important;">To Whom It May Concern,</p>
+
+          <!-- Body -->
+          <p style="color:#000 !important; text-align:justify;">
+            This is to certify that <strong style="color:#000 !important;">{{ empData.empName }}</strong>
+            (Employee Code: <strong style="color:#000 !important;">{{ empData.empCode }}</strong>)
+            was employed with <strong style="color:#000 !important;">{{ companyName }}</strong>
+            as <strong style="color:#000 !important;">{{ empData.designation }}</strong>
+            in the <strong style="color:#000 !important;">{{ empData.department }}</strong> department from
+            <strong style="color:#000 !important;">{{ empData.joiningDate | date:'dd-MMM-yyyy' }}</strong> to
+            <strong style="color:#000 !important;">{{ empData.lwd | date:'dd-MMM-yyyy' }}</strong>
+            — a total tenure of approximately <strong style="color:#000 !important;">{{ tenure }}</strong>.
+          </p>
+
+          <p style="color:#000 !important; text-align:justify;">
+            During their employment, <strong style="color:#000 !important;">{{ empData.empName }}</strong>
+            was responsible for {{ empData.workSummary }}. They were found to be hardworking, dedicated,
+            and a team player.
+          </p>
+
+          <p style="color:#000 !important; text-align:justify;">
+            We wish <strong style="color:#000 !important;">{{ empData.empName }}</strong>
+            all the best in their future endeavours.
+          </p>
+
+          <!-- Signature -->
+          <div style="margin-top:60px;">
+            <p style="color:#000 !important;">For <strong style="color:#000 !important;">{{ companyName }}</strong>,</p>
+            <div style="height:60px;"></div>
+            <p style="margin:0; color:#000 !important; font-weight:bold;">Authorized Signatory</p>
+            <p style="color:#000 !important;">HR Department</p>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

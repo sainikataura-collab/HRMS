@@ -1,0 +1,122 @@
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <!-- Card Header -->
+      <div class="card-header bg-primary">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-between">
+            <h4>List of Customer Shift Rate & Bonus</h4>
+          </div>
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-center">
+            <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchTerm" (ngModelChange)="onSearch()" />
+          </div>
+
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-md-end">
+            <button class="btn btnheader" routerLink="/dash/adminAttendance/adminAttendancedashboard/customer_shift_rate_bonus">
+              Add
+            </button>
+            <button class="btn btnheader mx-1" routerLink="/dash/adminAttendance/adminAttendancedashboard/customer_shift_rate_bonus_upload">
+              Import
+            </button>
+            <button class="btn btn-light mx-1" (click)="exportToExcel()">
+              Download
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filters Row -->
+      <div class="card-body border-bottom">
+        <div class="row row-cols-1 row-cols-md-3 g-4 align-items-end">
+          <div class="col">
+            <label>Customer</label>
+            <ng-select [items]="clients" bindLabel="text" bindValue="value" placeholder="--Select Customer--"
+              [(ngModel)]="selectedClientId" (change)="onFilterChange()" class="w-100 small" [clearable]="true">
+            </ng-select>
+          </div>
+          <div class="col">
+            <label>Location</label>
+            <ng-select [items]="locations" bindLabel="text" bindValue="value" placeholder="--Select Location--"
+              [(ngModel)]="selectedLocationId" (change)="onFilterChange()" class="w-100 small" [clearable]="true">
+            </ng-select>
+          </div>
+          <div class="col">
+            <button type="button" class="btn btn-outline-dark" (click)="resetFilters()">
+              Reset
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table Body -->
+      <div class="card-body">
+        <div class="table-responsive table-invoice">
+          <table id="exportTable" class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Sr.No.</th>
+                <th>Customer</th>
+                <th>Location</th>
+                <th>Shift Type A</th>
+                <th>Shift Type B</th>
+                <th>Shift Type C</th>
+                <th>Attendance Bonus</th>
+                <th>Bonus Applicable</th>
+                <th>Bonus Payout Type</th>
+                <th>Attendance Applicable Days</th>
+                <th>Quarterly Incentive</th>
+                <th>Peak Incentive</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of list | paginate: { itemsPerPage: pageSize, currentPage: pageIndex, totalItems: totalItems }; let i = index">
+                <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+                <td>{{ item.customerName || item.fk_clientId }}</td>
+                <td>{{ item.locationName || item.fk_locId }}</td>
+                <td>{{ item.shiftTypeA }}</td>
+                <td>{{ item.shiftTypeB }}</td>
+                <td>{{ item.shiftTypeC }}</td>
+                <td>{{ item.attendanceBonus }}</td>
+                <td>
+                  <span class="badge" [ngClass]="item.isBonusApplicable ? 'text-success' : 'text-danger'">
+                    {{ item.isBonusApplicable ? 'Yes' : 'No' }}
+                  </span>
+                </td>
+                <td>{{ item.isBonusApplicable && item.bonusPayoutType ? item.bonusPayoutType : '-' }}</td>
+                <td>{{ item.attendanceApplicableDays != null ? item.attendanceApplicableDays : (item.AttendanceApplicableDays != null ? item.AttendanceApplicableDays : 0) }}</td>
+                <td>{{ item.quarterlyIncentive != null ? (item.quarterlyIncentive | number:'1.0-0') : 0 }}</td>
+                <td>
+                  <span class="badge" [ngClass]="item.isPeakIncentiveApplicable ? 'text-success' : 'text-secondary'">
+                    {{ item.isPeakIncentiveApplicable ? ('Yes (' + (item.peakIncentivesCount || 0) + ')') : 'No' }}
+                  </span>
+                </td>
+                <td>
+                  <button class="btn btn-sm btn-outline" (click)="editRecord(item)" title="Edit">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                  </button>
+                  <button class="btn btn-sm btn-outline" (click)="deleteRecord(item)" title="Delete">
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                </td>
+              </tr>
+              <tr *ngIf="isLoading">
+                <td colspan="13" class="text-center py-4">
+                  <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+                </td>
+              </tr>
+              <tr *ngIf="!isLoading && list.length === 0">
+                <td colspan="13" class="text-center py-4">
+                  No data available
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

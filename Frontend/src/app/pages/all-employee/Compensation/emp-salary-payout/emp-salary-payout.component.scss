@@ -1,0 +1,854 @@
+
+// Earning And deduction salary slip =========================================================================================
+@media screen and (max-width: 767.98px) {
+  
+  #exportTable thead {
+    display: none;
+  }
+
+  /* ===== HIDE UNWANTED COLUMNS ===== */
+  #exportTable tbody td[data-label="Sr.no"] {
+    display: none !important;
+  }
+
+  /* ===== CARD CONTAINER ===== */
+  #exportTable tbody tr {
+    display: block;
+    margin: 1rem 0.2rem;
+    padding: 0rem;
+    background: #ffffff;
+    border: 1px dashed #87dabc;
+    border-left: 4px solid #10b981;
+    border-radius: 0.3rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    position: relative;
+  }
+
+   #exportTable tbody tr:nth-child(even) {
+    border-left-color: #10b981;
+       border-left: 4px solid #3080e8;
+  }
+
+  /* ===== RESET TD ===== */
+  #exportTable tbody td {
+    display: block;
+    padding: 0;
+    // padding-bottom: 10px;
+    margin: 0;
+    border: none;
+    background: transparent;
+    height: auto;
+  }
+
+  #exportTable tbody td::before {
+    display: none !important;
+  }
+
+  /* ===== DATE HEADER ===== */
+  #exportTable tbody td[data-label="EarningHead"] {
+    display: block;
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: #3080e8 !important;
+    padding: 0.0rem 0.5rem;
+    // background: #bed9c95c;
+    border-bottom: 1px solid #cacde2c0 !important;
+    text-align: start !important;
+  }
+
+ 
+ 
+
+
+  /* ===== TIME ROW ===== */
+  #exportTable tbody td[data-label="ENTITLEMENT"] {
+    display: inline-flex;
+    align-items: center;
+    padding: 0 0.5rem;
+    font-size: 0.65rem;
+    color: #8ab1e820;
+    font-weight: 500;
+    width: 100%;
+    text-align: start;
+     line-height: 1.4;  
+  }
+
+  #exportTable tbody td[data-label="ENTITLEMENT"]::before {
+    content: 'Entitlement:-' !important;
+    display: inline-block !important;
+    font-size: 0.65rem;
+    margin-right: 0.5rem;
+    font-weight: 500;
+  }
+
+
+
+  #exportTable tbody td[data-label="EARNING"] {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.65rem;
+    color: #1f2937;
+    font-weight: 500;
+  
+    padding-top: 0.5rem;
+    padding: 0 0.5rem;
+  
+    width: 50%;
+    text-align: start;
+    line-height: 1.4;
+  }
+
+  #exportTable tbody td[data-label="EARNING"]::before {
+    // content: '→' !important;
+    content: 'Earning :-';
+    display: inline-block !important;
+    color: #2b2e41;
+    // margin: 0 0.75rem;
+    font-size: 0.65rem;
+    font-weight: 500;
+    padding-right: 5px;
+  }
+
+    #exportTable tbody td[data-label="ARREAR"] {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.65rem;
+    color: #1f2937;
+    font-weight: 500;
+  
+    padding-top: 0.5rem;
+    padding: 0 0.5rem;
+
+   
+    position: relative;
+    width: 50%;
+    text-align: start;
+    line-height: 1.4;
+  }
+
+  #exportTable tbody td[data-label="ARREAR"]::before {
+    // content: '→' !important;
+    content: 'Arrear :';
+    display: inline-block !important;
+    color: #2b2e41;
+    // margin: 0 0.75rem;
+    font-size: 0.65rem;
+    font-weight: 500;
+    padding-right: 5px;
+  }
+
+ 
+
+  
+
+ 
+
+  /* ===== EMPTY STATE ===== */
+  #exportTable tbody tr td[colspan] {
+    display: block;
+    padding: 2rem 1rem;
+    text-align: center;
+    color: #94a3b8;
+    font-size: 0.65rem;
+    position: static;
+  }
+
+  #exportTable tbody tr td[colspan]::before,
+  #exportTable tbody tr td[colspan]::after {
+    content: none !important;
+  }
+}
+
+
+// salary month wise =========================================================================================================
+
+
+@media screen and (max-width: 767.98px) {
+  
+  #exportTablemonthwise thead {
+    display: none;
+  }
+
+  /* ===== HIDE UNWANTED COLUMNS ===== */
+  #exportTablemonthwise tbody td[data-label="Sr.No."] {
+    display: none !important;
+  }
+
+  /* ===== CARD CONTAINER ===== */
+  #exportTablemonthwise tbody tr {
+    display: block;
+    margin: 1rem 0.2rem;
+    padding: 0rem;
+    background: #ffffff;
+    border: 1px dashed #87dabc;
+    border-left: 4px solid #10b981;
+    border-radius: 0.3rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    position: relative;
+  }
+
+   #exportTablemonthwise tbody tr:nth-child(even) {
+    border-left-color: #10b981;
+       border-left: 4px solid #3080e8;
+  }
+
+  /* ===== RESET TD ===== */
+  #exportTablemonthwise tbody td {
+    display: block;
+    padding: 0;
+    // padding-bottom: 10px;
+    margin: 0;
+    border: none;
+    background: transparent;
+    height: auto;
+  }
+
+  #exportTablemonthwise tbody td::before {
+    display: none !important;
+  }
+
+  /* ===== DATE HEADER ===== */
+  #exportTablemonthwise tbody td[data-label="fk_monthid"] {
+    display: inline-flex;
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: #3080e8 !important;
+    padding: 0.0rem 0.2rem;
+    // background: #bed9c95c;
+   
+    text-align: start !important;
+  }
+  #exportTablemonthwise tbody td[data-label="fk_yearid"] {
+    display: inline-flex;
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: #3080e8 !important;
+    padding: 0.0rem 0.1rem;
+    // background: #bed9c95c;
+   
+    text-align: start !important;
+  }
+
+
+  
+  /* ===== STATUS BADGE (Top Right) ===== */
+  #exportTablemonthwise tbody td[data-label="NetAmount"] {
+    position: absolute;
+    top: 0.4rem;
+    right: 0.5rem;
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 40px;
+    font-size: 0.55rem;
+    font-weight: 600;
+    
+    letter-spacing: 0.5px;
+    color: #ffffff !important;
+    line-height: 1.4;
+  }
+
+    #exportTablemonthwise tbody td[data-label="NetAmount"]::before {
+content: 'Net Amt :';
+    display: inline-block !important;
+    font-size: 0.65rem;
+    margin-right: 0.2rem;
+    font-weight: 500;
+    }
+
+  #exportTablemonthwise tbody tr:nth-child(odd) td[data-label="NetAmount"] {
+    background: #10b981;
+  }
+
+  #exportTablemonthwise tbody tr:nth-child(even) td[data-label="NetAmount"] {
+    background: #10b981;
+    // background: #3080e8;
+  }
+
+
+ 
+ 
+
+
+  /* ===== TIME ROW ===== */
+  #exportTablemonthwise tbody td[data-label="TotalGros"] {
+    display: inline-flex;
+    align-items: center;
+    padding: 0 0.2rem;
+    font-size: 0.65rem;
+    color: #8ab1e820;
+    font-weight: 500;
+    width: 100%;
+    text-align: start;
+     line-height: 1.4;  
+  }
+
+  #exportTablemonthwise tbody td[data-label="TotalGros"]::before {
+    content: 'Total :-' !important;
+    display: inline-block !important;
+    font-size: 0.65rem;
+    margin-right: 0.2rem;
+    font-weight: 600;
+  }
+
+
+
+  #exportTablemonthwise tbody td[data-label="Deduction"] {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.65rem;
+    color: #1f2937;
+    font-weight: 500;
+  
+    padding-top: 0.5rem;
+    padding: 0 0.2rem;
+  
+    width: 100%;
+    text-align: start;
+    line-height: 1.4;
+  }
+
+  #exportTablemonthwise tbody td[data-label="Deduction"]::before {
+    // content: '→' !important;
+    content: 'Deduction :-';
+    display: inline-block !important;
+    color: #2b2e41;
+    // margin: 0 0.75rem;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding-right: 5px;
+  }
+
+ 
+ 
+
+  
+
+ 
+
+  /* ===== EMPTY STATE ===== */
+  #exportTablemonthwise tbody tr td[colspan] {
+    display: block;
+    padding: 2rem 1rem;
+    text-align: center;
+    color: #94a3b8;
+    font-size: 0.65rem;
+    position: static;
+  }
+
+  #exportTablemonthwise tbody tr td[colspan]::before,
+  #exportTablemonthwise tbody tr td[colspan]::after {
+    content: none !important;
+  }
+}
+
+
+// exportTable-Income-Tax-month-wise =========================================================================================
+
+@media screen and (max-width: 767.98px) {
+  
+  #exportTable-Income-Tax-month-wise thead {
+    display: none;
+  }
+
+  /* ===== HIDE UNWANTED COLUMNS ===== */
+  #exportTable-Income-Tax-month-wise tbody td[data-label="Sr.No."] {
+    display: none !important;
+  }
+
+  /* ===== CARD CONTAINER ===== */
+  #exportTable-Income-Tax-month-wise tbody tr {
+    display: block;
+    margin: 1rem 0.2rem;
+    padding: 0rem;
+    background: #ffffff;
+    border: 1px dashed #87dabc;
+    border-left: 4px solid #10b981;
+    border-radius: 0.3rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    position: relative;
+  }
+
+   #exportTable-Income-Tax-month-wise tbody tr:nth-child(even) {
+    border-left-color: #10b981;
+       border-left: 4px solid #3080e8;
+  }
+
+  /* ===== RESET TD ===== */
+  #exportTable-Income-Tax-month-wise tbody td {
+    display: block;
+    padding: 0;
+    // padding-bottom: 10px;
+    margin: 0;
+    border: none;
+    background: transparent;
+    height: auto;
+  }
+
+  #exportTable-Income-Tax-month-wise tbody td::before {
+    display: none !important;
+  }
+
+  /* ===== DATE HEADER ===== */
+  #exportTable-Income-Tax-month-wise tbody td[data-label="fk_monthid"] {
+    display: inline-flex;
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: #3080e8 !important;
+    padding: 0.0rem 0.3rem;
+   
+  }
+  #exportTable-Income-Tax-month-wise tbody td[data-label="fk_yearid"] {
+    display: inline-flex;
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: #3080e8 !important;
+    padding: 0.0rem 0.1rem;
+    text-align: start !important;
+    
+  }
+
+ 
+ 
+
+
+  /* ===== TIME ROW ===== */
+  #exportTable-Income-Tax-month-wise tbody td[data-label="total"] {
+    display: block;
+    align-items: center;
+    padding: 0.1rem 0.0rem;
+    font-size: 0.65rem;
+    color: #8ab1e820;
+    font-weight: 500;
+    width: 100%;
+    text-align: start;
+     line-height: 1.4;  
+     border-top: 1px solid #cacde2c0 !important;
+  }
+
+  #exportTable-Income-Tax-month-wise tbody td[data-label="total"]::before {
+    content: 'Total :' !important;
+    display: inline-block !important;
+    font-size: 0.65rem;
+    margin-right: 0.5rem;
+     padding: 0.3rem 0.3rem;
+    font-weight: 600;
+  }
+
+
+
+  #exportTable-Income-Tax-month-wise tbody td[data-label="PFGross"] {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.65rem;
+    color: #1f2937;
+    font-weight: 500;
+  
+    padding-top: 0.5rem;
+    padding: 0 0.3rem;
+  
+    width: 45%;
+    text-align: start;
+    line-height: 1.4;
+  }
+
+  #exportTable-Income-Tax-month-wise tbody td[data-label="PFGross"]::before {
+    // content: '→' !important;
+    content: '	PF Gross :';
+    display: inline-block !important;
+    color: #2b2e41;
+    // margin: 0 0.75rem;
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding-right: 5px;
+  }
+
+    #exportTable-Income-Tax-month-wise tbody td[data-label="PF"] {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.65rem;
+    color: #1f2937;
+    font-weight: 500;
+  
+    padding-top: 0.5rem;
+    padding: 0 0.5rem;
+    position: relative;
+    width: 55%;
+    text-align: start;
+    line-height: 1.4;
+  }
+
+  #exportTable-Income-Tax-month-wise tbody td[data-label="PF"]::before {
+    // content: '→' !important;
+    content: 'PF :';
+    display: inline-block !important;
+    color: #2b2e41;
+    // margin: 0 0.75rem;
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding-right: 5px;
+  }
+
+
+
+    #exportTable-Income-Tax-month-wise tbody td[data-label="PFEmr"] {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.65rem;
+    color: #1f2937;
+    font-weight: 500;
+    padding: 0 0.3rem;
+    position: relative;
+    width: 45%;
+    text-align: start;
+    line-height: 1.1;
+  }
+
+  #exportTable-Income-Tax-month-wise tbody td[data-label="PFEmr"]::before {
+    // content: '→' !important;
+    content: 'PF Emr :';
+    display: inline-block !important;
+    color: #2b2e41;
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding-right: 5px;
+  }
+    #exportTable-Income-Tax-month-wise tbody td[data-label="PFAmount"] {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.65rem;
+    color: #1f2937;
+    font-weight: 500;
+    padding: 0 0.3rem;
+    position: relative;
+    width: 55%;
+    text-align: start;
+    
+  }
+
+  #exportTable-Income-Tax-month-wise tbody td[data-label="PFAmount"]::before {
+    // content: '→' !important;
+    content: '(PF + PF Emr) :';
+    display: inline-block !important;
+    color: #2b2e41;
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding-right: 5px;
+  }
+
+ 
+    #exportTable-Income-Tax-month-wise tbody td[data-label="IT"] {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.65rem;
+    color: #1f2937;
+    font-weight: 500;
+    padding: 0 0.3rem;
+    position: relative;
+    width: 50%;
+    text-align: start;
+   
+  }
+
+  #exportTable-Income-Tax-month-wise tbody td[data-label="IT"]::before {
+    // content: '→' !important;
+    content: 'IT :';
+    display: inline-block !important;
+    color: #2b2e41;
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding-right: 5px;
+  }
+
+ 
+
+ 
+
+  
+
+ 
+
+  /* ===== EMPTY STATE ===== */
+  #exportTable-Income-Tax-month-wise tbody tr td[colspan] {
+    display: block;
+    padding: 2rem 1rem;
+    text-align: center;
+    color: #94a3b8;
+    font-size: 0.65rem;
+    position: static;
+  }
+
+  #exportTable-Income-Tax-month-wise tbody tr td[colspan]::before,
+  #exportTable-Income-Tax-month-wise tbody tr td[colspan]::after {
+    content: none !important;
+  }
+}
+
+
+
+
+
+// Bank Month wise ===========================================================================================================
+
+@media screen and (max-width: 767.98px) {
+  
+  #exportTable-Bank-month-wise thead {
+    display: none;
+  }
+
+  /* ===== HIDE UNWANTED COLUMNS ===== */
+  #exportTable-Bank-month-wise tbody td[data-label="Sr.No."] {
+    display: none !important;
+  }
+
+  /* ===== CARD CONTAINER ===== */
+  #exportTable-Bank-month-wise tbody tr {
+    display: block;
+    margin: 1rem 0.2rem;
+    padding: 0rem;
+    background: #ffffff;
+    border: 1px dashed #87dabc;
+    border-left: 4px solid #10b981;
+    border-radius: 0.3rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    position: relative;
+  }
+
+   #exportTable-Bank-month-wise tbody tr:nth-child(even) {
+    border-left-color: #10b981;
+       border-left: 4px solid #3080e8;
+  }
+
+  /* ===== RESET TD ===== */
+  #exportTable-Bank-month-wise tbody td {
+    display: block;
+    padding: 0;
+    // padding-bottom: 10px;
+    margin: 0;
+    border: none;
+    background: transparent;
+    height: auto;
+  }
+
+  #exportTable-Bank-month-wise tbody td::before {
+    display: none !important;
+  }
+
+  /* ===== DATE HEADER ===== */
+  #exportTable-Bank-month-wise tbody td[data-label="fk_monthid"] {
+    display: inline-flex;
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: #3080e8 !important;
+    padding: 0.0rem 0.3rem;
+   
+  }
+  #exportTable-Bank-month-wise tbody td[data-label="fk_yearid"] {
+    display: inline-flex;
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: #3080e8 !important;
+    padding: 0.0rem 0.1rem;
+    text-align: start !important;
+    
+  }
+
+ 
+ 
+
+
+  /* ===== TIME ROW ===== */
+  #exportTable-Bank-month-wise tbody td[data-label="Bankname"] {
+    display: block;
+    align-items: center;
+    padding: 0.1rem 0.0rem;
+    font-size: 0.65rem;
+    color: #8ab1e820;
+    font-weight: 500;
+    width: 100%;
+    text-align: start;
+     line-height: 1.4;  
+     border-top: 1px solid #cacde2c0 !important;
+  }
+
+  #exportTable-Bank-month-wise tbody td[data-label="Bankname"]::before {
+    content: 'Bank :' !important;
+    display: inline-block !important;
+    font-size: 0.65rem;
+    margin-right: 0.5rem;
+     padding: 0.3rem 0.3rem;
+    font-weight: 600;
+  }
+
+
+
+  #exportTable-Bank-month-wise tbody td[data-label="Accountno"] {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.65rem;
+    color: #1f2937;
+    font-weight: 500;
+  
+    padding-top: 0.5rem;
+    padding: 0 0.3rem;
+  
+    width: 100%;
+    text-align: start;
+    line-height: 1.4;
+  }
+
+  #exportTable-Bank-month-wise tbody td[data-label="Accountno"]::before {
+    // content: '→' !important;
+    content: 'Account No :';
+    display: inline-block !important;
+    color: #2b2e41;
+    // margin: 0 0.75rem;
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding-right: 5px;
+  }
+
+    #exportTable-Bank-month-wise tbody td[data-label="NetAmount"] {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.65rem;
+    color: #1f2937;
+    font-weight: 500;
+  
+    padding-top: 0.5rem;
+    padding: 0 0.2rem;
+    position: relative;
+    width: 100%;
+    text-align: start;
+    line-height: 1.4;
+  }
+
+  #exportTable-Bank-month-wise tbody td[data-label="NetAmount"]::before {
+    // content: '→' !important;
+    content: 'Net Amount :';
+    display: inline-block !important;
+    color: #2b2e41;
+    // margin: 0 0.75rem;
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding-right: 5px;
+  }
+
+
+
+ 
+
+ 
+
+  
+
+ 
+
+  /* ===== EMPTY STATE ===== */
+  #exportTable-Bank-month-wise tbody tr td[colspan] {
+    display: block;
+    padding: 2rem 1rem;
+    text-align: center;
+    color: #94a3b8;
+    font-size: 0.65rem;
+    position: static;
+  }
+
+  #exportTable-Bank-month-wise tbody tr td[colspan]::before,
+  #exportTable-Bank-month-wise tbody tr td[colspan]::after {
+    content: none !important;
+  }
+}
+
+// ----------------------------------------------------------------------------
+
+
+
+.small-lg{
+    font-size:13px;
+}
+
+
+  .table{
+    margin-bottom: 0.2rem;
+  }
+
+   .table thead th {
+   
+   text-align: start !important;
+    padding-top: 0px !important;
+    padding-bottom: 0px !important;
+  
+  }
+.s-small
+{
+  font-size: 8px !important;
+}
+
+.small{
+  font-size: 12px !important;
+}
+
+@media screen and (max-width:768px){
+  .small{
+    font-size: 11px !important;
+  }
+}
+
+  tbody td {
+    border: none !important;
+  
+  }
+
+
+
+    .table td {
+    white-space: nowrap;
+    text-align: start !important;
+    height: 20px !important;
+  }
+
+.tab-content {
+  width: 100%;
+}
+
+button.active {
+  background-color: #0d6efd; // Bootstrap's primary color
+  color: #fff;
+  border-color: #0d6efd;
+}
+
+#pdf-content {
+  margin-left:20px  !important;
+  margin-top: 20px !important;
+  margin-right:20px  !important;
+  padding: 0 !important;
+  position: relative;
+
+  border:1px solid #2b2e41 dashed !important;
+
+}
+
+.company p>.lh-sm{
+  line-height: 0.4 !important;
+}
+
+.lh-sm-custom{
+    line-height: 0.7 !important;
+}
+
+
+//new 
+.salary-slip th{
+  text-align: start !important;
+  padding: 0px 5px;
+}
+.salary-slip td{
+  text-align: start;
+  padding: 0px 5px;
+}
+
+

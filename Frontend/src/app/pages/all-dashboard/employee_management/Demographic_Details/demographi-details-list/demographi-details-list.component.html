@@ -1,0 +1,65 @@
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <!-- Heading -->
+            <div class="card-header bg-primary">
+                <div class="row w-100">
+                  <!-- Title Section -->
+                  <div class="col-sm-6 col-md-6 col-lg-4 d-flex align-items-center justify-content-start"> 
+                    <h4 class="text-white">Employee Demographic Details</h4>
+                  </div>
+                  <!-- Search Section -->
+                  <div class="col-sm-12 col-md-6 col-lg-4 d-flex align-items-center justify-content-center">
+                    <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText" (ngModelChange)="onSearchTextChanged()" />
+                  </div>
+                  <!-- Action Buttons -->
+                  <div class="col-sm-6 col-md-6 col-lg-4 d-flex align-items-center justify-content-end ms-auto gap-2">
+                    <!-- <button class="btn btn-light" routerLink="/dash/payroll/payrolldashboard/DemographicDetails">
+                      Add
+                    </button> -->
+                    <button class="btn btn-light" (click)="exportToExcel()">
+                      Download
+                    </button>
+                  </div>
+                </div>
+            </div>
+  
+            <!-- Table Section -->
+            <div class="mt-4">
+              <table id="exportTable" class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>S. No.</th>
+                    <th>Code</th>
+                    <th>Employee Name</th>
+                    <th>Department</th>
+                    <th>Designation</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let employee of filteredData() | paginate : { itemsPerPage: pageSize, currentPage: pageIndex, totalItems: totalItems }; let i = index">
+                    <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+                    <td>{{ employee.empcode }}</td>
+                    <td>{{ employee.empname }}</td>
+                    <td>{{ employee.depart }}</td>
+                    <td>{{ employee.desig }}</td>
+                    <td>
+                      <button  class="btn" (click)="editDemographicDetail(encryptionService.encryptText(employee.pk_empid))">
+                      <i class="fa-solid fa-pen-to-square"></i>
+                    </button>
+                    
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>
+              <ng-template #noData>
+                <tr>
+                  <td colspan="6" class="text-center">No data available</td>
+                </tr>
+              </ng-template>
+            </div>
+        </div>
+    </div>
+  </div>

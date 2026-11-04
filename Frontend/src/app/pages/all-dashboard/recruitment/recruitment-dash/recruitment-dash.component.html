@@ -1,0 +1,553 @@
+<div class="recruitment-hub-container">
+
+  <!-- ── Top Header Toolbar ── -->
+  <header class="hub-header d-flex flex-wrap align-items-center justify-content-between mb-2.5">
+    <div class="header-left d-flex align-items-center">
+      <div class="hub-icon-badge">
+        <i class="bi bi-grid-1x2-fill"></i>
+      </div>
+      <div class="header-text-block">
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+          <h1 class="hub-title mb-0">Recruitment Command Hub</h1>
+          <span class="hub-tenant-badge"><i class="bi bi-shield-check me-1"></i>CJ DARCL ATS</span>
+          <span class="hub-live-indicator"><span class="pulse-dot"></span>Live Operations</span>
+        </div>
+        <p class="hub-subtitle mb-0">Unified Talent Acquisition, Headcount Allocation & Sourcing Lifecycle</p>
+      </div>
+    </div>
+
+    <div class="header-actions d-flex align-items-center gap-1.5 flex-wrap">
+      <!-- Sync Button -->
+      <button class="btn-hub-action btn-refresh" (click)="refreshDashboard()" [disabled]="isRefreshing" title="Refresh Live Data">
+        <i class="bi bi-arrow-clockwise" [class.spin]="isRefreshing"></i>
+        <span>Sync</span>
+      </button>
+
+      <!-- Filter Modal Trigger Button -->
+      <button class="btn-hub-action btn-filter" (click)="openFilterModal()" [class.has-active-filter]="activeFilterCount > 0" title="Open Multi-Criteria Filters">
+        <i class="bi bi-funnel-fill"></i>
+        <span>Filters</span>
+        <span *ngIf="activeFilterCount > 0" class="badge-filter-count">{{ activeFilterCount }}</span>
+      </button>
+
+      <!-- MRF Directory Button -->
+      <a routerLink="/dash/recruitment/recruitmentdashboard/mrf-list" class="btn-hub-action btn-secondary-action">
+        <i class="bi bi-card-list"></i>
+        <span>MRF Directory</span>
+      </a>
+
+      <!-- Approvals Queue Button -->
+      <a routerLink="/dash/recruitment/recruitmentdashboard/job-management" [queryParams]="{ tab: 'Approvals' }" class="btn-hub-action btn-secondary-action">
+        <i class="bi bi-check2-square"></i>
+        <span>Approvals Queue</span>
+        <span *ngIf="pendingApprovalsCount > 0" class="badge-count-amber">{{ pendingApprovalsCount }}</span>
+      </a>
+
+      <!-- User Rights Configuration -->
+      <a [routerLink]="['/dash/user/userdashboard/PageRights']" [queryParams]="{ moduleId: 5 }" class="btn-hub-action btn-secondary-action" title="Configure User Page Rights & Approval Levels">
+        <i class="bi bi-shield-lock"></i>
+        <span>User Rights</span>
+      </a>
+
+      <!-- Post New MRF Button -->
+      <a routerLink="/dash/recruitment/recruitmentdashboard/create-job-wizard" class="btn-hub-action btn-primary-action">
+        <i class="bi bi-plus-lg"></i>
+        <span>Post New MRF</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- ── Active Filter Indicator Bar (Shown when any filter is active) ── -->
+  <div *ngIf="activeFilterCount > 0" class="active-filters-bar d-flex align-items-center flex-wrap gap-2 mb-3">
+    <span class="active-filters-label d-flex align-items-center gap-1">
+      <i class="bi bi-sliders2 text-primary"></i> Active Filters:
+    </span>
+
+    <!-- Vendor Filter Pill -->
+    <span *ngIf="appliedVendorId !== 'ALL'" class="filter-pill">
+      <i class="bi bi-buildings me-1 text-primary"></i> Vendor: <strong>{{ appliedVendorName }}</strong>
+      <button class="btn-pill-remove" (click)="removeVendorFilter()" title="Clear vendor filter">&times;</button>
+    </span>
+
+    <!-- Location Filter Pill -->
+    <span *ngIf="appliedLocation !== 'ALL'" class="filter-pill">
+      <i class="bi bi-geo-alt me-1 text-info"></i> Hub: <strong>{{ appliedLocation }}</strong>
+      <button class="btn-pill-remove" (click)="removeLocationFilter()" title="Clear location filter">&times;</button>
+    </span>
+
+    <!-- Date Range Filter Pill -->
+    <span *ngIf="appliedDateRange !== 'all'" class="filter-pill">
+      <i class="bi bi-calendar-event me-1 text-warning"></i> Period: 
+      <strong>
+        <ng-container [ngSwitch]="appliedDateRange">
+          <span *ngSwitchCase="'today'">Today</span>
+          <span *ngSwitchCase="'week'">Last 7 Days</span>
+          <span *ngSwitchCase="'month'">This Month</span>
+          <span *ngSwitchCase="'quarter'">Last 90 Days</span>
+          <span *ngSwitchCase="'custom'">{{ appliedCustomStartDate }} to {{ appliedCustomEndDate }}</span>
+        </ng-container>
+      </strong>
+      <button class="btn-pill-remove" (click)="removeDateFilter()" title="Clear date filter">&times;</button>
+    </span>
+
+    <!-- Clear All Button -->
+    <button class="btn-clear-all-filters" (click)="resetFilters()">
+      <i class="bi bi-trash3-fill me-1"></i> Clear All
+    </button>
+  </div>
+
+  <!-- ── Bento KPI Metric Row (6 Sleek Cards) ── -->
+  <section class="bento-kpi-row row g-2.5 mb-3">
+    <!-- 1. Active Requisitions -->
+    <div class="col-6 col-md-4 col-xl-2">
+      <div class="bento-kpi-card" routerLink="/dash/recruitment/recruitmentdashboard/job-management">
+        <div class="card-icon-wrap icon-blue">
+          <i class="bi bi-briefcase-fill"></i>
+        </div>
+        <div class="card-content">
+          <span class="card-label">Active Requisitions</span>
+          <div class="card-value-wrap">
+            <span class="card-value">{{ activeJobsCount }}</span>
+            <span class="card-subvalue">/ {{ totalJobsCount }}</span>
+          </div>
+          <span class="card-footer-text"><i class="bi bi-check-circle-fill text-success me-1"></i>Live Vacancies</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. Headcount Demand -->
+    <div class="col-6 col-md-4 col-xl-2">
+      <div class="bento-kpi-card" routerLink="/dash/recruitment/recruitmentdashboard/location-manpower-headcount">
+        <div class="card-icon-wrap icon-purple">
+          <i class="bi bi-people-fill"></i>
+        </div>
+        <div class="card-content">
+          <span class="card-label">Headcount Demand</span>
+          <div class="card-value-wrap">
+            <span class="card-value">{{ totalHeadcountDemand }}</span>
+            <span class="card-subvalue">heads</span>
+          </div>
+          <span class="card-footer-text"><i class="bi bi-bullseye text-primary me-1"></i>Target Quota</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. In-Flight Candidates -->
+    <div class="col-6 col-md-4 col-xl-2">
+      <div class="bento-kpi-card" routerLink="/dash/recruitment/recruitmentdashboard/pipeline">
+        <div class="card-icon-wrap icon-teal">
+          <i class="bi bi-diagram-3-fill"></i>
+        </div>
+        <div class="card-content">
+          <span class="card-label">Active Pipeline</span>
+          <div class="card-value-wrap">
+            <span class="card-value">{{ totalCandidatesInPipeline }}</span>
+            <span class="card-subvalue">candidates</span>
+          </div>
+          <span class="card-footer-text"><i class="bi bi-arrow-right-short text-info me-1"></i>Across All Stages</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. Hired / Onboarded -->
+    <div class="col-6 col-md-4 col-xl-2">
+      <div class="bento-kpi-card" routerLink="/dash/recruitment/recruitmentdashboard/pipeline" [queryParams]="{ stage: 'HIRED' }">
+        <div class="card-icon-wrap icon-green">
+          <i class="bi bi-person-check-fill"></i>
+        </div>
+        <div class="card-content">
+          <span class="card-label">Onboarded / Hired</span>
+          <div class="card-value-wrap">
+            <span class="card-value">{{ totalHiredCount }}</span>
+            <span class="card-subvalue">({{ hiringFulfillmentRate }}%)</span>
+          </div>
+          <span class="card-footer-text"><i class="bi bi-fingerprint text-success me-1"></i>Bio Transferred</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. Pending Approvals -->
+    <div class="col-6 col-md-4 col-xl-2">
+      <div class="bento-kpi-card" routerLink="/dash/recruitment/recruitmentdashboard/job-management" [queryParams]="{ tab: 'Approvals' }">
+        <div class="card-icon-wrap icon-amber">
+          <i class="bi bi-hourglass-split"></i>
+        </div>
+        <div class="card-content">
+          <span class="card-label">Tier Approvals</span>
+          <div class="card-value-wrap">
+            <span class="card-value text-amber">{{ pendingApprovalsCount }}</span>
+            <span class="card-subvalue">MRFs</span>
+          </div>
+          <span class="card-footer-text" [class.text-danger]="pendingApprovalsCount > 0">
+            <i class="bi bi-exclamation-triangle-fill me-1"></i>Tier 1-3 Review
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. Partner Vendors -->
+    <div class="col-6 col-md-4 col-xl-2">
+      <div class="bento-kpi-card" routerLink="/dash/recruitment/recruitmentdashboard/vendor-portal">
+        <div class="card-icon-wrap icon-indigo">
+          <i class="bi bi-buildings-fill"></i>
+        </div>
+        <div class="card-content">
+          <span class="card-label">Staffing Network</span>
+          <div class="card-value-wrap">
+            <span class="card-value">{{ totalVendorsCount }}</span>
+            <span class="card-subvalue">agencies</span>
+          </div>
+          <span class="card-footer-text"><i class="bi bi-shield-lock-fill text-primary me-1"></i>Company Scoped</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Main Grid: Left (8 Cols) & Right (4 Cols) ── -->
+  <div class="row g-3">
+
+    <!-- ══ LEFT COLUMN (8 COLS) ══ -->
+    <div class="col-12 col-xl-8 d-flex flex-column gap-3">
+
+      <!-- Bento Block 1: Candidate Conversion Funnel -->
+      <div class="bento-panel">
+        <div class="panel-header d-flex align-items-center justify-content-between flex-wrap gap-2">
+          <div class="d-flex align-items-center gap-2">
+            <div class="panel-icon-dot bg-primary"></div>
+            <h2 class="panel-title mb-0">Candidate Lifecycle Conversion Funnel</h2>
+            <span class="badge-subtle-blue">{{ totalCandidatesInPipeline }} Active In-Flight</span>
+          </div>
+          <a routerLink="/dash/recruitment/recruitmentdashboard/pipeline" class="panel-link">
+            Open Pipeline Roster <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+
+        <div class="panel-body">
+          <div class="funnel-grid row g-2">
+            <div class="col-6 col-md-4 col-lg-2" *ngFor="let stage of funnelStages">
+              <div class="funnel-step-box" (click)="navigateToFunnelStage(stage.code)" [style.--step-color]="stage.color">
+                <div class="step-icon-wrap">
+                  <i class="bi" [ngClass]="stage.icon"></i>
+                </div>
+                <div class="step-count">{{ stage.count }}</div>
+                <div class="step-label text-truncate" [title]="stage.label">{{ stage.label }}</div>
+                <div class="step-pct-bar">
+                  <div class="step-pct-fill" [style.width.%]="stage.pct"></div>
+                </div>
+                <div class="step-pct-text">{{ stage.pct }}% pool</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bento Block 2: Live Job Requisitions & Sourcing Status -->
+      <div class="bento-panel flex-grow-1">
+        <div class="panel-header d-flex align-items-center justify-content-between flex-wrap gap-2">
+          <div class="d-flex align-items-center gap-2 flex-wrap">
+            <div class="panel-icon-dot bg-info"></div>
+            <h2 class="panel-title mb-0">Requisition Sourcing & Fulfilment</h2>
+            <div class="req-tabs d-flex align-items-center">
+              <button class="req-tab-btn" [class.active]="activeReqTab === 'ALL'" (click)="setReqTab('ALL')">All ({{ totalJobsCount }})</button>
+              <button class="req-tab-btn" [class.active]="activeReqTab === 'ACTIVE'" (click)="setReqTab('ACTIVE')">Active ({{ activeJobsCount }})</button>
+              <button class="req-tab-btn" [class.active]="activeReqTab === 'PENDING'" (click)="setReqTab('PENDING')">Approvals ({{ pendingApprovalsCount }})</button>
+              <button class="req-tab-btn" [class.active]="activeReqTab === 'CLOSED'" (click)="setReqTab('CLOSED')">Closed ({{ closedJobsCount }})</button>
+            </div>
+          </div>
+
+          <div class="search-input-wrap">
+            <i class="bi bi-search"></i>
+            <input type="text" [(ngModel)]="searchReqText" (input)="applyReqFilter()" placeholder="Filter MRF, Title, Hub..." class="hub-search-input" />
+          </div>
+        </div>
+
+        <div class="panel-body p-0">
+          <div class="table-responsive hub-table-wrap">
+            <table class="table hub-table align-middle mb-0">
+              <thead>
+                <tr>
+                  <th style="width: 28%;">REQUISITION & ROLE</th>
+                  <th style="width: 22%;">LOCATION / DEPT</th>
+                  <th style="width: 20%;">HEADCOUNT PROGRESS</th>
+                  <th style="width: 18%;">TIER WORKFLOW</th>
+                  <th style="width: 12%; text-align: right;">ACTION</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let job of filteredRequisitions.slice(0, 6)" class="hub-table-row">
+                  <td>
+                    <div class="d-flex align-items-center gap-2">
+                      <div class="job-mini-avatar">
+                        <i class="bi bi-briefcase"></i>
+                      </div>
+                      <div class="text-truncate">
+                        <span class="mrf-code-badge">{{ job.mrfCode || ('MRF/2026/' + (job.reqId || job.jobId)) }}</span>
+                        <div class="job-title-text text-truncate" [title]="job.jobTitle || job.title">{{ job.jobTitle || job.title }}</div>
+                      </div>
+                    </div>
+                  </td>
+
+                  <td>
+                    <div class="text-truncate">
+                      <div class="hub-loc-text text-truncate" [title]="job.location || 'Hub Operations'">
+                        <i class="bi bi-geo-alt me-1 text-muted"></i>{{ job.location || 'Hub Operations' }}
+                      </div>
+                      <small class="text-muted" style="font-size: 11px;">{{ job.department || 'Operations' }}</small>
+                    </div>
+                  </td>
+
+                  <td>
+                    <div class="d-flex align-items-center justify-content-between mb-1">
+                      <span class="progress-count-text">
+                        <strong>{{ job.hiredCount || 0 }}</strong> / {{ job.openPositions || job.openingsCount || 1 }} filled
+                      </span>
+                      <span class="progress-pct-badge">
+                        {{ (job.openPositions > 0 ? (job.hiredCount / job.openPositions * 100) : 0) | number:'1.0-0' }}%
+                      </span>
+                    </div>
+                    <div class="hub-mini-progress">
+                      <div class="hub-progress-bar" [style.width.%]="job.openPositions > 0 ? (job.hiredCount / job.openPositions * 100) : 0"></div>
+                    </div>
+                  </td>
+
+                  <td>
+                    <span class="status-badge" [ngClass]="getStatusBadgeClass(job)">
+                      {{ getStatusLabel(job) }}
+                    </span>
+                  </td>
+
+                  <td style="text-align: right;">
+                    <button class="btn-table-action" (click)="navigateToJob(job)" title="View in Pipeline">
+                      <i class="bi bi-eye-fill"></i>
+                      <span>Pipeline</span>
+                    </button>
+                  </td>
+                </tr>
+
+                <tr *ngIf="filteredRequisitions.length === 0">
+                  <td colspan="5" class="text-center py-4 text-muted">
+                    <i class="bi bi-inbox fs-3 d-block mb-1 text-muted"></i>
+                    No job requisitions found matching current filters.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="panel-footer d-flex align-items-center justify-content-between py-2.5 px-3 border-top">
+          <small class="text-muted" style="font-size: 11px;">Showing top active requisitions</small>
+          <a routerLink="/dash/recruitment/recruitmentdashboard/job-management" class="panel-link">
+            View All {{ filteredRequisitions.length }} Requisitions <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ══ RIGHT COLUMN (4 COLS) ══ -->
+    <div class="col-12 col-xl-4 d-flex flex-column gap-3">
+
+      <!-- Bento Block 3: Location-Wise Manpower Demand -->
+      <div class="bento-panel">
+        <div class="panel-header d-flex align-items-center justify-content-between">
+          <div class="d-flex align-items-center gap-2">
+            <div class="panel-icon-dot bg-warning"></div>
+            <h2 class="panel-title mb-0">Hub Manpower Demand</h2>
+          </div>
+          <a routerLink="/dash/recruitment/recruitmentdashboard/location-manpower-headcount" class="panel-link" title="Open Buffer Manager">
+            Manage <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+
+        <div class="panel-body">
+          <div class="location-demand-list d-flex flex-column gap-2.5">
+            <div class="loc-demand-item" *ngFor="let loc of locationDemandList">
+              <div class="d-flex align-items-center justify-content-between mb-1">
+                <span class="loc-name text-truncate" [title]="loc.locationName">
+                  <i class="bi bi-pin-map-fill text-primary me-1"></i>{{ loc.locationName }}
+                </span>
+                <span class="loc-stat-badge">
+                  <strong>{{ loc.openDemand }}</strong> heads open
+                </span>
+              </div>
+              <div class="hub-mini-progress">
+                <div class="hub-progress-bar bg-primary" [style.width.%]="loc.fillPct || 25"></div>
+              </div>
+              <div class="d-flex align-items-center justify-content-between mt-1">
+                <small class="text-muted" style="font-size: 10px;">{{ loc.hiredCount }} fulfilled</small>
+                <small class="text-muted" style="font-size: 10px;">{{ loc.fillPct }}% fulfilled</small>
+              </div>
+            </div>
+
+            <div *ngIf="locationDemandList.length === 0" class="text-center py-3 text-muted" style="font-size: 12px;">
+              No location demand data available.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bento Block 4: Sourcing Channel Distribution -->
+      <div class="bento-panel">
+        <div class="panel-header d-flex align-items-center justify-content-between">
+          <div class="d-flex align-items-center gap-2">
+            <div class="panel-icon-dot bg-success"></div>
+            <h2 class="panel-title mb-0">Sourcing Channel Share</h2>
+          </div>
+          <span class="badge-subtle-slate">{{ totalCandidatesInPipeline }} Sourced</span>
+        </div>
+
+        <div class="panel-body">
+          <div class="channel-list d-flex flex-column gap-2">
+            <div class="channel-item" *ngFor="let ch of sourcingChannels">
+              <div class="d-flex align-items-center justify-content-between mb-1">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="bi" [ngClass]="ch.icon" [style.color]="ch.color"></i>
+                  <span class="channel-name">{{ ch.name }}</span>
+                </div>
+                <span class="channel-count"><strong>{{ ch.count }}</strong> ({{ ch.pct }}%)</span>
+              </div>
+              <div class="hub-mini-progress">
+                <div class="hub-progress-bar" [style.background-color]="ch.color" [style.width.%]="ch.pct"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bento Block 5: Recent Sourcing Stream -->
+      <div class="bento-panel flex-grow-1">
+        <div class="panel-header d-flex align-items-center justify-content-between">
+          <div class="d-flex align-items-center gap-2">
+            <div class="panel-icon-dot bg-purple"></div>
+            <h2 class="panel-title mb-0">Recent Candidate Activity</h2>
+          </div>
+          <a routerLink="/dash/recruitment/recruitmentdashboard/pipeline" class="panel-link">
+            All <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+
+        <div class="panel-body p-0">
+          <div class="recent-candidate-list">
+            <div class="recent-cand-item d-flex align-items-center justify-content-between gap-2 p-2.5 border-bottom" *ngFor="let cand of recentCandidates">
+              <div class="d-flex align-items-center gap-2 text-truncate">
+                <div class="cand-mini-avatar">
+                  {{ (cand.candidateName || 'C')[0] | uppercase }}
+                </div>
+                <div class="text-truncate">
+                  <div class="cand-name text-truncate">{{ cand.candidateName }}</div>
+                  <div class="cand-role text-muted text-truncate">{{ cand.designation || cand.jobTitle || 'Fleet Associate' }}</div>
+                </div>
+              </div>
+              <div class="text-end flex-shrink-0">
+                <span class="badge-stage" [ngClass]="getStageBadgeClass(cand.stage)">
+                  {{ cand.stage || 'Applied' }}
+                </span>
+                <div class="cand-source text-muted mt-0.5">{{ cand.sourceType || 'Vendor' }}</div>
+              </div>
+            </div>
+
+            <div *ngIf="recentCandidates.length === 0" class="text-center py-3 text-muted" style="font-size: 12px;">
+              No recent candidate submissions.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- ── Interactive Dashboard Filter Modal (100% Company Scoped) ── -->
+  <div *ngIf="showFilterModal" class="filter-modal-backdrop" (click)="closeFilterModal()">
+    <div class="filter-modal-dialog" (click)="$event.stopPropagation()">
+      <div class="modal-header d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center gap-2">
+          <div class="filter-modal-icon">
+            <i class="bi bi-funnel-fill"></i>
+          </div>
+          <div>
+            <h5 class="modal-title mb-0">Filter Recruitment Dashboard</h5>
+            <small class="text-muted" style="font-size: 11px;">
+              100% Company-Scoped Metrics · {{ companyId ? 'Tenant ' + companyId : 'Active Session' }}
+            </small>
+          </div>
+        </div>
+        <button type="button" class="btn-close-modal" (click)="closeFilterModal()" aria-label="Close">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <!-- 1. Staffing Partner Vendor Filter -->
+        <div class="filter-field-group mb-3">
+          <label class="filter-field-label">
+            <i class="bi bi-buildings text-primary me-1"></i> Staffing Partner Agency / Vendor
+          </label>
+          <select [(ngModel)]="tempVendorId" class="form-select filter-select">
+            <option value="ALL">-- All Assigned Staffing Vendors ({{ availableVendors.length }}) --</option>
+            <option *ngFor="let v of availableVendors" [value]="v.vendorId">
+              {{ v.vendorName || v.contactPerson }} ({{ v.vendorCode || v.vendorId }})
+            </option>
+          </select>
+          <small class="form-text text-muted" style="font-size: 10.5px;">
+            Exclusively lists agencies registered for this company.
+          </small>
+        </div>
+
+        <!-- 2. Location / Operating Hub Filter -->
+        <div class="filter-field-group mb-3">
+          <label class="filter-field-label">
+            <i class="bi bi-geo-alt text-info me-1"></i> Operating Hub / Location
+          </label>
+          <select [(ngModel)]="tempLocation" class="form-select filter-select">
+            <option value="ALL">-- All Operating Hubs & Locations ({{ availableLocations.length }}) --</option>
+            <option *ngFor="let loc of availableLocations" [value]="loc">
+              {{ loc }}
+            </option>
+          </select>
+        </div>
+
+        <!-- 3. Date Range Filter -->
+        <div class="filter-field-group mb-2">
+          <label class="filter-field-label">
+            <i class="bi bi-calendar-range text-warning me-1"></i> Date Timeline Scope
+          </label>
+          <div class="date-preset-chips d-flex align-items-center flex-wrap gap-1.5 mb-2">
+            <button type="button" class="chip-preset-btn" [class.active]="tempDateRange === 'all'" (click)="setDatePreset('all')">All Time</button>
+            <button type="button" class="chip-preset-btn" [class.active]="tempDateRange === 'today'" (click)="setDatePreset('today')">Today</button>
+            <button type="button" class="chip-preset-btn" [class.active]="tempDateRange === 'week'" (click)="setDatePreset('week')">Last 7 Days</button>
+            <button type="button" class="chip-preset-btn" [class.active]="tempDateRange === 'month'" (click)="setDatePreset('month')">This Month</button>
+            <button type="button" class="chip-preset-btn" [class.active]="tempDateRange === 'quarter'" (click)="setDatePreset('quarter')">Last 90 Days</button>
+            <button type="button" class="chip-preset-btn" [class.active]="tempDateRange === 'custom'" (click)="setDatePreset('custom')">Custom Range</button>
+          </div>
+
+          <!-- Custom Date Range Inputs -->
+          <div *ngIf="tempDateRange === 'custom'" class="row g-2 custom-date-row mt-1">
+            <div class="col-6">
+              <label class="sub-label">From Date</label>
+              <input type="date" [(ngModel)]="tempCustomStartDate" class="form-control filter-input" />
+            </div>
+            <div class="col-6">
+              <label class="sub-label">To Date</label>
+              <input type="date" [(ngModel)]="tempCustomEndDate" class="form-control filter-input" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer d-flex align-items-center justify-content-between">
+        <button type="button" class="btn-modal-reset" (click)="resetFilters()">
+          <i class="bi bi-arrow-counterclockwise me-1"></i> Reset
+        </button>
+        <div class="d-flex align-items-center gap-2">
+          <button type="button" class="btn-modal-cancel" (click)="closeFilterModal()">Cancel</button>
+          <button type="button" class="btn-modal-apply" (click)="applyFilters()">
+            <i class="bi bi-check2 me-1"></i> Apply Filters
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

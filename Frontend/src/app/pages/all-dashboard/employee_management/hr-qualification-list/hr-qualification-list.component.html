@@ -1,0 +1,91 @@
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-primary">
+                <div class="row w-100">
+                  
+                  <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-between">
+                    <h4>Qualification List</h4>
+                   
+                  </div>
+                  
+                  <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-center">
+                    <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText"/>
+                  </div>
+
+                  <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-md-end">
+                    <button class="btn btnheader" routerLink="/dash/adminEmployeeManagement/adminEmployeeManagementdashboard/HR_EmployeeQualification_Mst" [queryParams]="{ from: 'qualification_list' }">
+                      Add
+                      </button>
+                      <button class="btn btn-light mx-1" (click)="exportToExcel()">
+                        Download
+                      </button>
+                  </div>
+                  
+                  
+                </div>
+            </div>
+        
+            <div class="card-body">
+              <div class="table-responsive table-invoice">
+                    <table id="exportTable" class="table table-bordered">
+                        <thead>
+                          <tr>
+                            <th>Sr.No</th>
+                            <th>EmpName</th>
+                            <th>EmpCode</th>
+                            <th>Designation</th>
+                            <th>Department</th>
+                          <th>Location</th>
+                         <th>Qualification</th>
+                         <th>institute</th>
+                         <th>Year</th>
+                         <th>File</th>
+                            <th>Action</th>
+                          </tr>
+                        </thead>
+                       
+                      <tbody>
+                        <tr *ngFor="let item of filteredData() | paginate: { itemsPerPage: pageSize, currentPage: pageIndex ,totalItems:totalItems};let i = index">
+
+                          <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+                          <td>{{ item.empname }}</td>
+                          <td>{{ item.empcode }}</td>
+                          <td>{{ item.designation }}</td>
+                          <td>{{ item.department }}</td>
+                          <td>{{ item.locname}}</td>
+                          <td>{{item.qualification}}</td>
+                           <td>{{item.institute}}</td>
+                            <td>{{item.passyear}}</td>
+                             <td (click)="downloadFile(item.documentupload)"  style="cursor: pointer;">{{item.documentupload}}</td>
+                       
+                          <td>
+
+                            
+                            <button class="btn btn-sm btn-outline" (click)="isUpdate(item.pk_empqualid)">
+                              <i class="fa-regular fa-pen-to-square"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline"  (click)="deleteQualification(item.pk_empqualid)">
+                              <i class="fa fa-trash"></i>
+                            </button>
+                          </td>
+                        </tr>
+                      </tbody>
+                      
+                    </table>
+                    <pagination-controls
+                    (pageChange)="onPageChange($event)"
+                    [responsive]="true">
+                  </pagination-controls>
+                
+                        <ng-template #noData>
+                          <tr>
+                            <td colspan="4" class="text-center">No data available</td>
+                          </tr>
+                        </ng-template>
+                    
+                  </div>
+            </div>
+        </div>
+    </div> 
+</div>

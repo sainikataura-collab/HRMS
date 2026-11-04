@@ -1,0 +1,73 @@
+<div>
+
+    <div class="row" >
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary">
+                    <div class="row w-100">
+                      <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-between">
+                        <h4>{{Isedit? 'Edit Grade':'Grade Master'}}</h4>
+                      </div>
+                      <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+                        <button class="btn btnheader" routerLink="/dash/user/userdashboard/gradeMaster_list">
+                          Back
+                        </button>
+                      </div>
+        
+                    </div>
+                </div>
+    
+                <div class="card-body mt-4">
+                    
+    
+                    <form [formGroup]="GradeForm" (ngSubmit)="submitForm()">
+                        <!-- Department Name -->
+                 
+                        <div class="row" class="row row-cols-1 row-cols-md-3 g-4">
+                           
+                            <div class="col">
+                                <label for="department">Description:<span style="color: red;">*</span></label>
+      
+                                <input id="department" type="text" class="form-control" formControlName="classname" (blur)="checkClassAvailability(GradeForm.get('classname')?.value)"/>
+    
+                                <!-- Validation message below input field -->
+                                <span *ngIf="showError && GradeForm.controls['classname'].invalid && !GradeForm.get('classname')?.errors?.['duplicate']" class="text-danger mt-1" style="font-size: 12px;">
+                                    Please enter description.
+                                </span> 
+                                              <!-- Show validation error message from API only if it exists -->
+                                   <div *ngIf="GradeForm.get('classname')?.errors?.['duplicate']" 
+                                     class="text-danger" style="font-size:10px;">
+                                          {{ GradeForm.get('classname')?.errors?.['duplicate'] }}
+                                       </div>
+                               </div>
+    
+                               <div class="col">
+                                <label>Notice Period:<span style="color: red;">*</span></label>
+    
+                                <ng-select [items]="NoticeOptions"  id="level" bindLabel="label" bindValue="value" formControlName="NoticePeriod"  placeholder="-select -"></ng-select>
+    
+                                <!-- Validation message below input field -->
+                                <span *ngIf="showError && GradeForm.controls['NoticePeriod'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                                    Please select Notice period.
+                                </span> 
+                            </div>
+                               </div>
+    
+                        <!-- Footer buttons -->
+                        <div class="modal-footer">
+                            <button type="submit"  class="btn btn-primary mx-1" >
+                                {{ Isedit ? 'Update' : 'Save' }}
+                            </button>
+                            <button type="button" class="btn btn-outline-dark mx-1" (click)="resetForm()">Reset</button>
+                            
+
+                            
+                        </div>
+    
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,149 @@
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card">
+      <!--  -->
+
+      <div class="card-header bg-primary py-lg-2 mt-0">
+        <div class="col-sm-12 col-md-12 col-lg-3 col-12">
+
+          <div class="row w-100">
+            <div class="col-sm-12 col-md-12 col-lg-12 ">
+              <h4>Loan Transaction</h4>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-12 col-md-12 col-lg-7 col-12">
+          <div class="row w-100">
+            <div class="col-sm-12 col-md-12 col-lg-12">
+              <app-common-search (filtersChanged)="handleFilters($event)"></app-common-search>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-12 col-md-12 col-lg-2 col-12">
+          <div class="row w-100">
+            <div class="col-sm-12 col-md-12 col-lg-12 d-flex align-items-center justify-content-end ms-auto gap-2">
+              <button class="btn btnheader" routerLink="/dash/payroll/payrolldashboard/loanTransaction_list">
+                Back
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-body my-3">
+        <form [formGroup]="loanTransForm" (ngSubmit)="onSubmit()">
+          <div class="row row-cols-1 row-cols-md-3">
+            <div class="col">
+              <label>Employee Code<span class="text-danger font-bold">*</span></label>
+              <ng-select  placeholder="--select emp --" id="fk_empid" [items]="EmployeeList" bindLabel="name" bindValue="value"
+                formControlName="fk_empid" placeholder="--Select Employee--" class="w-100" [searchable]="true"
+                                (search)="onEmployeeSearch($event)" [loading]="loadingEmployees" loadingText="Searching employees...">
+              </ng-select>
+              <span *ngIf="showError && loanTransForm.controls['fk_empid'].invalid" class="text-danger mt-1"
+                  style="font-size: 12px;">
+                  Please select
+               </span>
+            </div>
+            <div class="col">
+              <label>Loan/Adv. Type</label>
+              <ng-select id="loantype" placeholder="--Loan/Adv. Type --" [items]="LoanList" bindLabel="name" bindValue="value" formControlName="fk_headid"
+                 class="w-100"></ng-select>
+              <span *ngIf="showError && loanTransForm.controls['fk_headid'].invalid" class="text-danger mt-1"
+                style="font-size: 12px;">
+                Please enter Loan/Adv. Type.
+              </span>
+            </div>
+
+            <div class="col">
+              <label>Allotment/Order No.</label>
+              <ng-select id="year" [items]="LoanAllotmentList" bindLabel="name" bindValue="value"
+                formControlName="fk_allotid" placeholder="--Select LoanAllotmentList--" class="w-100"></ng-select>
+                <!-- <span *ngIf="showError && loanTransForm.controls['fk_allotid'].invalid" class="text-danger mt-1"
+                  style="font-size: 12px;">
+                  Allotment/Order No.
+                </span> -->
+            </div>
+
+
+            <div class="col">
+              <label>Effective From</label>
+              <div class="form-group">
+                <input type="date" class="form-control" formControlName="ldated">
+                <span *ngIf="showError && loanTransForm.controls['ldated'].invalid" class="text-danger mt-1"
+                  style="font-size: 12px;">
+                  Please enter Date.
+                </span>
+              </div>
+            </div>
+            <div class="col">
+              <label>Remarks</label>
+              <div class="form-floating">
+                <textarea class="form-control" id="floatingTextarea" formControlName="remarks"></textarea>
+              </div>
+            </div>
+
+
+
+            <!-- table input field add -->
+
+            <!-- Loan Transaction Details Table -->
+            <div class="col-sm-12 col-md-12 col-lg-12 mt-3 table-responsive">
+              <table class="table table-bordered text-center table-responsive">
+                <thead class="table-light">
+                  <tr>
+                    <th>Total&nbsp;Amount</th>
+                    <th>Installment&nbsp;Amount</th>
+                    <th>Tot. Installment</th>
+                    <th>Tot.&nbsp;left&nbsp;Installment</th>
+                    <th>Balance&nbsp;Amount</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <input type="number" class="form-control" formControlName="lamount" min="0"
+                        (input)="calculateValues()" />
+                      <span *ngIf="showError && loanTransForm.controls['lamount'].invalid" class="text-danger mt-1"
+                        style="font-size: 10px;">
+                        Enter Total Amount.
+                      </span>
+                    </td>
+                    <td>
+                      <input type="number" class="form-control" formControlName="InstalmentAmount" min="0"
+                        (input)="calculateValues()" />
+                      <span *ngIf="showError && loanTransForm.controls['InstalmentAmount'].invalid"
+                        class="text-danger mt-1" style="font-size: 10px;">
+                        Enter Installment Amount.
+                      </span>
+                    </td>
+                    <td>
+                      <input type="number" class="form-control" formControlName="noOfInstalments" readonly />
+                    </td>
+                    <td>
+                      <input type="number" class="form-control" formControlName="leftInstalments" min="0"
+                        (input)="calculateValues()" />
+                      <span *ngIf="showError && loanTransForm.controls['leftInstalments'].invalid"
+                        class="text-danger mt-1" style="font-size: 10px;">
+                        Enter Tot. left Installment.
+                      </span>
+                    </td>
+                    <td>
+                      <input type="number" class="form-control" formControlName="balAmount" readonly />
+                    </td>
+                  </tr>
+
+                </tbody>
+              </table>
+            </div>
+            <!--  button-->
+            <div class="col-sm-12 col-md-12 col-lg-12 model-footer d-flex align-items-end justify-content-end ">
+              <button type="submit" class="btn btn-primary mx-1">
+                {{ isEditMode ? 'Update' : 'Save' }}
+              </button>
+              <button type="button" class="btn btn-outline-dark mx-1" (click)="resetForm()">Reset</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

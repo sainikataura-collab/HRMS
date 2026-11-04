@@ -1,0 +1,135 @@
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+
+            <div class="card-header bg-blue">
+                <div class="row w-100">
+                    <div class="col-sm-12 col-md-6 col-lg-6">
+                        <h4>{{ isViewMode ? 'View Due Clearance Details' : 'Due Clearance Review Form' }}</h4>
+                    </div>
+
+                    <div class="col-sm-12 col-md-6 col-lg-6 d-flex align-items-center justify-content-md-end">
+                        <button class="btn btnheader"
+                            routerLink="/dash/emp-exit/emp-exitdashboard/due_clearance_review_list">
+                            Back
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body mt-4">
+
+                <div class="row row-cols-1 row-cols-md-3 mb-4">
+                    <div class="col">
+                        <label>Employee Code</label>
+                        <div class="form-group">
+                            <input type="text" class="form-control flex-grow-1" [value]="empInfo.empcode" readonly>
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        <label>Employee Name</label>
+                        <div class="form-group">
+                            <input type="text" class="form-control flex-grow-1" [value]="empInfo.empname" readonly>
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        <label>Department</label>
+                        <div class="form-group">
+                            <input type="text" class="form-control flex-grow-1" [value]="empInfo.department" readonly>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-primary rounded-1 page-seperator mb-3">
+                    <p class="p-1 text-white ms-4 mb-0">Asset Details</p>
+                </div>
+
+                <form *ngIf="clearanceForm" [formGroup]="clearanceForm">
+                    <div class="table-invoice" style="overflow: visible;">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th style="width:40px">#</th>
+                                    <th>Asset</th>
+                                    <th style="width:130px">Issued?</th>
+                                    <th style="width:170px">Status</th>
+                                    <th style="width:150px">Recovery (₹)</th>
+                                    <th>Remarks</th>
+                                </tr>
+                            </thead>
+
+                            <tbody formArrayName="assets">
+                                <tr *ngFor="let asset of assets.controls; let i = index" [formGroupName]="i">
+                                    <td>{{ i + 1 }}</td>
+
+                                    <td class="align-middle fw-semibold">
+                                        {{ getGroup(i).get('assetName')?.value }}
+                                    </td>
+
+                                    <td>
+                                        <ng-select [items]="issuedOptions" bindLabel="name" bindValue="value"
+                                            formControlName="isIssued" [clearable]="false" class="w-100"
+                                            (change)="onIssuedChange(i)" [readonly]="isViewMode">
+                                        </ng-select>
+                                    </td>
+
+                                    <td>
+                                        <ng-select [items]="statusOptions" bindLabel="name" bindValue="value"
+                                            formControlName="assetStatus" [clearable]="false" placeholder="--Select--"
+                                            (change)="onStatusChange(i)" class="w-100" [readonly]="isViewMode">
+                                        </ng-select>
+                                    </td>
+
+                                    <td>
+                                        <input type="number" class="form-control form-control-sm"
+                                            formControlName="recoveryAmount" [readonly]="!isRecoverable(i) || isViewMode"
+                                            [style.backgroundColor]="'#fff'" [style.opacity]="'1'"
+                                            [style.pointerEvents]="(!isRecoverable(i) || isViewMode) ? 'none' : 'auto'" placeholder="0">
+                                    </td>
+
+                                    <td>
+                                        <input type="text" class="form-control form-control-sm"
+                                            formControlName="remarks" placeholder="Remarks" [readonly]="isViewMode">
+                                    </td>
+                                </tr>
+
+                                <tr *ngIf="assets.length === 0">
+                                    <td colspan="6" class="text-center">
+                                        No assets assigned for your department.
+                                    </td>
+                                </tr>
+                            </tbody>
+
+                            <tfoot>
+                                <tr>
+                                    <td colspan="4" class="text-end fw-bold">
+                                        Total Recovery Amount:
+                                    </td>
+                                    <td class="fw-bold">
+                                        ₹ {{ totalRecovery() }}
+                                    </td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </form>
+
+                <div class="row" *ngIf="!isViewMode">
+                    <div class="col d-flex align-items-end justify-content-end pt-4 pb-3">
+                        <button type="button" class="btn btn-primary mx-1" (click)="submitForm()">
+                            Submit
+                        </button>
+
+                        <button type="button" class="btn btn-outline-dark mx-1" (click)="resetForm()">
+                            Reset
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

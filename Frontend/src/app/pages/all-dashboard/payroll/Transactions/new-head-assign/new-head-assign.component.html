@@ -1,0 +1,127 @@
+
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+      <div class="card-header bg-primary py-lg-1 mt-0">
+        <div class="row w-100 align-items-center">
+       
+          <!-- Title Section -->
+          <div class="col-12 col-md-3">
+            <h4>Employee Head Assignment</h4>   
+          </div>
+          <!-- Search Section -->
+          <div class="col-12 col-md-7 mt-2 mt-md-0">
+            <app-common-search (filtersChanged)="handleFilters($event)"></app-common-search>
+          </div>
+          
+        </div>
+      </div>
+      <div class="card-body mt-4">
+        <form [formGroup]="EmployeeForm" (ngSubmit)="OnVeiw()">
+        <div class="row row-cols-1 row-cols-md-3">
+
+              <div class="col">
+                  <label>Head</label>
+              
+                  <div class="form-group">
+                    <ng-select id="fk_headid" [items]="HeadList" bindLabel="name" bindValue="value"
+                    formControlName="fk_headid" placeholder="--Select --"
+                    class="w-100"></ng-select>
+                    <span *ngIf="showError && EmployeeForm.controls['fk_headid'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                      Please enter head.
+           </span>
+                  </div>    
+              </div>
+         
+          
+              <div class="col"><label>Effective From</label>
+                <input type="date" class="form-control" formControlName="effectivedate">
+                <span *ngIf="showError && EmployeeForm.controls['effectivedate'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                  Please enter Effective From.
+       </span>
+              </div>
+              <div class="col">
+                <label>Update Type</label>
+            
+                <div class="form-group">
+                    <input type="radio"name="overwrite"formControlName="overwrite" value="Y" class="form-check-input fs-6 mx-1">&nbsp;<label>Overwrite</label>	&nbsp;&nbsp;
+                    <input type="radio"name="overwrite"formControlName="overwrite" value="N" class="form-check-input fs-6 mx-1">&nbsp;<label>Skip</label>	
+
+                </div> 
+            </div>
+          </div>
+          <div class="row">
+            <div class="col d-flex align-items-end justify-content-end pt-4 pb-3">
+           
+
+                <button type="submit" class="btn btn-primary mx-1">Veiw</button>
+                <button type="reset" class="btn btn-outline-dark mx-1">Reset</button>
+              </div>
+        </div>
+        </form>
+       
+      </div>
+
+      <!-- List of Employee -->
+       <div *ngIf="showEmployeeList">
+  
+        <div class="row row-cols-1 row-cols-md-2 p-2">
+          
+          <div class="col"> <p class="text-primary m-0">List of Employee </p></div>
+      <!-- <div class="col"></div>
+      <div class="col"></div> -->
+         <div class="col d-flex align-items-center justify-content-end">
+          
+          <input
+          type="text"
+          class="form-control w-50"
+          placeholder="Search employee..."
+          placeholder="Search..." [(ngModel)]="searchText" />
+         </div>
+        
+        </div> 
+    
+      
+        <div class="table-responsive table-invoice">
+            <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>Sr.</th>
+                    <th>Code</th>
+                    <th>Name</th>
+                    <th>Location</th>
+                    <th>Department</th>
+                    <th>Designation</th>
+               
+                    
+                  </tr>
+                </thead>
+                <tbody *ngFor="let item of filteredData() | paginate:{itemsPerPage:pageSize,currentPage:pageIndex,totalItems:totalcount}; let i = index" >
+                   <tr>
+                    <td> {{(pageIndex-1)*pageSize+i+1}}</td>
+                    <td>{{item.empcode}}</td>
+                    <td>{{item.empname}}</td>
+                    <td>{{item.location}}</td>
+                    <td>{{item.department}}</td>
+                    <td>{{item.designation}}</td>
+                   
+                  </tr> 
+                </tbody>
+              </table>
+              <pagination-controls
+              (pageChange)="onpageChange($event)">
+              totalItems=totalcount
+              </pagination-controls>
+    
+              <div class="modal-footer">
+
+                 <button type="submit" class="btn btn-primary mx-1" (click)="update()">Assign</button>
+           
+              </div>
+          </div>
+  
+</div>
+  </div>
+</div>    
+
+</div>

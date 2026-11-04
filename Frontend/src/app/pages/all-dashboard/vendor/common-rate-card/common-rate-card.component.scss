@@ -1,0 +1,135 @@
+// Step Indicator Styles for Common Rate Card Form (Matching Project Theme)
+.step-indicator {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 450px;
+  margin: 0 auto 1.5rem auto;
+  position: relative;
+  padding: 10px 20px;
+}
+
+.step {
+  position: relative;
+  text-align: center;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.step-circle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: #cbd5e1;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+  font-weight: 600;
+  font-size: 13px;
+  z-index: 2;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.step-circle:hover {
+  transform: scale(1.1);
+}
+
+.step-label {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #64748b;
+  text-align: center;
+}
+
+.step-line {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  width: 100%;
+  height: 3px;
+  background-color: #e2e8f0;
+  z-index: 1;
+}
+
+.active-step .step-circle {
+  background-color: #3080e8 !important;
+  color: #fff !important;
+  box-shadow: 0 0 0 4px rgba(48, 128, 232, 0.2);
+}
+
+.active-step .step-label {
+  color: #3080e8 !important;
+  font-weight: 600;
+}
+
+.completed-step .step-circle {
+  background-color: #198754 !important;
+  color: #fff !important;
+}
+
+.completed-step .step-line {
+  background-color: #198754 !important;
+}
+
+.completed-step .step-label {
+  color: #198754 !important;
+}
+
+// Existing card banner alert using project colors
+.existing-card-banner {
+  background-color: #f0f7ff;
+  // border: 1px solid #bfdbfe;
+  // border-left: 4px solid #3080e8;
+  border-radius: 4px;
+  padding: 10px 16px;
+}
+
+// Table wrapper overflow fix so dropdowns float over cleanly
+.rate-card-table-wrap {
+  overflow: visible !important;
+  min-height: 220px;
+  margin-bottom: 1.5rem;
+
+  .table {
+    overflow: visible;
+  }
+}
+
+// Tab 2 Table Styling - clean, single-line headers with white background
+#exportTable {
+  border-collapse: collapse;
+
+  thead {
+    th {
+      white-space: nowrap !important;
+      vertical-align: middle;
+      font-weight: 600;
+      font-size: 13.5px;
+      color: #334155;
+      background-color: #ffffff !important;
+      padding: 10px 14px;
+      border-bottom: 2px solid #cbd5e1;
+    }
+  }
+
+  tbody {
+    tr {
+      transition: background-color 0.15s ease-in-out;
+      &:hover {
+        background-color: #f8fafc;
+      }
+    }
+
+    td {
+      vertical-align: middle;
+      padding: 10px 14px;
+      font-size: 13px;
+    }
+  }
+}

@@ -1,0 +1,217 @@
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+         
+           <div class="card-header bg-blue">
+                <div class="row w-100">
+                    <div class="col-sm-12 col-md-12 col-lg-12">
+                        <h4 class="">Apply Request</h4>
+                    </div>
+                </div>
+                <div
+                    class="col-sm-6 col-md-6 col-lg-6 d-flex align-items-center justify-content-end ms-auto gap-2">
+                    <button class="btn btn-light"routerLink="/dash/attendance/attendancedashboard/OD-request-list">
+                        Back
+                    </button>
+                </div>
+            </div>
+      
+          <div class="card-body mt-4">
+            <form [formGroup]="ODRequestForm">
+           
+            <div class="row row-cols-1 row-cols-md-3 ">
+                <div class="col">
+                    <label>Request Type<span class="text-danger font-bold">*</span></label>           
+                    <ng-select id="leavetype" [items]="leavetypeddl" bindLabel="name" bindValue="value"
+                    formControlName="fk_leaveid" placeholder="--Select leavetype --"
+                    class="w-100" ></ng-select>
+                    <span *ngIf="showError && ODRequestForm.controls['fk_leaveid'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                      Please enter Request Type.
+                </span>
+                </div>
+
+                
+
+    <div class="col">
+                    <label>From Date <span class="text-danger font-bold">*</span></label>           
+                    <div class="form-group">
+                        <input type="date"class="form-control"formControlName="fromdate" (change)="calculateLeaveDays()" >
+                        <span *ngIf="showError && ODRequestForm.controls['fromdate'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                          Please enter FromDate.
+              </span>
+                    </div>  
+                </div>
+              
+                <div class="col">
+                    <label>To Date <span class="text-danger font-bold">*</span></label>           
+                    <div class="form-group">
+                        <input type="date"class="form-control" formControlName="todate"  (change)="calculateLeaveDays()">
+                        <span *ngIf="showError && ODRequestForm.controls['todate'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                          Please enter ToDate.
+              </span>
+                    </div>  
+                </div>
+
+                
+
+                <div class="col">
+                  <label>Total days</label>           
+                  <div class="form-group">
+                      <input type="number"class="form-control" formControlName="leavetaken" readonly>
+                      
+                  </div>  
+              </div>
+                
+              <!--add new -->
+              <div class="col">
+                  <label>From Time<span class="text-danger font-bold">*</span></label>           
+                  <div class="form-group">
+                      <input type="time"class="form-control" formControlName="fromtime" >
+                         <span *ngIf="showError && ODRequestForm.controls['fromtime'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                          Please enter from time.
+              </span> 
+                  </div>  
+              </div>
+
+               <div class="col">
+                  <label>To Time<span class="text-danger font-bold">*</span></label>           
+                  <div class="form-group">
+                      <input type="time"class="form-control" formControlName="totime" >
+                         <span *ngIf="showError && ODRequestForm.controls['totime'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                          Please enter to time.
+              </span> 
+                  </div>  
+              </div>
+
+               <div class="col">
+                  <label>Total hours</label>           
+                  <div class="form-group">
+                      <input type="number"class="form-control" formControlName="totalhour"  [readonly]="true">
+                      
+                  </div>  
+              </div>
+
+                <!--add new -->
+                <div class="col">
+                    <label>Remarks</label>
+                    <div class="form-group">
+                        <textarea class="form-control"formControlName="remarks"></textarea>
+                    </div>
+                </div>
+
+                    <div class="col">
+                  <label>Contact No.</label>           
+                  <div class="form-group">
+                      <input type="text"class="form-control" formControlName="contactno" (keypress)="validateNumber($event)" maxlength="25">
+                      
+                  </div>  
+              </div>
+                
+            </div>
+          
+
+                <div class="col d-flex align-items-center justify-content-end">
+            
+                  <button type="submit" class="btn btn-primary mx-1" (click)="onCalculateClick()">Calculate</button>
+                  <button type="submit" class="btn btn-outline-dark mx-1"(click)="resetForm()">Reset</button>  
+                  </div>
+
+            </form>
+
+
+
+
+
+       
+
+          <div class="bg-primary rounded-1 mt-3 page-seperator">
+            <p class="p-1 text-white ms-4">Request Apply</p>
+          </div>
+
+            <div class="table-responsive table-invoice">
+              <table class="table table-bordered">
+                    <thead>
+                      <tr>
+                        <th>Sr.</th>
+                        <th>Leave Dates</th>
+                        <th>Leave Type</th>
+                        <th>Half Day</th>
+                        <th>Half Day Type</th>
+                        <th>Half Day Club</th>
+                        <th>Remarks</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let leave of calculatedLeaveList; let i = index">
+                        <td>{{leave.cid}}</td>
+                        <td>{{ leave.dates }}</td>
+                        <td>{{ leave.leaveType }}</td>
+                        <td class="text-center">                         
+                          <!-- <input type="checkbox" [(ngModel)]="leave.ishalfday" /> -->
+                          <input type="checkbox" [(ngModel)]="leave.ishalfday" (change)="onHalfDayToggle(i)" />
+                        </td>
+                        <td>
+                          <select class="form-select text-center" [(ngModel)]="leave.halfdaystatus" [disabled]="!leave.ishalfday">
+                            <option selected="selected" value="F">First Half</option>
+                            <option value="S">Second Half</option>
+                          </select>
+                        </td>
+                        
+                          <td>
+                            <select class="form-select text-center" [(ngModel)]="leave.halfdayclub" >
+                              <option selected="selected" value="N">Only Half Day</option>
+                              <option value="Y">Half LWP</option>
+                            </select>
+                          </td>
+                        <!-- <td>{{ leave.halfDayClub }}</td> -->
+                        <td>
+                          <input type="text" class="form-control" [(ngModel)]="leave.remarks" placeholder="Enter Remark" />
+                        </td>
+                      </tr>
+                      <tr *ngIf="calculatedLeaveList.length === 0">
+                        <td colspan="7" class="text-center">No leave data available.</td>
+                      </tr>
+                    </tbody>
+                    
+                </table>              
+            </div>         
+    
+
+        <div class="row py-2 ">
+  
+
+     
+
+          <div class="col-sm-12 col-md-12 col-lg-6  d-flex align-items-center justify-content-start  pe-3" (click)="getLeavesTakenListDetails()"> 
+                  
+            <ul class="nav nav-pills  lh-0" id="pills-tab" role="tablist">
+
+              <!-- <li class="nav-item" role="presentation">
+                <p class="nav-link bg-transparent active  small" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home" aria-selected="true">Leave Balance</p>
+              </li> -->
+
+              <!-- <li class="nav-item" role="presentation">
+                <p class="nav-link bg-transparent   small" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="false" (click)="toggleToBalance()"> Leave Taken Detail</p>
+              </li> -->
+              
+            </ul>
+   
+
+          </div>
+
+          <div class="col-sm-12 col-md-12 col-lg-6 p-0 d-flex align-center justify-content-end">
+            
+            <button type="submit" class="btn btn-primary mx-1" (click)="onSubmit()">Save</button>
+            <button type="submit" class="btn btn-outline-dark mx-1"(click)="resetForm()">Reset</button> 
+          </div>
+   
+        </div> 
+
+
+       
+
+        
+    </div>
+    </div>    
+
+</div>

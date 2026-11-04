@@ -1,0 +1,206 @@
+.p-0{
+  padding-left: 0px !important;
+  padding-right: opx !important;
+}
+
+
+
+// .card:hover{
+// background-color: #3080e8 !important;
+// color: #fff !important;
+// }
+
+
+// 
+
+
+.card-custom {
+  border-radius: 10px;
+  border: 1px solid #f0f0f0;
+  text-align: center;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Circular Progress Bar Container */
+.progress-container {
+  width: 120px;
+  height: 120px;
+  position: relative;
+  margin: auto;
+}
+
+/* Base Circle */
+.progress-circle {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: conic-gradient(#28a745 0% 75%, #e9ecef 75% 100%);
+  animation: progressAnimation 2s ease-out forwards;
+}
+
+/* Inner White Circle */
+.progress-inner {
+  width: 93%;
+  height: 93%;
+  background: white;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+/* Animation */
+@keyframes progressAnimation {
+  from {
+      background: conic-gradient(#28a745 0% 0%, #e9ecef 0% 100%);
+  }
+  to {
+      background: conic-gradient(#28a745 0% 70%, #e9ecef 70% 100%);
+  }
+}
+
+
+// 
+
+
+// 
+/* Button Styling */
+.btn-punch-out {
+  background-color: #3080e8;
+  color: white;
+  font-weight: bold;
+  width: 100%;
+  border-radius: 5px;
+}
+
+.btn-punch-out:hover {
+  background-color: #36cb72 !important;
+  color: #fff;
+}
+
+.production-badge {
+  background-color: #000;
+  color: #fff;
+  // padding: 2px 2px;
+  border-radius: 5px;
+  font-size: 14px;
+  align-items: center;
+
+}
+
+.icon-fingerprint {
+  color: #36cb72;
+}
+
+
+// 
+.progress-bar {
+  transition: width 0.5s ease-in-out;
+}
+
+
+//   fouth row
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.animate-fade-in { animation: fadeIn 0.5s ease-in-out; }
+.animate-slide-in { animation: slideIn 0.5s ease-in-out; }
+
+/* Card Styling */
+.card {
+  border-radius: 12px;
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+.card:hover {
+  transform: scale(1.03);
+  box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.15);
+
+}
+
+// /* Skills Progress Circle */
+// .progress-circle2 {
+//   width: 40px;
+//   height: 40px;
+//   border-radius: 50%;
+//   border: 3px solid #ddd;
+//   position: relative;
+//   // background: conic-gradient(#28a745 0% 75%, #e9ecef 75% 100%);
+//   animation: progressAnimation 2s ease-out forwards;
+  
+// }
+
+
+
+
+
+.progress-circle2 {
+  width: 59px;
+  height: 59px;
+  border-radius: 50%;
+  border: 2px solid #ddd;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  font-size: 12px;
+  font-weight: 600;
+  color: black;
+}
+
+/* Dynamic Border Color based on Data Percentage */
+.progress-circle2[data-percent=""] { border-color: #28a745; }
+.progress-circle2[data-percent=""] { border-color: #17a2b8; }
+.progress-circle2[data-percent=""] { border-color: #ffc107; }
+.progress-circle2[data-percent=""] { border-color: #17a2b8; color: #2b2e41; }
+.progress-circle2[data-percent=""] { border-color: #dc3545; }
+
+.progress-circle2:before {
+  content: attr(data-percent) "";
+  position: absolute;
+  font-size: 11px;
+  width: 100%;
+  height: 100%;
+  text-align: end;
+  line-height: 37px;
+  font-weight: 600;
+  padding-left: 0.8rem;
+
+}
+
+
+
+th,td{
+  height: 0px !important;
+}
+
+
+.small, small {
+  font-size: .775rem;
+  font-weight: 500;
+}
+
+
+.hover-shadow:hover {
+  transform: translateY(-4px);
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+h6{
+  font-size: 15px;
+  font-weight: 500;
+}

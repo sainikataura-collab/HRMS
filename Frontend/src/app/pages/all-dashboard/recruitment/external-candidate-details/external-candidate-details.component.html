@@ -1,0 +1,86 @@
+<div class="row" *ngIf="candidateDetails">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header bg-primary">
+        <h6 class="text-white mb-0">Candidate Profile: {{ candidateDetails.fullName }}</h6>
+      </div>
+      <div class="card-body">
+        
+        <div class="row mb-4">
+          <div class="col-md-8">
+            <span class="d-block fw-bold fs-6 mb-2">Personal Information</span>
+            <table class="table table-bordered">
+              <tbody>
+                <tr>
+                  <th width="30%">Full Name</th>
+                  <td>{{ candidateDetails.fullName }}</td>
+                </tr>
+                <tr>
+                  <th>Email Address</th>
+                  <td>{{ candidateDetails.email }}</td>
+                </tr>
+                <tr>
+                  <th>Phone Number</th>
+                  <td>{{ candidateDetails.phoneNumber }}</td>
+                </tr>
+                <tr>
+                  <th>Location</th>
+                  <td>{{ candidateDetails.location }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="col-md-4 text-center">
+             <div class="mb-3">
+               <span class="text-muted d-block mb-1" style="font-size: 0.85rem;">Applied via</span>
+               <span *ngFor="let source of getSources(candidateDetails.sourcePlatform)" class="badge me-1" [ngClass]="{'bg-info': source === 'Naukri', 'bg-success': source === 'Indeed', 'bg-secondary': source !== 'Naukri' && source !== 'Indeed'}">
+                 {{ source }}
+               </span>
+             </div>
+             <p class="text-muted">Applied on: {{ candidateDetails.applicationDate | date:'mediumDate' }}</p>
+             <button class="btn btn-primary w-100 mb-2" (click)="importCandidate()">
+               <i class="fa fa-download me-2"></i> Import to HRMS
+             </button>
+             <a [href]="candidateDetails.resumeUrl" target="_blank" class="btn btn-outline-secondary w-100">
+               <i class="fa fa-file-pdf me-2"></i> View Resume
+             </a>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-12">
+            <span class="d-block fw-bold fs-6 mb-2">Professional Details</span>
+            <table class="table table-bordered">
+              <tbody>
+                <tr>
+                  <th width="30%">Current Company</th>
+                  <td>{{ candidateDetails.currentCompany }}</td>
+                </tr>
+                <tr>
+                  <th>Current Designation</th>
+                  <td>{{ candidateDetails.currentDesignation }}</td>
+                </tr>
+                <tr>
+                  <th>Years of Experience</th>
+                  <td>{{ candidateDetails.yearsOfExperience }} Years</td>
+                </tr>
+                <tr>
+                  <th>LinkedIn Profile</th>
+                  <td>
+                    <a [href]="candidateDetails.linkedInProfileUrl" target="_blank">{{ candidateDetails.linkedInProfileUrl }}</a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+      <div class="card-footer">
+        <button class="btn btn-secondary" routerLink="/dash/recruitment/recruitmentdashboard/external-candidates-list">
+          Back to List
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

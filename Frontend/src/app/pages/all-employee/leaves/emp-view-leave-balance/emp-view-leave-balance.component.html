@@ -1,0 +1,124 @@
+<div class="row mx-0">
+  <div class="col-sm-12 col-md-12 col-lg-12 px-0">
+    <div class="card">
+
+
+              <div class="card-header bg-blue py-lg-1 mt-0">
+            <div class=" col-12 d-flex align-items-center justify-content-between flex-wrap">
+          
+             
+            <h4> Leave View Balance</h4>
+                  <div class="  d-flex align-items-center justify-content-md-end">
+              <button class="btn btnheader"   routerLink="/dash/leaves/leavesdashboard/leaverequest">
+                   Apply
+                </button>
+                <button class="btn btnheader mx-1"   routerLink="/dash/leaves/leavesdashboard/leavetaken">
+                  Taken Detail
+                </button>
+            </div> 
+          
+            </div>
+          
+         
+          
+          </div>
+
+
+      <div class="card-body mt-4">
+        <div class="row">
+          <div class="col-12">
+
+            <!-- <div class="timeline">
+
+            
+               <div class="timeline-item">
+                <div class="timeline-marker"><p class="pt-2 small">COFF</p></div>
+                <div class="timeline-content">
+                  <div class="card  border border-primary shadow-sm p-3">
+                    <p class="border-bottom"><strong>48.00</strong> Annual Allotment</p>
+                  
+                    <p class="border-bottom"><strong>2.5</strong> Leaves Accrued</p>
+                  
+                    <p class="border-bottom"><strong>2.5</strong> Leaves Utilised</p>
+                   
+                    <p class="border-bottom"><strong>0</strong> Available Leaves</p>
+                  </div>
+                </div>
+              </div>
+
+       
+              <div class="timeline-item">
+                <div class="timeline-marker"><p class="pt-2 small">CL</p></div>
+                <div class="timeline-content">
+                  <div class="card  border border-primary shadow-sm p-3">
+                    <p class="border-bottom"><strong>7.00</strong> Annual Allotment</p>
+               
+                    <p class="border-bottom"><strong>10</strong> Leaves Accrued</p>
+              
+                    <p class="border-bottom"><strong>0</strong> Leaves Utilised</p>
+                    
+                    <p class="border-bottom"><strong>10</strong> Available Leaves</p>
+                  </div>
+                </div>
+              </div>
+
+               <div class="timeline-item">
+                <div class="timeline-marker"><p class="pt-2 small">SL</p></div>
+                <div class="timeline-content">
+                  <div class="card  border border-primary shadow-sm p-3">
+                    <p class="border-bottom"><strong>10.00</strong> Annual Allotment</p>
+               
+                    <p class="border-bottom"><strong>8</strong> Leaves Accrued</p>
+              
+                    <p class="border-bottom"><strong>0</strong> Leaves Utilised</p>
+                    
+                    <p class="border-bottom"><strong>8</strong> Available Leaves</p>
+                  </div>
+                </div>
+              </div>
+             <div class="timeline-item">
+                <div class="timeline-marker"><p class="pt-2 small">EL</p></div>
+                <div class="timeline-content">
+                  <div class="card  border border-primary shadow-sm p-3">
+                    <p class="border-bottom"><strong>50.00</strong> Annual Allotment</p>
+               
+                    <p class="border-bottom"><strong>3.56</strong> Leaves Accrued</p>
+              
+                    <p class="border-bottom"><strong>2</strong> Leaves Utilised</p>
+                    
+                    <p class="border-bottom"><strong>1.56</strong> Available Leaves</p>
+                  </div>
+                </div>
+              </div> 
+
+             </div> -->
+
+            <div class="timeline" *ngFor="let leave of leavetakenList">
+            <div class="timeline-marker">
+              <p class="pt-2 small">{{ leave.leavetype }}</p>
+            </div>
+
+            <div class="timeline-content">
+              <div class="card border border-primary shadow-sm p-3">
+                <p class="border-bottom"><strong>{{ leave.maxperyear }}</strong> Annual Allotment</p>
+                <p class="border-bottom"><strong>{{ leave.totalleavesearned }}</strong> Leaves Accrued</p>
+                <p class="border-bottom"><strong>{{ leave.leaveavailed }}</strong> Leaves Utilised</p>
+                <p class="border-bottom"><strong>{{ leave.BalanceLeave }}</strong> Available Leaves</p>
+              </div>
+            </div>
+
+          </div>
+
+          </div>
+        </div>
+
+
+      </div>
+
+
+
+
+
+
+    </div>
+  </div>

@@ -1,0 +1,280 @@
+<section>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+
+
+           <div class="card-header bg-blue">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-6 col-lg-6 col-9">
+            <h4>HR ChatBot Assistant</h4>
+          </div>
+          <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 col-3 d-flex align-items-center justify-content-md-end">
+             <button class="btn btn-outline-light btn-sm" (click)="clearChat()" title="Clear Chat">
+          <i class="fas fa-trash"></i>
+        </button>
+          </div>
+        </div>
+      </div>
+
+
+<div class="card-body p-0">
+<div class="chatboat-container d-flex flex-column h-100">
+  
+
+
+
+  <!-- Chat Messages Area -->
+  <main class="chat-messages flex-grow-1 overflow-auto p-3" #chatHistoryContainer>
+    <div class="messages-wrapper">
+      <!-- Welcome Message -->
+      <div *ngIf="chatHistory.length <= 1" class="welcome-message text-center py-4">
+        <div class="bot-avatar mb-0">
+          <!-- <i class="fas fa-robot fa-3x text-primary"></i> -->
+          <img src="assets/Image/ai.png" alt="" class="object-fit-contain" width="200px" height="100px">
+        </div>
+        <h6 class="text-muted lh-sm">Welcome to HR Assistant!</h6>
+        <p class="text-muted small lh-sm">I can help you with:</p>
+        <div class="row g-3 mt-2">
+          <div class="col-md-3">
+            <div class="feature-card p-2 border rounded text-center" (click)="selectSuggestion('Generate offer letters')" style="cursor: pointer;">
+              <i class="fas fa-file-alt text-primary me-2"></i>
+              <span class="small">Generate offer letters</span>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="feature-card p-2 border rounded text-center" (click)="selectSuggestion('Salary breakdowns of all employees')" style="cursor: pointer;">
+              <i class="fas fa-calculator text-success me-2"></i>
+              <span class="small">Salary breakdowns of all employees</span>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="feature-card p-2 border rounded text-center" (click)="selectSuggestion('Personal Information of Employees')" style="cursor: pointer;">
+              <i class="fas fa-receipt text-info me-2"></i>
+              <span class="small">Personal Information of Employees</span>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="feature-card p-lg-2 border rounded text-center" (click)="selectSuggestion('Set reminders')" style="cursor: pointer;">
+              <i class="fas fa-bell text-warning me-2"></i>
+              <span class="small">Set reminders</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <br>
+      <br>
+      <br>
+      <!-- Chat Messages -->
+      <div *ngFor="let item of chatHistory" class="message-item mb-3">
+        <!-- User Message -->
+        <div *ngIf="item.from === 'user'" class="user-message d-flex justify-content-end align-items-start">
+          <div class="message-content bg-primary text-white rounded-3 p-3 max-width-70 shadow-sm">
+            <div class="message-text" [innerHTML]="item.message"></div>
+            <div class="message-time text-end mt-1">
+              <small class="opacity-75">{{ item.timestamp | date:'shortTime' }}</small>
+            </div>
+          </div>
+          <div class="user-avatar ms-2">
+            <i class="fas fa-user-circle fa-2x text-primary"></i>
+          </div>
+        </div>
+
+        <!-- Bot Message -->
+        <div *ngIf="item.from === 'bot'" class="bot-message d-flex justify-content-start align-items-start">
+          <div class="bot-avatar me-2">
+            <i class="fas fa-robot fa-2x text-success"></i>
+          </div>
+          <div class="message-content bg-light rounded-3 p-3 max-width-70 shadow-sm">
+            <ng-container [ngSwitch]="item.type">
+              <!-- Case 1: Table -->
+              <div *ngSwitchCase="'table'">
+                <div class="table-responsive">
+                  <table class="table table-sm table-bordered table-hover">
+                    <thead class="table-light">
+                      <tr>
+                        <th *ngFor="let col of item.columns">{{ col }}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let row of item.data">
+                        <td *ngFor="let col of item.columns">{{ row[col] }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <!-- Case 2: Loading -->
+              <div *ngSwitchCase="'loading'">
+                <app-skeleton></app-skeleton>
+              </div>
+              <!-- Case 3: Error -->
+              <div *ngSwitchCase="'error'" class="text-danger" [innerHTML]="item.message" class="output-message"></div>
+              <!-- EDITED: New Case for Letters -->
+              <div *ngSwitchCase="'letter'">
+                <div [innerHTML]="item.message" ></div>
+                <button class="btn btn-success btn-sm mt-3" (click)="downloadPdf(item.pdf_data, item.filename)">
+                  <i class="fas fa-download me-2"></i>Download PDF
+                </button>
+              </div>
+              <!-- Default: Text -->
+              <div *ngSwitchDefault [innerHTML]="item.message" class="output-message"></div>
+            </ng-container>
+            <div class="message-time mt-1">
+              <small class="text-muted">{{ item.timestamp | date:'shortTime' }}</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Interactive Forms / Input Area -->
+  <footer class="footer-input-area">
+    <div class="input-container">
+      <!-- Interactive Form Cases -->
+      <div *ngIf="isInteractiveFormVisible" class="p-3">
+        <!-- Case 1: Letter Details Form -->
+        <div *ngIf="letterContext && !isAwaitingReminderDetails" class="interactive-form">
+          <div class="letter-form p-3 bg-light rounded border">
+            <div class="d-flex align-items-center mb-3">
+              <i class="fas fa-file-alt text-primary me-2"></i>
+              <h6 class="mb-0">Letter Generation Form</h6>
+            </div>
+            <p class="form-title small fw-bold mb-3 text-muted">
+              Please provide details for the {{ letterContext.letter_type?.replace('_', ' ') }}:
+            </p>
+            <div class="row g-2">
+              <div *ngFor="let detail of letterContext.needed_details" class="col-md-6">
+                <div class="form-floating">
+                  <input 
+                    type="text" 
+                    [(ngModel)]="letterDetails[detail]" 
+                    [placeholder]="detail.replace('_', ' ')" 
+                    [id]="'input-' + detail"
+                    class="form-control form-control-sm">
+                  <label [for]="'input-' + detail" class="text-muted small">
+                    {{ detail.replace('_', ' ') }}
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div class="d-flex justify-content-end gap-2 mt-3">
+              <button (click)="submitLetterDetails()" class="btn btn-success btn-sm d-flex align-items-center gap-1">
+                <i class="fas fa-paper-plane"></i> Generate Letter
+              </button>
+              <button (click)="cancelInteractiveForm()" class="btn btn-outline-secondary btn-sm">Cancel</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Case 2: Reminder Details Form -->
+        <div *ngIf="isAwaitingReminderDetails" class="interactive-form">
+          <div class="reminder-form p-3 bg-light rounded border">
+            <div class="d-flex align-items-center mb-3">
+              <i class="fas fa-bell text-warning me-2"></i>
+              <h6 class="mb-0">Set Reminder</h6>
+            </div>
+            <div class="row g-2 mb-3">
+              <div class="col-md-6">
+                <div class="form-floating">
+                  <input type="text" [(ngModel)]="reminderDetails.emp_code" placeholder="Employee Code" id="empCode" class="form-control form-control-sm">
+                  <label for="empCode" class="text-muted small">Employee Code (e.g., A0001)</label>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-floating">
+                  <input type="date" [(ngModel)]="reminderDetails.reminder_date" id="reminderDate" class="form-control form-control-sm">
+                  <label for="reminderDate" class="text-muted small">Reminder Date</label>
+                </div>
+              </div>
+            </div>
+           
+
+            <div class="mb-3"> <textarea 
+     [(ngModel)]="reminderDetails.custom_message" 
+     placeholder="Optional: Add a custom message" 
+     id="customMessage" 
+     class="form-control text-dark" 
+     style="height: 80px">
+   </textarea>
+ </div>
+
+            <div class="d-flex justify-content-end gap-2">
+              <button (click)="submitReminderDetails()" class="btn btn-warning btn-sm d-flex align-items-center gap-1">
+                <i class="fas fa-bell"></i> Set Reminder
+              </button>
+              <button (click)="cancelInteractiveForm()" class="btn btn-outline-secondary btn-sm">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Chat Input -->
+      <div *ngIf="!isInteractiveFormVisible" class="main-input-area">
+        <div class="input-wrapper">
+          <!-- Suggestions Dropdown -->
+          <ul *ngIf="filteredSuggestions.length > 0" class="suggestion-list">
+            <li *ngFor="let suggestion of filteredSuggestions" (click)="selectSuggestion(suggestion)">
+              {{ suggestion }}
+            </li>
+          </ul>
+          
+          <!-- Input Row Wrapper with NEW classes -->
+          <div class="footer-input-row">
+            <div class="footer-input-field-wrapper">
+              <span class="input-icon">
+                <i class="fas fa-comment"></i>
+              </span>
+              <input
+                type="text"
+                (keyup.enter)="sendData()"
+                (input)="onInputChange()"
+                placeholder="Type your message..."
+                [(ngModel)]="prompt"
+                [disabled]="isProcessing"
+                autocomplete="off"
+                aria-label="Message input"
+                class="footer-input-field"
+              />
+            </div>
+            
+            <button
+              (click)="sendData()"
+              [disabled]="isProcessing || !prompt.trim()"
+              aria-label="Send message"
+              type="button"
+              class="footer-send-button"
+            >
+              <span *ngIf="!isProcessing; else spinner">
+                <i class="fas fa-paper-plane"></i>
+              </span>
+              <ng-template #spinner>
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+              </ng-template>
+            </button>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="footer-quick-actions">
+            <button *ngFor="let suggestion of suggestions.slice(0, 3)" 
+                    (click)="selectSuggestion(suggestion)">
+              <i class="fas fa-magic me-1"></i>
+              {{ suggestion }}
+            </button>
+        </div>
+      </div>
+    </div>
+  </footer>
+</div>
+</div>
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+

@@ -1,0 +1,70 @@
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <!-- Card Header -->
+      <div class="card-header bg-primary py-2">
+        <div class="row w-100">
+          <!-- Title Section -->
+          <div class="col-sm-12 col-md-4 col-lg-4 d-flex align-items-center justify-content-start">
+            <h4 class="text-white">List Candidate Medical Details</h4>
+          </div>
+
+          <!-- Search Section -->
+          <div class="col-sm-12 col-md-4 col-lg-4 d-flex align-items-center justify-content-center">
+            <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText" />
+          </div>
+
+          <!-- Button Section -->
+          <div class="col-sm-12 col-md-4 col-lg-4 d-flex align-items-center justify-content-end">
+            <button class="btn btn-light"
+              routerLink="/dash/recruitment/recruitmentdashboard/CandidateMedicalDetails">Add</button>
+            <!-- <button class="btn btn-light mx-2" (click)="exportToExcel()">Download</button> -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Card Body -->
+      <div class="card-body">
+        <div class="table-responsive table-invoice">
+          <table id="exportTable" class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Sr. No.</th>
+                <th>Description</th>
+                <th>Date</th>
+                <th>Report</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                *ngFor="let item of filteredData() | paginate : { itemsPerPage: pageSize, currentPage: pageIndex, totalItems: totalItems }; let i = index">
+                <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+                <td>{{ item.description }}</td>
+                <td>{{ item.dated }}</td>
+                <td>{{ item.report }}</td>
+                <td>
+                  <button class="btn btn-sm btn-outline px-1 mx-1">
+                    <i class="fa-regular fa-pen-to-square fw-semibold"
+                      (click)="isUpdate(encryptionService.encryptText(item.pk_mtrnid.toString()))">
+                    </i>
+                  </button>
+                  <button class="btn btn-sm btn-outline px-1 mx-1">
+                    <i class="fa fa-trash text-dark" (click)="deleteMedical(item.pk_mtrnid)"></i>
+                  </button>
+                </td>
+              </tr>
+              <tr *ngIf="filteredData().length === 0">
+                <td colspan="6" class="text-center">No data available</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Pagination Controls -->
+          <pagination-controls (pageChange)="onPageChange($event)" totalItems="totalItems" itemsPerPage="pageSize">
+          </pagination-controls>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

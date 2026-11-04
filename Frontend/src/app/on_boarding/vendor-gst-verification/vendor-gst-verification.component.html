@@ -1,0 +1,173 @@
+<section>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+          <div class="card-header bg-blue">
+            <div class="row w-100">
+              <div class="col-sm-12 col-md-6 col-lg-6">
+                <h4>Vendor GST Details</h4>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-body mt-2">
+            <!-- ====================== VIEW MODE ====================== -->
+            <div *ngIf="isViewMode && gstData">
+              <div class="row">
+                <div class="col-md-4">
+                  <label class="text-muted">GST Applicable:</label>
+                  <p class="fs-6">
+                    <span
+                      class="badge"
+                      [ngClass]="gstData.vendor_IsGSTApplicable ? 'bg-success' : 'bg-secondary'"
+                    >
+                      {{ gstData.vendor_IsGSTApplicable ? 'Yes - Applicable' : 'Not Applicable' }}
+                    </span>
+                  </p>
+                </div>
+
+                <div class="col-md-4" *ngIf="gstData.vendor_IsGSTApplicable">
+                  <label class="text-muted">GST Number:</label>
+                  <p class="fs-5">
+                    <strong>{{ gstData.vendor_GSTNo || 'N/A' }}</strong>
+                  </p>
+                </div>
+
+                <div class="col-md-4" *ngIf="gstData.gstPhoto">
+                  <label class="fw-semibold">GST Certificate Document</label><br />
+                  <img
+                    [src]="gstData.gstPhoto"
+                    alt="GST Certificate"
+                    class="img-thumbnail my-2"
+                    style="
+                      max-width: 320px;
+                      max-height: 200px;
+                      object-fit: contain;
+                      cursor: pointer;
+                    "
+                  />
+                </div>
+
+                <div class="col-12 mt-3">
+                  <button type="button" class="btn btn-warning" (click)="editGST()">
+                    <i class="fas fa-edit me-1"></i> Edit GST Details
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- ====================== FORM MODE ====================== -->
+            <form *ngIf="!isViewMode" [formGroup]="gstForm" (ngSubmit)="onSubmit()">
+              <div class="row">
+                <!-- GST Status Display (Read from DB, NO toggle switch) -->
+                <div class="col-12 mb-3">
+                  <div class="d-flex align-items-center gap-2 mb-2">
+                    <span class="fw-bold fs-6">Is GST Applicable:</span>
+                    <span
+                      class="badge px-3 py-2 fs-6"
+                      [ngClass]="isGSTApplicableFromDb ? 'bg-success' : 'bg-secondary'"
+                    >
+                      {{ isGSTApplicableFromDb ? 'Yes - Applicable' : 'Not Applicable' }}
+                    </span>
+                  </div>
+                  
+                  <div *ngIf="isGSTApplicableFromDb" class="alert alert-success py-2 px-3 mb-0">
+                    <i class="fas fa-check-circle me-1"></i>
+                    GST is configured as applicable for your vendor profile. GST Number is pre-filled and certificate upload is <strong>mandatory</strong>.
+                  </div>
+
+                  <div *ngIf="!isGSTApplicableFromDb" class="alert alert-secondary py-2 px-3 mb-0">
+                    <i class="fas fa-info-circle me-1"></i>
+                    GST registration is marked as <strong>Not Applicable</strong> for your vendor profile. No GST document is required. Click <strong>Save & Continue</strong> to proceed.
+                  </div>
+                </div>
+
+                <!-- GST Fields (Only when applicable from DB) -->
+                <ng-container *ngIf="isGSTApplicableFromDb">
+                  <!-- GST Number -->
+                  <div class="col-sm-12 col-md-6 col-lg-5">
+                    <label class="fw-semibold">GST Number <span class="text-danger">*</span></label>
+                    <div class="input-group">
+                      <span class="input-group-text">
+                        <i class="fas fa-receipt"></i>
+                      </span>
+                      <input
+                        type="text"
+                        class="form-control text-uppercase"
+                        formControlName="Vendor_GSTNo"
+                        placeholder="e.g. 07AAAAA0000A1Z5"
+                        maxlength="15"
+                        (blur)="checkGSTDuplicate()"
+                      />
+                    </div>
+                    <small class="text-muted">Auto-patched from vendor registration</small>
+                    <div
+                      *ngIf="(submitted || validate['Vendor_GSTNo'].touched) && validate['Vendor_GSTNo'].errors"
+                      class="text-danger mt-1 small"
+                    >
+                      <div *ngIf="validate['Vendor_GSTNo'].errors['required']">
+                        GST number is required when GST is applicable.
+                      </div>
+                      <div *ngIf="validate['Vendor_GSTNo'].errors['pattern']">
+                        Please enter a valid 15-digit GSTIN (e.g. 07AAAAA0000A1Z5).
+                      </div>
+                      <div *ngIf="validate['Vendor_GSTNo'].errors['duplicate']">
+                        {{ validate['Vendor_GSTNo'].errors['duplicate'] }}
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- GST Certificate Upload -->
+                  <div class="col-sm-12 col-md-6 col-lg-5">
+                    <label class="fw-semibold">
+                      Upload GST Certificate
+                      <span class="text-danger">*</span>
+                    </label>
+                    <div class="input-group">
+                      <input
+                        type="file"
+                        class="form-control"
+                        (change)="onFileSelected($event, 'GSTPhotoFile')"
+                        accept="image/jpeg,image/png,image/jpg,application/pdf"
+                      />
+                    </div>
+                    <small class="text-muted">Allowed: JPG, PNG, PDF (Max 5MB) - <strong class="text-danger">Mandatory</strong></small>
+                    <div
+                      *ngIf="submitted && validate['GSTPhotoFile'].errors && !gstData?.gstPhoto"
+                      class="text-danger mt-1 small"
+                    >
+                      Please upload GST certificate.
+                    </div>
+
+                    <!-- Image Preview -->
+                    <div *ngIf="previewGSTImage" class="mt-2">
+                      <img
+                        [src]="previewGSTImage"
+                        alt="GST Preview"
+                        class="img-thumbnail"
+                        style="max-width: 250px; max-height: 160px; object-fit: contain;"
+                      />
+                    </div>
+                  </div>
+                </ng-container>
+              </div>
+
+              <!-- Submit Buttons -->
+              <div class="row mt-4">
+                <div class="col-12">
+                  <button type="submit" class="btn btn-primary me-2">
+                    <i class="fas fa-save me-1"></i> Save & Continue
+                  </button>
+                  <button type="button" class="btn btn-secondary" (click)="reset()">
+                    Reset
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

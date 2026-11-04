@@ -1,0 +1,138 @@
+<div class="card">
+
+  <div class="card-header py-1 bg-primary">
+    <div class="row w-100">
+  
+      <div class="col-sm-12 col-md-4 d-flex align-items-center">
+        <h4>Resignation Approvals</h4>
+      </div>
+  
+      <div class="col-sm-12 col-md-4 d-flex justify-content-center">
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Search..."
+          [(ngModel)]="searchText" />
+      </div>
+  
+      <div class="col-sm-12 col-md-4">
+      </div>
+  
+    </div>
+  </div>
+
+  <div class="card-body">
+
+    <div class="table-responsive table-invoice">
+
+      <table class="table resignation-table">
+
+        <thead>
+
+          <tr>
+
+            <th>Sr.</th>
+
+            <th>Employee Code</th>
+
+            <th>Employee Name</th>
+
+            <th>Resignation Date</th>
+
+            <th>Expected LWD</th>
+
+            <th>Reason</th>
+
+            <th>Status</th>
+
+            <th>Action</th>
+
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+          <tr
+            *ngFor="
+            let item of filteredData()
+            | paginate:
+            {
+              itemsPerPage: pageSize,
+              currentPage: pageIndex
+            };
+            let i=index">
+
+            <td>
+              {{ i + 1 }}
+            </td>
+
+            <td>
+              {{ item.empcode }}
+            </td>
+
+            <td>
+              {{ item.empname }}
+            </td>
+
+            <td>
+              {{ item.resignationDate
+              | date:'dd-MM-yyyy' }}
+            </td>
+
+            <td>
+              {{ item.expectedLWD
+              | date:'dd-MM-yyyy' }}
+            </td>
+
+            <td>
+              {{ item.reason }}
+            </td>
+
+            <td>
+
+              <span class="badge bg-warning" *ngIf="item.status == 1">
+                Pending
+              </span>
+            
+              <span class="badge bg-info" *ngIf="item.status == 2">
+                Retain
+              </span>
+            
+              <span class="badge bg-secondary" *ngIf="item.status == 3">
+                Withdraw
+              </span>
+            
+              <span class="badge bg-success" *ngIf="item.status == 4">
+                Accepted
+              </span>
+            
+              <span class="badge bg-danger" *ngIf="item.status == 5">
+                Rejected
+              </span>
+
+            </td>
+
+            <td>
+
+              <button
+                class="btn btn-sm btn-outline me-2"
+                (click)="view(item.pkSepRequestId)">
+
+                <i class="fa fa-edit"></i>
+
+              </button>
+
+            </td>
+
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+</div>

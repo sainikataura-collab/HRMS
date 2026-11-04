@@ -1,0 +1,118 @@
+
+<div class="row">
+    <div class="col-12">
+        <div class="card w-100">
+           
+      <div class="card-header py-1 bg-primary">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-between">
+            <h4>Due Clearence Details</h4>
+          </div>
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-center">
+            <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText" />
+          </div>
+
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-md-end">
+            <button class="btn btnheader" routerLink="/dash/exit/exitdashboard/Due_Clearence_User_Master">
+              Add
+            </button>
+             <button class="btn btnheader mx-1" (click)="exportToExcel()" >Download</button>
+
+          </div>
+        </div>
+      </div>
+            <div class="card-body">
+                  <div class="table-responsive table-invoice">
+                    <table id="exportTable" class="table">
+                        <thead>
+                          <tr>
+                            <th>Sr.</th>
+                            <th>Department</th>
+                            <th>Employee Code</th>
+                               <th>Employee Name</th>
+                              <th>Remark</th>
+                            <th>Is Active</th>
+                            <th>Action</th>
+
+                          </tr>
+                        </thead>
+                       <tbody>
+  <tr *ngFor="let item of filteredData() 
+              | paginate: { itemsPerPage: pageSize, currentPage: pageIndex, totalItems: totalCount }; let i = index">
+    <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+    <td>{{ item.department }}</td>
+    <td>{{ item.empCode }}</td>
+    <td>{{ item.empName }}</td>
+    <td>{{ item.remarks }}</td>
+    <td>{{ item.isActive }}</td>
+    <td>
+      <button class="btn btn-sm btn-outline" (click)="edit(item.pk_DeptUserId)">
+        <i class="fa-regular fa-pen-to-square" ></i>
+      </button>
+      <button class="btn btn-sm btn-outline" (click)="delete(item.pk_DeptUserId)">
+        <i class="fa fa-trash"></i>
+      </button>
+    </td>
+  </tr>
+</tbody>
+
+                      </table>
+
+
+
+                          <pagination-controls (pageChange)="onPageChange($event)" >
+                    </pagination-controls>
+                  </div>
+                  <p *ngIf="DueclearencemasterList.length === 0">No records found.</p>
+
+            </div>
+<!--
+            <div class="card-header">
+              <div class="row w-100">
+                <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-between">
+                  <h4>List of Parameters</h4>
+
+                </div>
+
+
+
+              </div>
+          </div>
+          <div class="card-body">
+              <div class="table-responsive table-invoice">
+                  <table class="table table-bordered">
+                      <thead>
+                        <tr>
+                          <th>Sr.</th>
+                          <th>Description</th>
+                          <th>Order Number</th>
+                          <th>Input Type</th>
+                          <th>Is Active</th>
+                          <th>Action</th>
+
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let item of ParametersList; let i = index">
+                          <td>{{ i + 1 }}</td>
+                          <td> {{item.Description}}</td>
+                          <td>{{item.OrderNumber}}</td>
+                          <td>{{item.InputType}}</td>
+                          <td> {{item.IsActive}}</td>
+
+
+                          <td>
+                              <button class="btn btn-sm btn-outline" (click)="edit(item.id)" ><i class="fa-regular fa-pen-to-square" style="color:#3080e8; font-size: 14px;"></i></button>
+
+                             <button class="btn btn-sm btn-outline" (click)="delete1(item.id)"><i class="fa fa-trash" style="color:#3080e8; font-size: 14px;"></i></button>
+                            </td>
+                        </tr>
+                      </tbody>
+                    </table>
+
+
+                </div>
+          </div> -->
+        </div>
+    </div>
+</div>

@@ -1,0 +1,76 @@
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+
+      <div class="card-header py-1 bg-primary">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-between">
+            <h4>Due Clearence Details</h4>
+          </div>
+
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-center">
+            <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText" />
+          </div>
+
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-md-end">
+            <button class="btn btnheader" routerLink="/dash/exit/exitdashboard/due_clearance">
+              Add
+            </button>
+
+            <button class="btn btnheader mx-1" (click)="exportToExcel()">
+              Download
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <div class="table-responsive table-invoice">
+          <table id="exportTable" class="table">
+            <thead>
+              <tr>
+                <th>Sr.No.</th>
+                <th>Department</th>
+                <th>Assets / Parameters</th>
+                <th>Is Active</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr *ngFor="let item of filteredData() | paginate: {
+                  itemsPerPage: pageSize,
+                  currentPage: pageIndex,
+                  totalItems: totalItems
+                }; let i = index">
+                <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+                <td>{{ item.department }}</td>
+                <td>{{ item.assets || item.parameters || item.parameterNames || '-' }}</td>
+
+                <td>{{ item.isActive }}</td>
+
+                <td>
+                  <button class="btn btn-sm btn-outline px-1 mx-1">
+                    <i class="fa-regular fa-pen-to-square fw-semibold" (click)="isUpdate(item.pk_clsdeptId)"></i>
+                  </button>
+
+                  <button class="btn btn-sm btn-outline" (click)="delete(item.pk_clsdeptId)">
+                    <i class="fa fa-trash"></i>
+                  </button>
+                </td>
+              </tr>
+
+              <tr *ngIf="filteredData().length === 0">
+                <td colspan="7" class="text-center">No data available</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <pagination-controls (pageChange)="onPageChange($event)">
+          </pagination-controls>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

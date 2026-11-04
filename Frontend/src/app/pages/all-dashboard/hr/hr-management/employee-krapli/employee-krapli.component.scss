@@ -1,0 +1,22 @@
+//For scroll table
+.scrollable-table {
+    max-height: 300px; /* adjust as needed */
+    overflow-y: auto;
+  }
+  
+  // .page-seperator{
+  //   background-color: rgb(122, 169, 216);;
+  // }
+  
+  
+  
+  .table-invoice {
+  overflow: auto;
+  max-height: 380px;
+  position: relative;
+  }
+  
+  .table-invoice table tbody td {
+  overflow-y: auto !important;
+  }
+  

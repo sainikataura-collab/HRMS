@@ -1,0 +1,77 @@
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+      <div class="card">
+  
+        <!-- Card Header -->
+        <div class="card-header bg-primary">
+          <div class="row w-100">
+            <div class="col-sm-12 col-md-6 col-lg-6">
+              <h4 class="text-white">Newspaper Master</h4>
+            </div>
+            <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+              <button class="btn btnheader" routerLink="/dash/recruitment/recruitmentdashboard/newsPaper-master_list">
+                Back
+              </button>
+            </div>
+          </div>
+        </div>
+  
+        <!-- Card Body -->
+        <div class="card-body mt-4">
+          <form [formGroup]="newsPaperForm" class="row row-cols-1 row-cols-md-3 gx-3 gy-1">
+  
+            <div class="col">
+              <div class="form-group">
+                <label>Newspaper Name<span class="text-danger">*</span></label>
+                <input type="text" class="form-control flex-grow-1" formControlName="newspaperName">
+                <div *ngIf="newsPaperForm.get('newspaperName')?.errors?.['duplicate']" class="text-danger"
+                  style="font-size:10px;">
+                  {{ newsPaperForm.get('newspaperName')?.errors?.['duplicate'] }}
+                </div>
+                <span class="text-danger mt-1" style="font-size: 12px;"
+                  *ngIf="showerror && newsPaperForm.controls['newspaperName'].invalid">
+                  Please enter newspaper name.
+                </span>
+              </div>
+            </div>
+  
+            <div class="col">
+              <div class="form-group">
+                <label>Contact Person 1</label>
+                <input type="text" class="form-control flex-grow-1" formControlName="contactperson1">
+              </div>
+            </div>
+  
+            <div class="col">
+              <div class="form-group">
+                <label>Contact No. 1</label>
+                <input type="text" class="form-control flex-grow-1" formControlName="contactno1" maxlength="12">
+              </div>
+            </div>
+  
+            <div class="col">
+              <div class="form-group">
+                <label>Contact Person 2</label>
+                <input type="text" class="form-control flex-grow-1" formControlName="contactperson2">
+              </div>
+            </div>
+  
+            <div class="col">
+              <div class="form-group">
+                <label>Contact No. 2</label>
+                <input type="text" class="form-control flex-grow-1" formControlName="contactno2" maxlength="12">
+              </div>
+            </div>
+            <div class="col d-flex align-items-center justify-content-end">
+              <button type="submit" class="btn btn-primary btn-sm mx-1 px-2" (click)="onSubmit()">
+                {{ id ? 'Update' : 'Save' }}
+              </button>
+              <button type="button" class="btn btn-outline-dark btn-sm mx-1 px-2" (click)="resetForm()">Reset</button>
+            </div>
+  
+          </form>
+        </div>
+  
+      </div>
+    </div>
+  </div>

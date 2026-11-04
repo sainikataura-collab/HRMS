@@ -1,0 +1,613 @@
+<div class="row px-0  ">
+  <div class="col-12 ">
+    <div class="card w-100 px-0 ">
+
+      <!-- MAIN HEADER -->
+      <div class="card-header py-2 bg-primary">
+        <div
+          class="d-flex flex-column flex-md-row align-items-stretch align-items-md-center justify-content-between gap-2 w-100">
+
+          <div class="d-flex align-items-center justify-content-between justify-content-md-start gap-md-3">
+            <h4 class="mb-0 text-white text-truncate me-2 me-md-0">Vendor List</h4>
+            <!-- Mobile Filters Toggle -->
+            <button class="btn btn-sm btnheader rounded-pill d-md-none px-3 text-nowrap"
+              (click)="showMobileFilters = !showMobileFilters">
+              <i class="fa-solid fa-filter me-1"></i><span *ngIf="!showMobileFilters">Filters</span><span
+                *ngIf="showMobileFilters">Close</span>
+            </button>
+          </div>
+          <!-- Right side group: Search + Buttons -->
+          <div
+            class="d-flex flex-column flex-md-row align-items-stretch align-items-md-center justify-content-md-end gap-2 gap-md-3 ms-md-auto">
+            <input type="text" class="form-control form-control-sm" style="width: 350px; max-width: 100%;"
+              placeholder="Search vendors..." [(ngModel)]="searchTerm" (ngModelChange)="onSearch()"
+              (keyup.enter)="onSearch()" />
+
+            <div class="d-grid d-md-flex gap-2 justify-content-md-end mt-1 mt-md-0"
+              style="grid-template-columns: repeat(3, 1fr);">
+              <button type="button" class="btn btn-sm bg-white text-primary rounded-pill px-3 shadow-sm text-nowrap flex-grow-1 flex-md-grow-0" (click)="downloadVendorVerificationExcel()"
+                title="Download Vendor Excel with Verification Links" [disabled]="isDownloadingLinks">
+                <i class="fa fa-spinner fa-spin me-1" *ngIf="isDownloadingLinks"></i>
+                <i class="fa fa-download me-1" *ngIf="!isDownloadingLinks"></i>Links
+              </button>
+              <button type="button" class="btn btn-sm bg-white text-primary rounded-pill px-3 shadow-sm text-nowrap flex-grow-1 flex-md-grow-0" (click)="exportToExcel()"
+                title="Export to Excel" [disabled]="isDownloadingExcel">
+                <i class="fa fa-spinner fa-spin me-1" *ngIf="isDownloadingExcel"></i>
+                <i class="fa fa-download me-1" *ngIf="!isDownloadingExcel"></i>Download
+              </button>
+              <button
+                class="btn btn-sm bg-white text-primary rounded-pill px-2 px-md-3 shadow-sm text-nowrap text-center"
+                routerLink="/dash/vendor_management/vendor_managementdashboard/vendor_master_form">
+                <i class="fa-solid fa-plus me-1"></i>Add New
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FILTERS HEADER -->
+      <div class="card-header py-2 border-bottom" style="background-color: #f8f9fa;"
+        [ngClass]="showMobileFilters ? 'd-block' : 'd-none d-md-block'">
+        <div class="d-flex flex-column flex-md-row align-items-stretch align-items-md-center gap-2">
+          <!-- Clear Button -->
+          <button class="btn btn-sm btn-white border rounded-pill px-3 text-nowrap flex-shrink-0"
+            style="background-color: #ffffff;" (click)="clearFilters()" title="Clear Filters">
+            <i class="fa-solid fa-eraser me-1"></i>Clear
+          </button>
+
+          <ng-select class="w-100" style="max-width: 380px;" [(ngModel)]="locationId" (change)="onFilterChange()"
+            [clearable]="true" placeholder="All Locations">
+            <ng-option value="">All Locations</ng-option>
+            <ng-option *ngFor="let loc of locations" [value]="loc.value">{{ loc.name }}</ng-option>
+          </ng-select>
+
+          <ng-select class="w-100" style="max-width: 380px;" [(ngModel)]="agentCode" (change)="onFilterChange()"
+            [clearable]="true" placeholder="All Agents">
+            <ng-option value="">All Agents</ng-option>
+            <ng-option *ngFor="let ag of agents" [value]="ag.value">{{ ag.name }}</ng-option>
+          </ng-select>
+
+          <ng-select class="w-100" style="max-width: 250px;" [(ngModel)]="status" (change)="onFilterChange()"
+            [clearable]="true" placeholder="All Statuses">
+            <ng-option value="">All Statuses</ng-option>
+            <ng-option value="Not Initiated">Not Initiated</ng-option>
+            <ng-option value="Initiated">Initiated</ng-option>
+            <ng-option value="Submitted">Submitted</ng-option>
+            <ng-option value="Verified">Verified</ng-option>
+            <ng-option value="ReInitiated">ReInitiated</ng-option>
+          </ng-select>
+
+          <ng-select class="w-100" style="max-width: 250px;" [(ngModel)]="fhridMappingStatus"
+            (change)="onFilterChange()" [clearable]="true" placeholder="All Mapping Status">
+            <ng-option value="">All Mapping Status</ng-option>
+            <ng-option value="mapped">Mapped</ng-option>
+            <ng-option value="Unmapped">Unmapped</ng-option>
+          </ng-select>
+        </div>
+      </div>
+
+      <!-- Dashboard Stats (Responsive Grid for Mobile & Desktop) -->
+      <div class="card-body py-2 px-2 px-sm-3">
+        <div class="row g-2">
+          <!-- Total Vendors (Full width hero card on mobile, balanced column on desktop) -->
+          <div class="col-12 col-md col-xl">
+            <div class="kpi-box d-flex align-items-center justify-content-between rounded-2 shadow-2xs"
+              style="background-color: #f0f7ff; border: 1px solid #bfdbfe;">
+              <span class="kpi-total-title text-nowrap me-2 d-inline-flex align-items-center"
+                style="font-weight: 700; color: #1e3a8a; line-height: 1;">Total Vendors</span>
+              <span class="kpi-num fw-bold flex-shrink-0 d-inline-flex align-items-center"
+                style="color: #1d4ed8; line-height: 1;">{{ stats.totalVendors }}</span>
+            </div>
+          </div>
+
+          <!-- Not Initiated -->
+          <div class="col-6 col-md col-xl">
+            <div class="kpi-box d-flex align-items-center justify-content-between rounded-2 shadow-2xs"
+              style="background-color: #fef2f2; border: 1px solid #fecaca;">
+              <span class="kpi-title text-nowrap me-2 d-inline-flex align-items-center"
+                style="font-weight: 600; color: #991b1b; line-height: 1;">Not Initiated</span>
+              <span class="kpi-num fw-bold flex-shrink-0 d-inline-flex align-items-center"
+                style="color: #dc2626; line-height: 1;">{{ stats.notInitiated }}</span>
+            </div>
+          </div>
+
+          <!-- Initiated -->
+          <div class="col-6 col-md col-xl">
+            <div class="kpi-box d-flex align-items-center justify-content-between rounded-2 shadow-2xs"
+              style="background-color: #f0f9ff; border: 1px solid #bae6fd;">
+              <span class="kpi-title text-nowrap me-2 d-inline-flex align-items-center"
+                style="font-weight: 600; color: #075985; line-height: 1;">Initiated</span>
+              <span class="kpi-num fw-bold flex-shrink-0 d-inline-flex align-items-center"
+                style="color: #0284c7; line-height: 1;">{{ stats.initiated }}</span>
+            </div>
+          </div>
+
+          <!-- Submitted -->
+          <div class="col-6 col-md col-xl">
+            <div class="kpi-box d-flex align-items-center justify-content-between rounded-2 shadow-2xs"
+              style="background-color: #fffbeb; border: 1px solid #fde68a;">
+              <span class="kpi-title text-nowrap me-2 d-inline-flex align-items-center"
+                style="font-weight: 600; color: #92400e; line-height: 1;">Submitted</span>
+              <span class="kpi-num fw-bold flex-shrink-0 d-inline-flex align-items-center"
+                style="color: #d97706; line-height: 1;">{{ stats.submitted }}</span>
+            </div>
+          </div>
+
+          <!-- Verified -->
+          <div class="col-6 col-md col-xl">
+            <div class="kpi-box d-flex align-items-center justify-content-between rounded-2 shadow-2xs"
+              style="background-color: #f0fdf4; border: 1px solid #bbf7d0;">
+              <span class="kpi-title text-nowrap me-2 d-inline-flex align-items-center"
+                style="font-weight: 600; color: #166534; line-height: 1;">Verified</span>
+              <span class="kpi-num fw-bold flex-shrink-0 d-inline-flex align-items-center"
+                style="color: #16a34a; line-height: 1;">{{ stats.verified }}</span>
+            </div>
+          </div>
+
+          <!-- ReInitiated -->
+          <div class="col-6 col-md col-xl">
+            <div class="kpi-box d-flex align-items-center justify-content-between rounded-2 shadow-2xs"
+              style="background-color: #eef2ff; border: 1px solid #c7d2fe;">
+              <span class="kpi-title text-nowrap me-2 d-inline-flex align-items-center"
+                style="font-weight: 600; color: #3730a3; line-height: 1;">Re-Initiated</span>
+              <span class="kpi-num fw-bold flex-shrink-0 d-inline-flex align-items-center"
+                style="color: #4f46e5; line-height: 1;">{{ stats.reInitiated }}</span>
+            </div>
+          </div>
+
+          <!-- Agents -->
+          <div class="col-6 col-md col-xl">
+            <div class="kpi-box d-flex align-items-center justify-content-between rounded-2 shadow-2xs"
+              style="background-color: #f8fafc; border: 1px solid #e2e8f0;">
+              <span class="kpi-title text-nowrap me-2 d-inline-flex align-items-center"
+                style="font-weight: 600; color: #334155; line-height: 1;">Agents</span>
+              <span class="kpi-num fw-bold flex-shrink-0 d-inline-flex align-items-center"
+                style="color: #334155; line-height: 1;">{{ stats.totalAgents }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hierarchical Table (Desktop - Unchanged) -->
+      <div class="card-body pt-0 d-none d-md-block">
+        <div class="table-responsive table-invoice border rounded">
+          <table class="table table-hover vendor-table mb-0">
+            <thead>
+              <tr>
+                <th>Sr.</th>
+                <th>Code</th>
+                <th>Vendor Name</th>
+                <th>Contact No</th>
+                <th>Bank Name</th>
+                <th>Account No</th>
+                <th>Status</th>
+                <th>Progress</th>
+                <th>Reg. Date</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <ng-container
+                *ngFor="let group of groupedVendors | paginate: { itemsPerPage: pageSize, currentPage: pageIndex, totalItems: totalItems }; let gi = index">
+
+                <!-- Agent Header Row (Fallback if agentRecord is null but has sub-vendors) -->
+                <tr *ngIf="group.isAgentGroup && !group.agentRecord" class="agent-row fw-bold"
+                  style="background-color: #f8fafc; cursor: pointer;" (click)="toggleGroup(group)">
+                  <td colspan="10" class="text-primary">
+                    <i class="fa-solid me-2" [ngClass]="group.isExpanded ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
+                    Agent: {{ group.agentCode }} ({{ group.agentName }})
+                  </td>
+                </tr>
+
+                <!-- Agent Header Row (If agentRecord exists, show full details!) -->
+                <tr *ngIf="group.isAgentGroup && group.agentRecord" [ngClass]="{'bg-light': true}"
+                  style="border-left: 4px solid #3b82f6;">
+                  <td>
+                    <!-- Expand button only if there are sub-vendors -->
+                    <button *ngIf="group.vendors.length > 0" class="btn btn-sm btn-link text-primary p-0 me-1"
+                      (click)="toggleGroup(group)">
+                      <i class="fa-solid" [ngClass]="group.isExpanded ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
+                    </button>
+                    <span *ngIf="group.vendors.length === 0" class="ms-3"></span>
+                    {{ (pageIndex - 1) * pageSize + gi + 1 }}
+                  </td>
+                  <td class="fw-bold text-primary">{{ group.agentRecord.vendor_Code }}</td>
+                  <td class="fw-bold">{{ group.agentRecord.vendor_Name }}
+                    <span *ngIf="(group.agentRecord.totalSubVendors || group.agentRecord.TotalSubVendors || 0) > 0"
+                      class="badge bg-primary rounded-pill ms-1" style="font-size: 0.65rem;">Agent
+                      ({{group.agentRecord.totalSubVendors || group.agentRecord.TotalSubVendors}})</span>
+                    <span *ngIf="(group.agentRecord.totalSubVendors || group.agentRecord.TotalSubVendors || 0) === 0"
+                      class="badge bg-secondary rounded-pill ms-1" style="font-size: 0.65rem;">Agent</span>
+                  </td>
+                  <td>{{ group.agentRecord.vendor_ContactNo || '-' }}</td>
+                  <td>{{ group.agentRecord.vendor_BankName || '-' }}</td>
+                  <td>{{ group.agentRecord.vendor_AccountNo || '-' }}</td>
+                  <td>
+                    <span class="badge rounded-pill px-2 py-1" style="font-size: 0.75rem;"
+                      [ngClass]="getStatusClass(group.agentRecord.vendor_Status)">
+                      <i [ngClass]="getStatusIcon(group.agentRecord.vendor_Status)" class="me-1"></i>
+                      {{ group.agentRecord.vendor_Status || 'Not Verified' }}
+                    </span>
+                  </td>
+                  <td class="text-center">
+                    <div style="position: relative; width: 36px; height: 36px; margin: 0 auto;">
+                      <svg width="36" height="36" viewBox="0 0 36 36" style="transform: rotate(-90deg);">
+                        <circle cx="18" cy="18" r="15.9155" fill="none" stroke="#e2e8f0" stroke-width="3"></circle>
+                        <circle cx="18" cy="18" r="15.9155" fill="none"
+                          [attr.stroke]="(group.agentRecord.verificationProgress || 0) === 100 ? '#10B981' : '#F59E0B'"
+                          stroke-width="3"
+                          [attr.stroke-dasharray]="(group.agentRecord.verificationProgress || 0) + ', 100'"></circle>
+                      </svg>
+                      <div
+                        style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10px; font-weight: 600; color: #334155;">
+                        {{ group.agentRecord.verificationProgress || 0 }}%
+                      </div>
+                    </div>
+                  </td>
+                  <td>{{ group.agentRecord.vendor_RegistrationDate | date:'dd-MM-yyyy' }}</td>
+                  <td>
+                    <div class="d-flex gap-1">
+                      <button class="btn btn-sm btn-outline-primary" (click)="editVendor(group.agentRecord.pk_recId)"
+                        title="Edit">
+                        <i class="fa-regular fa-pen-to-square"></i>
+                      </button>
+                      <button class="btn btn-sm btn-outline-info"
+                        (click)="sendOnboardingEmail(group.agentRecord.pk_recId, group.agentRecord.vendor_Name || '')"
+                        title="Send Onboarding Email"
+                        [disabled]="isSendingEmail && sendingEmailForId === group.agentRecord.pk_recId">
+                        <span *ngIf="isSendingEmail && sendingEmailForId === group.agentRecord.pk_recId"
+                          class="spinner-border spinner-border-sm"></span>
+                        <i *ngIf="!(isSendingEmail && sendingEmailForId === group.agentRecord.pk_recId)"
+                          class="fa-solid fa-envelope"></i>
+                      </button>
+                      <button class="btn btn-sm btn-outline-secondary" (click)="viewVendor(group.agentRecord.pk_recId)"
+                        title="View">
+                        <i class="fa-solid fa-eye"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- Sub-vendors (or standalone vendors) -->
+                <ng-container *ngIf="group.isExpanded || !group.isAgentGroup">
+                  <tr *ngFor="let data of group.vendors; let i = index"
+                    [ngClass]="{'sub-vendor-row': group.isAgentGroup}">
+                    <td [ngClass]="{'ps-4': group.isAgentGroup}">
+                      <span *ngIf="group.isAgentGroup" class="text-muted me-1">↳</span>
+                      {{ group.isAgentGroup ? ((pageIndex - 1) * pageSize + gi + 1) + '.' + (i + 1) : ((pageIndex - 1) *
+                      pageSize + gi + 1 + i) }}
+                    </td>
+                    <td>{{ data.vendor_Code }}</td>
+                    <td>{{ data.vendor_Name }}</td>
+                    <td>{{ data.vendor_ContactNo || '-' }}</td>
+                    <td>{{ data.vendor_BankName || '-' }}</td>
+                    <td>{{ data.vendor_AccountNo || '-' }}</td>
+                    <td>
+                      <span class="badge rounded-pill px-2 py-1" style="font-size: 0.75rem;"
+                        [ngClass]="getStatusClass(data.vendor_Status)">
+                        <i [ngClass]="getStatusIcon(data.vendor_Status)" class="me-1"></i>
+                        {{ data.vendor_Status || 'Not Verified' }}
+                      </span>
+                    </td>
+                    <td class="text-center">
+                      <div style="position: relative; width: 36px; height: 36px; margin: 0 auto;">
+                        <svg width="36" height="36" viewBox="0 0 36 36" style="transform: rotate(-90deg);">
+                          <circle cx="18" cy="18" r="15.9155" fill="none" stroke="#e2e8f0" stroke-width="3"></circle>
+                          <circle cx="18" cy="18" r="15.9155" fill="none"
+                            [attr.stroke]="(data.verificationProgress || 0) === 100 ? '#10B981' : '#F59E0B'"
+                            stroke-width="3" [attr.stroke-dasharray]="(data.verificationProgress || 0) + ', 100'">
+                          </circle>
+                        </svg>
+                        <div
+                          style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10px; font-weight: 600; color: #334155;">
+                          {{ data.verificationProgress || 0 }}%
+                        </div>
+                      </div>
+                    </td>
+                    <td>{{ data.vendor_RegistrationDate | date:'dd-MM-yyyy' }}</td>
+                    <td>
+                      <div class="d-flex gap-1">
+                        <button class="btn btn-sm btn-outline-primary" (click)="editVendor(data.pk_recId)" title="Edit">
+                          <i class="fa-regular fa-pen-to-square"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-info"
+                          (click)="sendOnboardingEmail(data.pk_recId, data.vendor_Name || '')"
+                          title="Send Onboarding Email"
+                          [disabled]="isSendingEmail && sendingEmailForId === data.pk_recId">
+                          <span *ngIf="isSendingEmail && sendingEmailForId === data.pk_recId"
+                            class="spinner-border spinner-border-sm"></span>
+                          <i *ngIf="!(isSendingEmail && sendingEmailForId === data.pk_recId)"
+                            class="fa-solid fa-envelope"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-secondary" (click)="viewVendor(data.pk_recId)"
+                          title="View">
+                          <i class="fa-solid fa-eye"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                </ng-container>
+              </ng-container>
+
+              <tr *ngIf="groupedVendors.length === 0">
+                <td colspan="10" class="text-center py-4 text-muted">No records found.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Enhanced Mobile Card View (Compact Layout, Reduced Gaps, Icon-Only Actions) -->
+      <div class="card-body pt-0 px-2 px-sm-3 d-md-none">
+        <ng-container
+          *ngFor="let group of groupedVendors | paginate: { itemsPerPage: pageSize, currentPage: pageIndex, totalItems: totalItems }; let gi = index">
+
+          <!-- Agent Card (Full bg-primary-subtle) -->
+          <div
+            class="card mb-2 border border-1 border-primary-subtle bg-primary-subtle rounded-2 shadow-sm overflow-hidden"
+            *ngIf="group.isAgentGroup && group.agentRecord">
+
+            <!-- Agent Header (Strictly Single Line: Badges on Left, Ring + Actions on Right) -->
+            <div
+              class="card-header bg-transparent py-1 px-2.5 border-bottom border-primary-subtle d-flex align-items-center justify-content-between flex-nowrap">
+              <!-- Left: Code + Status Badge + Agent Pill -->
+              <div class="d-flex align-items-center gap-1 flex-nowrap min-w-0 me-1">
+                <span class="badge bg-dark text-white fw-semibold px-1.5 py-0.5 text-nowrap"
+                  style="font-size: 0.58rem; line-height: 1.1;">
+                  {{ group.agentRecord.vendor_Code }}
+                </span>
+                <span class="badge rounded-pill px-1.5 py-0.5 fw-semibold text-nowrap"
+                  style="font-size: 0.58rem; line-height: 1.1;"
+                  [ngClass]="getStatusClass(group.agentRecord.vendor_Status)">
+                  <i [ngClass]="getStatusIcon(group.agentRecord.vendor_Status)" class="me-0.5"></i>
+                  {{ group.agentRecord.vendor_Status || 'Not Verified' }}
+                </span>
+                <span *ngIf="(group.agentRecord.totalSubVendors || group.agentRecord.TotalSubVendors || 0) > 0"
+                  class="badge bg-white text-primary border border-primary fw-semibold px-1 py-0 text-nowrap"
+                  style="font-size: 0.55rem; line-height: 1.1;">
+                  Agent ({{group.agentRecord.totalSubVendors || group.agentRecord.TotalSubVendors}})
+                </span>
+              </div>
+
+              <!-- Right: Progress Ring + 3 Action Icons (Never wraps) -->
+              <div class="d-flex align-items-center gap-2.5 flex-nowrap flex-shrink-0 ms-auto">
+                <!-- Progress Ring (Crisp & High-Contrast) -->
+                <div
+                  style="position: relative; width: 28px; height: 28px; flex-shrink: 0; background: #ffffff; border-radius: 50%; box-shadow: 0 1px 3px rgba(0,0,0,0.12); display: flex; align-items: center; justify-content: center;"
+                  title="Verification Progress: {{ (group.agentRecord.verificationProgress || 0) }}%">
+                  <svg width="28" height="28" viewBox="0 0 36 36"
+                    style="transform: rotate(-90deg); position: absolute; top: 0; left: 0;">
+                    <circle cx="18" cy="18" r="15.9155" fill="none" stroke="#e2e8f0" stroke-width="3.5"></circle>
+                    <circle cx="18" cy="18" r="15.9155" fill="none"
+                      [attr.stroke]="(group.agentRecord.verificationProgress || 0) === 100 ? '#10B981' : '#f59e0b'"
+                      stroke-width="3.5" stroke-linecap="round"
+                      [attr.stroke-dasharray]="(group.agentRecord.verificationProgress || 0) + ', 100'"></circle>
+                  </svg>
+                  <span style="font-size: 8px; font-weight: 800; color: #0f172a; z-index: 1; line-height: 1;">
+                    {{ group.agentRecord.verificationProgress || 0 }}%
+                  </span>
+                </div>
+
+                <!-- 3 Action Icons -->
+                <button
+                  class="btn btn-link p-0 border-0 shadow-none d-inline-flex align-items-center justify-content-center"
+                  (click)="editVendor(group.agentRecord.pk_recId)" title="Edit"
+                  style="font-size: 0.88rem; line-height: 1; text-decoration: none; color: #0d6efd !important; width: 22px; height: 22px;">
+                  <i class="fa-regular fa-pen-to-square"></i>
+                </button>
+                <button
+                  class="btn btn-link p-0 border-0 shadow-none d-inline-flex align-items-center justify-content-center"
+                  (click)="sendOnboardingEmail(group.agentRecord.pk_recId, group.agentRecord.vendor_Name || '')"
+                  title="Send Onboarding Email"
+                  [disabled]="isSendingEmail && sendingEmailForId === group.agentRecord.pk_recId"
+                  style="font-size: 0.88rem; line-height: 1; text-decoration: none; color: #0284c7 !important; width: 22px; height: 22px;">
+                  <span *ngIf="isSendingEmail && sendingEmailForId === group.agentRecord.pk_recId"
+                    class="spinner-border spinner-border-sm" style="width: 11px; height: 11px;"></span>
+                  <i *ngIf="!(isSendingEmail && sendingEmailForId === group.agentRecord.pk_recId)"
+                    class="fa-solid fa-envelope"></i>
+                </button>
+                <button
+                  class="btn btn-link p-0 border-0 shadow-none d-inline-flex align-items-center justify-content-center"
+                  (click)="viewVendor(group.agentRecord.pk_recId)" title="View"
+                  style="font-size: 0.88rem; line-height: 1; text-decoration: none; color: #475569 !important; width: 22px; height: 22px;">
+                  <i class="fa-solid fa-eye"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Toggle Sub-vendors Bar (If has sub-vendors) -->
+            <div class="px-2 pt-1 pb-0 bg-transparent" *ngIf="group.vendors.length > 0">
+              <button
+                class="btn btn-sm bg-white border border-primary-subtle text-primary fw-semibold rounded-pill py-0.5 w-100 d-flex align-items-center justify-content-between shadow-xs"
+                style="font-size: 0.68rem;" (click)="toggleGroup(group)">
+                <span><i class="fa-solid fa-users me-1 text-primary"></i> Sub-vendors ({{ group.vendors.length
+                  }})</span>
+                <span>
+                  <span class="me-1">{{ group.isExpanded ? 'Hide' : 'Show' }}</span>
+                  <i class="fa-solid" [ngClass]="group.isExpanded ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+                </span>
+              </button>
+            </div>
+
+            <!-- Agent Body Details (Reduced gap, crisp text) -->
+            <div class="card-body py-1.5 px-2.5 bg-transparent">
+              <div class="d-flex align-items-center mb-0.5" style="font-size: 0.74rem;">
+                <span class="fw-semibold d-flex align-items-center me-1"
+                  style="min-width: 76px; color: #1e293b !important;">
+                  <i class="fa-solid fa-user text-primary me-1" style="width: 14px;"></i> Name :
+                </span>
+                <span class="fw-bold text-truncate" style="color: #0f172a !important;">{{
+                  group.agentRecord.vendor_Name }}</span>
+              </div>
+              <div class="d-flex align-items-center mb-0.5" style="font-size: 0.74rem;">
+                <span class="fw-semibold d-flex align-items-center me-1"
+                  style="min-width: 76px; color: #1e293b !important;">
+                  <i class="fa-solid fa-phone text-primary me-1" style="width: 14px;"></i> Contact :
+                </span>
+                <span class="fw-bold text-truncate" style="color: #0f172a !important;">{{
+                  group.agentRecord.vendor_ContactNo || '-' }}</span>
+              </div>
+              <div class="d-flex align-items-center mb-0.5" style="font-size: 0.74rem;">
+                <span class="fw-semibold d-flex align-items-center me-1"
+                  style="min-width: 76px; color: #1e293b !important;">
+                  <i class="fa-regular fa-calendar text-primary me-1" style="width: 14px;"></i> Reg Date :
+                </span>
+                <span class="fw-bold" style="color: #0f172a !important;">{{ group.agentRecord.vendor_RegistrationDate |
+                  date:'dd-MM-yyyy' }}</span>
+              </div>
+              <div class="d-flex align-items-center mb-0.5" style="font-size: 0.74rem;">
+                <span class="fw-semibold d-flex align-items-center me-1"
+                  style="min-width: 76px; color: #1e293b !important;">
+                  <i class="fa-solid fa-building-columns text-primary me-1" style="width: 14px;"></i> Bank :
+                </span>
+                <span class="fw-bold text-truncate" style="color: #0f172a !important;">{{
+                  group.agentRecord.vendor_BankName || '-' }}</span>
+              </div>
+              <div class="d-flex align-items-center mb-0" style="font-size: 0.74rem;">
+                <span class="fw-semibold d-flex align-items-center me-1"
+                  style="min-width: 76px; color: #1e293b !important;">
+                  <i class="fa-solid fa-credit-card text-primary me-1" style="width: 14px;"></i> A/C No :
+                </span>
+                <span class="fw-bold text-truncate" style="color: #0f172a !important;">{{
+                  group.agentRecord.vendor_AccountNo || '-' }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sub Vendors (or Standalone Vendors) Cards (Full bg-*-subtle) -->
+          <ng-container *ngIf="group.isExpanded || !group.isAgentGroup">
+            <div class="card mb-2 border border-1 rounded-2 shadow-sm overflow-hidden"
+              *ngFor="let data of group.vendors; let i = index"
+              [ngClass]="group.isAgentGroup ? 'ms-2 border-info-subtle bg-info-subtle' : getCardSubtleBg(data.vendor_Status)">
+
+              <!-- Card Header (Strictly Single Line: Badges on Left, Ring + Actions on Right) -->
+              <div
+                class="card-header bg-transparent py-1 px-2.5 border-bottom d-flex align-items-center justify-content-between flex-nowrap"
+                [ngClass]="group.isAgentGroup ? 'border-info-subtle' : 'border-secondary-subtle'">
+                <!-- Left: Code + Status Badge + Sub-Vendor Tag -->
+                <div class="d-flex align-items-center gap-1 flex-nowrap min-w-0 me-1">
+                  <span class="badge bg-dark text-white fw-semibold px-1.5 py-0.5 text-nowrap"
+                    style="font-size: 0.58rem; line-height: 1.1;">
+                    {{ data.vendor_Code }}
+                  </span>
+                  <span class="badge rounded-pill px-1.5 py-0.5 fw-semibold text-nowrap"
+                    style="font-size: 0.58rem; line-height: 1.1;" [ngClass]="getStatusClass(data.vendor_Status)">
+                    <i [ngClass]="getStatusIcon(data.vendor_Status)" class="me-0.5"></i>
+                    {{ data.vendor_Status || 'Not Verified' }}
+                  </span>
+                  <span *ngIf="group.isAgentGroup"
+                    class="badge bg-white text-info border border-info fw-semibold px-1 py-0 text-nowrap"
+                    style="font-size: 0.55rem; line-height: 1.1;">
+                    ↳ Sub {{ ((pageIndex - 1) * pageSize + gi + 1) + '.' + (i + 1) }}
+                  </span>
+                </div>
+
+                <!-- Right: Progress Ring + 3 Action Icons (Never wraps) -->
+                <div class="d-flex align-items-center gap-2.5 flex-nowrap flex-shrink-0 ms-auto">
+                  <!-- Progress Ring (Crisp & High-Contrast) -->
+                  <div
+                    style="position: relative; width: 28px; height: 28px; flex-shrink: 0; background: #ffffff; border-radius: 50%; box-shadow: 0 1px 3px rgba(0,0,0,0.12); display: flex; align-items: center; justify-content: center;"
+                    title="Verification Progress: {{ (data.verificationProgress || 0) }}%">
+                    <svg width="28" height="28" viewBox="0 0 36 36"
+                      style="transform: rotate(-90deg); position: absolute; top: 0; left: 0;">
+                      <circle cx="18" cy="18" r="15.9155" fill="none" stroke="#e2e8f0" stroke-width="3.5"></circle>
+                      <circle cx="18" cy="18" r="15.9155" fill="none"
+                        [attr.stroke]="(data.verificationProgress || 0) === 100 ? '#10B981' : '#f59e0b'"
+                        stroke-width="3.5" [attr.stroke-dasharray]="(data.verificationProgress || 0) + ', 100'">
+                      </circle>
+                    </svg>
+                    <span style="font-size: 8px; font-weight: 800; color: #0f172a; z-index: 1; line-height: 1;">
+                      {{ data.verificationProgress || 0 }}%
+                    </span>
+                  </div>
+
+                  <!-- 3 Action Icons -->
+                  <button
+                    class="btn btn-link p-0 border-0 shadow-none d-inline-flex align-items-center justify-content-center"
+                    (click)="editVendor(data.pk_recId)" title="Edit"
+                    style="font-size: 0.88rem; line-height: 1; text-decoration: none; color: #0d6efd !important; width: 22px; height: 22px;">
+                    <i class="fa-regular fa-pen-to-square"></i>
+                  </button>
+                  <button
+                    class="btn btn-link p-0 border-0 shadow-none d-inline-flex align-items-center justify-content-center"
+                    (click)="sendOnboardingEmail(data.pk_recId, data.vendor_Name || '')" title="Send Onboarding Email"
+                    [disabled]="isSendingEmail && sendingEmailForId === data.pk_recId"
+                    style="font-size: 0.88rem; line-height: 1; text-decoration: none; color: #0284c7 !important; width: 22px; height: 22px;">
+                    <span *ngIf="isSendingEmail && sendingEmailForId === data.pk_recId"
+                      class="spinner-border spinner-border-sm" style="width: 11px; height: 11px;"></span>
+                    <i *ngIf="!(isSendingEmail && sendingEmailForId === data.pk_recId)"
+                      class="fa-solid fa-envelope"></i>
+                  </button>
+                  <button
+                    class="btn btn-link p-0 border-0 shadow-none d-inline-flex align-items-center justify-content-center"
+                    (click)="viewVendor(data.pk_recId)" title="View"
+                    style="font-size: 0.88rem; line-height: 1; text-decoration: none; color: #475569 !important; width: 22px; height: 22px;">
+                    <i class="fa-solid fa-eye"></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Card Body (Reduced gap, crisp text) -->
+              <div class="card-body py-1.5 px-2.5 bg-transparent">
+                <div class="d-flex align-items-center mb-0.5" style="font-size: 0.74rem;">
+                  <span class="fw-semibold d-flex align-items-center me-1"
+                    style="min-width: 76px; color: #1e293b !important;">
+                    <i class="fa-solid fa-user me-1" [ngClass]="group.isAgentGroup ? 'text-info' : 'text-primary'"
+                      style="width: 14px;"></i> Name :
+                  </span>
+                  <span class="fw-bold text-truncate" style="color: #0f172a !important;">{{ data.vendor_Name }}</span>
+                </div>
+                <div class="d-flex align-items-center mb-0.5" style="font-size: 0.74rem;">
+                  <span class="fw-semibold d-flex align-items-center me-1"
+                    style="min-width: 76px; color: #1e293b !important;">
+                    <i class="fa-solid fa-phone me-1" [ngClass]="group.isAgentGroup ? 'text-info' : 'text-primary'"
+                      style="width: 14px;"></i> Contact :
+                  </span>
+                  <span class="fw-bold text-truncate" style="color: #0f172a !important;">{{ data.vendor_ContactNo || '-'
+                    }}</span>
+                </div>
+                <div class="d-flex align-items-center mb-0.5" style="font-size: 0.74rem;">
+                  <span class="fw-semibold d-flex align-items-center me-1"
+                    style="min-width: 76px; color: #1e293b !important;">
+                    <i class="fa-regular fa-calendar me-1" [ngClass]="group.isAgentGroup ? 'text-info' : 'text-primary'"
+                      style="width: 14px;"></i> Reg Date :
+                  </span>
+                  <span class="fw-bold" style="color: #0f172a !important;">{{ data.vendor_RegistrationDate |
+                    date:'dd-MM-yyyy' }}</span>
+                </div>
+                <div class="d-flex align-items-center mb-0.5" style="font-size: 0.74rem;">
+                  <span class="fw-semibold d-flex align-items-center me-1"
+                    style="min-width: 76px; color: #1e293b !important;">
+                    <i class="fa-solid fa-building-columns me-1"
+                      [ngClass]="group.isAgentGroup ? 'text-info' : 'text-primary'" style="width: 14px;"></i> Bank :
+                  </span>
+                  <span class="fw-bold text-truncate" style="color: #0f172a !important;">{{ data.vendor_BankName || '-'
+                    }}</span>
+                </div>
+                <div class="d-flex align-items-center mb-0" style="font-size: 0.74rem;">
+                  <span class="fw-semibold d-flex align-items-center me-1"
+                    style="min-width: 76px; color: #1e293b !important;">
+                    <i class="fa-solid fa-credit-card me-1"
+                      [ngClass]="group.isAgentGroup ? 'text-info' : 'text-primary'" style="width: 14px;"></i> A/C No :
+                  </span>
+                  <span class="fw-bold text-truncate" style="color: #0f172a !important;">{{ data.vendor_AccountNo || '-'
+                    }}</span>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+
+        </ng-container>
+
+        <div *ngIf="groupedVendors.length === 0" class="text-center py-4 text-muted border rounded bg-light">
+          No records found.
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-center justify-content-md-end mt-3 p-3 pt-0" *ngIf="vendorList.length > 0">
+        <pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>
+      </div>
+
+    </div>
+  </div>
+</div>

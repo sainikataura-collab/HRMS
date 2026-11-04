@@ -1,0 +1,466 @@
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card">
+      <div class="card-header bg-blue">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-6 col-lg-6">
+            <h4 class="">{{ Isedit ? 'Update Client Master' : 'Client Master' }}</h4>
+          </div>
+          <div class="col-sm-12 col-md-6 col-lg-6 d-flex align-items-center justify-content-md-end">
+            <button class="btn btnheader" routerLink="/dash/user/userdashboard/clientMaster_list">Back</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-body mt-4">
+        <form [formGroup]="ClientForm">
+
+          <div class="row row-cols-1 row-cols-md-3">
+
+            <div class="col">
+              <label>Client Code<span style="color: red;">*</span></label>
+              <div class="form-group">
+
+                <ng-select [items]="ClientCodeList" bindLabel="name" bindValue="value" formControlName="ClientCode"
+                  placeholder="--Select Client Code--" class="w-100"></ng-select>
+                <span
+                  *ngIf="submited && ClientForm.controls['ClientCode'].invalid && !ClientForm.get('ClientCode')?.errors?.['duplicate']"
+                  class="text-danger mt-1" style="font-size: 12px;">
+                  Please enter Client Code.
+                </span>
+
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Client Name<span style="color: red;">*</span></label>
+              <div class="form-group">
+                <input type="text" class="form-control" formControlName="ClientName">
+                <span *ngIf="submited && ClientForm.controls['ClientName'].invalid" class="text-danger mt-1"
+                  style="font-size: 12px;">
+                  Please enter Client Name.
+                </span>
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Emp Code Prefix</label>
+              <div class="form-group">
+                <input type="text" class="form-control" formControlName="EmpCodePrefix">
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Grouping</label>
+              <div class="form-group">
+                <input type="text" class="form-control" formControlName="Grouping">
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Contact Person</label>
+              <div class="form-group">
+                <input type="text" class="form-control" formControlName="ContactPerson">
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Email ID</label>
+              <div class="form-group">
+                <input type="email" class="form-control" formControlName="EmailID">
+              </div>
+            </div>
+
+            <div class="col">
+              <label>CIN No</label>
+              <div class="form-group">
+                <input type="text" class="form-control" formControlName="CINNo">
+              </div>
+            </div>
+
+            <div class="col">
+              <label>TAN No</label>
+              <div class="form-group">
+                <input type="text" class="form-control" formControlName="TAN">
+              </div>
+            </div>
+
+            <div class="col">
+              <label>GST No</label>
+              <div class="form-group">
+                <input type="text" class="form-control" formControlName="GST">
+              </div>
+            </div>
+
+            <div class="col">
+              <label>GST State</label>
+              <div class="form-group">
+                <ng-select [items]="StateList" bindLabel="name" bindValue="value" formControlName="gst_state"
+                  placeholder="--Select GST State--" class="w-100"></ng-select>
+              </div>
+            </div>
+
+            <div class="col">
+              <label>PAN No</label>
+              <div class="form-group">
+                <input type="text" class="form-control" formControlName="PAN">
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Zone</label>
+              <div class="form-group">
+                <ng-select [items]="ZoneList" bindLabel="name" bindValue="value" formControlName="fk_zoneId"
+                  placeholder="--Select Zone--" class="w-100"></ng-select>
+              </div>
+            </div>
+
+            <div class="col">
+              <label>State</label>
+              <div class="form-group">
+                <ng-select [items]="StateList" bindLabel="name" bindValue="value" formControlName="fk_stateId"
+                  (change)="onStateChange($event)" placeholder="--Select State--" class="w-100"></ng-select>
+              </div>
+            </div>
+
+            <div class="col">
+              <label>City</label>
+              <div class="form-group">
+                <ng-select [items]="CityList" bindLabel="name" bindValue="value" formControlName="fk_cityId"
+                  placeholder="--Select City--" class="w-100"></ng-select>
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Location</label>
+              <div class="form-group">
+                <ng-select [items]="LocationList" bindLabel="name" bindValue="value" formControlName="Location"
+                  [multiple]="true" placeholder="--Select Location(s)--" class="w-100"></ng-select>
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Pincode</label>
+              <div class="form-group">
+                <input type="text" class="form-control" formControlName="Pincode" maxlength="6">
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Phone No</label>
+              <div class="form-group">
+                <input type="text" class="form-control" formControlName="Phone" maxlength="10">
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Start Date</label>
+              <div class="form-group">
+                <input type="date" class="form-control" formControlName="StartDate">
+              </div>
+            </div>
+
+            <div class="col">
+              <label>End Date</label>
+              <div class="form-group">
+                <input type="date" class="form-control" formControlName="EndDate">
+                <!-- <span *ngIf="submited && ClientForm.get('EndDate')?.invalid" class="text-danger mt-1"
+                  style="font-size: 12px;">
+                  Please select an End Date.
+                </span> -->
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Leave Policy</label>
+              <div class="form-group">
+                <ng-select [items]="LeavePolicyList" bindLabel="name" bindValue="value" formControlName="LeavePolicy"
+                  placeholder="--Select Leave Policy--" class="w-100"></ng-select>
+              </div>
+            </div>
+
+            <div class="col">
+              <label>GST rate (%)</label>
+              <div class="form-group">
+                <input type="number" class="form-control" formControlName="gst_rate">
+              </div>
+            </div>
+            <div class="col">
+              <label>Commission (%)</label>
+              <div class="form-group">
+                <input type="number" class="form-control" formControlName="CommissionPercent">
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Type Of Service</label>
+              <div class="form-group">
+                <ng-select [items]="ServiceTypeList" bindLabel="name" bindValue="value" [multiple]="true"
+                  [closeOnSelect]="false" [searchable]="true" placeholder="--Select Service Types--" class="w-100 small"
+                  formControlName="ServiceTypeIds">
+                </ng-select>
+              </div>
+            </div>
+
+            <div class="col" *ngIf="modelList && modelList.length > 0">
+              <label>Model</label>
+              <div class="form-group">
+                <ng-select [items]="modelList" bindLabel="name" bindValue="value" [multiple]="true"
+                  [closeOnSelect]="false" [searchable]="true" placeholder="--Select Models--" class="w-100 small"
+                  formControlName="ModelTypeIds">
+                </ng-select>
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Address</label>
+              <div class="form-group">
+                <textarea class="form-control" formControlName="Address" rows="1"></textarea>
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Add Week Off In Paid Days</label>
+              <div class="form-group d-flex align-items-center" style="min-height: 38px;">
+                <div class="form-check d-flex align-items-center mb-0">
+                  <input class="form-check-input" type="checkbox" id="addWeekOffInPaidDays"
+                    formControlName="addWeekOffInPaidDays">
+                  <label class="form-check-label ms-2" for="addWeekOffInPaidDays">Add Week Off In Paid Days</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Show Details On Salary Slip</label>
+              <div class="form-group d-flex align-items-center" style="min-height: 38px;">
+                <div class="form-check d-flex align-items-center mb-0">
+                  <input class="form-check-input" type="checkbox" id="ShowDetailsOnSlalrySlip"
+                    formControlName="ShowDetailsOnSlalrySlip">
+                  <label class="form-check-label ms-2" for="ShowDetailsOnSlalrySlip">Show On Salary Slip</label>
+                </div>
+              </div>
+            </div>
+
+            <!-- <div class="col">
+              <label>Days Divide In Month</label>
+              <div class="form-group">
+                <input type="text" inputmode="numeric" maxlength="2" class="form-control" formControlName="daysDivideInMonth"
+                  placeholder="Days Divide In Month (Max 31)" (keypress)="validateTwoDigitDecimal($event)"
+                  (input)="formatTwoDigitDecimal($event, 'daysDivideInMonth')">
+              </div>
+            </div> -->
+
+            <div class="col">
+              <label>Present Days For Weekly Off</label>
+              <div class="form-group">
+                <input type="number" step="any" min="0" class="form-control" formControlName="PresentDaysforWeekOff"
+                  placeholder="Present Days For Weekly Off" (keypress)="validateDecimalNumber($event)">
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Pay Cycle</label>
+              <div class="form-group">
+                <ng-select [items]="Pay_cycle" bindLabel="name" bindValue="value" formControlName="Pay_cycle"
+                  placeholder="--Select--" class="w-100"></ng-select>
+              </div>
+            </div>
+          </div>
+
+
+
+
+
+
+          <!-- Header -->
+          <div class="row mt-3 mb-2">
+
+            <div class="col-12">
+              <p class="text-primary fw-bold">Extra Attendance Day Status</p>
+            </div>
+
+            <div class="col-lg-4">
+              <label class="fw-bold">Extra Day Status</label>
+            </div>
+
+            <div class="col-lg-4">
+              <label class="fw-bold">Day Consider</label>
+            </div>
+
+            <div class="col-lg-4">
+              <label class="fw-bold">Action</label>
+            </div>
+
+          </div>
+
+          <!-- Dynamic Rows -->
+          <div formArrayName="ExtraDayDetails">
+
+            <div class="row align-items-center mb-2" *ngFor="let item of ExtraDayDetails.controls; let i = index"
+              [formGroupName]="i">
+
+              <!-- Extra Day Status -->
+              <div class="col-lg-4">
+                <input type="text" class="form-control" formControlName="extraDayStatus">
+              </div>
+
+              <!-- Day Consider -->
+              <div class="col-lg-4">
+                <ng-select [items]="DayConsiderList" bindLabel="name" bindValue="value" formControlName="dayConsider"
+                  placeholder="Select">
+
+                </ng-select>
+              </div>
+
+              <!-- Buttons -->
+              <div class="col-lg-4">
+
+                <div class="d-flex gap-2">
+
+                  <button type="button" class="btn btn-danger" (click)="removeExtraDay(i)">
+
+                    <i class="fa fa-trash"></i>
+                  </button>
+
+                  <button *ngIf="i === ExtraDayDetails.length - 1" type="button" class="btn btn-success"
+                    (click)="addExtraDay()">
+
+                    <i class="fa fa-plus me-1"></i>
+                    Add
+                  </button>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <!-- Month days mapping with service type Section -->
+          <div class="row mt-4 mb-2">
+            <div class="col-12">
+              <p class="text-primary fw-bold">Month days mapping with service type</p>
+            </div>
+
+            <div class="col-lg-4">
+              <label class="fw-bold">Service Type</label>
+            </div>
+
+            <div class="col-lg-4">
+              <label class="fw-bold">Days Divide In Month</label>
+            </div>
+
+            <div class="col-lg-4">
+              <label class="fw-bold">Action</label>
+            </div>
+          </div>
+
+          <!-- Dynamic Month Days Rows -->
+          <div formArrayName="ServiceMonthDaysDetails">
+            <div class="row align-items-center mb-2" *ngFor="let item of ServiceMonthDaysDetails.controls; let i = index"
+              [formGroupName]="i">
+
+              <!-- Service Type Dropdown (CodeTypeId 14) -->
+              <div class="col-lg-4">
+                <ng-select [items]="serviceTypeMonthList" bindLabel="name" bindValue="value" formControlName="serviceTypeId"
+                  (change)="onServiceTypeMonthChange(i)" placeholder="--Select Service Type--" class="w-100">
+                </ng-select>
+              </div>
+
+              <!-- Days Divide In Month Input -->
+              <div class="col-lg-4">
+                <input type="text" inputmode="numeric" maxlength="2" class="form-control" formControlName="daysDivideInMonth"
+                  placeholder="Days Divide In Month (Max 31)" (keypress)="validateTwoDigitDecimal($event)"
+                  (input)="formatTwoDigitDecimal($event, undefined, i)">
+              </div>
+
+              <!-- Action Buttons -->
+              <div class="col-lg-4">
+                <div class="d-flex gap-2">
+                  <button type="button" class="btn btn-danger" (click)="removeServiceMonthDays(i)">
+                    <i class="fa fa-trash"></i>
+                  </button>
+
+                  <button *ngIf="i === ServiceMonthDaysDetails.length - 1" type="button" class="btn btn-success"
+                    (click)="addServiceMonthDays()">
+                    <i class="fa fa-plus me-1"></i> Add
+                  </button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+
+          <!-- Holiday Wages Section -->
+          <div class="row mt-4 mb-2">
+            <div class="col-12">
+              <p class="text-primary fw-bold">Holiday Wages</p>
+            </div>
+
+            <!-- Column 1: isHoliday Checkbox -->
+            <div class="col-lg-4">
+              <label class="fw-bold">Holiday Status</label>
+              <div class="form-group d-flex align-items-center" style="min-height: 38px;">
+                <div class="form-check d-flex align-items-center mb-0">
+                  <input class="form-check-input" type="checkbox" id="isHolidayHead" formControlName="isHolidayHead"
+                    (change)="onHolidayChange()">
+                  <label class="form-check-label ms-2" for="isHolidayHead">isHoliday</label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Column 2: Wage Type Dropdown -->
+            <div class="col-lg-4" *ngIf="ClientForm.get('isHolidayHead')?.value">
+              <label class="fw-bold">Wage Type</label>
+              <div class="form-group">
+                <ng-select [items]="HolidayWageTypeList" bindLabel="name" bindValue="value"
+                  formControlName="holidayWageTypeHead" (change)="onHolidayWageTypeChange()"
+                  placeholder="--Select Wage Type--" class="w-100">
+                </ng-select>
+              </div>
+            </div>
+
+            <!-- Column 3: Salary Earning Heads Multi-Select Dropdown -->
+            <div class="col-lg-4"
+              *ngIf="ClientForm.get('isHolidayHead')?.value && ClientForm.get('holidayWageTypeHead')?.value === 'On Heads'">
+              <label class="fw-bold">Salary Earning Heads</label>
+              <div class="form-group">
+                <ng-select [items]="EarningHeadList" bindLabel="name" bindValue="value" [multiple]="true"
+                  [closeOnSelect]="false" [searchable]="true" placeholder="--Select Earning Heads--" class="w-100 small"
+                  formControlName="HolidaySalaryHeadIds">
+                </ng-select>
+              </div>
+            </div>
+
+            <!-- Column Last: Holiday Multiple -->
+            <div class="col-lg-4" *ngIf="ClientForm.get('isHolidayHead')?.value">
+              <label class="fw-bold">Holiday Multiple</label>
+              <div class="form-group">
+                <input type="number" step="any" min="0" class="form-control" formControlName="HolidayMultiple"
+                  placeholder="Holiday Multiple">
+              </div>
+            </div>
+          </div>
+
+
+        </form>
+        <!---added new-->
+
+
+
+
+        <!--added new-->
+        <div class="row mt-4">
+          <div class="col d-flex align-items-end justify-content-end">
+            <button type="submit" class="btn btn-primary mx-1" (click)="onSubmit()">{{ Isedit ? 'Update' : 'Save'
+              }}</button>
+            <button type="reset" class="btn btn-outline-dark mx-1">Reset</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

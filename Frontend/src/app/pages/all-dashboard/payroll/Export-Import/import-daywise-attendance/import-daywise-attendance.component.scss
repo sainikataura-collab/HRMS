@@ -1,0 +1,302 @@
+.modal-backdrop.show {
+    z-index: 10500 !important;
+  }
+  
+  .modal.modal-fullscreen {
+    z-index: 10550 !important;
+    position: fixed !important;
+  }
+  
+  .table td {
+    white-space: nowrap;
+  }
+  .table th {
+    white-space: nowrap;
+  }
+  
+  .table-responsive {
+    overflow-x: auto;
+  }
+  
+
+  .cursor-pointer {
+    cursor: pointer;
+  }
+
+
+  @keyframes slideRightArrow {
+
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  50% {
+    transform: translateX(4px);
+  }
+}
+
+.animated-arrow {
+  display: inline-block;
+  animation: slideRightArrow 1.2s ease-in-out infinite;
+  will-change: transform;
+}
+
+.factbox-section-container {
+  position: sticky;
+  top: 10px;
+  height: calc(100vh - 140px) !important;
+  min-height: 180px !important;
+  max-height: calc(100vh - 140px) !important;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  .factbox-quick-actions {
+    flex-shrink: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: auto !important;
+      max-width: 100%;
+      gap: 5px;
+      padding: 3.5px 11px;
+      border-radius: 9999px !important;
+      font-size: 10.5px !important;
+      font-weight: 600 !important;
+      line-height: 1.2;
+      transition: all 0.18s ease-in-out;
+      cursor: pointer;
+      min-height: 26px;
+      border: none !important;
+      box-shadow: none !important;
+      white-space: nowrap;
+
+      .btn-text {
+        font-size: 10.5px !important;
+        font-weight: 600 !important;
+        line-height: 1.2;
+        letter-spacing: 0.05px;
+        white-space: nowrap;
+      }
+
+      i {
+        font-size: 11px !important;
+        flex-shrink: 0;
+      }
+
+      &:hover {
+        transform: translateY(-1.5px);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08) !important;
+      }
+
+      &:active {
+        transform: translateY(0);
+      }
+
+      /* 1. Green Subtle (Monthly Attendance) */
+      &.action-btn-green {
+        background-color: #dcfce7 !important;
+        color: #166534 !important;
+        border: none !important;
+
+        i {
+          color: #15803d !important;
+        }
+
+        &:hover {
+          background-color: #bbf7d0 !important;
+          color: #14532d !important;
+        }
+      }
+
+      /* 2. Blue Subtle (Attendance Adjustment) */
+      &.action-btn-blue {
+        background-color: #dbeafe !important;
+        color: #1e40af !important;
+        border: none !important;
+
+        i {
+          color: #1d4ed8 !important;
+        }
+
+        &:hover {
+          background-color: #bfdbfe !important;
+          color: #1e3a8a !important;
+        }
+      }
+
+      /* 3. Amber Subtle (Attendance Report) */
+      &.action-btn-amber {
+        background-color: #fef3c7 !important;
+        color: #92400e !important;
+        border: none !important;
+
+        i {
+          color: #b45309 !important;
+        }
+
+        &:hover {
+          background-color: #fde68a !important;
+          color: #78350f !important;
+        }
+      }
+
+      /* 4. Purple Subtle (Leave Report) */
+      &.action-btn-purple {
+        background-color: #f3e8ff !important;
+        color: #6b21a8 !important;
+        border: none !important;
+
+        i {
+          color: #7e22ce !important;
+        }
+
+        &:hover {
+          background-color: #e9d5ff !important;
+          color: #581c87 !important;
+        }
+      }
+    }
+  }
+
+  ::ng-deep app-fact-box,
+  ::ng-deep app-darcl-fact-box {
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100% !important;
+    max-height: 100% !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+
+    .card {
+      height: 100% !important;
+      max-height: 100% !important;
+      min-height: 0 !important;
+      display: flex !important;
+      flex-direction: column !important;
+      overflow: hidden !important;
+    }
+
+    .card-header {
+      flex-shrink: 0 !important;
+    }
+
+    .card-body {
+      flex: 1 1 auto !important;
+      min-height: 0 !important;
+      overflow: hidden !important;
+      display: flex !important;
+      flex-direction: column !important;
+    }
+
+    .file-history-list {
+      flex: 1 1 0px !important;
+      min-height: 0 !important;
+      max-height: 100% !important;
+      overflow-y: auto !important;
+      scrollbar-width: thin;
+
+      &::-webkit-scrollbar {
+        width: 5px;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background-color: #cbd5e1;
+        border-radius: 4px;
+      }
+    }
+
+    .card-footer {
+      flex-shrink: 0 !important;
+    }
+  }
+}
+
+
+.table-scroll-viewport {
+  max-height: calc(100vh - 350px);
+  min-height: 260px;
+  overflow-y: auto;
+  overflow-x: auto;
+  position: relative;
+  scrollbar-width: thin;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f8fafc;
+  }
+}
+
+.attendance-table {
+  margin-bottom: 0 !important;
+
+  thead.sticky-header th {
+    position: sticky;
+    top: 0;
+    background-color: #f1f5f9 !important;
+    color: #334155;
+    z-index: 2;
+    white-space: nowrap;
+    border-top: none;
+    box-shadow: inset 0 -1px 0 #cbd5e1;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 10px;
+  }
+
+  tbody td {
+    white-space: nowrap;
+    font-size: 12.5px;
+    vertical-align: middle;
+    padding: 6px 10px;
+  }
+}
+
+.list-tabs {
+  .nav-link {
+    border-radius: 20px;
+    font-size: 12.5px;
+    transition: all 0.2s ease;
+    border: 1px solid #e2e8f0;
+    background-color: #f8fafc;
+    color: #475569;
+
+    &.active {
+      background-color: #3080e8;
+      color: #fff;
+      border-color: #3080e8;
+    }
+
+    &:hover:not(.active) {
+      background-color: #edf2f7;
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+
+

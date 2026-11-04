@@ -1,0 +1,153 @@
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+            <!--  -->
+            <div class="card-header bg-blue ">
+                <div class="row w-100 ">
+                    <div class="col-sm-12 col-md-6 col-lg-6 ">
+                        <h4>Employee Search</h4>
+                    </div>
+                    <!-- <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+                        <button class="btn btnheader" routerLink="/dash/hr/hrdashboard/CRD_BudgetIssue_Mst_list">Back
+                        </button>
+                    </div> -->
+                </div>
+
+
+            </div>
+
+<app-common-search></app-common-search>
+
+            <form [formGroup]="Userparametermasterform">
+                <!-- NextFrom---------- -->
+                <div class="card-header bg-blue mt-3 ">
+                    <div class="row w-100 ">
+                        <div class="col-sm-12 col-md-6 col-lg-6 ">
+                            <h4>Clearence Department</h4>
+                        </div>
+                        <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+            <button class="btn btnheader" routerLink="/dash/hr/hrdashboard/ClearanceDepartment_User_list">Back
+            </button>
+        </div>
+
+                    </div>
+
+
+                </div>
+                <!-- Clearence depratment -->
+                <div class="card-body mt-4">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label>Employee Code</label>
+                            <div class="form-group">
+                                <ng-select id="year" [items]="selects" bindLabel="name" bindValue="value"
+                                    formControlName="EmployeeCode" placeholder="--Select --" class="w-100"></ng-select>
+                                <div *ngIf="submitted   && Userparametermasterform.get('EmployeeCode')?.invalid"
+                                    class="text-danger">
+                                    Employee Code is required!
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label>Department</label>
+                            <div class="form-group">
+                                <ng-select id="year" [items]="selects" bindLabel="name" bindValue="value"
+                                    formControlName="Department" placeholder="--Select --" class="w-100"></ng-select>
+                                    <div *ngIf="submitted   && Userparametermasterform.get('Department')?.invalid"
+                                    class="text-danger">
+                                    Department is required!
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label>Remarks</label>
+                            <div class="form-group">
+                                <input type="textarea" class="form-control" formControlName="Remarks">
+                                <div *ngIf="submitted   && Userparametermasterform.get('Remarks')?.invalid"
+                                class="text-danger">
+                                Remarks is required!
+                            </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+
+                            <div class="form-group">
+                                <label>Is Active</label>&nbsp;&nbsp;
+                                <input type="checkbox" class="form-check-input fs-6 mx-1" formControlName="IsActive">
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- parameter department -->
+
+                <!-- NextFrom---------- -->
+                <div class="card-header bg-blue mt-3 ">
+                    <div class="row w-100 ">
+                        <div class="col-sm-12 col-md-6 col-lg-6 ">
+                            <h4>Parameters Details</h4>
+                        </div>
+                        <!-- <div
+                            class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+                            <button class="btn btnheader" routerLink="/dash/hr/hrdashboard/Due_Clearence_list">Back
+                            </button>
+                        </div> -->
+
+                    </div>
+
+
+                </div>
+                <div class="card-body mt-4">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label>Parameter</label>
+                            <div class="form-group">
+                                <ng-select id="year" [items]="selects" bindLabel="name" bindValue="value"
+                                    formControlName="Parameter" placeholder="--Select --" class="w-100"></ng-select>
+                                <div *ngIf="submitted   && Userparametermasterform.get('Parameter')?.invalid"
+                                    class="text-danger">
+                                    Parameter is required!
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Is Active</label>&nbsp;&nbsp;
+                                <input type="checkbox" class="form-check-input fs-6 mx-1" formControlName="IsActiveS">
+
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label>Remarks</label>
+                            <div class="form-group">
+                                <input type="text" class="form-control" formControlName="RemarksS">
+                                <div *ngIf="submitted   && Userparametermasterform.get('Remarks')?.invalid"
+                                    class="text-danger">
+                                    Remarks is required!
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+
+                        </div>
+
+                    </div>
+        
+
+                    <!-- Buttons -->
+                    <div class="modal-footer">
+
+                        <button type="submit" class="btn btn-outline-dark mx-1" (click)="resetForm()">Reset</button>
+                        <button type="submit" class="btn btn-primary mx-1" (click)="submit()">Add</button>
+
+
+                    </div>
+                </div>
+            </form>
+        </div>
+
+
+    </div>
+
+</div>

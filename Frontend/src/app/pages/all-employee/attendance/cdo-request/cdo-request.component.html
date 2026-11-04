@@ -1,0 +1,65 @@
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card">
+      <!-- Header -->
+      <div class="card-header bg-blue">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-6 col-lg-6 col-9">
+            <h4>CDO Request</h4>
+          </div>
+          <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 col-3 d-flex align-items-center justify-content-md-end">
+            <button class="btn btnheader"
+              routerLink="/dash/attendance/attendancedashboard/cdoRequest-list">Back</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Body -->
+      <div class="card-body mt-4">
+        <form [formGroup]="Form" class="row row-cols-1 row-cols-md-3">
+
+          <!-- Regularization Date -->
+
+          <div class="col">
+            <label for="attenDate">CDO Date <span style="color: red;">*</span></label>
+            
+            <input type="date" formControlName="attenDate" class="form-control"/>
+            <span *ngIf="showError && Form.controls['attenDate'].invalid" class="text-danger mt-1"
+              style="font-size: 12px;">
+              Please enter Date.
+            </span>
+          </div>
+
+        
+          <!-- Working Hours -->
+          <div class="col">
+            <label>Hours <span style="color: red;">*</span></label>
+            <div class="form-group">
+              <input type="text" class="form-control" formControlName="cdoHours"  (keypress)="validateNumber($event)" maxlength="3"/>
+              <span *ngIf="showError && Form.controls['totalhours'].invalid" class="text-danger mt-1"
+                style="font-size: 12px;">
+                Hours required
+              </span>
+            </div>
+          </div>
+
+          <!-- Remarks -->
+          <div class="col">
+            <label>Remarks</label>
+            <div class="form-group">
+              <textarea class="form-control" formControlName="remarks"></textarea>
+            </div>
+          </div>
+
+          <!-- Buttons -->
+          <div class="col-sm-12 col-md-12 col-lg-12 d-flex align-items-center justify-content-end">
+            <button type="button" class="btn btn-primary mx-1" (click)="onSubmit()">Save</button>
+            <button type="button" class="btn btn-outline-dark mx-1" (click)="resetForm()">Reset</button>
+          </div>
+
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>

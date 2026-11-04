@@ -1,0 +1,77 @@
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <!--  -->
+      <div class="card-header bg-primary">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-between">
+            <h4>List of Shift Master</h4>
+
+          </div>
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-center">
+            <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText" />
+          </div>
+
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-md-end">
+            <button class="btn btnheader" routerLink="/dash/adminAttendance/adminAttendancedashboard/shiftmaster">
+              Add
+            </button>
+            <button class="btn btn-light mx-1" (click)="exportToExcel()">
+              Download
+            </button>
+          </div>
+
+        </div>
+      </div>
+      <!--  -->
+      <div class="card-body">
+        <div class="table-responsive table-invoice">
+          <table Id="exportTable" class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Sr.No.</th>
+                <th>Shift Name</th>
+                <th>Start Time</th>
+                <th>End Time</th>
+                <th>Duration</th>
+                <th>Grace Time</th>
+                <th>Compensation Time</th>
+                <th>ShiftType</th>
+                <th>Active</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Paginate filtered data -->
+              <tr
+                *ngFor="let shift of  filteredData() | paginate: { itemsPerPage: pageSize, currentPage: pageIndex ,totalItems:totalItems};let i = index">
+
+                <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+                <td>{{shift.shiftName}}</td>
+                <td>{{shift.startTime}}</td>
+                <td>{{shift.endTime}}</td>
+                <td>{{formatTime(shift.duration)}}</td>
+                <td>{{formatTime(shift.graceTime)}}</td>
+                <td>{{formatTime(shift.compenstationTime)}}</td>
+                <td>{{shift.fk_shifttype}}</td>
+
+                <td>
+                  <span class="badge" [ngClass]="shift.isActive ? 'text-success' : 'text-danger'">
+                    {{ shift.isActive ? 'Yes' : 'No' }}
+                  </span>
+                </td>
+                <td>
+                  <button class="btn btn-sm btn-outline" (click)="isUpdate(shift.pk_shiftId)"><i
+                      class="fa-solid fa-pen-to-square"></i></button>
+                  <button class="btn btn-sm btn-outline" (click)="deleteZone(shift.pk_shiftId)"><i
+                      class="fa-solid fa-trash"></i></button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

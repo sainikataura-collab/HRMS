@@ -1,0 +1,176 @@
+<!-- user-reports.html -->
+<div class="reports-container">
+    <!-- Header Section -->
+    <div class="header-section">
+        <h2>Reports Dashboard</h2>
+        <br>
+        <br>
+        <p>Generate and download comprehensive reports with advanced filtering capabilities</p>
+    </div>
+
+    <!-- Search Section -->
+    <div class="search-section">
+        <div class="search-container">
+            <input type="text" class="search-input" placeholder="Search reports..." 
+                   [(ngModel)]="reportFilter" 
+                   (ngModelChange)="filterReports()">
+            <div class="search-icon">🔍</div>
+        </div>
+    </div>
+
+    <!-- Reports Grid -->
+    <div class="reports-grid" *ngIf="filteredReportNames.length > 0; else noReports">
+        <div *ngFor="let name of filteredReportNames" class="report-card" (click)="openFilterModal(name)">
+            <div class="report-header">
+                <div class="report-icon">📄</div>
+                <div class="report-info">
+                    <h3>{{ name }}</h3>
+                    <p>Click to configure filters and download</p>
+                </div>
+            </div>
+            <button class="download-btn">
+                <span>↓</span>
+                Download Report
+            </button>
+        </div>
+    </div>
+
+    <!-- Empty State -->
+    <ng-template #noReports>
+        <div class="empty-state">
+            <div class="empty-state-icon">📂</div>
+            <h3>No reports found</h3>
+            <p>Try adjusting your search criteria or check back later for new reports.</p>
+        </div>
+    </ng-template>
+</div>
+
+<!-- ======================================================================= -->
+<!-- Filter Modal -->
+<!-- ======================================================================= -->
+<div class="modal-overlay" *ngIf="selectedReportForFilter" (click)="closeFilterModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+        
+        <div class="modal-header">
+            <h3>Filter Report: {{ selectedReportForFilter }}</h3>
+            <button class="close-btn" (click)="closeFilterModal()">&times;</button>
+        </div>
+
+        <div class="modal-body">
+            <p>Configure your report filters below. Leave fields blank to include all data.</p>
+            
+            <div *ngIf="isLoadingFilters" class="loading-spinner">
+                <div class="spinner"></div>
+                <p>Loading filter options...</p>
+            </div>
+
+            
+            <div *ngIf="!isLoadingFilters && filterableFields.length > 0" class="filter-fields-grid">
+                <div *ngFor="let field of filterableFields" class="form-group">
+                    
+                    <label [for]="field.fieldName">{{ field.alias }}</label>
+
+                    <!-- Custom Multi-Select Component -->
+                    <ng-container *ngIf="field.dataType === 'text' || field.dataType === 'multi-select-text'">
+                        <div class="custom-multi-select">
+                            <div class="selected-chips">
+                                <span *ngFor="let value of filterValues[field.fieldName].values" class="chip">
+                                    {{ value }}
+                                    <button (click)="removeSelectedItem(field.fieldName, value)" class="remove-chip">&times;</button>
+                                </span>
+                            </div>
+                            <div class="dropdown-container">
+                                <input 
+                                    type="text" 
+                                    class="dropdown-input form-input"
+                                    placeholder="Select values..."
+                                    (focus)="toggleDropdown(field.fieldName, true)"
+                                    (blur)="toggleDropdown(field.fieldName, false)"
+                                    [(ngModel)]="dropdownFilters[field.fieldName]"
+                                    (ngModelChange)="filterDropdownOptions(field.fieldName)">
+                                <div class="dropdown-options" *ngIf="activeDropdown === field.fieldName">
+                                    <div *ngIf="getFilteredOptions(field.fieldName).length === 0" class="dropdown-option disabled">No results found</div>
+                                    <div 
+                                        *ngFor="let option of getFilteredOptions(field.fieldName)" 
+                                        class="dropdown-option"
+                                        (mousedown)="selectItem(field.fieldName, option)">
+                                        {{ option }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </ng-container>
+
+                    <!-- "Contains" Text Search -->
+                    <ng-container *ngIf="field.dataType === 'contains-text'">
+                        <input type="text" class="form-input" [placeholder]="'Contains text...'" [(ngModel)]="filterValues[field.fieldName].value">
+                    </ng-container>
+
+                    <!-- ADVANCED Range/Condition Filters (Number, Date, DateTime) -->
+                    <ng-container *ngIf="field.dataType === 'number' || field.dataType === 'date' || field.dataType === 'datetime'">
+                        <div class="range-container">
+                            <div *ngFor="let condition of filterValues[field.fieldName].conditions; let i = index" class="range-filter-row">
+                                
+                                <!-- Operator Dropdown -->
+                                <select class="operator-select" [(ngModel)]="condition.operator">
+                                    <option value="between">Between</option>
+                                    <option value="equals">=</option>
+                                    <option value="greaterThan">&gt;</option>
+                                    <option value="lessThan">&lt;</option>
+                                    <option value="greaterThanOrEquals">&gt;=</option>
+                                    <option value="lessThanOrEquals">&lt;=</option>
+                                </select>
+
+                                <!-- Input Fields -->
+                                <div class="range-inputs" [ngSwitch]="field.dataType">
+                                    <ng-container *ngSwitchCase="'number'">
+                                        <input type="number" class="form-input" placeholder="Value" [(ngModel)]="condition.from">
+                                        <span *ngIf="condition.operator === 'between'">to</span>
+                                        <input *ngIf="condition.operator === 'between'" type="number" class="form-input" placeholder="Value 2" [(ngModel)]="condition.to">
+                                    </ng-container>
+                                    <ng-container *ngSwitchCase="'date'">
+                                        <input type="date" class="form-input" [(ngModel)]="condition.from">
+                                        <span *ngIf="condition.operator === 'between'">to</span>
+                                        <input *ngIf="condition.operator === 'between'" type="date" class="form-input" [(ngModel)]="condition.to">
+                                    </ng-container>
+                                    <ng-container *ngSwitchCase="'datetime'">
+                                        <input type="datetime-local" class="form-input" [(ngModel)]="condition.from">
+                                        <span *ngIf="condition.operator === 'between'">to</span>
+                                        <input *ngIf="condition.operator === 'between'" type="datetime-local" class="form-input" [(ngModel)]="condition.to">
+                                    </ng-container>
+                                </div>
+                                <button *ngIf="i > 0" (click)="removeCondition(field.fieldName, i)" class="btn-remove-range" title="Remove condition">&times;</button>
+                            </div>
+                            <button (click)="addCondition(field.fieldName)" class="btn-add-range">+ Add another condition</button>
+                        </div>
+                    </ng-container>
+
+                    <!-- Boolean Dropdown -->
+                    <ng-container *ngIf="field.dataType === 'boolean'">
+                        <select class="form-input" [(ngModel)]="filterValues[field.fieldName].value">
+                            <option [ngValue]="null">-- All --</option>
+                            <option [ngValue]="true">Yes</option>
+                            <option [ngValue]="false">No</option>
+                        </select>
+                    </ng-container>
+
+                </div>
+            </div>
+            
+            <div *ngIf="!isLoadingFilters && filterableFields.length === 0" class="no-filters-message">
+                <div class="no-filters-content">
+                    <div class="no-filters-icon">⚙️</div>
+                    <p>This report has no configurable filters. You can download the full report directly.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn btn-secondary" (click)="closeFilterModal()">Cancel</button>
+            <button class="btn btn-primary" (click)="downloadWithFilters()" [disabled]="isDownloading">
+                <span *ngIf="!isDownloading">Download Report</span>
+                <span *ngIf="isDownloading">Downloading...</span>
+            </button>
+        </div>
+    </div>
+</div>

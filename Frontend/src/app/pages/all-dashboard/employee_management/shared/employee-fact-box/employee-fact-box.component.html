@@ -1,0 +1,655 @@
+<!-- Right Side: Employee Master Tab-Wise Fact Box -->
+<div class="card fact-box-card" *ngIf="isOpen">
+
+  <!-- Fact Box Header (Identical Size and Color to Employee Master Header) -->
+  <div
+    class="card-header bg-blue d-flex justify-content-between align-items-center flex-wrap position-relative fact-box-header">
+    <!-- Side-by-Side Tab Switching (Visible all the time) -->
+    <div class="d-flex align-items-center fact-box-tabs">
+      <button type="button" class="fact-box-tab-btn" [class.active]="activeView === 'general'"
+        (click)="selectView('general')" title="General (Issued Letters)">
+        <i class="fa fa-folder-open me-1"></i>
+        <span>General</span>
+        <span class="badge rounded-pill ms-1 tab-badge"
+          [ngClass]="activeView === 'general' ? 'bg-primary text-white' : 'bg-white text-primary'">
+          {{ generalLetters.length }}
+        </span>
+      </button>
+
+      <button type="button" class="fact-box-tab-btn" [class.active]="activeView === 'audit'"
+        (click)="selectView('audit')" title="Audit Log">
+        <i class="fa fa-info-circle me-1"></i>
+        <span>Audit Log</span>
+        <span class="badge rounded-pill ms-1 tab-badge"
+          [ngClass]="activeView === 'audit' ? 'bg-primary text-white' : 'bg-white text-primary'" *ngIf="totalItems > 0">
+          {{ totalItems }}
+        </span>
+      </button>
+    </div>
+
+    <div class="d-flex align-items-center gap-2">
+      <!-- Filter Button (in Header, for both Audit Log and General view) -->
+      <button type="button" class="btn-header-icon text-white p-0 me-1" (click)="toggleFilter($event)"
+        [title]="activeView === 'audit' ? ((selectedField || selectedUser) ? 'Filter Active' : 'Filter Audit Logs') : (generalSearchText ? 'Filter Active' : 'Search / Filter')">
+        <i class="fa fa-filter fs-6"
+          [ngClass]="{'text-warning': (activeView === 'audit' && (selectedField || selectedUser)) || (activeView === 'general' && generalSearchText)}"></i>
+      </button>
+
+      <!-- Refresh Button -->
+      <button type="button" class="btn-header-icon text-white p-0 me-1" (click)="refresh($event)"
+        [title]="activeView === 'audit' ? 'Refresh Audit Log' : 'Refresh General Tab'">
+        <i class="fa fa-rotate-right fs-6" [ngClass]="{'fa-spin': isLoading || isGeneralLoading}"></i>
+      </button>
+
+      <!-- Close Button (Matching size and style of filter and refresh) -->
+      <button type="button" class="btn-header-icon text-white p-0" (click)="toggleFactBox()" aria-label="Close"
+        title="Close Fact Box">
+        <i class="fa fa-times fs-6"></i>
+      </button>
+    </div>
+  </div>
+
+  <div class="card-body p-1 flex-column d-flex fact-box-body">
+
+    <!-- ==================== VIEW 1: AUDIT LOG ==================== -->
+    <ng-container *ngIf="activeView === 'audit'">
+      <!-- Collapsible Field & User Filter Bar (Toggled by Header Filter Button) -->
+      <div class="filter-bar px-2 py-2 border-bottom mb-1 rounded-top" *ngIf="isFilterOpen && logs.length > 0">
+        <div class="row g-1 align-items-center">
+          <!-- Field Filter Dropdown (Equal 50% Size) -->
+          <div class="col-6">
+            <div class="input-group input-group-sm" style="height: 28px;">
+              <span class="input-group-text bg-white px-2 py-0 border-end-0 text-muted d-flex align-items-center"
+                style="font-size: 0.7rem; height: 28px; line-height: 28px;">
+                <i class="fa fa-filter text-primary"></i>
+              </span>
+              <select class="form-select form-select-sm text-dark bg-white border-start-0 py-0 ps-1 pe-3"
+                style="font-size: 0.72rem; height: 28px; line-height: 28px;" [(ngModel)]="selectedField"
+                (change)="applyFilter()">
+                <option value="">All Fields ({{ availableFields.length }})</option>
+                <option *ngFor="let field of availableFields" [value]="field">{{ field }}</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- User Filter Dropdown (Equal 50% Size) -->
+          <div class="col-6">
+            <div class="input-group input-group-sm" style="height: 28px;">
+              <span class="input-group-text bg-white px-2 py-0 border-end-0 text-muted d-flex align-items-center"
+                style="font-size: 0.7rem; height: 28px; line-height: 28px;">
+                <i class="fa fa-user text-primary"></i>
+              </span>
+              <select class="form-select form-select-sm text-dark bg-white border-start-0 py-0 ps-1 pe-3"
+                style="font-size: 0.72rem; height: 28px; line-height: 28px;" [(ngModel)]="selectedUser"
+                (change)="applyFilter()">
+                <option value="">All Users ({{ availableUsers.length }})</option>
+                <option *ngFor="let user of availableUsers" [value]="user">{{ user }}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reset Filter Row (Visible when filter active) -->
+        <div class="d-flex justify-content-between align-items-center mt-1 pt-1" *ngIf="selectedField || selectedUser">
+          <span class="text-muted" style="font-size: 0.68rem;">
+            Showing <strong>{{ totalItems }}</strong> of <strong>{{ allGroups.length }}</strong> transactions
+          </span>
+          <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2 d-flex align-items-center"
+            style="height: 24px; font-size: 0.7rem;" (click)="resetFilters()" title="Clear Filters">
+            <i class="fa fa-times me-1"></i>Reset
+          </button>
+        </div>
+      </div>
+
+      <!-- Scrollable Logs List -->
+      <div class="file-history-list px-1 flex-grow-1" style="flex: 1 1 auto; overflow-y: auto; min-height: 0;">
+
+        <!-- Loading state -->
+        <div *ngIf="isLoading" class="text-center py-3 text-muted small">
+          <i class="fa fa-spinner fa-spin me-1"></i>Loading history...
+        </div>
+
+        <!-- Empty state when no logs match the filter -->
+        <div *ngIf="!isLoading && displayedGroups.length === 0 && (selectedField || selectedUser)"
+          class="text-muted small text-center py-3 empty-audit-state rounded border">
+          <i class="fa fa-filter me-1 fs-6 d-block mb-1 text-secondary"></i>
+          No audit logs match the selected filter.
+          <div class="mt-2">
+            <button type="button" class="btn btn-sm btn-outline-primary py-1 px-2" style="font-size: 0.72rem;"
+              (click)="resetFilters()">
+              Clear Filters
+            </button>
+          </div>
+        </div>
+
+        <!-- Empty state when no logs exist at all -->
+        <div *ngIf="!isLoading && displayedGroups.length === 0 && !selectedField && !selectedUser"
+          class="text-muted small text-center py-3 empty-audit-state rounded border">
+          <i class="fa fa-info-circle me-1"></i>No audit logs recorded for this tab.
+        </div>
+
+        <!-- Audit Card Items: 1 Cell Per Update Transaction -->
+        <div *ngFor="let group of displayedGroups; let i = index; trackBy: trackByGroup"
+          class="p-2 mb-2 rounded audit-log-item"
+          [ngClass]="i % 2 === 0 ? 'bg-warning-subtle audit-card-warning' : 'bg-success-subtle audit-card-success'">
+
+          <!-- Transaction Header (User & Timestamp) -->
+          <div class="d-flex justify-content-between align-items-center text-dark mb-2 pb-1 audit-item-header"
+            style="font-size: 0.72rem;">
+            <span class="text-dark">
+              <i class="fa fa-user me-1 text-primary"></i><strong>{{ getUserDisplayName(group.entryBy) }}</strong>
+            </span>
+            <span class="text-dark fw-medium">
+              <i class="fa fa-calendar me-1 text-dark"></i>{{ group.entryDate | date: 'dd-MMM-yyyy hh:mm:ss a' }}
+            </span>
+          </div>
+
+          <!-- Audit Log Table: Field | Previous | Current -->
+          <div class="diff-table-container">
+            <table class="table table-sm table-borderless align-middle mb-0">
+              <thead>
+                <tr>
+                  <th class="px-1 py-0 text-start" style="width: 36%;">Field</th>
+                  <th class="px-1 py-0 text-start" style="width: 32%;">Previous</th>
+                  <th class="px-1 py-0 text-start" style="width: 32%;">Current</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let f of group.fields">
+                  <td class="px-1 py-0 text-dark fw-semibold text-break text-start">
+                    {{ formatFieldName(f.fieldName) }}
+                  </td>
+                  <td class="px-1 py-0 text-dark text-start text-break">
+                    {{ formatValue(f.previousValue) }}
+                  </td>
+                  <td class="px-1 py-0 text-dark text-start text-break">
+                    {{ formatValue(f.currentValue) }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+
+      </div>
+    </ng-container>
+
+    <!-- ==================== VIEW 2: GENERAL TAB (LETTERS & DOCUMENTS) ==================== -->
+    <ng-container *ngIf="activeView === 'general'">
+      <!-- Collapsible Search / Filter Bar (Toggled by Header Filter Button, identical to Audit Log) -->
+      <div class="filter-bar px-2 py-2 border-bottom mb-1 rounded-top" *ngIf="isFilterOpen">
+        <div class="input-group input-group-sm" style="height: 28px;">
+          <span class="input-group-text bg-white px-2 py-0 border-end-0 text-muted d-flex align-items-center"
+            style="font-size: 0.7rem; height: 28px; line-height: 28px;">
+            <i class="fa fa-search text-primary"></i>
+          </span>
+          <input type="text" class="form-control form-control-sm text-dark bg-white border-start-0 py-0 ps-1 pe-2"
+            style="font-size: 0.72rem; height: 28px; line-height: 28px;" placeholder="Search letters or formats..."
+            [(ngModel)]="generalSearchText" (input)="applyGeneralFilter()" />
+          <button *ngIf="generalSearchText" class="btn btn-sm btn-outline-secondary py-0 px-2 border-start-0"
+            type="button" (click)="clearGeneralSearch()" title="Clear search">
+            <i class="fa fa-times" style="font-size: 0.7rem;"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Issued Letters / CTC Subheader (Title on Left, CTC + Profile + Generate on Right) -->
+      <div class="d-flex justify-content-between align-items-center mb-2 px-1 pt-1 gap-1">
+        <div class="small fw-semibold text-dark d-flex align-items-center" style="font-size: 0.74rem;">
+          <ng-container *ngIf="isSalaryTab && generalViewMode === 'ctc'">
+            <i class="fa fa-calculator me-1 text-success"></i>
+            <span>CTC Breakdown</span>
+          </ng-container>
+          <ng-container *ngIf="!isSalaryTab || generalViewMode !== 'ctc'">
+            <i class="fa fa-file-text me-1 text-primary"></i>
+            <span>Issued Letters</span>
+            <span class="badge bg-primary text-white rounded-pill ms-1" style="font-size: 0.65rem;">
+              {{ generalLetters.length }}
+            </span>
+          </ng-container>
+        </div>
+
+        <div class="d-flex align-items-center gap-1 ms-auto">
+          <!-- CTC Button: Displayed on Tab 4 (Salary Details) with Profile & Generate -->
+          <button *ngIf="isSalaryTab" type="button" class="btn btn-sm py-0 px-2 d-flex align-items-center"
+            [ngClass]="generalViewMode === 'ctc' ? 'btn-success text-white shadow-sm' : 'btn-outline-success'"
+            style="height: 24px; font-size: 0.7rem;" (click)="toggleCtcView()"
+            [title]="generalViewMode === 'ctc' ? 'View Issued Letters' : 'View Full CTC Breakdown'">
+            <i class="fa fa-calculator me-1"></i>CTC
+          </button>
+          <button type="button" class="btn btn-sm btn-outline-info py-0 px-2 d-flex align-items-center"
+            style="height: 24px; font-size: 0.7rem;" (click)="openProfileModal()" title="View Employee Profile">
+            <i class="bi bi-person-lines-fill me-1"></i>Profile
+          </button>
+          <button type="button" class="btn btn-sm btn-outline-primary py-0 px-2 d-flex align-items-center"
+            style="height: 24px; font-size: 0.7rem;" (click)="navigateToGenerate()" title="Generate Letter">
+            <i class="fa fa-plus me-1"></i>Generate
+          </button>
+        </div>
+      </div>
+
+      <!-- Scrollable List (Identical to file-history-list in Audit Log) -->
+      <div class="file-history-list px-1 flex-grow-1"
+        [class.overflow-hidden]="isSalaryTab && generalViewMode === 'ctc'">
+
+        <!-- ================= SUBVIEW 1: CTC DETAILS (Matching Screenshot 1 ctcdetails) ================= -->
+        <ng-container *ngIf="isSalaryTab && generalViewMode === 'ctc'">
+          <!-- Loading State -->
+          <div *ngIf="isCtcLoading" class="text-center py-4 text-muted small">
+            <i class="fa fa-spinner fa-spin me-1 text-primary"></i>Loading CTC details...
+          </div>
+
+          <ng-container *ngIf="!isCtcLoading">
+            <!-- Empty CTC State -->
+            <div *ngIf="!ctcEmployee || ctcEmployee.components.length === 0"
+              class="text-muted small text-center py-4 px-2 empty-audit-state rounded border">
+              <i class="fa fa-calculator text-secondary fs-4 d-block mb-1"></i>
+              <div class="fw-semibold text-dark" style="font-size: 0.76rem;">No CTC Details Found</div>
+              <div class="text-muted mt-1" style="font-size: 0.7rem;">
+                No CTC breakdown records found for this employee.
+              </div>
+            </div>
+
+            <!-- Screenshot 1 CTC Details View -->
+            <div *ngIf="ctcEmployee && ctcEmployee.components.length > 0"
+              class="ctc-details-wrapper flex-grow-1 d-flex flex-column" style="min-height: 0;">
+
+              <!-- Quick Search Filter -->
+              <div class="px-1 mb-2 flex-shrink-0">
+                <div class="input-group input-group-sm" style="height: 26px;">
+                  <span class="input-group-text bg-white px-2 py-0 border-end-0 text-muted d-flex align-items-center"
+                    style="font-size: 0.68rem; height: 26px;">
+                    <i class="fa fa-search text-primary"></i>
+                  </span>
+                  <input type="text"
+                    class="form-control form-control-sm border-start-0 py-0 ps-1 pe-2 text-dark bg-white"
+                    style="font-size: 0.7rem; height: 26px;" placeholder="Search components (e.g. Basic, HRA, PF)..."
+                    [(ngModel)]="ctcComponentSearch" />
+                  <button *ngIf="ctcComponentSearch" class="btn btn-sm btn-outline-secondary py-0 px-2 border-start-0"
+                    type="button" (click)="ctcComponentSearch = ''" title="Clear search">
+                    <i class="fa fa-times" style="font-size: 0.65rem;"></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Main CTC Card matching Screenshot 1 -->
+              <div class="card border rounded mb-0 overflow-hidden shadow-sm flex-grow-1 d-flex flex-column"
+                style="border-color: #cbd5e1 !important; min-height: 0;">
+
+                <!-- Card Header (Accordion style with Avatar, Name, Code, and Badges) -->
+                <!-- <div class="p-2 d-flex align-items-center justify-content-between flex-wrap gap-2 flex-shrink-0"
+                  style="background: #e8f1fd; border-bottom: 1px solid #bfdbfe;">
+                  <div class="d-flex align-items-center gap-2">
+                    <!-- Avatar circle with Initials -->
+                <!-- <div
+                      class="rounded-circle text-white d-flex align-items-center justify-content-center fw-bold flex-shrink-0 shadow-sm"
+                      style="width: 34px; height: 34px; background: #2563eb; font-size: 0.76rem;">
+                      {{ getInitials(ctcEmployee.emp_name) }}
+                    </div>
+                    <div>
+                      <div class="fw-bold text-dark text-truncate" style="font-size: 0.78rem;"
+                        [title]="ctcEmployee.emp_name">
+                        {{ ctcEmployee.emp_name }}
+                      </div>
+                      <span class="badge bg-white fw-bold border px-1 py-0 shadow-sm"
+                        style="font-size: 0.65rem; color: #000000 !important;">
+                        {{ ctcEmployee.emp_code }}
+                      </span>
+                    </div> -->
+                <!-- </div>
+                </div> -->
+
+                <!-- CTC Table matching Screenshot 1: Component | Monthly | Yearly -->
+                <div class="table-responsive flex-grow-1" style="flex: 1 1 auto; overflow-y: auto; min-height: 0;">
+                  <table class="table table-sm table-striped align-middle mb-0" style="font-size: 0.72rem;">
+                    <thead class="table-light sticky-top" style="z-index: 2;">
+                      <tr style="border-bottom: 2px solid #e2e8f0;">
+                        <th class="ps-2 py-1 fw-bold" style="width: 48%; color: #000000 !important;">Component</th>
+                        <th class="py-1 text-end fw-bold" style="width: 26%; color: #000000 !important;">Monthly</th>
+                        <th class="pe-2 py-1 text-end fw-bold" style="width: 26%; color: #000000 !important;">Yearly
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let c of filteredCtcComponents()"
+                        [ngClass]="c.shortdesc === 'Total Gross' ? 'table-warning fw-bold' : ''">
+                        <td class="ps-2 py-1 text-break text-dark"
+                          [ngClass]="c.shortdesc === 'Total Gross' ? 'fw-bold' : ''">
+                          {{ c.shortdesc }}
+                        </td>
+                        <td class="py-1 text-end"
+                          [ngClass]="c.shortdesc === 'Total Gross' ? 'fw-bold text-dark' : 'text-dark'">
+                          {{ c.amount | number:'1.2-2' }}
+                        </td>
+                        <td class="pe-2 py-1 text-end"
+                          [ngClass]="c.shortdesc === 'Total Gross' ? 'fw-bold text-dark' : 'text-dark'">
+                          {{ c.amount_yearly | number:'1.2-2' }}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <!-- Fixed Card Footer: Total CTC (Always fixed at bottom of card, visible immediately without scrolling) -->
+                <div class="card-footer p-0 border-0 flex-shrink-0 sticky-bottom"
+                  style="background: #dcfce7 !important; z-index: 5; position: sticky; bottom: 0; box-shadow: 0 -2px 5px rgba(0,0,0,0.05);">
+                  <table class="table table-sm align-middle mb-0" style="font-size: 0.74rem;">
+                    <tbody>
+                      <tr class="fw-bold" style="background: #dcfce7; border-top: 2px solid #86efac; color: #15803d;">
+                        <td class="ps-2 py-1 text-dark fw-bold"
+                          style="width: 48%; border: none; font-weight: 700 !important; color: #000000 !important;">
+                          <i class="fa fa-calculator me-1"></i>Total CTC
+                        </td>
+                        <td class="py-1 text-end text-dark"
+                          style="width: 26%; border: none; color: #000000 !important;">
+                          ₹ {{ (ctcEmployee.total_Month ?? 0) | number:'1.2-2' }}
+                        </td>
+                        <td class="pe-2 py-1 text-end text-dark"
+                          style="width: 26%; border: none; color: #000000 !important;">
+                          ₹ {{ (ctcEmployee.total_Year ?? 0) | number:'1.2-2' }}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+              </div>
+
+            </div>
+          </ng-container>
+        </ng-container>
+
+        <!-- ================= SUBVIEW 2: ISSUED LETTERS (Standard / Switched) ================= -->
+        <ng-container *ngIf="!isSalaryTab || generalViewMode === 'letters'">
+          <!-- Loading State -->
+          <div *ngIf="isGeneralLoading" class="text-center py-3 text-muted small">
+            <i class="fa fa-spinner fa-spin me-1"></i>Loading...
+          </div>
+
+          <ng-container *ngIf="!isGeneralLoading">
+            <!-- Empty State -->
+            <div *ngIf="displayedGeneralLetters.length === 0"
+              class="text-muted small text-center py-4 px-2 empty-audit-state rounded border">
+              <i class="fa fa-folder-open text-secondary fs-5 d-block mb-1"></i>
+              <div class="fw-semibold text-dark" style="font-size: 0.76rem;">No Letters Issued Yet</div>
+              <div class="text-muted mt-1" style="font-size: 0.7rem;">
+                No letters have been issued for this employee so far.
+              </div>
+              <div class="mt-2 d-flex justify-content-center align-items-center gap-2">
+                <button type="button" class="btn btn-sm btn-outline-info py-1 px-3 d-flex align-items-center"
+                  style="font-size: 0.72rem;" (click)="openProfileModal()">
+                  <i class="bi bi-person-lines-fill me-1"></i>View Profile
+                </button>
+                <button type="button" class="btn btn-sm btn-primary py-1 px-3 d-flex align-items-center"
+                  style="font-size: 0.72rem;" (click)="navigateToGenerate()">
+                  <i class="fa fa-plus me-1"></i>Generate New Letter
+                </button>
+              </div>
+            </div>
+
+            <!-- Cards: Alternating Yellow & Green with Image 2 Pastel Badges -->
+            <div *ngFor="let letter of displayedGeneralLetters; let i = index" class="p-2 mb-2 rounded audit-log-item"
+              [ngClass]="i % 2 === 0 ? 'bg-warning-subtle audit-card-warning' : 'bg-success-subtle audit-card-success'">
+
+              <!-- Card Header: Title with Image 2 Badge on Left, Issue Date on Right -->
+              <div class="d-flex justify-content-between align-items-center text-dark mb-2 pb-1 audit-item-header"
+                style="font-size: 0.72rem;">
+                <span class="image2-pill text-truncate me-2"
+                  [ngStyle]="{'background-color': getLetterBadge(letter).bg, 'color': getLetterBadge(letter).color, 'border': '1px solid ' + getLetterBadge(letter).border}"
+                  [title]="letter.formatTypeName || letter.name">
+                  <i class="fa" [ngClass]="getLetterBadge(letter).icon"></i>
+                  <strong class="ms-1">{{ letter.formatTypeName || letter.name || 'HR Letter' }}</strong>
+                </span>
+                <span class="text-dark fw-medium flex-shrink-0" style="font-size: 0.68rem;">
+                  <i class="fa fa-calendar-day me-1 text-secondary"></i>{{ letter.dated | date: 'dd-MMM-yyyy' }}
+                </span>
+              </div>
+
+              <!-- Diff Table: REF NO | DEPARTMENT | STATUS with Icons -->
+              <div class="diff-table-container">
+                <table class="table table-sm table-borderless align-middle mb-1">
+                  <thead>
+                    <tr>
+                      <th class="px-1 py-0 text-start" style="width: 36%;">
+                        <i class="fa fa-hashtag text-muted me-1"></i>REF NO
+                      </th>
+                      <th class="px-1 py-0 text-start" style="width: 38%;">
+                        <i class="fa fa-building text-muted me-1"></i>DEPARTMENT
+                      </th>
+                      <th class="px-1 py-0 text-end" style="width: 26%;">
+                        <i class="fa fa-circle-check text-muted me-1"></i>STATUS
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="px-1 py-0 text-dark fw-semibold text-break text-start">
+                        {{ letter.refno || '—' }}
+                      </td>
+                      <td class="px-1 py-0 text-dark text-start text-break">
+                        {{ letter.department || 'Official' }}
+                      </td>
+                      <td class="px-1 py-0 text-end">
+                        <span class="image2-pill"
+                          [ngClass]="(letter.StatusId || letter.status) ? 'pill-mint' : 'pill-amber'"
+                          style="font-size: 0.62rem; padding: 2px 8px;">
+                          <i class="fa me-1"
+                            [ngClass]="(letter.StatusId || letter.status) ? 'fa-check text-success' : 'fa-clock text-warning'"></i>
+                          {{ (letter.StatusId || letter.status) ? 'Published' : 'Draft' }}
+                        </span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Action Buttons Row -->
+              <div class="d-flex justify-content-end align-items-center gap-1 mt-1 pt-1"
+                style="border-top: 1px dashed rgba(0, 0, 0, 0.08);">
+                <button type="button" class="btn-fact-view"
+                  [disabled]="viewingLetterId === letter.pk_trnid || downloadingLetterId === letter.pk_trnid"
+                  (click)="viewIssuedLetter(letter, $event)" title="View Document">
+                  <i class="fa" [ngClass]="viewingLetterId === letter.pk_trnid ? 'fa-spinner fa-spin' : 'fa-eye'"></i>
+                  <span>{{ viewingLetterId === letter.pk_trnid ? '...' : 'View' }}</span>
+                </button>
+                <button type="button" class="btn-fact-download"
+                  [disabled]="viewingLetterId === letter.pk_trnid || downloadingLetterId === letter.pk_trnid"
+                  (click)="downloadLetter(letter, $event)" title="Download Document">
+                  <i class="fa"
+                    [ngClass]="downloadingLetterId === letter.pk_trnid ? 'fa-spinner fa-spin' : 'fa-download'"></i>
+                  <span>{{ downloadingLetterId === letter.pk_trnid ? '...' : 'Download' }}</span>
+                </button>
+              </div>
+
+            </div>
+          </ng-container>
+        </ng-container>
+
+      </div>
+    </ng-container>
+
+  </div>
+
+  <!-- Fact Box Sliding Window Pagination Controls (Audit Log view) -->
+  <div class="card-footer py-2 bg-transparent border-top" *ngIf="activeView === 'audit' && totalPagesCount > 1">
+    <div class="d-flex justify-content-center align-items-center w-100">
+      <ul class="factbox-pagination mb-0 p-0 list-unstyled">
+        <li class="factbox-page-item" [class.disabled]="currentPage === 1">
+          <button type="button" class="btn-pagination btn-nav" (click)="goToPage(currentPage - 1)"
+            [disabled]="currentPage === 1" aria-label="Previous Page" title="Previous Page">
+            &laquo;
+          </button>
+        </li>
+        <li *ngFor="let item of cachedPaginationItems; trackBy: trackByKey" class="factbox-page-item">
+          <span *ngIf="item.type === 'ellipsis'" class="factbox-ellipsis">&hellip;</span>
+          <button *ngIf="item.type === 'page'" type="button" class="btn-pagination"
+            [class.active]="item.value === currentPage" (click)="goToPage(+item.value)">
+            {{ item.value }}
+          </button>
+        </li>
+        <li class="factbox-page-item" [class.disabled]="currentPage === totalPagesCount">
+          <button type="button" class="btn-pagination btn-nav" (click)="goToPage(currentPage + 1)"
+            [disabled]="currentPage === totalPagesCount" aria-label="Next Page" title="Next Page">
+            &raquo;
+          </button>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Fact Box Sliding Window Pagination Controls (General view) -->
+  <div class="card-footer py-2 bg-transparent border-top"
+    *ngIf="activeView === 'general' && generalTotalPagesCount > 1">
+    <div class="d-flex justify-content-center align-items-center w-100">
+      <ul class="factbox-pagination mb-0 p-0 list-unstyled">
+        <li class="factbox-page-item" [class.disabled]="generalCurrentPage === 1">
+          <button type="button" class="btn-pagination btn-nav" (click)="goToGeneralPage(generalCurrentPage - 1)"
+            [disabled]="generalCurrentPage === 1" aria-label="Previous Page" title="Previous Page">
+            &laquo;
+          </button>
+        </li>
+        <li *ngFor="let item of cachedGeneralPaginationItems; trackBy: trackByKey" class="factbox-page-item">
+          <span *ngIf="item.type === 'ellipsis'" class="factbox-ellipsis">&hellip;</span>
+          <button *ngIf="item.type === 'page'" type="button" class="btn-pagination"
+            [class.active]="item.value === generalCurrentPage" (click)="goToGeneralPage(+item.value)">
+            {{ item.value }}
+          </button>
+        </li>
+        <li class="factbox-page-item" [class.disabled]="generalCurrentPage === generalTotalPagesCount">
+          <button type="button" class="btn-pagination btn-nav" (click)="goToGeneralPage(generalCurrentPage + 1)"
+            [disabled]="generalCurrentPage === generalTotalPagesCount" aria-label="Next Page" title="Next Page">
+            &raquo;
+          </button>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<!-- ==================== TEMPLATE VIEW MODAL ==================== -->
+<div class="template-modal-backdrop" *ngIf="isTemplateModalOpen" (click)="closeTemplateViewModal()">
+  <div class="template-modal-dialog" (click)="$event.stopPropagation()">
+    <div class="template-modal-content card shadow-lg border-0 rounded-3 overflow-hidden">
+
+      <!-- Modal Header -->
+      <div class="card-header bg-blue text-white d-flex justify-content-between align-items-center py-2 px-3">
+        <div class="d-flex align-items-center">
+          <i class="fa fs-6 me-2" [ngClass]="selectedTemplateForView?.icon || 'fa-file-lines'"></i>
+          <h5 class="mb-0 text-white fs-6 fw-semibold">{{ selectedTemplateForView?.name }}</h5>
+        </div>
+        <button type="button" class="btn-close btn-close-white" (click)="closeTemplateViewModal()"
+          aria-label="Close"></button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="card-body p-3">
+
+        <!-- Category & Format File Badge -->
+        <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+          <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1"
+            style="font-size: 0.72rem;">
+            <i class="fa fa-tag me-1"></i>{{ selectedTemplateForView?.category }}
+          </span>
+          <span class="text-muted small d-flex align-items-center" style="font-size: 0.72rem;">
+            <i class="fa fa-file-word text-primary me-1"></i>
+            <code>{{ selectedTemplateForView?.templateFile }}</code>
+          </span>
+        </div>
+
+        <!-- Description Summary -->
+        <div class="mb-3">
+          <label class="text-dark fw-semibold small mb-1 d-block">
+            <i class="fa fa-info-circle text-primary me-1"></i>Format Purpose & Overview:
+          </label>
+          <div class="p-2 bg-light rounded border text-dark" style="font-size: 0.78rem; line-height: 1.45;">
+            {{ selectedTemplateForView?.summary }}
+          </div>
+        </div>
+
+        <!-- Included Sections / Placeholders -->
+        <div class="mb-3">
+          <label class="text-dark fw-semibold small mb-1 d-block">
+            <i class="fa fa-list-check text-success me-1"></i>Key Fields & Dynamic Placeholders:
+          </label>
+          <div class="d-flex flex-wrap gap-1">
+            <span *ngFor="let field of selectedTemplateForView?.keyFields"
+              class="badge bg-secondary-subtle text-dark border px-2 py-1" style="font-size: 0.7rem; font-weight: 500;">
+              {{ field }}
+            </span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="card-footer bg-light d-flex justify-content-between align-items-center py-2 px-3 border-top">
+        <button type="button" class="btn btn-sm btn-outline-secondary px-3" (click)="closeTemplateViewModal()">
+          Close
+        </button>
+        <button type="button" class="btn btn-sm btn-primary px-3 d-flex align-items-center"
+          (click)="navigateToGenerate(selectedTemplateForView)">
+          <i class="fa fa-plus me-1"></i>Generate for this Employee
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ==================== ISSUED LETTER PDF PREVIEW MODAL (EXACT EXIT MODULE STYLE) ==================== -->
+<div class="letter-preview-backdrop" *ngIf="isLetterPdfModalOpen" (click)="closeLetterPdfModal()">
+  <div class="modal-dialog modal-xl modal-dialog-centered" (click)="$event.stopPropagation()">
+    <div class="modal-content">
+
+      <!-- Modal Header (Exit Module Style: Centered Title, Right Close X) -->
+      <div class="modal-header justify-content-center position-relative p-0 pt-3 border-0 bg-white">
+        <p class="modal-title w-100 text-center fw-semibold text-dark mb-0">
+          {{ selectedLetterTitle || 'Letter Document Preview' }}
+        </p>
+        <button type="button" class="btn-close position-absolute end-0 me-3" (click)="closeLetterPdfModal()"
+          aria-label="Close"></button>
+      </div>
+
+      <!-- Modal Body (Exit Module Style) -->
+      <div class="modal-body px-1 px-lg-3 py-2 bg-white">
+        <iframe *ngIf="selectedLetterPdfUrl" [src]="selectedLetterPdfUrl" class="pdf-frame"
+          style="width: 100%; height: 600px; border: none;" title="Letter Document Preview">
+        </iframe>
+        <div *ngIf="!selectedLetterPdfUrl" class="text-center py-4">
+          <p class="text-muted mb-0">No PDF available</p>
+        </div>
+      </div>
+
+      <!-- Modal Footer (Exit Module Style: Centered Download & Back Buttons) -->
+      <div class="modal-footer justify-content-center flex-wrap gap-2 py-3 border-0 bg-white">
+        <button type="button" class="btn btn-primary px-4" (click)="downloadCurrentModalLetter()">
+          Download
+        </button>
+        <button type="button" class="btn btn-secondary px-4" (click)="closeLetterPdfModal()">
+          Back
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ==================== EMPLOYEE PROFILE MODAL (MATCHING LIST PAGE) ==================== -->
+<div class="employee-profile-modal-backdrop" *ngIf="isProfileModalOpen" (click)="closeProfileModal()">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable" (click)="$event.stopPropagation()">
+    <div class="modal-content border-0 shadow overflow-hidden">
+      <div class="modal-header bg-blue py-2 d-flex justify-content-between align-items-center">
+        <h5 class="modal-title text-white fs-6 m-0">
+          <i class="bi bi-person-lines-fill me-2"></i>Employee Profile
+        </h5>
+        <button type="button" class="btn-close btn-close-white" (click)="closeProfileModal()"
+          aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-0 bg-light" style="max-height: 85vh; overflow-y: auto;">
+        <app-employee-profile *ngIf="isProfileModalOpen && documentId" [inputEmpId]="documentId"></app-employee-profile>
+      </div>
+    </div>
+  </div>
+</div>

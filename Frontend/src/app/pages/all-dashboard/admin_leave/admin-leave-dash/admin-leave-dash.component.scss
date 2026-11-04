@@ -1,0 +1,134 @@
+// ── Typography ────────────────────────────────────────────────────
+.small {
+  font-size: 12px;
+}
+
+// ── Cards ─────────────────────────────────────────────────────────
+.card {
+  border-radius: 10px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+}
+
+// ── Stat card icon box ────────────────────────────────────────────
+.icon-box {
+  font-size: 16px;
+  min-width: 32px;
+  text-align: center;
+}
+
+// ── Tab buttons ───────────────────────────────────────────────────
+.tab-btn {
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  transition: all 0.2s ease;
+
+  &.btn-primary        { font-weight: 600; }
+  &.btn-outline-secondary:hover {
+    background-color: #e9ecef;
+    color: #495057;
+  }
+}
+
+// ── Legend dots ───────────────────────────────────────────────────
+.legend-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+// ── Table headers ─────────────────────────────────────────────────
+thead.table-light th {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: #6c757d;
+  border-bottom: 2px solid #dee2e6;
+  white-space: nowrap;
+}
+
+td {
+  font-size: 11px !important;
+  white-space: nowrap;
+  vertical-align: middle !important;
+}
+
+// ── Reason column — truncate long text ───────────────────────────
+.reason-cell {
+  max-width: 130px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: default;
+}
+
+// ── Extra-small action buttons ────────────────────────────────────
+.btn-xs {
+  padding: 2px 7px;
+  font-size: 10px;
+  line-height: 1.4;
+  border-radius: 4px;
+}
+
+// ── Badge ─────────────────────────────────────────────────────────
+.badge {
+  font-size: 10px;
+}
+
+// ── Quick action buttons hover ────────────────────────────────────
+.btn-outline-primary:hover,
+.btn-outline-success:hover,
+.btn-outline-secondary:hover,
+.btn-outline-warning:hover {
+  color: white;
+}
+
+// ── Purple colour for Sick Leave ─────────────────────────────────
+.bg-purple-subtle { background-color: #ede7f6 !important; }
+.text-purple      { color: #7c5cbf !important; }
+
+// ── Row hover ─────────────────────────────────────────────────────
+.table-hover tbody tr:hover {
+  background-color: #f0f7ff !important;
+  cursor: default;
+}
+
+// ── Avatar circle ─────────────────────────────────────────────────
+.avatar-circle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.avatar-blue   { background-color: #3080e8; }
+.avatar-green  { background-color: #54ca68; }
+.avatar-orange { background-color: #ffa446; }
+.avatar-purple { background-color: #7c5cbf; }
+.avatar-teal   { background-color: #20c997; }
+.avatar-red    { background-color: #e35b5d; }
+
+// ── Department pill ───────────────────────────────────────────────
+.dept-pill {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 20px;
+  background-color: #e8f0fe;
+  color: #3080e8;
+  font-size: 10px;
+  font-weight: 500;
+}

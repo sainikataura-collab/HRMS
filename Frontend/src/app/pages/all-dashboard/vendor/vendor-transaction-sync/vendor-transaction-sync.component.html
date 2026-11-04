@@ -1,0 +1,562 @@
+<div class="row">
+  <div class="col-12">
+    <div class="card shadow-sm border-0">
+
+      <!-- Card Header -->
+      <div class="card-header bg-primary">
+        <div class="row align-items-center">
+          <div class="col">
+            <h4 class="text-white mb-0">
+              <i class="fa fa-refresh me-2"></i>Vendor Transaction Sync
+            </h4>
+          </div>
+          <div class="col-auto d-flex align-items-center gap-2">
+            <span class="badge bg-light text-primary px-3 py-2 fw-semibold">
+              <i class="fa fa-info-circle me-1"></i>Pivots daily deductions into payout transactions
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card Body -->
+      <div class="card-body">
+
+        <!-- Filter Form -->
+        <form [formGroup]="filterForm" class="row g-2 align-items-start mb-3">
+
+          <!-- Client -->
+          <div class="col-12 col-sm-6 col-md-3 col-lg-3">
+            <label class="form-label mb-1 small fw-semibold">Select Client <span class="text-danger">*</span></label>
+            <ng-select [items]="clientList" bindLabel="name" bindValue="value"
+              formControlName="clientId" placeholder="-- Select Client --"
+              appendTo="body">
+            </ng-select>
+            <div *ngIf="filterForm.get('clientId')?.touched && filterForm.get('clientId')?.invalid" class="text-danger small mt-1">
+              Client is required.
+            </div>
+          </div>
+
+          <!-- Model -->
+          <div class="col-12 col-sm-6 col-md-3 col-lg-3">
+            <label class="form-label mb-1 small fw-semibold">Select Model <span class="text-danger">*</span></label>
+            <ng-select [items]="modelList" bindLabel="name" bindValue="value"
+              formControlName="modelId" placeholder="-- Select Model --"
+              appendTo="body">
+            </ng-select>
+            <div *ngIf="filterForm.get('modelId')?.touched && filterForm.get('modelId')?.invalid" class="text-danger small mt-1">
+              Model is required.
+            </div>
+          </div>
+
+          <!-- Location -->
+          <div class="col-12 col-sm-6 col-md-3 col-lg-3">
+            <label class="form-label mb-1 small fw-semibold">Location / Hub</label>
+            <ng-select [items]="locationList" bindLabel="name" bindValue="value"
+              formControlName="locationId" placeholder="-- All Locations --"
+              appendTo="body">
+            </ng-select>
+          </div>
+
+          <!-- Vendor (Rich Dropdown matching deduction entry) -->
+          <div class="col-12 col-sm-6 col-md-3 col-lg-3">
+            <label class="form-label mb-1 small fw-semibold">Vendor / FHRID</label>
+            <ng-select [items]="filteredVendors" 
+              bindLabel="displayName" 
+              appendTo="body"
+              placeholder="-- All Vendors --" 
+              formControlName="vendor"
+              [loading]="isVendorsLoading">
+              <ng-template ng-option-tmp let-item="item">
+                <div class="d-flex flex-column py-1 small">
+                  <span class="fw-semibold text-primary small text-truncate">{{ item.vendorCode }} - {{ item.vendorName }}</span>
+                  <small class="text-muted small">FHRID: <strong>{{ item.fhrid }}</strong> | Hub: {{ item.locationName || 'N/A' }}</small>
+                </div>
+              </ng-template>
+              <ng-template ng-label-tmp let-item="item">
+                <span class="small text-truncate"><strong>{{ item.vendorCode }}</strong> - {{ item.vendorName }} ({{ item.fhrid }})</span>
+              </ng-template>
+            </ng-select>
+          </div>
+
+          <!-- Transaction Range -->
+          <div class="col-12 col-sm-6 col-md-4 col-lg-4 mt-2">
+            <label class="form-label mb-1 small fw-semibold">Transaction Range <span class="text-danger">*</span></label>
+            <ng-select [items]="transactionRanges" bindLabel="label" bindValue="value"
+              formControlName="transactionRange" placeholder="-- Select Transaction Range --"
+              appendTo="body">
+            </ng-select>
+            <div *ngIf="filterForm.get('transactionRange')?.touched && filterForm.get('transactionRange')?.invalid" class="text-danger small mt-1">
+              Transaction range is required.
+            </div>
+          </div>
+
+          <!-- Filter Action Buttons -->
+          <div class="col-12 col-sm-6 col-md-4 col-lg-4 mt-2">
+            <label class="form-label d-none d-md-block">&nbsp;</label>
+            <div class="d-flex gap-2">
+              <button type="button" class="btn btn-primary px-4 fw-semibold" (click)="onSearch()">
+                <i class="fa fa-search me-1"></i> View Transactions
+              </button>
+              <button type="button" class="btn btn-outline-secondary px-4" (click)="onReset()">
+                <i class="fa fa-undo me-1"></i> Reset
+              </button>
+            </div>
+          </div>
+
+        </form>
+
+        <!-- Summary KPI Chips -->
+        <div *ngIf="isLoaded" class="row g-2 mb-3">
+          <div class="col-auto">
+            <div class="summary-chip chip-total">
+              <i class="fa fa-users me-1"></i>
+              Total Vendors: <strong>{{ totalVendors }}</strong>
+            </div>
+          </div>
+          <div class="col-auto">
+            <div class="summary-chip chip-synced">
+              <i class="fa fa-check-circle me-1"></i>
+              Synced: <strong>{{ syncedCount }}</strong>
+            </div>
+          </div>
+          <div class="col-auto">
+            <div class="summary-chip chip-pending">
+              <i class="fa fa-clock-o me-1"></i>
+              Pending Sync: <strong>{{ pendingCount }}</strong>
+            </div>
+          </div>
+          <div class="col-auto" *ngIf="totalNetPayable > 0">
+            <div class="summary-chip chip-payable">
+              <i class="fa fa-money me-1"></i>
+              Total Net Payable: <strong>{{ formatCurrency(totalNetPayable) }}</strong>
+            </div>
+          </div>
+          <div class="col-auto" *ngIf="totalCarryForwardDeficit > 0">
+            <div class="summary-chip chip-deficit">
+              <i class="fa fa-exclamation-triangle me-1"></i>
+              Total Deficits Carried Forward: <strong>{{ formatCurrency(totalCarryForwardDeficit) }}</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Bar -->
+        <div *ngIf="isLoaded" class="d-flex flex-wrap align-items-center gap-2 mb-3">
+
+          <!-- Select All checkbox -->
+          <div class="form-check me-2 mb-0">
+            <input class="form-check-input" type="checkbox" id="selectAllSyncChk"
+              [checked]="isCurrentPageAllSelected"
+              [disabled]="pendingRows.length === 0"
+              (change)="toggleSelectAll($event)">
+            <label class="form-check-label fw-semibold" for="selectAllSyncChk">
+              Select All Pending on Page ({{ pendingRows.length }})
+            </label>
+          </div>
+
+          <!-- Sync Selected Button -->
+          <button class="btn btn-success btn-sm fw-semibold"
+            [disabled]="selectedCount === 0"
+            (click)="openSyncModal(false)">
+            <i class="fa fa-check me-1"></i>
+            Sync Selected ({{ selectedCount }})
+          </button>
+
+          <!-- Clear Selection Button (shown when vendors across any page are selected) -->
+          <button class="btn btn-outline-secondary btn-sm"
+            *ngIf="selectedCount > 0"
+            (click)="clearSelection()"
+            title="Deselect all vendors across all pages">
+            <i class="fa fa-times me-1"></i>
+            Clear ({{ selectedCount }})
+          </button>
+
+          <!-- Sync All Pending Button -->
+          <button class="btn btn-warning btn-sm text-dark fw-semibold"
+            [disabled]="pendingCount === 0"
+            (click)="openSyncModal(true)">
+            <i class="fa fa-bolt me-1"></i>
+            Sync All Pending ({{ pendingCount }})
+          </button>
+
+          <!-- Table Search Input -->
+          <div class="ms-auto d-flex">
+            <input type="text" class="form-control form-control-sm me-2"
+              placeholder="Search vendor code, name, location..."
+              [(ngModel)]="searchTerm"
+              (keyup.enter)="onTableFilter()"
+              style="min-width: 260px;">
+            <button class="btn btn-sm btn-outline-primary" (click)="onTableFilter()">
+              <i class="fa fa-search"></i>
+            </button>
+          </div>
+
+        </div>
+
+        <!-- Grid Table -->
+        <div *ngIf="isLoaded" class="table-responsive">
+          <table class="table table-hover table-bordered align-middle sync-table">
+            <thead class="table-light">
+              <tr>
+                <th style="width: 40px;" class="text-center">#</th>
+                <th style="width: 40px;" class="text-center">
+                  <input type="checkbox" class="form-check-input"
+                    [checked]="isCurrentPageAllSelected"
+                    [disabled]="pendingRows.length === 0"
+                    (change)="toggleSelectAll($event)">
+                </th>
+                <th>Vendor Code</th>
+                <th>Vendor Name</th>
+                <th>Location</th>
+                <th>Hub</th>
+                <th *ngIf="isVehicleTypeApplicable" class="text-nowrap">Vehicle Type</th>
+                <th *ngIf="isRouteApplicable" class="text-nowrap">Route / Block</th>
+                <th class="text-end text-nowrap">
+                  Earnings (Post-GST)
+                  <span class="ms-1" style="cursor: pointer;" title="Formula: [Base/Gross Payable] + [GST Amount] - [TDS Amount]">
+                    <i class="fa fa-info-circle text-primary"></i>
+                  </span>
+                </th>
+
+                <!-- Dynamic Model-Specific Deduction / Addition Columns -->
+                <th *ngFor="let col of activeDeductionColumns" 
+                    class="text-end text-nowrap"
+                    [class.deduction-col-header]="!col.isPositive"
+                    [class.positive-col-header]="col.isPositive"
+                    [style.background-color]="col.isPositive ? '#f0fdf4 !important' : '#fef2f2 !important'"
+                    [style.color]="col.isPositive ? '#166534 !important' : '#991b1b !important'"
+                    [style.border-bottom]="col.isPositive ? '2px solid #16a34a !important' : '2px solid #dc3545 !important'">
+                  <i *ngIf="!col.isPositive" class="fa fa-minus-circle text-danger me-1 small opacity-75"></i>
+                  <i *ngIf="col.isPositive" class="fa fa-plus-circle text-success me-1 small opacity-75"></i>
+                  {{ col.label }}
+                  <span *ngIf="col.isPositive" class="ms-1" style="cursor: pointer;" title="Formula: (+) Additional reimbursement / positive arrear added to Net Payable">
+                    <i class="fa fa-info-circle text-success"></i>
+                  </span>
+                </th>
+
+                <th class="text-end text-nowrap">
+                  Brought-Fwd Deficit
+                  <span class="ms-1" style="cursor: pointer;" title="Formula: (-) Unrecovered negative deficit carried over from prior cycle">
+                    <i class="fa fa-info-circle text-primary"></i>
+                  </span>
+                </th>
+                <th class="text-end text-nowrap">
+                  Total Deductions
+                  <span class="ms-1" style="cursor: pointer;" title="Formula: Sum of all operational deduction debit heads (excluding Arrears)">
+                    <i class="fa fa-info-circle text-primary"></i>
+                  </span>
+                </th>
+                <th class="text-center text-nowrap" style="min-width: 105px; background-color: #f8fafc !important; border-bottom: 2px solid #6366f1 !important;">
+                  <i class="fa fa-shield text-primary me-1 small"></i>
+                  Recovery Cap %
+                  <span class="ms-1" style="cursor: pointer;" title="Max % of post-GST earnings allowed to be deducted this cycle. Protects vendor take-home pay. Editable per row before sync.">
+                    <i class="fa fa-info-circle text-primary"></i>
+                  </span>
+                </th>
+                <th class="text-end text-success fw-bold text-nowrap">
+                  Net Payable
+                  <span class="ms-1" style="cursor: pointer;" title="Formula: [Earnings (Post-GST)] - [Total Deductions] + [Arrear Amt] - [Brought-Fwd Deficit]">
+                    <i class="fa fa-info-circle text-success"></i>
+                  </span>
+                </th>
+                <th class="text-end text-nowrap" style="background-color: #fff7ed !important; color: #9a3412 !important; border-bottom: 2px solid #ea580c !important;">
+                  <i class="fa fa-arrow-circle-right text-warning me-1 small"></i>
+                  Carry-Fwd Deficit
+                  <span class="ms-1" style="cursor: pointer;" title="Formula: Unrecovered deficit carried over to the next payout cycle when Deductions > Earnings">
+                    <i class="fa fa-info-circle text-warning"></i>
+                  </span>
+                </th>
+                <th class="text-center">Status</th>
+                <th>Synced By</th>
+                <th>Synced On</th>
+                <th>Remarks</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngIf="rows.length === 0">
+                <td [attr.colspan]="15 + (isVehicleTypeApplicable ? 1 : 0) + (isRouteApplicable ? 1 : 0) + activeDeductionColumns.length" class="text-center text-muted py-5">
+                  <i class="fa fa-inbox fa-3x mb-2 d-block opacity-50"></i>
+                  No vendor transaction records found for the selected criteria.
+                </td>
+              </tr>
+              <tr *ngFor="let row of rows | paginate: { itemsPerPage: pageSize, currentPage: pageIndex, totalItems: totalRows }; let i = index"
+                [class.synced-row]="isSynced(row)"
+                [class.pending-row]="!isSynced(row)">
+                <td class="text-center text-muted small">{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+                <td class="text-center">
+                  <input type="checkbox" class="form-check-input"
+                    [checked]="isSelected(row)"
+                    [disabled]="isSynced(row)"
+                    (change)="toggleRow(row, $event)">
+                </td>
+                <td><code>{{ row.VendorCode }}</code></td>
+                <td class="fw-semibold">
+                  {{ row.VendorName }}
+                </td>
+                <td>{{ row.LocationName }}</td>
+                <td>{{ row.HubCode || '-' }}</td>
+                <td *ngIf="isVehicleTypeApplicable">
+                  <span *ngIf="isValidVehicleType(row.Vehicle_Type)" class="badge bg-light text-dark border">
+                    <i class="fa fa-motorcycle text-primary me-1" *ngIf="row.Vehicle_Type.toLowerCase().includes('bike')"></i>
+                    <i class="fa fa-truck text-info me-1" *ngIf="row.Vehicle_Type.toLowerCase().includes('van') || row.Vehicle_Type.toLowerCase().includes('truck')"></i>
+                    {{ row.Vehicle_Type }}
+                  </span>
+                  <span *ngIf="!isValidVehicleType(row.Vehicle_Type)" class="text-muted small">-</span>
+                </td>
+                <td *ngIf="isRouteApplicable">
+                  <span *ngIf="isValidRoute(row.Route)" class="badge bg-primary-subtle text-primary border border-primary-subtle font-monospace fw-semibold">
+                    {{ row.Route }}
+                  </span>
+                  <span *ngIf="!isValidRoute(row.Route)" class="text-muted small">-</span>
+                </td>
+                <td class="text-end">{{ formatCurrency(row.Earnings_Post_GST != null ? row.Earnings_Post_GST : ((row.Total_Payable_After_GST || 0) - (row.TDS_Amount || 0))) }}</td>
+
+                <!-- Model-Specific Deduction / Addition Cells with Breakdown Links -->
+                <td *ngFor="let col of activeDeductionColumns" class="text-end">
+                  <ng-container *ngIf="row[col.column] && row[col.column] > 0; else emptyDed">
+                    <a href="javascript:void(0)" 
+                       [class.text-success]="col.isPositive"
+                       [class.text-danger]="!col.isPositive"
+                       class="fw-bold text-decoration-underline deduction-link"
+                       (click)="openDeductionBreakdown(row, col.column, col.label)"
+                       [title]="'Click to view ' + col.label + ' itemized breakdown'">
+                      {{ col.isPositive ? '+' : '' }}{{ formatCurrency(row[col.column]) }}
+                      <i class="fa fa-external-link ms-1 small"></i>
+                    </a>
+                  </ng-container>
+                  <ng-template #emptyDed>
+                    <span class="text-muted small">-</span>
+                  </ng-template>
+                </td>
+
+                <td class="text-end" [class.text-danger]="row.CarryForwardDeficit_In > 0">
+                  {{ row.CarryForwardDeficit_In > 0 ? formatCurrency(row.CarryForwardDeficit_In) : '-' }}
+                </td>
+                <td class="text-end fw-semibold" [class.deduction-exceeded-cell]="isDeductionExceeded(row)">
+                  <span *ngIf="isDeductionExceeded(row)" 
+                        class="deduction-exceeded-badge"
+                        [title]="'⚠️ Deductions (' + formatCurrency(row.Total_Deductions) + ') exceed Earnings (' + formatCurrency(row.Earnings_Post_GST || (row.Total_Payable_After_GST - row.TDS_Amount)) + '). Net Payable clamped to ₹0.00 and remaining deficit is carried forward.'">
+                    <i class="fa fa-exclamation-triangle me-1"></i>{{ formatCurrency(row.Total_Deductions) }}
+                  </span>
+                  <span *ngIf="!isDeductionExceeded(row)" class="text-danger">
+                    {{ formatCurrency(row.Total_Deductions) }}
+                  </span>
+                </td>
+                <td class="text-center" style="min-width: 105px;">
+                  <ng-container *ngIf="!isSynced(row); else syncedRecoveryPct">
+                    <div class="input-group input-group-sm justify-content-center" style="max-width: 95px; margin: 0 auto;">
+                      <input type="number" 
+                             class="form-control form-control-sm text-center fw-bold px-1" 
+                             style="border-color: #6366f1;"
+                             min="1" 
+                             max="100" 
+                             step="1"
+                             [value]="row.RecoveryPercent != null ? row.RecoveryPercent : 100"
+                             (keydown)="onRecoveryCapKeydown($event)"
+                             (input)="onRecoveryCapInput(row, $event)"
+                             (paste)="onRecoveryCapPaste(row, $event)"
+                             (blur)="onRecoveryCapBlur(row, $event)"
+                             [title]="'Change recovery cap % for this vendor (strictly 1% to 100%)'">
+                      <span class="input-group-text bg-light text-muted px-1" style="font-size: 11px;">%</span>
+                    </div>
+                  </ng-container>
+                  <ng-template #syncedRecoveryPct>
+                    <span class="badge bg-light text-dark border fw-semibold">
+                      {{ row.RecoveryPercent || 100 }}%
+                    </span>
+                  </ng-template>
+                </td>
+                <td class="text-end fw-bold text-success fs-6">
+                  <span [class.text-muted]="row.Net_Payable === 0 && isDeductionExceeded(row)">
+                    {{ formatCurrency(row.Net_Payable) }}
+                  </span>
+                </td>
+                <td class="text-end fw-semibold">
+                  <span *ngIf="row.CarryForwardDeficit_Out > 0" 
+                        class="deficit-carryforward-badge"
+                        [title]="'Remaining deficit of ' + formatCurrency(row.CarryForwardDeficit_Out) + ' could not be deducted from current earnings. Carried forward to recover in subsequent payout cycle under Brought-Fwd Deficit.'">
+                    <i class="fa fa-arrow-right me-1 text-danger"></i>{{ formatCurrency(row.CarryForwardDeficit_Out) }}
+                  </span>
+                  <span *ngIf="!row.CarryForwardDeficit_Out || row.CarryForwardDeficit_Out <= 0" class="text-muted small">
+                    -
+                  </span>
+                </td>
+                <td class="text-center">
+                  <span *ngIf="isSynced(row)" class="badge bg-success px-2 py-1">
+                    <i class="fa fa-check me-1"></i>Synced
+                  </span>
+                  <span *ngIf="!isSynced(row)" class="badge bg-warning text-dark px-2 py-1">
+                    <i class="fa fa-clock-o me-1"></i>Pending
+                  </span>
+                </td>
+                <td class="small">{{ row.SyncedByName || row.SyncedBy || '-' }}</td>
+                <td class="small">{{ row.DeductionSyncDate ? formatDate(row.DeductionSyncDate) : '-' }}</td>
+                <td class="small text-muted">{{ row.SyncRemarks || '-' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination Controls -->
+        <div *ngIf="isLoaded && totalRows > 0" class="d-flex justify-content-between align-items-center mt-3">
+          <div class="text-muted small">
+            Showing {{ (pageIndex - 1) * pageSize + 1 }} to {{ pageIndex * pageSize > totalRows ? totalRows : pageIndex * pageSize }} of {{ totalRows }} records
+          </div>
+          <pagination-controls (pageChange)="onPageChange($event)" [maxSize]="5" [directionLinks]="true" [autoHide]="true"></pagination-controls>
+        </div>
+
+        <!-- Initial Placeholder State -->
+        <div *ngIf="!isLoaded" class="text-center py-3 text-muted">
+          <i class="fa fa-calendar-check-o fa-3x mb-3 d-block opacity-50 text-primary"></i>
+          <p>Select Client, Model and Transaction Range</p>
+          <p class="mb-0 text-muted">Then click <strong>View Transactions</strong> to review deduction columns and synchronize payables.</p>
+        </div>
+
+      </div><!-- card-body -->
+    </div><!-- card -->
+  </div>
+</div>
+
+<!-- ── Sync Confirmation Modal (Matching Attendance-InOut_shift modal format) ── -->
+<div class="modal fade show d-block" id="syncConfirmModal" tabindex="-1" aria-labelledby="syncConfirmModalLabel"
+  aria-modal="true" role="dialog" style="background: rgba(0, 0, 0, 0.5); z-index: 1055;"
+  *ngIf="showConfirmModal" (click)="$event.target === $event.currentTarget && cancelSyncModal()">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header small py-2">
+        <p class="modal-title small lh-sm mb-0" id="syncConfirmModalLabel">
+          <i class="fa fa-refresh text-primary me-2"></i>
+          <span class="fw-semibold">Confirm Deduction Synchronization</span>
+        </p>
+        <button type="button" id="modalCloseBtn" class="btn-close" aria-label="Close" (click)="cancelSyncModal()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-info border-0 py-2 px-3 small mb-3">
+          <i class="fa fa-info-circle me-1"></i>
+          This operation will aggregate all recorded deduction entries into Payment Transactions, calculate net payables, and lock deduction lines for this cycle.
+        </div>
+
+        <div class="row align-items-center mb-2">
+          <!-- Targeted Vendors -->
+          <div class="col-md-6">
+            <p class="lh-base small mb-1">
+              <span class="fw-semibold">Targeted vendors:&nbsp;</span>
+              <span class="text-danger fw-semibold">
+                {{ syncAllPending ? pendingCount + ' pending vendor(s)' : selectedCount + ' selected vendor(s)' }}
+              </span>
+            </p>
+          </div>
+
+          <!-- Transaction Range -->
+          <div class="col-md-6">
+            <p class="lh-base small mb-1">
+              <span class="fw-semibold">Date:&nbsp;</span>
+              <span style="color:blue">{{ filterForm.get('transactionRange')?.value }}</span>
+            </p>
+          </div>
+        </div>
+
+        <!-- Remarks -->
+        <div class="mt-2">
+          <label class="form-label small mb-1">Sync Remarks <span class="text-muted" style="font-size: 10px;">(optional)</span></label>
+          <textarea class="form-control" rows="3" [(ngModel)]="syncRemarks"
+            placeholder="Enter any notes or audit remarks for this sync operation..."></textarea>
+        </div>
+
+        <!-- Buttons aligned right -->
+        <div class="col-12 d-flex justify-content-end mt-3">
+          <button type="button" class="btn btn-secondary btn-sm mx-1" (click)="cancelSyncModal()">Close</button>
+          <button type="button" class="btn btn-primary btn-sm" (click)="confirmSync()">
+            <i class="fa fa-check me-1"></i> Confirm & Execute Sync
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Deduction Breakdown Drilldown Modal ── -->
+<div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5); z-index: 1060;" *ngIf="isBreakdownModalOpen">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content shadow border-0">
+      <div class="modal-header bg-primary text-white py-2">
+        <h6 class="modal-title mb-0 fs-6">
+          <i class="fa fa-list-alt me-2"></i>Breakdown: {{ selectedColumnLabel }}
+        </h6>
+        <button type="button" class="btn-close btn-close-white" aria-label="Close" (click)="closeBreakdownModal()"></button>
+      </div>
+      <div class="modal-body p-3">
+        <div class="alert alert-light border d-flex flex-wrap justify-content-between align-items-center py-2 px-3 mb-3 gap-2" *ngIf="selectedTxn">
+          <div>
+            <span class="fw-bold me-2">Vendor:</span> 
+            <span class="text-primary fw-semibold">{{ selectedTxn.VendorCode }} - {{ selectedTxn.VendorName }}</span>
+            <span class="badge bg-secondary ms-2">{{ selectedTxn.FHRID }}</span>
+            <span *ngIf="selectedTxn.Vehicle_Type" class="badge bg-light text-dark border ms-2">
+              <i class="fa fa-motorcycle text-primary me-1" *ngIf="selectedTxn.Vehicle_Type.toLowerCase().includes('bike')"></i>
+              <i class="fa fa-truck text-info me-1" *ngIf="selectedTxn.Vehicle_Type.toLowerCase().includes('van') || selectedTxn.Vehicle_Type.toLowerCase().includes('truck')"></i>
+              {{ selectedTxn.Vehicle_Type }}
+            </span>
+            <span *ngIf="selectedTxn.Route" class="badge bg-primary-subtle text-primary border border-primary-subtle font-monospace ms-1">
+              Route: {{ selectedTxn.Route }}
+            </span>
+          </div>
+          <div>
+            <span class="text-muted small">Range: {{ selectedTxn.TransactionRange }}</span>
+          </div>
+        </div>
+
+        <div *ngIf="isBreakdownLoading" class="text-center py-4 text-muted">
+          <i class="fa fa-spinner fa-spin fa-2x mb-2 text-primary"></i>
+          <p class="mb-0">Loading itemized deduction entries...</p>
+        </div>
+
+        <div *ngIf="!isBreakdownLoading && breakdownEntries.length === 0" class="text-center py-4 text-muted">
+          <i class="fa fa-info-circle fa-2x mb-2 text-secondary"></i>
+          <p class="mb-0">No itemized entries found for this column.</p>
+        </div>
+
+        <div class="table-responsive" *ngIf="!isBreakdownLoading && breakdownEntries.length > 0">
+          <table class="table table-bordered table-striped table-sm mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>#</th>
+                <th>{{ isPositiveColumn(selectedColumnKey) ? 'Addition Type' : 'Deduction Type' }}</th>
+                <th class="text-end">Amount (₹)</th>
+                <th>Shipment ID</th>
+                <th>Remarks</th>
+                <th>Entry Date</th>
+                <th>Entered By</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of breakdownEntries; let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>
+                  <span class="badge" [ngClass]="isPositiveColumn(selectedColumnKey) ? 'bg-success-subtle text-success border border-success-subtle' : 'bg-danger-subtle text-danger border border-danger-subtle'">
+                    {{ item.DeductionType }}
+                  </span>
+                </td>
+                <td class="text-end fw-bold" [ngClass]="isPositiveColumn(selectedColumnKey) ? 'text-success' : 'text-danger'">
+                  {{ (isPositiveColumn(selectedColumnKey) ? '+' : '') + formatCurrency(item.Amount) }}
+                </td>
+                <td><code>{{ item.ShipmentID || '-' }}</code></td>
+                <td>{{ item.Remarks || '-' }}</td>
+                <td class="small text-muted">{{ formatDate(item.EntryDate) }}</td>
+                <td><span class="badge bg-light text-dark border">{{ item.EnteredBy || 'System' }}</span></td>
+              </tr>
+            </tbody>
+            <tfoot class="table-light">
+              <tr class="fw-bold">
+                <td colspan="2" class="text-end">Total:</td>
+                <td class="text-end fs-6" [ngClass]="isPositiveColumn(selectedColumnKey) ? 'text-success' : 'text-danger'">
+                  {{ (isPositiveColumn(selectedColumnKey) ? '+' : '') + formatCurrency(totalBreakdownAmount) }}
+                </td>
+                <td colspan="4"></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    
+    </div>
+  </div>
+</div>

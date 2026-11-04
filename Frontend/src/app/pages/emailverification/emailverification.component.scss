@@ -1,0 +1,65 @@
+
+        /* Reset margin and padding */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Container styles */
+        .container-fluid {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            width: 100%;
+            background:linear-gradient(to left,#f07130, #3b3b42);
+            color: #444;
+            text-align: center;
+        }
+
+        /* Card styling */
+        .verification-card {
+            background-color: #fff;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 400px;
+            box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Icon styling */
+        .icon {
+            font-size: 50px;
+            color: #f16a24;
+            margin-bottom: 20px;
+        }
+
+        /* Message styling */
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .message {
+            font-size: 16px;
+            color: #666;
+            margin: 10px 0 20px;
+        }
+
+        /* Button styling */
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background-color:  #f16a24;
+            color: white;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color:  #f5783a;
+        }

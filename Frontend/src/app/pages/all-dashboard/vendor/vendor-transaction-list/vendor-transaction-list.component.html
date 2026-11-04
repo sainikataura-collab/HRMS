@@ -1,0 +1,282 @@
+<div class="container-fluid pt-2">
+  <div class="row">
+    <div class="col-12">
+      
+      <!-- Filter Card -->
+      <div class="card mb-3 shadow-sm border-0">
+        <div class="card-header bg-primary text-white d-flex align-items-center py-2">
+          <h5 class="mb-0 fs-6">Vendor Transaction List Filters</h5>
+        </div>
+        <div class="card-body">
+          <form [formGroup]="filterForm" (ngSubmit)="searchTransactions()" class="row g-2 align-items-end mb-2">
+            
+            <!-- Select Client -->
+            <div class="col-12 col-sm-6 col-md-4 col-lg-2">
+              <label class="form-label">Client <span style="color: red;">*</span></label>
+              <ng-select [items]="clientList" bindLabel="name" bindValue="value" appendTo="body" placeholder="Select Client" formControlName="client">
+              </ng-select>
+            </div>
+
+            <!-- Select Model -->
+            <div class="col-12 col-sm-6 col-md-4 col-lg-2">
+              <label class="form-label">Model <span style="color: red;">*</span></label>
+              <ng-select [items]="modelList" bindLabel="name" bindValue="value" appendTo="body" placeholder="Select Model" formControlName="model">
+              </ng-select>
+            </div>
+
+            <!-- Select Location -->
+            <div class="col-12 col-sm-6 col-md-4 col-lg-2">
+              <label class="form-label">Location</label>
+              <ng-select [items]="locationList" bindLabel="name" bindValue="value" appendTo="body" placeholder="Optional" formControlName="location">
+              </ng-select>
+            </div>
+
+            <!-- Select Transaction Range -->
+            <div class="col-12 col-sm-6 col-md-4 col-lg-2">
+              <label class="form-label">Transaction Range</label>
+              <ng-select [items]="transactionRanges" bindLabel="name" bindValue="value" appendTo="body" placeholder="Optional" formControlName="transactionRange">
+              </ng-select>
+            </div>
+
+            <!-- Select Vendor Code (Autocomplete) -->
+            <div class="col-12 col-sm-6 col-md-4 col-lg-2">
+              <label class="form-label">Vendor</label>
+              <ng-select [items]="vendorCodes$ | async" bindLabel="VendorName" bindValue="VendorCode" appendTo="body" placeholder="Type 3 chars to search..." formControlName="vendorCode" [typeahead]="vendorCodeInput$" [loading]="isVendorsLoading">
+                <ng-template ng-option-tmp let-item="item">
+                  {{item.VendorCode}} - {{item.VendorName}}
+                </ng-template>
+                <ng-template ng-label-tmp let-item="item">
+                  {{item.VendorCode}} - {{item.VendorName}}
+                </ng-template>
+              </ng-select>
+            </div>
+
+            <div class="col-12 col-sm-6 col-md-12 col-lg-2 d-flex gap-2">
+              <button type="submit" class="btn btn-primary w-100"><i class="fa fa-search me-1"></i> Search</button>
+              <button type="button" class="btn btn-outline-secondary w-100" (click)="resetForm()">Reset</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Data Table Card -->
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-white d-flex flex-wrap justify-content-between align-items-center py-2">
+          <h5 class="mb-0 fs-6 text-primary"><i class="fa fa-list me-2"></i>Transactions</h5>
+          <div class="d-flex align-items-center gap-2">
+            <button class="btn btn-primary btn-sm d-flex align-items-center" (click)="downloadExcel()" [disabled]="transactions.length === 0">
+              <i class="fa fa-download me-1"></i> Export to Excel
+            </button>
+
+            <div style="width: 220px;">
+              <input type="text" class="form-control form-control-sm" placeholder="Search in results..." [(ngModel)]="searchTerm" (ngModelChange)="onGlobalSearch()" (keyup.enter)="onGlobalSearch()" />
+            </div>
+          </div>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-bordered table-striped table-hover mb-0 text-nowrap" style="font-size: 0.85rem;">
+              <thead class="table-light">
+                <tr>
+                  <th *ngFor="let key of previewKeys">
+                    {{ formatHeaderKey(key) }}
+                    <!-- Tooltip for Formula -->
+                    <span *ngIf="formulaMap[key]" class="ms-1" style="cursor: pointer;" [title]="'Formula: ' + formulaMap[key]">
+                      <i class="fa fa-info-circle text-primary"></i>
+                    </span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let txn of transactions | paginate: { itemsPerPage: pageSize, currentPage: pageIndex, totalItems: totalItems }">
+                  <td *ngFor="let key of previewKeys">
+                    <!-- 1. Processing Status -->
+                    <ng-container *ngIf="key === 'Processing Status'">
+                      <span class="badge" [ngClass]="{'bg-success': txn[key] === 'Success', 'bg-danger': txn[key] === 'Failed'}">
+                        {{ txn[key] }}
+                      </span>
+                    </ng-container>
+
+                    <!-- 2. IsDeductionsSynced / Sync Status boolean -->
+                    <ng-container *ngIf="isBooleanSyncedKey(key)">
+                      <span *ngIf="isSyncedValue(txn[key])" class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">
+                        <i class="fa fa-check-circle me-1"></i>Yes
+                      </span>
+                      <span *ngIf="!isSyncedValue(txn[key])" class="badge bg-secondary-subtle text-secondary border border-secondary-subtle px-2 py-1">
+                        <i class="fa fa-times-circle me-1"></i>No
+                      </span>
+                    </ng-container>
+
+                    <!-- 3. Recovery Cap % Badge -->
+                    <ng-container *ngIf="isPercentKey(key)">
+                      <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1 fw-bold">
+                        {{ formatPercent(txn[key]) }}
+                      </span>
+                    </ng-container>
+
+                    <!-- 4. Currency / Payable / Deficit Columns -->
+                    <ng-container *ngIf="!isBooleanSyncedKey(key) && !isPercentKey(key) && key !== 'Processing Status' && isCurrencyKey(key)">
+                      <span [ngClass]="{
+                        'text-danger fw-bold': isDeficitKey(key) && (txn[key] > 0),
+                        'text-success fw-bold': isNetPayableKey(key)
+                      }">
+                        {{ (txn[key] || 0) | currency:'INR' }}
+                      </span>
+                    </ng-container>
+
+                    <!-- 5. Deduction & Addition Columns with Amount > 0 (Clickable drilldown link) -->
+                    <ng-container *ngIf="!isBooleanSyncedKey(key) && !isPercentKey(key) && key !== 'Processing Status' && !isCurrencyKey(key) && isDeductionKey(key)">
+                      <span *ngIf="hasDeductionAmount(txn[key]); else zeroDeduction">
+                        <a href="javascript:void(0)" 
+                           [ngClass]="isArrearKey(key) ? 'text-success' : 'text-danger'"
+                           class="fw-bold text-decoration-underline" 
+                           (click)="openDeductionBreakdown(txn, key)" 
+                           [title]="'Click to view ' + (isArrearKey(key) ? 'addition' : 'deduction') + ' breakdown audit'">
+                          {{ (isArrearKey(key) ? '+' : '') + (txn[key] | currency:'INR') }} <i class="fa fa-external-link ms-1 small"></i>
+                        </a>
+                      </span>
+                      <ng-template #zeroDeduction>
+                        <span class="text-muted">
+                          {{ txn[key] !== null && txn[key] !== undefined ? txn[key] : '-' }}
+                        </span>
+                      </ng-template>
+                    </ng-container>
+
+                    <!-- 6. Date Columns (User-Friendly Format) -->
+                    <ng-container *ngIf="!isBooleanSyncedKey(key) && !isPercentKey(key) && key !== 'Processing Status' && !isCurrencyKey(key) && !isDeductionKey(key) && isDateKey(key)">
+                      <span>
+                        {{ formatDateValue(txn[key]) }}
+                      </span>
+                    </ng-container>
+
+                    <!-- 7. Payment Status -->
+                    <ng-container *ngIf="key === 'Payment Status' || key === 'Payment_Status'">
+                      <span *ngIf="txn[key] === 'Paid' || txn[key] === 'Payment Done'" class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">
+                        <i class="fa fa-check-circle me-1"></i>Paid
+                      </span>
+                      <span *ngIf="txn[key] !== 'Paid' && txn[key] !== 'Payment Done'" class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2 py-1">
+                        <i class="fa fa-clock-o me-1"></i>Pending
+                      </span>
+                    </ng-container>
+
+                    <!-- 7.5 Recovery Policy Applied -->
+                    <ng-container *ngIf="isRecoveryPolicyKey(key)">
+                      <span *ngIf="txn[key]" class="badge bg-info-subtle text-info border border-info-subtle px-2 py-1 fw-bold">
+                        <i class="fa fa-shield me-1"></i>{{ txn[key] }}
+                      </span>
+                      <span *ngIf="!txn[key]" class="text-muted">-</span>
+                    </ng-container>
+
+                    <!-- 8. Default/Other columns -->
+                    <ng-container *ngIf="!isBooleanSyncedKey(key) && !isPercentKey(key) && key !== 'Processing Status' && key !== 'Payment Status' && key !== 'Payment_Status' && !isCurrencyKey(key) && !isDeductionKey(key) && !isDateKey(key) && !isRecoveryPolicyKey(key)">
+                      <span [class.text-muted]="txn[key] === 0 || txn[key] === null">
+                        {{ txn[key] !== null && txn[key] !== undefined ? txn[key] : '-' }}
+                      </span>
+                    </ng-container>
+                  </td>
+                </tr>
+                <tr *ngIf="transactions.length === 0">
+                  <td [attr.colspan]="previewKeys.length > 0 ? previewKeys.length : 15" class="text-center py-4 text-muted">
+                    <i class="fa fa-folder-open mb-2" style="font-size: 2rem;"></i>
+                    <p class="mb-0">No transactions found for the selected criteria.</p>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card-footer bg-white d-flex justify-content-end py-2" *ngIf="totalItems > 0">
+          <pagination-controls (pageChange)="onPageChange($event)" [maxSize]="5" [directionLinks]="true" [autoHide]="true"></pagination-controls>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Deduction Breakdown Drilldown Modal -->
+<div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5); z-index: 1050;" *ngIf="isBreakdownModalOpen">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content shadow border-0">
+      <div class="modal-header bg-primary text-white py-2">
+        <h6 class="modal-title mb-0 fs-6">
+          <i class="fa fa-info-circle me-2"></i>Breakdown: {{ selectedDeductionKey }}
+        </h6>
+        <button type="button" class="btn-close btn-close-white" aria-label="Close" (click)="closeBreakdownModal()"></button>
+      </div>
+      <div class="modal-body p-3">
+        <div class="alert alert-light border d-flex justify-content-between align-items-center py-2 px-3 mb-3" *ngIf="selectedTxn">
+          <div>
+            <span class="fw-bold me-2">FHRID:</span> <span class="badge bg-secondary me-3">{{ selectedTxn.FHRID || selectedTxn.HFRID || 'N/A' }}</span>
+            <span class="fw-bold me-2">Vendor:</span> <span>{{ selectedTxn.VendorCode || selectedTxn.Vendor_Code || selectedTxn.Code || '' }} - {{ selectedTxn.VendorName || selectedTxn.Vendor_Name || selectedTxn.Name || '' }}</span>
+          </div>
+          <div>
+            <span class="text-muted small">Range: {{ selectedTxn.TransactionRange || selectedTxn['Date Range'] || 'N/A' }}</span>
+          </div>
+        </div>
+
+        <div *ngIf="isBreakdownLoading" class="text-center py-4 text-muted">
+          <i class="fa fa-spinner fa-spin fa-2x mb-2 text-primary"></i>
+          <p class="mb-0">Loading deduction breakdown details...</p>
+        </div>
+
+        <div *ngIf="!isBreakdownLoading && breakdownEntries.length === 0" class="text-center py-4 text-muted">
+          <i class="fa fa-info-circle fa-2x mb-2 text-secondary"></i>
+          <p class="mb-0">No itemized daily deduction entries found for this transaction.</p>
+        </div>
+
+        <div class="table-responsive" *ngIf="!isBreakdownLoading && breakdownEntries.length > 0">
+          <table class="table table-bordered table-striped table-sm mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>#</th>
+                <th>{{ isArrearKey(selectedDeductionKey) ? 'Addition Type' : 'Deduction Type' }}</th>
+                <th class="text-end">Amount (₹)</th>
+                <th>Shipment ID</th>
+                <th>Remarks</th>
+                <th>Entry Date</th>
+                <th>Entered By</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of breakdownEntries; let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>
+                  <span class="badge" [ngClass]="isArrearKey(selectedDeductionKey) ? 'bg-success-subtle text-success border border-success-subtle' : 'bg-danger-subtle text-danger border border-danger-subtle'">
+                    {{ item.DeductionType }}
+                  </span>
+                </td>
+                <td class="text-end fw-bold" [ngClass]="isArrearKey(selectedDeductionKey) ? 'text-success' : 'text-danger'">
+                  {{ (isArrearKey(selectedDeductionKey) ? '+' : '') + (item.Amount | currency:'INR') }}
+                </td>
+                <td><code>{{ item.ShipmentID || '-' }}</code></td>
+                <td>{{ item.Remarks || '-' }}</td>
+                <td class="small text-muted">{{ item.EntryDate | date:'medium' }}</td>
+                <td><span class="badge bg-light text-dark border">{{ item.EnteredBy || item.EntryBy || 'System' }}</span></td>
+              </tr>
+            </tbody>
+            <tfoot class="table-light">
+              <tr class="fw-bold">
+                <td colspan="2" class="text-end">Total:</td>
+                <td class="text-end" [ngClass]="isArrearKey(selectedDeductionKey) ? 'text-success' : 'text-danger'">
+                  {{ (isArrearKey(selectedDeductionKey) ? '+' : '') + (totalBreakdownAmount | currency:'INR') }}
+                </td>
+                <td colspan="4"></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer py-2">
+        <button type="button" class="btn btn-secondary btn-sm" (click)="closeBreakdownModal()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+

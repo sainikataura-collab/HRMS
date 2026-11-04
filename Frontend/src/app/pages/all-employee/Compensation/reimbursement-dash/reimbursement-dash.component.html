@@ -1,0 +1,268 @@
+<section>
+  <div class="container">
+    <div class="row border-bottom">
+      <div class="col-sm-12 col-md-12 col-lg-9 col-xxl-9">
+        <p class="small fw-semibold">
+          <span>Compensation Dashboard </span><br>
+          <span class="fw-semibold text-success"><i class="fa-solid fa-user fw-bold"></i> Welcome !</span>
+        </p>
+      </div>
+
+
+      <div class="col-sm-12 col-md-12 col-lg-3 col-xxl-3">
+
+       <form [formGroup]="salaryForm" (ngSubmit)="onView()">
+          <div class="row row-cols-2 row-cols-md-2 g-2" >
+            <div class="col mb-3">
+              <!-- <label>Month</label> -->
+              <ng-select [items]="months" bindLabel="name" bindValue="value" formControlName="FkMonthId"
+                placeholder="--Select--" class="w-100">
+              </ng-select>
+           
+            </div>
+            <div class="col mb-3">
+              <!-- <label>Year</label> -->
+              <ng-select [items]="years" bindLabel="name" bindValue="value" formControlName="FkYearId"
+                placeholder="--Select--" class="w-100">
+              </ng-select>
+            
+            </div>
+
+
+
+
+          </div>
+
+
+
+        </form>
+
+</div>
+    </div>
+  </div>
+</section>
+
+
+
+<section class="pt-3">
+  <div class="container-fluid">
+
+  
+
+    <div class="row g-3 mb-2">
+      <div class=" col-md-3">
+        <div class="card shadow-sm border-start border-3 border-success text-center">
+          <div class="card-body small">
+            <i class="fa fa-sack-dollar text-success fs-4 mb-1"></i>
+            <p class="fw-semibold mb-0"> Tax Rebate Amount</p>
+            <p class="fw-semibold text-success mb-0">{{salaryOverview.TotalDocSubAmt}}</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card shadow-sm border-start border-3 border-primary text-center">
+          <div class="card-body small">
+            <i class="fa-solid fa-coins text-primary fs-4 mb-1"></i>
+            <p class="fw-semibold mb-0">Total NetPay Salary</p>
+            <p class="fw-semibold text-primary mb-0">{{salaryOverview.TotalNetPay}}</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card shadow-sm border-start border-3 border-warning text-center">
+          <div class="card-body small">
+            <i class="fa-solid fa-gift text-warning fs-4 mb-1"></i>
+            <p class="fw-semibold mb-0">Bonuses</p>
+            <p class="fw-semibold text-warning mb-0">{{salaryOverview.Bonus}}</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card shadow-sm border-start border-3 border-danger text-center">
+          <div class="card-body small">
+            <i class="fas fa-money-bill-wave  text-primary mb-1"></i>
+            <p class="fw-semibold mb-0">Total Gratuity</p>
+            <p class="fw-semibold text-primary mb-0">{{salaryOverview.TotalGratuity}}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+
+    <!-- Compensation Dashboard Summary Card -->
+    <div class="row g-3">
+      <div class="col-lg-7">
+
+        <!-- Salary Distribution Overview -->
+        <div class="shadow-0 mb-3">
+          <div class="card-body small px-0">
+            <p class="fw-semibold text-primary mb-3">
+              <i class="fa-solid fa-sack-dollar"></i> Salary Distribution Overview
+            </p>
+            <div class="row row-cols-2 row-cols-md-4 g-2">
+              <div class="col">
+                <div class="border rounded p-2 text-center">
+                  <div class="text-success mb-1">
+                    <i class="fa-solid fa-chart-bar"></i>
+                  </div>
+                  <div class="fw-bold fs-6">{{salaryOverview.AverageSalary}}</div>
+                  <small class="text-dark small">Average Salary</small>
+                </div>
+              </div>
+              <div class="col">
+                <div class="border rounded p-2 text-center">
+                  <div class="text-primary mb-1">
+                    <i class="fa-solid fa-arrow-up"></i>
+                  </div>
+                  <div class="fw-bold fs-6">{{salaryOverview.HighestSalary}}</div>
+                  <small class="text-dark small">Highest Salary</small>
+                </div>
+              </div>
+              <div class="col">
+                <div class="border rounded  p-2 text-center">
+                  <div class="text-warning mb-1">
+                    <i class="fa-solid fa-arrow-down"></i>
+                  </div>
+                  <div class="fw-bold fs-6">{{salaryOverview.LowestSalary}}</div>
+                  <div class="fw-bold fs-6"></div>
+                  <small class="text-dark small">Lowest Salary</small>
+                </div>
+              </div>
+              <div class="col">
+                <div class="border rounded p-2 text-center">
+                  <div class="text-info mb-1">
+                    <i class="fa-solid fa-chart-pie"></i>
+                  </div>
+                  <div class="fw-bold fs-6">{{salaryOverview.MedianSalary }}</div>
+                  <div class="fw-bold fs-6"></div>
+                  <small class="text-dark small">Median Salary</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Annual Compensation Trend -->
+
+        <div class="card shadow-sm mb-3">
+          <div class="card-body small">
+            <p class="fw-semibold text-primary mb-3">
+              <i class="fa-solid fa-chart-line"></i> Annual Compensation Trend
+            </p>
+            <div class="row text-center">
+              <div class="col-4">
+                <div class="fw-semibold">{{annualTrend.TotalYearSalary}}</div>
+                <small class="text-dark small">YTD Total</small>
+              </div>
+              <div class="col-4">
+                <div class="fw-semibold">{{annualTrend.TotalMonthSalary}}</div>
+                <small class="text-dark small">Last Month</small>
+              </div>
+              <div class="col-4">
+                <div class="fw-semibold text-success">{{annualTrend.TrendPercent}}</div>
+                <small class="text-dark small">Growth</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!--  -->
+
+
+
+
+      </div>
+
+      <div class="col-lg-5">
+        <!-- Compensation Summary -->
+        <div class="card shadow-sm mb-3">
+          <div class="card-body small">
+            <p class="fw-semibold text-primary mb-3">
+              <i class="fa-solid fa-wallet"></i> Compensation Summary
+            </p>
+            <ul class="list-group list-group-flush small">
+              <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                <div class="d-flex align-items-center">
+                  <div
+                    class="bg-success text-white rounded-circle d-flex justify-content-center align-items-center me-2"
+                    style="width:28px; height:28px;">
+                    <i class="fa-solid fa-money-bill-wave small"></i>
+                  </div>
+                  <span class="text-dark"> Reimbursement bill</span>
+                </div>
+                <span class="fw-semibold text-dark">{{salaryOverview.TotalFlexiAmt}}</span>
+              </li>
+              <!-- <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                <div class="d-flex align-items-center">
+                  <div class="bg-info text-white rounded-circle d-flex justify-content-center align-items-center me-2"
+                    style="width:28px; height:28px;">
+                    <i class="fa-solid fa-coins small"></i>
+                  </div>
+                  <span class="text-dark">Variable Pay Processed</span>
+                </div>
+                <span class="fw-semibold text-dark">₹1,20,000</span>
+              </li> -->
+              <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                <div class="d-flex align-items-center">
+                  <div
+                    class="bg-warning text-white rounded-circle d-flex justify-content-center align-items-center me-2"
+                    style="width:28px; height:28px;">
+                    <i class="fa-solid fa-hourglass-half small"></i>
+                  </div>
+                  <span class="text-dark">Pending Tax Rebate</span>
+                </div>
+                <span class="fw-semibold text-dark">{{salaryOverview.PendingTaxRebateCount}}</span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                <div class="d-flex align-items-center">
+                  <div
+                    class="bg-primary text-white rounded-circle d-flex justify-content-center align-items-center me-2"
+                    style="width:28px; height:28px;">
+                    <i class="fa-solid fa-percent small"></i>
+                  </div>
+                  <span class="text-dark">Pending Reimbursement Bill</span>
+                </div>
+                <span class="fw-semibold text-dark">{{salaryOverview.PendingBillCount}}</span>
+              </li>
+              <!-- <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                <div class="d-flex align-items-center">
+                  <div
+                    class="bg-secondary text-white rounded-circle d-flex justify-content-center align-items-center me-2"
+                    style="width:28px; height:28px;">
+                    <i class="fa-solid fa-users small"></i>
+                  </div>
+                  <span class="text-dark">Total Active Employees</span>
+                </div>
+                <span class="fw-semibold text-dark">250</span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                <div class="d-flex align-items-center">
+                  <div class="bg-danger text-white rounded-circle d-flex justify-content-center align-items-center me-2"
+                    style="width:28px; height:28px;">
+                    <i class="fa-solid fa-user-plus small"></i>
+                  </div>
+                  <span class="text-dark">New Joinees with Pending CTC Setup</span>
+                </div>
+                <span class="fw-semibold text-dark">4</span>
+              </li> -->
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+</section>

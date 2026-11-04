@@ -1,0 +1,331 @@
+<section>
+  <div class="container">
+    <div class="row border-bottom">
+      <div class="col-sm-12 col-md-12 col-lg-8 col-xxl-8">
+        <p class="small fw-semibold">
+          <span>Travel-Expence Dashboard </span><br>
+          <span class="fw-semibold text-success"><i class="fa-solid fa-user fw-bold"></i> Total Employee :</span> <span
+            class="fw-semibold text-success ps-2">15</span>
+        </p>
+      </div>
+
+      <div class="col-sm-12 col-md-12 col-lg-4 col-xxl-4">
+        <p class="row row-cols-3 row-cols-md-3 g-2 pt-lg-3">
+          <span class="col">
+            <select id="employeeMonth" class="form-select form-select-sm">
+              <option selected><i class="fa-solid fa-file-import"></i>Month</option>
+              <option>Jan</option>
+              <option>Feb</option>
+              <option>Mar</option>
+              <option>Apr</option>
+              <option>May</option>
+              <option>Jun</option>
+              <option>Jul</option>
+              <option>Aug</option>
+              <option>Sep</option>
+              <option>Oct</option>
+              <option>Nov</option>
+              <option>Dec</option>
+            </select>
+          </span>
+
+          <span class="col">
+            <select id="employeeYear" class="form-select form-select-sm">
+              <option selected><i class="fa-solid fa-file-import"></i>Year</option>
+              <option>2023</option>
+              <option>2024</option>
+              <option>2025</option>
+            </select>
+          </span>
+
+          <span class="col">
+            <select id="employeeExport" class="form-select form-select-sm">
+              <option selected><i class="fa-solid fa-file-import"></i>Export</option>
+              <option>Export PDF</option>
+              <option>Export Excel </option>
+            </select>
+          </span>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-12 col-md-12 col-lg-8 col-xxl-8">
+
+
+        <!-- travel expence card -->
+        
+        <div class="row">
+          <div class="col-lg-12 pt-2">
+            <div class="card shadow-sm p-3 border-top border-2 border-primary">
+              <p class="fw-semibold text-primary mb-2 small"><i class="fa-solid fa-shapes"></i> Travel-Expence Status
+              </p>
+              <div class="d-flex flex-wrap gap-2">
+                <button class="btn btn-sm btn-outline-primary">Total Trips: 15</button>
+                <button class="btn btn-sm btn-outline-dark">Approved: 5</button>
+                <button class="btn btn-sm btn-outline-warning">Upcoming: 1</button>
+                <button class="btn btn-sm btn-outline-info">Ongoing: 2</button>
+                <button class="btn btn-sm btn-outline-success">Completed: 7</button>
+                <button class="btn btn-sm btn-outline-warning">Pending: 7</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+
+        <!-- total card -->
+        <div class="row row-cols-2 row-cols-md-3 row-cols-xl-3 g-3 pt-lg-3">
+
+          <!-- Total Travel Expenses -->
+          <div class="col">
+            <div class="card rounded pt-2">
+              <h4 class="text-center">
+                <span class="badge bg-primary rounded">
+                  <i class="fas fa-wallet fs-5 text-white"></i>
+                </span>
+              </h4>
+              <p class="small text-center fw-semibold">Total Travel Expenses<br>
+                <span class="fw-semibold text-primary">
+                  <i class="fa-solid fa-indian-rupee-sign px-1"></i> 3,50,451
+                </span>
+              </p>
+            </div>
+          </div>
+
+          <!-- Pending Reimbursements -->
+          <div class="col">
+            <div class="card rounded pt-2">
+              <h4 class="text-center">
+                <span class="badge bg-warning rounded">
+                  <i class="fas fa-clock fs-5 text-white"></i>
+                </span>
+              </h4>
+              <p class="small text-center fw-semibold">Pending Reimbursements<br>
+                <span class="fw-semibold text-warning">12</span>
+              </p>
+            </div>
+          </div>
+
+          <!-- Approved Requests -->
+          <div class="col">
+            <div class="card rounded pt-2">
+              <h4 class="text-center">
+                <span class="badge bg-success rounded">
+                  <i class="fas fa-check-circle fs-5 text-white"></i>
+                </span>
+              </h4>
+              <p class="small text-center fw-semibold">Approved Requests<br>
+                <span class="fw-semibold text-success">26</span>
+              </p>
+            </div>
+          </div>
+
+          <!-- Declined Claims -->
+          <div class="col">
+            <div class="card rounded pt-2">
+              <h4 class="text-center">
+                <span class="badge bg-danger rounded">
+                  <i class="fas fa-times-circle fs-5 text-white"></i>
+                </span>
+              </h4>
+              <p class="small text-center fw-semibold">Declined Claims<br>
+                <span class="fw-semibold text-danger">4</span>
+              </p>
+            </div>
+          </div>
+
+
+          <!-- Total Trips Made -->
+          <div class="col">
+            <div class="card rounded pt-2">
+              <h4 class="text-center">
+                <span class="badge bg-secondary rounded">
+                  <i class="fas fa-suitcase-rolling fs-5 text-white"></i>
+                </span>
+              </h4>
+              <p class="small text-center fw-semibold">Total Trips Made<br>
+                <span class="fw-semibold text-secondary">18</span>
+              </p>
+            </div>
+          </div>
+
+          <!-- Average Expense Per Trip -->
+          <div class="col">
+            <div class="card rounded pt-2">
+              <h4 class="text-center">
+                <span class="badge bg-dark rounded">
+                  <i class="fas fa-chart-line fs-5 text-white"></i>
+                </span>
+              </h4>
+              <p class="small text-center fw-semibold">Avg. Expense / Trip<br>
+                <span class="fw-semibold text-dark">
+                  <i class="fa-solid fa-indian-rupee-sign px-1"></i> 19,470
+                </span>
+              </p>
+            </div>
+          </div>
+
+        </div>
+
+
+        <!-- Bottom Summary Section -->
+        <div class="row pt-3">
+
+          <!-- Expense by Category -->
+          <div class="col-md-6 mb-3">
+            <div class="card shadow-sm p-3 border-top border-2 border-info">
+              <p class="fw-semibold text-info small mb-2">
+                <i class="fa-solid fa-layer-group"></i> Expense by Category
+              </p>
+              <ul class="list-group small">
+                <li class="list-group-item d-flex justify-content-between">
+                  Travel Fare <span class="text-info fw-semibold">₹1,50,000</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                  Accommodation <span class="text-info fw-semibold">₹1,20,000</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                  Meals <span class="text-info fw-semibold">₹45,000</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                  Miscellaneous <span class="text-info fw-semibold">₹35,451</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Recent Activity -->
+          <div class="col-md-6 mb-3">
+            <div class="card shadow-sm p-3 border-top border-2 border-secondary">
+              <p class="fw-semibold text-secondary small mb-2">
+                <i class="fa-solid fa-clock-rotate-left"></i> Recent Activity
+              </p>
+              <ul class="list-group small">
+                <li class="list-group-item">
+                  <i class="fa-solid fa-check-circle text-success me-2"></i> Trip to Hyderabad approved
+                </li>
+                <li class="list-group-item">
+                  <i class="fa-solid fa-hourglass-half text-warning me-2"></i> Mumbai trip pending
+                </li>
+                <li class="list-group-item">
+                  <i class="fa-solid fa-times-circle text-danger me-2"></i> Pune trip declined
+                </li>
+                <li class="list-group-item">
+                  <i class="fa-solid fa-paper-plane text-primary me-2"></i> New trip request submitted
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Quick Notes (Optional block) -->
+          <div class="col-md-12">
+            <div class="card shadow-sm p-3 border-top border-2 border-warning">
+              <p class="fw-semibold text-warning small mb-2">
+                <i class="fa-solid fa-note-sticky"></i> Quick Notes
+              </p>
+              <p class="small m-0">
+                Please ensure all receipts are uploaded within 5 days of trip completion. Finance team processes
+                reimbursements every Friday.
+              </p>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="col-sm-12 col-md-12 col-lg-4 col-xxl-4 pt-2">
+
+        <!-- Recent Travel Requests -->
+        <div class="card shadow-sm p-3 mb-3 border-top border-2 border-primary">
+          <p class="fw-semibold text-primary small mb-2">
+            <i class="fa-solid fa-plane-up"></i> Recent Travel Requests
+          </p>
+          <ul class="list-group small">
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              Rahul Sharma - Delhi
+              <span class="badge bg-success">Approved</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              Sneha Patel - Mumbai
+              <span class="badge bg-warning text-dark">Pending</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              Arjun Rao - Bangalore
+              <span class="badge bg-danger">Declined</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card shadow-sm p-3 mb-3 border-top border-2 border-success">
+          <p class="fw-semibold text-success small mb-2">
+            <i class="fa-solid fa-bolt"></i> Quick Actions
+          </p>
+          <div class="d-grid gap-2">
+            <button class="btn btn-outline-primary btn-sm small"><i class="fa-solid fa-plus"></i> New Travel
+              Request</button>
+            <button class="btn btn-outline-success btn-sm small"><i class="fa-solid fa-download"></i> Download
+              Report</button>
+            <button class="btn btn-outline-secondary btn-sm small"><i class="fa-solid fa-user-clock"></i> View
+              Approvals</button>
+          </div>
+        </div>
+
+        <!-- Top Spenders -->
+        <div class="card shadow-sm p-3 mb-3 border-top border-2 border-danger">
+          <p class="fw-semibold text-danger small mb-2">
+            <i class="fa-solid fa-coins"></i> Top Spenders
+          </p>
+          <ul class="list-group small">
+            <li class="list-group-item d-flex justify-content-between">
+              Vishal Maurya <span class="text-primary fw-semibold">₹45,000</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+              Neha Jain <span class="text-primary fw-semibold">₹38,500</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+              Ramesh Yadav <span class="text-primary fw-semibold">₹32,700</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Monthly Summary -->
+        <div class="card shadow-sm p-3 border-top border-2 border-dark ">
+          <div class="d-flex align-items-center mb-2">
+            <div class="me-2">
+              <i class="fa-solid fa-calendar-alt text-dark fs-5"></i>
+            </div>
+            <div>
+              <p class="fw-semibold text-dark small mb-0">Monthly Summary</p>
+            </div>
+          </div>
+
+          <div class="row text-center small">
+            <div class="col-4 border-end">
+              <p class="mb-1 text-muted">Trips</p>
+              <p class="mb-0 fw-semibold text-dark">6</p>
+            </div>
+            <div class="col-4 border-end">
+              <p class="mb-1 text-muted">Total</p>
+              <p class="mb-0 fw-semibold text-dark">₹1,08,000</p>
+            </div>
+            <div class="col-4">
+              <p class="mb-1 text-muted">Avg/Trip</p>
+              <p class="mb-0 fw-semibold text-dark">₹18,000</p>
+            </div>
+          </div>
+        </div>
+
+
+      </div>
+
+    </div>
+  </div>
+</section>

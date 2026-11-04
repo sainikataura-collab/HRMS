@@ -1,0 +1,95 @@
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <!-- Card Header -->
+      <div class="card-header bg-primary pe-0">
+        <div class="row w-100">
+          <!-- Title Section -->
+          <div class="col-sm-12 col-md-6 col-lg-4 d-flex align-items-center justify-content-between">
+            <h4 class="text-white">Uploaded Flexi Head Bills</h4>
+            <button class="btn btnheader d-lg-none mb-1"
+              routerLink="/dash/reimbursement/reimbursementdashboard/FlexiHeadBills">
+              Add
+            </button>
+          </div>
+
+          <!-- Search Section -->
+          <div class="col-sm-12 col-md-4 col-lg-4 d-flex align-items-center justify-content-center">
+            <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText"
+              (ngModelChange)="searchText = $event" />
+          </div>
+
+          <!-- Action Button Section -->
+          <div
+            class="col-sm-12 col-md-6 col-lg-4 d-flex align-items-center justify-content-end ms-auto gap-2 d-none d-md-flex">
+            <button class="btn btnheader" routerLink="/dash/reimbursement/reimbursementdashboard/FlexiHeadBills">
+              Add
+            </button>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Table Section -->
+      <div class="mt-4 ">
+        <table id="exportTable" class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Sr.</th>
+              <th>Dated</th>
+              <th>Bill Date</th>
+              <th>Amount</th>
+              <th>Description</th>
+              <th>Remarks</th>
+              <th>Status</th>
+              <th>File</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              *ngFor="let bill of filteredData() | paginate: { itemsPerPage: pageSize, currentPage: pageIndex, totalItems: totalItems }; let i = index">
+              <td data-label="Sr.No.">{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+              <td data-label="generate-date">{{ bill.dated }}</td>
+              <td data-label="bill-date">{{ bill.billDate }}</td>
+              <td data-label="amount">{{ bill.amount }}</td>
+              <td data-label="description">{{ bill.description }}</td>
+
+              <td data-label="remarks">{{ bill.remarks }}</td>
+              <td data-label="status"
+                [ngClass]="{'text-success btn-success': bill.status === 'Approved', 'text-danger btn-danger': bill.status === 'Rejected', 'text-warning btn-warning': bill.status === 'Pending'}">
+                {{ bill.status }}</td>
+              <td style="text-align: center;" data-label="file">
+                <a *ngIf="bill.filename" (click)="download(bill.filename)" style="cursor: pointer;">
+                  <i class="fa fa-eye" title="View/Download File"></i>
+                </a>
+                <span *ngIf="!bill.filename">No File</span>
+              </td>
+              <td data-label="action">
+                <button class="btn" (click)="deleteBill(bill.pk_flexibillId)">
+                  <i class="fa fa-trash"></i>
+                </button>
+              </td>
+            </tr>
+
+
+
+            <tr *ngIf="filteredData().length === 0">
+              <td colspan="12" class="text-center py-4">
+                <div class="no-record-wrapper">
+                  <i class="fa-regular fa-folder-open no-record-icon"></i>
+
+                  <div class="no-record-text"> <span>No records found</span> <span class="fs-5">🫡</span> </div>
+
+                </div>
+              </td>
+            </tr>
+
+          </tbody>
+        </table>
+
+        <pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>
+      </div>
+    </div>
+  </div>
+</div>

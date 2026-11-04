@@ -1,0 +1,380 @@
+
+<div class="row">
+    <div [ngClass]="isFactBoxOpen ? 'col-sm-12 col-md-9' : 'col-sm-12 col-md-12'">
+        <div class="card">
+          <div class="card-header bg-primary py-2 px-3 mt-0">
+            <div class="d-flex align-items-center justify-content-between flex-nowrap gap-3 w-100">
+              <div class="d-flex align-items-center flex-shrink-0" style="flex: 1 1 0; min-width: 0;">
+                <h4 class="mb-0 text-white text-nowrap fw-semibold">Monthly Attendance</h4>
+              </div>
+              <div class="d-flex justify-content-center mx-auto" style="width: 100%; max-width: 450px;">
+                <app-common-search class="w-100" (filtersChanged)="handleFilters($event)"></app-common-search>
+              </div>
+              <div class="d-flex align-items-center justify-content-end flex-shrink-0" style="flex: 1 1 0; min-width: 0;">
+              </div>
+            </div>
+          </div>
+        
+      <div class="card-body mt-2">
+        <form [formGroup]="EmployeeForm" (ngSubmit)="onSubmit()">
+
+        <div class="row row-cols-1 row-cols-md-4">           
+
+
+                <div class="col">
+                    <label>Month</label>
+                
+                    <div class="form-group">
+                      <ng-select
+                       id="year" 
+                       [items]="months"
+                       bindLabel="name"
+                       bindValue="value"
+                        formControlName="FkMonthId"
+                         placeholder="--Select --"
+                          class="w-100"></ng-select>
+                      <span *ngIf="showError && EmployeeForm.controls['FkMonthId'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                        Please enter Month.
+                      </span>
+                    </div> 
+                </div>
+
+                <div class="col">
+                  <label>Year</label>
+              
+                  <div class="form-group">
+                    <ng-select id="year
+                    " [items]="years"
+                     bindLabel="name"
+                      bindValue="value"
+                    formControlName="FkYearId" placeholder="--Select --"
+                    class="w-100"></ng-select>
+                    <span *ngIf="showError && EmployeeForm.controls['FkYearId'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                      Please enter Year.
+                    </span>
+                  </div> 
+                 </div>
+             
+
+               <div class="col" *ngIf="isContractApplicable">
+                <label>Contractor Name</label>
+            
+                <div class="form-group">
+                  <ng-select 
+                    [items]="CostCenter"
+                    bindLabel="name"
+                    bindValue="value"
+                    [multiple]="true"
+                    [closeOnSelect]="false"
+                    formControlName="fk_costcentreid" 
+                    placeholder="--Select --"
+                    class="w-100"
+                    (clear)="clearCostCenters()"
+                  >
+                    <!-- Display Selected CostCenters -->
+                    <ng-template ng-multi-label-tmp>
+                        <span>{{ getCostCenterDisplayText() || '--Select --' }}</span>
+                    </ng-template>
+
+                    <!-- Custom Checkbox for Select All -->
+                    <ng-template ng-option-tmp let-item="item" let-index="index">
+                        <div *ngIf="item.value === '__select_all__'">
+                            <input type="checkbox" 
+                            (change)="toggleSelectAllCostCenters($event)" 
+                            [checked]="isAllCostCentersSelected()" 
+                            class="form-check-input fs-6 mx-1"/>
+                            <strong>Select All</strong>
+                        </div>
+                     
+                        <!-- Normal location rows -->
+                        <div *ngIf="item.value !== '__select_all__'">
+                            <input type="checkbox" 
+                            [checked]="selectedCostCenters.includes(item.value)"
+                            (change)="toggleCostCenter(item.value)" 
+                            class="form-check-input fs-6 mx-1"/>
+                            {{ item.name }}
+                        </div>
+                    </ng-template>
+                  </ng-select>
+                </div> 
+               </div>
+              
+                 
+
+                 <div class="col">
+                  <div class="col d-flex align-items-end justify-content-end pt-4 pb-3">
+                 
+                    
+                      <button type="submit" class="btn btn-primary mx-1">View</button>
+                      <button type="reset" class="btn btn-outline-dark mx-1">Reset</button>
+                    </div>
+                </div>
+          </div>
+          
+
+        </form>
+
+        <div class="container mt-4" *ngIf="attendanceData && (
+          (attendanceData.notMarkedAttendance?.length > 0) ||
+          (attendanceData.markedAttendance?.length > 0) ||
+          (attendanceData.lockedAttendance?.length > 0)
+        )">
+          <!-- Row for three cards -->
+          <div class="row">
+         
+            <!-- Card 2: Marked Employees -->
+           
+            <div class="col-12 col-md-4 mb-3">
+              <div class="card" style="height: 40px; border: 1px solid #ffc107; box-shadow: none; border-left: 5px solid #ffc107;">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                  <div>
+                    <p class="card-title">Un Process Attendance : &nbsp;<b>{{ this.notMarkedAttendanceCount }}</b></p>
+                   
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-12 col-md-4 mb-3">
+              <div class="card" style="height: 40px; border: 1px solid green; box-shadow: none; border-left: 5px solid #28a745;">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                  <div>
+                    <p class="card-title">Processed Attendance :&nbsp;<b>{{ this.markedAttendanceCount }}</b></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+        
+            <!-- Card 3: Not Marked Employees -->
+           
+        
+            <!-- Card 4: Locked Employees -->
+            <div class="col-12 col-md-4 mb-3">
+              <div class="card" style="height: 40px; border: 1px solid #dc3545; box-shadow: none; border-left: 5px solid #dc3545;">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                  <div>
+                    <p class="card-title">Locked Attendance:&nbsp;<b>{{ this.lockedAttendanceCount }}</b></p>
+                    
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        
+      </div>
+
+        <!-- List of Employee -->
+        <div class="container mt-4" *ngIf="attendanceData && (
+        (attendanceData.notMarkedAttendance?.length > 0) ||
+        (attendanceData.markedAttendance?.length > 0) ||
+        (attendanceData.lockedAttendance?.length > 0)
+      )">
+          <!-- Not Marked Attendance -->
+          <!-- <p class="text-primary">Un Process Attendance</p> -->
+
+          <div class="d-flex justify-content-between align-items-center mt-4 mb-2">
+            <p class="text-primary m-0">Un Process Attendance</p>
+            <input
+              type="text"
+              class="form-control w-auto"
+              placeholder="Search employee..."
+              [(ngModel)]="searchTextUnprocessed"
+              (input)="filterAttendance('unprocessed')" />
+          </div>
+          <div class="table-responsive">
+            <table class="table table-bordered table-sm">
+              <thead>
+                <tr>
+                  <th>Select</th>
+                  <th>Sr.</th>
+                  <th>Emp Code</th>
+              
+                  <th>Name</th>
+                  <th>Location</th>
+                  <th>Department</th>
+                  <th>Designation</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngIf="filteredUnprocessedList?.length === 0">
+                  <td colspan="7" class="text-center">No records found</td>
+                </tr>
+                <tr *ngFor="let emp of filteredUnprocessedList | paginate: { id:'unprocessed',itemsPerPage: pageSize1, currentPage: pageIndex1,totalItems:notMarkedAttendanceCount }; let i = index">
+                  <td>
+                    <input type="checkbox"
+                           [checked]="selectedEmpCodes.includes(emp.empCode)"
+                           (change)="toggleEmpCodeSelection(emp.empCode, $event)" />
+                  </td>
+                  <td>{{ (pageIndex1 - 1) * pageSize1 + i + 1 }}</td>
+                  <td>{{ emp.empCode }}</td>
+                  
+                  <td>{{ emp.empName }}</td>
+                  <td>{{ emp.location }}</td>
+                  <td>{{ emp.department }}</td>
+                  <td>{{ emp.designation }}</td>
+                </tr>
+              </tbody>
+            </table>
+          <!-- Not Marked Attendance -->
+  <pagination-controls
+  *ngIf="notMarkedAttendanceCount > 0"
+  id="unprocessed"
+  (pageChange)="onNotMarkedPageChange($event)"
+  totalItems="notMarkedAttendanceCount"
+  itemsPerPage="pageSize1">
+  </pagination-controls>
+
+          </div>
+        
+          <!-- Marked Attendance -->
+          <!-- <p class="mt-4 text-primary" >Process Attendance</p> -->
+          <div class="d-flex justify-content-between align-items-center mt-4 mb-2">
+            <p class="text-primary m-0">Process Attendance</p>
+            <input
+              type="text"
+              class="form-control w-auto"
+              placeholder="Search employee..."
+              [(ngModel)]="searchTextMarked"
+              (input)="filterAttendance('marked')" />
+          </div>
+          <div class="table-responsive" style="overflow-x: auto;">
+            <table class="table  table-bordered table-sm min-width-table">
+              <thead class="">
+                <tr>
+                  <th>select</th>
+                  <th>Sr.</th>
+                  <th>Emp&nbsp;Code</th>
+                
+                  <th>Name</th>
+                  <th>Location</th>
+                  <th>Department</th>
+                  <th>Designation</th>
+                  <th>Total&nbsp;Days</th>
+                  <th>Present</th>
+                  <th>LWP</th>
+                  <th>National&nbsp;Holidays</th>
+                   <th>OT&nbsp;Worked</th>
+                    <th>OT&nbsp;Paid</th>
+                     <th>CDO&nbsp;Adjustment</th>
+                      <th>OT&nbsp;Lapsed</th>
+                  <th>OT&nbsp;Hours</th>
+                  <th>Weekly&nbsp;Off</th>
+                  <th>Paid&nbsp;Days</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngIf="filteredMarkedList?.length === 0">
+                  <td colspan="14" class="text-center">No records found</td>
+                </tr>
+                <tr *ngFor="let emp of filteredMarkedList | paginate: { id:'marked',itemsPerPage: pageSize2, currentPage: pageIndex2, totalItems:markedAttendanceCount }; let i = index">
+                  <td>
+                    <input type="checkbox"
+                           [checked]="selectedEmpUprocessed.includes(emp.empCode)"
+                           (change)="EmpCodeSelectionforUnprocess(emp.empCode, $event)" />
+                  </td>
+                  <td>{{ (pageIndex2 - 1) * pageSize2 + i + 1 }}</td>
+                  <td>{{ emp.empCode }}</td>
+                  <td>{{ emp.empName }}</td>
+                  <td>{{ emp.location }}</td>
+                  <td>{{ emp.department }}</td>
+                  <td>{{ emp.designation }}</td>
+                  <td>{{ emp.totalDays }}</td>
+                  <td>{{ emp.present }}</td>
+                  <td>{{ emp.lwp }}</td>
+                  <td>{{ emp.holidays }}</td>
+                  <td>{{ emp.otWorked }}</td>
+                  <td>{{ emp.otPaid }}</td>
+                  <td>{{ emp.cdoAdjustment }}</td>
+                  <td>{{ emp.otLapsed }}</td>
+                  <td>{{ emp.otHrs }}</td>
+                  <td>{{ emp.wOff }}</td>
+                  <td>{{ emp.paidDays }}</td>
+                </tr>
+              </tbody>
+            </table>
+          
+            <pagination-controls
+              *ngIf="markedAttendanceCount > 0"
+              id="marked"
+              (pageChange)="onMarkedPageChange($event)"
+              totalItems="markedAttendanceCount"
+              itemsPerPage="pageSize2">
+            </pagination-controls>
+          </div>
+          
+        
+          <!-- Locked Attendance -->
+          <!-- <p class="mt-4 text-primary">Locked Attendance</p> -->
+
+          <div class="d-flex justify-content-between align-items-center mt-4 mb-2">
+            <p class="text-primary m-0">Locked Attendance</p>
+            <input
+              type="text"
+              class="form-control w-auto"
+              placeholder="Search employee..."
+              [(ngModel)]="searchTextLocked"
+              (input)="filterAttendance('locked')" />
+          </div>
+          <div class="table-responsive">
+            <table class="table table-bordered table-sm">
+              <thead>
+                <tr>
+                  <th>Sr.</th>
+                  <th>Emp Code</th>
+            
+                  <th>Name</th>
+                  <th>Location</th>
+                  <th>Department</th>
+                  <th>Designation</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngIf="filteredLockedList?.length === 0">
+                  <td colspan="7" class="text-center">No records found</td>
+                </tr>
+                <tr *ngFor="let emp of filteredLockedList | paginate: {id:'locked', itemsPerPage: pageSize3, currentPage: pageIndex3,totalItems:lockedAttendanceCount}; let i = index">
+                  <td>{{ (pageIndex3 - 1) * pageSize3 + i + 1 }}</td>
+                  <td>{{ emp.empCode }}</td>
+              
+                  <td>{{ emp.empName }}</td>
+                  <td>{{ emp.location }}</td>
+                  <td>{{ emp.department }}</td>
+                  <td>{{ emp.designation }}</td>
+                </tr>
+              </tbody>
+            </table>
+            <!-- <pagination-controls (pageChange)="onLockedPageChange($event)" totalItems="lockedAttendanceCount" itemsPerPage="pageSize">
+            </pagination-controls> -->
+
+            <pagination-controls  
+    (pageChange)="onLockedPageChange($event)"
+    id="locked"
+    *ngIf="lockedAttendanceCount > 0"
+    totalItems="attendanceData.lockedAttendanceCount"
+    itemsPerPage="pageSize3">
+  </pagination-controls>
+          </div>
+
+
+          <div class="col d-flex align-items-end justify-content-end flex-wrap gap-2 pt-4 pb-3">
+            <button type="button" class="btn btn-success" (click)="postAllAttendanceData()">Process</button>
+            <button type="button" class="btn btn-danger" (click)="deleteAllAttendanceData()">Un-Process</button>
+          </div>
+
+        </div>
+      </div>
+  </div>
+
+  <!-- Navigation Sidebar -->
+  <div class="col-sm-12 col-md-3" *ngIf="isFactBoxOpen">
+    <app-workflow-sidebar currentStep="monthly-attendance" [getContextFn]="getPayrollContext" (onClose)="toggleFactBox()"></app-workflow-sidebar>
+  </div>
+</div>
+
+<!-- Floating Open Button (Bottom-right, when closed) -->
+<button class="btn btn-primary btn-float-fact" type="button" *ngIf="!isFactBoxOpen" (click)="toggleFactBox()" title="Open Process Actions">
+  <i class="fa fa-sitemap"></i>
+</button>
+

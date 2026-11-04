@@ -1,0 +1,84 @@
+/* Upload Drop zone styling */
+.drop-zone {
+  border: 2px dashed #0d6efd;
+  border-radius: 10px;
+  padding: 0.75rem;
+  text-align: center;
+  background-color: #ffffff;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #e7f1ff;
+  }
+
+  i {
+    color: #0d6efd;
+  }
+
+  p {
+    color: #495057;
+    font-weight: 500;
+  }
+}
+
+/* Locked ng-select dropdown styling for Edit Mode (no gray background, clean white & crisp text) */
+::ng-deep {
+  ng-select.locked-select {
+    pointer-events: none;
+
+    .ng-select-container {
+      background-color: #ffffff !important;
+      border-color: #dee2e6 !important;
+      opacity: 1 !important;
+      color: #212529 !important;
+      cursor: default !important;
+      box-shadow: none !important;
+
+      .ng-value-container {
+        opacity: 1 !important;
+
+        .ng-value {
+          color: #212529 !important;
+          opacity: 1 !important;
+        }
+
+        .ng-value-label {
+          color: #212529 !important;
+          font-weight: 500;
+          opacity: 1 !important;
+        }
+
+        .ng-input input {
+          color: #212529 !important;
+          opacity: 1 !important;
+          cursor: default !important;
+        }
+      }
+
+      .ng-clear-wrapper {
+        display: none !important;
+      }
+
+      .ng-arrow-wrapper {
+        display: none !important;
+      }
+    }
+  }
+
+  /* Fallback for disabled / readonly ng-selects to ensure no graying out */
+  ng-select[readonly] > .ng-select-container,
+  ng-select.ng-select-disabled > .ng-select-container {
+    background-color: #ffffff !important;
+    opacity: 1 !important;
+    color: #212529 !important;
+
+    .ng-value-label,
+    .ng-placeholder,
+    .ng-input input {
+      color: #212529 !important;
+      opacity: 1 !important;
+    }
+  }
+}
+

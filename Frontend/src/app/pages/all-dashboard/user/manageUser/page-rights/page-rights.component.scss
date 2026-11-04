@@ -1,0 +1,37 @@
+// Ensure ng-select maintains clean uniform height and text truncation
+::ng-deep ng-select.small {
+  .ng-select-container {
+    min-height: 38px !important;
+    height: 38px !important;
+    font-size: 13px;
+  }
+
+  .ng-value-container {
+    flex-wrap: nowrap !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
+    text-overflow: ellipsis !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  .ng-value {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+::ng-deep .ng-dropdown-panel {
+  .input-group {
+    .form-control:focus {
+      box-shadow: none !important;
+      border-color: #3080e8 !important;
+    }
+  }
+}

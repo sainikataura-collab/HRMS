@@ -1,0 +1,115 @@
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+      <div class="card">
+   
+    <!--  -->
+    <div class="card-header bg-primary">
+        <div class="row w-100">
+          <!-- Title Section -->
+          <div class="col-sm-7 col-md-7 col-lg-5 d-flex align-items-center justify-content-start"> 
+            <h4 class="text-white">{{ Isedit ? 'Update Restricted Master' : 'Restricted Master' }}</h4>
+          </div>
+       
+         
+          <!-- Back Button -->
+          
+          <div class="col-sm-6 col-md-6 col-lg-2 d-flex align-items-center justify-content-end ms-auto gap-2">
+            <button class="btn btnheader" routerLink="/dash/adminLeave/adminLeavedashboard/RestrictedMaster_list">
+               Back
+            </button>
+          </div>
+        </div>
+      </div>
+   
+    <div class="card-body mt-2 ">
+        <form [formGroup]="resholidayForm" (ngSubmit)="onSubmit()">
+        <div class="row row-cols-1 row-cols-md-3 g-4 ">
+          <div class="col">
+            <label>Location</label>
+           
+            <ng-select 
+              [items]="Location" 
+              bindLabel="name" 
+              bindValue="value" 
+              [multiple]="true"
+              [closeOnSelect]="false"
+              placeholder="--Select Locations--" 
+              class="w-100 small"
+              formControlName="fk_locid"
+              [disabled]="Isedit"
+             >  <!-- Disable in update mode -->
+            
+              <!-- Custom Template for Displaying Selected Items -->
+              <ng-template ng-multi-label-tmp>
+                <span>{{ getLocationDisplayText() || "--Select Locations--" }}</span>
+              </ng-template>
+            
+              <!-- Custom Checkbox for Select All -->
+              <ng-template ng-option-tmp let-item="item" let-index="index">
+                <div *ngIf="index === 0">
+                  <input type="checkbox" (change)="toggleSelectAll()" [checked]="isAllSelected()" class="form-check-input fs-6 mx-1" />
+                  <strong>&nbsp;Select All</strong>
+                </div>
+                <div *ngIf="index !== 0">
+                  <input type="checkbox" [checked]="selectedLocations.includes(item.value)"
+                         (change)="toggleLocation(item.value)" class="form-check-input fs-6 mx-1"/>
+                  {{ item.name }}
+                </div>
+              </ng-template>
+            
+            </ng-select> 
+          </div>
+          
+                      
+          
+                      
+          
+          
+              <!--year -->
+              <div class="col"><label>Year<span style="color: red;">*</span></label>
+                <ng-select id="year" [items]="years" bindLabel="name" bindValue="value"
+                formControlName="fk_yearid" placeholder="--Select Year--"
+                class="w-100"></ng-select>
+                <span *ngIf="showError && resholidayForm.controls['fk_yearid'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                  Please enter Year
+                </span>
+              </div>
+
+
+              <div class="col"><label>Holiday type <span style="color: red;">*</span></label>
+                <input type="text" class="form-control" formControlName="holidaytype">
+                 <span *ngIf="showError && resholidayForm.controls['holidaytype'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                    Please enter Holiday.
+                  </span>
+              </div>
+              <div class="col">
+                  <label for="department">Holiday Date (dd/mm/yyyy)</label><span class="text-danger fw-bold">*</span>
+                  <input type="date" class="form-control" formControlName="dated">
+                   <span *ngIf="showError && resholidayForm.controls['dated'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                    Please enter Dated
+                  </span>
+              </div>
+             
+             
+            
+           
+              <div class="col">
+                <label>Is National Holiday</label><br>
+                <input type="checkbox"formControlName="isNH" class="form-check-input fs-6 mx-1">
+              </div>
+        
+           
+           
+           </div>
+            <!-- Buttons -->
+            <div class="modal-footer">
+               <button type="submit" class="btn btn-primary mx-1">{{ pk_holidayid ? 'Update' : 'Save' }}</button>
+               <button type="reset" class="btn btn-outline-dark mx-1">Reset</button>
+             
+          </div>
+          </form>
+    </div>
+
+</div>
+</div>
+</div>

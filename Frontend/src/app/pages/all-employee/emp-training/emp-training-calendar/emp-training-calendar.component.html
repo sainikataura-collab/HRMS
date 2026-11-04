@@ -1,0 +1,45 @@
+<div class="calendar-container">
+  <div class="calendar-header">
+    <h4> Employee Training Calendar</h4>
+  </div>
+  <div class="calendar-body">
+    <full-calendar [options]="calendarOptions"></full-calendar>
+  </div>
+  </div>
+
+<!-- Modal -->
+<div class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header bg-primary text-white">
+        <p class="modal-title" id="eventModalLabel">{{ selectedEvent?.title }}</p>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body">
+        <p> <span class="small fw-semibold">empName:</span> <span class="small">{{ selectedEvent?.employeeNames }}</span> </p>
+        <p> <span class="fw-semibold small">Program:</span> <span class="small">{{ selectedEvent?.programName }}</span></p>
+        <p> <span class="small fw-semibold">Sub-Program:</span> <span class="small"> {{ selectedEvent?.subProgramName }}</span></p>
+        <p> <span class="small fw-semibold">Trainer:</span> <span class="small">{{ selectedEvent?.trainer }}</span></p>
+        <p><span class="small fw-semibold">Location:</span>  <span class="small">{{ selectedEvent?.location }}</span></p>
+        <p><span class="fw-semibold small">Date: </span> <span class="small">{{ selectedEvent?.start | date:'fullDate' }}</span></p>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- <div *ngIf="selectedEvent" class="event-details mt-3 p-3 border rounded">
+  <h5>{{ selectedEvent.title }}</h5>
+  <p><strong>Program:</strong> {{ selectedEvent.programName }}</p>
+  <p><strong>Sub-Program:</strong> {{ selectedEvent.subProgramName }}</p>
+  <p><strong>Trainer:</strong> {{ selectedEvent.trainer }}</p>
+  <p><strong>Location:</strong> {{ selectedEvent.location }}</p>
+  <p><strong>Date:</strong> {{ selectedEvent.start | date:'fullDate' }}</p>
+</div> -->
+
+

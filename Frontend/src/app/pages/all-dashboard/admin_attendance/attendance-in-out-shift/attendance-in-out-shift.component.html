@@ -1,0 +1,321 @@
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card">
+      <!--  -->
+
+      <div class="card-header bg-primary py-lg-1 mt-0">
+        <div class="row w-100 align-items-center">
+
+          <!-- Title Section -->
+          <div class="col-12 col-md-3">
+            <h4>Attendance Details In Out</h4>
+          </div>
+
+          <!-- Search Section -->
+          <div class="col-12 col-md-7 mt-2 mt-md-0">
+            <app-common-search (filtersChanged)="handleFilters($event)"></app-common-search>
+          </div>
+
+          <!-- Button Section -->
+
+
+        </div>
+
+      </div>
+
+
+
+      <div class="card-body mt-4">
+        <form [formGroup]="EmployeeForm" (ngSubmit)="onSubmit()">
+
+          <div class="row row-cols-1 row-cols-md-4">
+
+
+            <div class="col">
+              <label>Month<span style="color: red;">*</span></label>
+
+              <div class="form-group">
+                <ng-select id="year" [items]="months" bindLabel="name" bindValue="value" formControlName="FkMonthId"
+                  placeholder="--Select --" class="w-100"></ng-select>
+                <span *ngIf="showError && EmployeeForm.controls['FkMonthId'].invalid" class="text-danger mt-1"
+                  style="font-size: 12px;">
+                  Please enter Month.
+                </span>
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Year<span style="color: red;">*</span></label>
+
+              <div class="form-group">
+                <ng-select id="year
+                      " [items]="years" bindLabel="name" bindValue="value" formControlName="FkYearId"
+                  placeholder="--Select --" class="w-100"></ng-select>
+                <span *ngIf="showError && EmployeeForm.controls['FkYearId'].invalid" class="text-danger mt-1"
+                  style="font-size: 12px;">
+                  Please enter Year.
+                </span>
+              </div>
+            </div>
+
+            <div class="col" *ngIf="isContractApplicable">
+              <label>Contractor Name</label>
+              <div class="form-group">
+                <ng-select id="Year" [items]="Contractor" bindLabel="name" bindValue="value"
+                  formControlName="fk_costcentreid" placeholder="--Select --" class="w-100"></ng-select>
+
+              </div>
+            </div>
+
+            <div class="col">
+              <div class="col d-flex align-items-end justify-content-end pt-4 pb-3">
+
+
+                <button type="submit" class="btn btn-primary mx-1">View</button>
+                <button type="reset" class="btn btn-outline-dark mx-1">Reset</button>
+              </div>
+            </div>
+          </div>
+
+
+        </form>
+
+        <div class="d-flex justify-content-between align-items-center mt-4 mb-2" *ngIf="isDataLoaded">
+          <p class="text-primary m-0">Attendance Details InOut List</p>
+          <input type="text" class="form-control w-auto" placeholder="Search employee..." [(ngModel)]="searchText"
+            name="searchText" (input)="filterApply()" />
+        </div>
+
+
+        <div class="table-responsive" *ngIf="employeeList.length > 0">
+          <table class="table table-bordered table-sm   table-hover table-striped">
+            <thead>
+              <tr>
+                <th>Emp Name</th>
+                <th>Emp Code</th>
+                <!-- <th *ngFor="let dayKey of dayKeys">
+                  {{ getDateFromField(firstEmployee?.[dayKey]) | date:'dd MMM yyyy' }}
+                </th> -->
+                <th *ngFor="let date of dateHeaders">
+                  {{ date | date: 'dd MMM yyyy' }}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                *ngFor="let emp of employeeList | paginate: {itemsPerPage: pageSize, currentPage: pageIndex,totalItems:totalCount };">
+                <td>{{ emp.empname }}</td>
+                <td>{{ emp.empcode }}</td>
+                <td *ngFor="let dayKey of dayKeys">
+
+                  <div *ngIf="emp[dayKey]" class="lh-sm btn" data-bs-toggle="modal" data-bs-target="#exampleModal"
+                    style="cursor: pointer;" (click)="openAttendanceModal(emp, dayKey)">
+                    {{ (getFieldData(emp[dayKey], 'in') || '').replace(':00', '') }} |
+                    {{ (getFieldData(emp[dayKey], 'out') || '').replace(':00', '') }} |
+                    {{ getFieldData(emp[dayKey], 'workhour') }}
+                    <br>
+                    {{ getFieldData(emp[dayKey], 'daystatus') }} |
+
+                    {{ getFieldData(emp[dayKey], 'shiftName') }} |
+
+                    {{ getFieldData(emp[dayKey], 'OThour') }}
+                  </div>
+                  <div *ngIf="!emp[dayKey]">
+                    N/A
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <pagination-controls (pageChange)="onPageChange($event)" totalItems="totalCount" itemsPerPage="pageSize">
+          </pagination-controls>
+        </div>
+        <div *ngIf="isDataLoaded && employeeList.length === 0" class="text-danger mt-3">
+          No records found.
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class=" modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header small">
+        <p class="modal-title small lh-sm" id="exampleModalLabel"><span>Employee Code :</span> <span
+            class="text-danger">{{ selectedAttendance?.empcode }}</span>&nbsp;<span>Employee Name :</span> <span
+            class="text-danger">{{ selectedAttendance?.employeeName }}</span> </p>
+        <button type="button" id="modalCloseBtn" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="AttendanceForm" (ngSubmit)="SaveChanges()" class="row g-2">
+
+          <div class="row align-items-center">
+            <!-- Date -->
+            <div class="col-md-6 col-lg-4">
+              <p class="lh-base small mb-0">
+                <span class="fw-semibold">Date:&nbsp;</span>
+                <span style="color:blue">{{ selectedAttendance?.dated | date:'dd MMM yyyy' }}</span>
+
+              </p>
+            </div>
+
+            <!-- Shift -->
+            <div class="col-md-6 col-lg-8">
+
+              <div class="row d-flex align-items-center justify-content-center">
+
+                <div class="col-md-6 col-lg-4">
+                  <label class="form-label small mb-1">Shift</label>
+                </div>
+
+                <div class="col-md-6 col-lg-8">
+                  <ng-select [items]="shiftList" bindLabel="name" bindValue="value" formControlName="shift"
+                    placeholder="--Select--" (change)="shiftdata($event)" class="form-control-sm small w-100">
+                  </ng-select>
+                  <span *ngIf="showError && AttendanceForm.controls['shift'].invalid" class="text-danger mt-1 d-block"
+                    style="font-size: 10px;">
+                    Please select shift.
+                  </span>
+                  <div *ngIf="shiftdetails && shiftdetails.length > 0" class="text-danger mt-1"
+                    style="font-size: 10px;">
+                    {{ shiftdetails[0].startHrs }}:{{ shiftdetails[0].startMinute }}
+                    to
+                    {{ shiftdetails[0].endHrs }}:{{ shiftdetails[0].endMinute }}
+                    (Hours: {{ getShiftHoursAndMinutes(shiftdetails[0].shiftHour) }})
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+          <!-- In Time -->
+          <div class="col-md-4">
+            <label class="form-label small">In Time</label>
+            <input type="time" class="form-control" formControlName="in">
+          </div>
+
+          <!-- Out Time -->
+          <div class="col-md-4">
+            <label class="form-label small">Out Time</label>
+            <input type="time" class="form-control" formControlName="out">
+          </div>
+          <!-- Additional fields row -->
+          <div class="col-md-4">
+            <label class="form-label small">Out Time Date</label>
+            <input type="date" class="form-control" formControlName="outTimeDate" (change)="checkOutTimeDateLimit()"
+              [min]="minDate">
+            <span *ngIf="showError && AttendanceForm.controls['outTimeDate'].invalid" class="text-danger mt-1"
+              style="font-size: 10px;">
+              Please enter out Time Date.
+            </span>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label small">Working hours</label>
+            <input type="text" class="form-control" formControlName="workhour">
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label small">Status</label>
+
+            <ng-select [items]="AttendanceStatusDataList" bindLabel="name" bindValue="value" formControlName="status"
+              placeholder="--Select--" class="form-control-sm small w-100">
+            </ng-select>
+            <span *ngIf="showError && AttendanceForm.controls['status'].invalid" class="text-danger mt-1 d-block"
+              style="font-size: 10px;">
+              Please select Status.
+            </span>
+            <!-- <input type="text" class="form-control" formControlName="status"> -->
+          </div>
+
+
+
+          <div class="col-md-4">
+            <label class="form-label small d-flex align-items-center justify-content-center">Shift Actual Time</label>
+            <input type="checkbox" formControlName="ShiftActualTime" class="ms-5" />
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label small">Total OT Hour</label>
+            <input type="text" class="form-control" formControlName="ot">
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label small">OT Lapsed Hour</label>
+            <input type="text" class="form-control" formControlName="OTLapsedHours" placeholder="HH:mm" mask="00:00" (input)="AttendanceForm.get('OTLapsedHours')?.updateValueAndValidity()" (blur)="formatTimeOnBlur('OTLapsedHours')">
+            
+            <div class="text-danger small" 
+       *ngIf="AttendanceForm.get('OTLapsedHours')?.invalid">
+    <span *ngIf="AttendanceForm.get('OTLapsedHours')?.errors?.['required']">
+      OT Lapsed Hour is required.
+    </span>
+    <span *ngIf="AttendanceForm.get('OTLapsedHours')?.errors?.['pattern']">
+      Please enter a valid time (00:00 to 23:59).
+    </span>
+  </div>
+
+          </div>
+
+
+          <div class="col-md-4">
+            <label class="form-label small">OT Hour</label>
+            <input type="text" class="form-control" formControlName="TotalOTHour">
+          </div>
+
+          <!-- <div class="col-md-4">
+            <label class="form-label small">Total OT Hour</label>
+            <input type="text" class="form-control" formControlName="TotalOTHour">
+          </div> -->
+
+
+          <div class="col-md-4">
+            <label class="form-label small d-flex align-items-center">OT Lapsed</label>
+            <input type="checkbox" formControlName="OTlapsed" class="ms-4" />
+
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label small d-flex align-items-center">Short Leave Lapsed</label>
+            <input type="checkbox" formControlName="shortleaveLapsed" class="ms-5" />
+
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small d-flex align-items-center">Latecoming Lapsed</label>
+            <input type="checkbox" formControlName="LatecomingLapsed" class="ms-5" />
+
+          </div>
+
+
+             <div class="col-md-4">
+            <label class="form-label small d-flex align-items-center">Only OT</label>
+            <input type="checkbox" formControlName="onlyot" class="ms-2"/>
+
+          </div>
+          <div class="col-md-4">
+             <label class="form-label small ps-2">Remarks</label>
+            <!-- <input type="text"  class="form-control" formControlName="Remark"/> -->
+             <textarea class="form-control" formControlName="Remark"></textarea>
+                      
+          </div>
+
+
+
+          <!-- Hidden Fields -->
+          <input type="hidden" formControlName="dated">
+          <input type="hidden" formControlName="empcode">
+
+          <!-- Buttons aligned right -->
+          <div class="col-12 d-flex justify-content-end mt-3">
+            <button type="button" class="btn btn-secondary btn-sm mx-1" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary btn-sm">Save changes</button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

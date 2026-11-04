@@ -1,0 +1,73 @@
+.label-modern {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  color: #1f1f1f;
+  transition: color 0.3s ease;
+
+  i {
+    font-size: 1rem;
+    color: #3080e8;
+    transition: transform 0.3s ease, color 0.3s ease;
+  }
+
+  &:hover i {
+    transform: scale(1.2);
+    color: #1e5fbd;
+  }
+}
+
+.small{
+    font-size: 12px;
+}
+
+
+
+
+.editor-box {
+  min-height: 3.5rem;
+  border: 1px solid #bdc1c7;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+
+label {
+    font-size: 13px;
+    color: #2b2e41;
+    font-weight: 500;
+}
+
+
+// EMP KRA Page Style
+
+.card-kra {
+  border: 1px solid #b6c5d3;
+  border-radius: 5px;
+}
+
+.card-kra:hover {
+  border: 1px dashed #3080e8;
+  border-radius: 2px;
+}
+
+.alert {
+  transition: opacity 0.5s ease-in-out;
+}
+
+// sticky top
+.sticky-active {
+  background-color: #ffffff;
+  border-bottom: 1px solid #dee2e6;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  z-index: 1020;
+}
+
+
+
+
+

@@ -1,0 +1,97 @@
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+
+            <!-- Header -->
+            <div class="card-header bg-primary py-lg-2 mt-0">
+                <div class="row w-100 align-items-center">
+                    <div class="col-12 col-md-6">
+                        <h4 class="text-white text-center text-md-start">Leave Configuration</h4>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Body -->
+            <div class="card-body mt-2">
+                <form [formGroup]="LeaveconfigurationForm" class="row g-3">
+
+                    <!-- Row 1 -->
+                    <div class="row row-cols-1 row-cols-md-3 g-3">
+                        <div class="col">
+                            <label>Month</label>
+                            <div class="form-group">
+                                <ng-select [items]="Month" bindLabel="name" bindValue="value"
+                                    formControlName="fk_monthId" placeholder="--Select--" class="w-100"></ng-select>
+                                <span *ngIf="showError && LeaveconfigurationForm.controls['fk_monthId'].invalid"
+                                    class="text-danger mt-1" style="font-size: 12px;">
+                                    Please enter Month.
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <label>Year</label>
+                            <div class="form-group">
+                                <ng-select [items]="Year" bindLabel="name" bindValue="value" formControlName="fk_yearId"
+                                    placeholder="--Select--" class="w-100"></ng-select>
+                                <span *ngIf="showError && LeaveconfigurationForm.controls['fk_yearId'].invalid"
+                                    class="text-danger mt-1" style="font-size: 12px;">
+                                    Please enter Year.
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <label>National Holiday Priority</label>
+                            <input type="number" class="form-control" formControlName="nholiday_priority">
+                        </div>
+                    </div>
+
+                    <!-- Row 2 -->
+                    <div class="row row-cols-1 row-cols-md-3 g-3">
+                        <div class="col">
+                            <label>Weekly Off Priority</label>
+                            <input type="number" class="form-control" formControlName="woff_priority">
+                        </div>
+                        <div class="col">
+                            <label>Club Priority</label>
+                            <input type="number" class="form-control" formControlName="club_priority">
+                        </div>
+                        <div class="col">
+                            <label>Cover Priority</label>
+                            <input type="number" class="form-control" formControlName="cover_priority">
+                        </div>
+                    </div>
+
+                    <!-- Row 3 -->
+                    <div class="row row-cols-1 row-cols-md-3 g-3">
+                        <div class="col">
+                            <label>JDate Propationate</label>
+                            <ng-select [items]="jdate_propationate" bindLabel="name" bindValue="value"
+                                formControlName="jdate_propationate" placeholder="--Select--" class="w-100"></ng-select>
+                        </div>
+                        <div class="col">
+                            <label>Locked For Apply</label>
+                            <div class="form-group">
+                                <input type="checkbox" class="form-check-input fs-6" formControlName="isLockedForApply">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <label>Locked For Approval</label>
+                            <div class="form-group">
+                                <input type="checkbox" class="form-check-input fs-6" formControlName="isLockedForApproval">
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Footer Buttons -->
+                    <div class="row mt-3">
+                        <div class="col d-flex justify-content-end">
+                            <button type="submit" class="btn btn-primary mx-1" (click)="update()">Update</button>
+
+                            <button type="button" class="btn btn-outline-dark mx-1" (click)="resetForm()">Reset</button>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

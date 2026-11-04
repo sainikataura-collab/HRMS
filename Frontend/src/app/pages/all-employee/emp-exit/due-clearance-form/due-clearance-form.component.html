@@ -1,0 +1,177 @@
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+
+            <div class="card-header bg-blue">
+                <div class="row w-100">
+
+                    <div class="col-sm-12 col-md-6 col-lg-6">
+                        <h4>Due Clearance Form</h4>
+                    </div>
+
+                    <div class="col-sm-12 col-md-6 col-lg-6 d-flex align-items-center justify-content-md-end">
+
+                        <button class="btn btnheader" (click)="goBack()">
+                            Back
+                        </button>
+
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="card-body mt-4">
+
+                <!-- Employee Details -->
+
+                <div class="row row-cols-1 row-cols-md-3 mb-4">
+
+                    <div class="col">
+
+                        <label>Employee Code</label>
+
+                        <div class="form-group">
+
+                            <input type="text" class="form-control" [value]="empInfo.empcode" readonly>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col">
+
+                        <label>Employee Name</label>
+
+                        <div class="form-group">
+
+                            <input type="text" class="form-control" [value]="empInfo.empname" readonly>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col">
+
+                        <label>Department</label>
+
+                        <div class="form-group">
+
+                            <input type="text" class="form-control" [value]="empInfo.employeeDepartment" readonly>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- Asset Details -->
+
+                <div class="bg-primary rounded-1 page-seperator mb-3">
+
+                    <p class="p-1 text-white ms-4 mb-0">
+
+                        Asset Details
+
+                    </p>
+
+                </div>
+
+                <form [formGroup]="assetForm">
+
+                    <div class="table-responsive table-invoice">
+
+                        <table class="table">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th style="width:40px">
+                                        #
+                                    </th>
+
+                                    <th>
+                                        Asset
+                                    </th>
+
+                                    <th style="width:130px">
+                                        Issued?
+                                    </th>
+
+                                    <th style="width:170px">
+                                        Status
+                                    </th>
+
+                                    <th style="width:150px">
+                                        Recovery (₹)
+                                    </th>
+
+                                    <th>
+                                        Remarks
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+                            <tbody formArrayName="assets">
+
+                                <tr *ngFor="let asset of assets.controls;let i=index" [formGroupName]="i">
+
+                                    <td>
+
+                                        {{i+1}}
+
+                                    </td>
+
+                                    <td class="align-middle fw-semibold">
+
+                                        {{getGroup(i).get('name')?.value}}
+
+                                    </td>
+
+                                    <td>
+
+                                        <ng-select [items]="issuedOptions" bindLabel="name" bindValue="value"
+                                            formControlName="issued" [clearable]="false" [readonly]="true">
+
+                                        </ng-select>
+
+                                    </td>
+
+                                    <td>
+
+                                        <ng-select [items]="statusOptions" bindLabel="name" bindValue="value"
+                                            formControlName="status" [clearable]="false" [readonly]="true">
+
+                                        </ng-select>
+
+                                    </td>
+                                    <td>
+                                        <input type="number" class="form-control form-control-sm"
+                                            formControlName="recoveryAmount" readonly>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control form-control-sm"
+                                            formControlName="remarks" readonly>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="4" class="text-end fw-bold">
+                                        Total Recovery Amount :
+                                    </td>
+                                    <td class="fw-bold">
+                                        ₹ {{totalRecovery()}}
+                                    </td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

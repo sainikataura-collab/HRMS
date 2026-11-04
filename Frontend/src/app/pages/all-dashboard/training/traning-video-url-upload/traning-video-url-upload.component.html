@@ -1,0 +1,91 @@
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-primary">
+                <div class="row w-100">
+                    <div
+                        class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-between">
+                        <h4>Video URL Upload</h4>
+                    </div>
+                    <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+                        <button class="btn btnheader" routerLink="/dash/payroll/payrolldashboard/video-url-upload-list">
+                            Back
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="card-body mt-4">
+                <form [formGroup]="VideoURLForm">
+
+                    <div class="row" class="row row-cols-1 row-cols-md-3 g-4">
+
+                        <div class="col">
+                            <label>Appication Name<span style="color: red;">*</span></label>
+                            <ng-select [items]="application" bindLabel="name" bindValue="value"
+                                formControlName="Application"></ng-select>
+
+                            <!-- Validation message below input field -->
+                            <span *ngIf="showError && VideoURLForm.controls['Application'].invalid"
+                                class="text-danger mt-1" style="font-size: 12px;">
+                                Select Appication Name
+                            </span>
+
+                        </div>
+
+                        <div class="col">
+                            <label>Topic Name<span class="text-danger fw-bold">*</span></label>
+                            <input type="text" class="form-control" formControlName="Topic" />
+                            <span *ngIf="showError && VideoURLForm.controls['description'].invalid"
+                                class="text-danger mt-1" style="font-size: 12px;">please enter Topic Name
+                            </span>
+                        </div>
+                        <div class="col">
+                            <label>thumbnails<span class="text-danger fw-bold">*</span></label>
+                            <input type="file" class="form-control" formControlName="thumbnails" (change)="onFileChange($event)"  />
+                            <span *ngIf="showError && VideoURLForm.controls['description'].invalid"
+                                class="text-danger mt-1" style="font-size: 12px;">please enter thumbnails
+                            </span>
+                        </div>
+
+                        <div class="col">
+                            <label for="URL">URL:</label>
+                            <div class="form-group">
+                                <input type="text" class="form-control" formControlName="URL" />
+                            </div>
+                        </div>
+
+                        <div class="col">
+                            <label>File Type<span style="color: red;">*</span></label>
+                            <ng-select [items]="Filetype" bindLabel="name" bindValue="value"
+                                formControlName="filetype"></ng-select>
+
+                            <!-- Validation message below input field -->
+                            <span *ngIf="showError && VideoURLForm.controls['filetype'].invalid"
+                                class="text-danger mt-1" style="font-size: 12px;">
+                                Select File Type
+                            </span>
+
+                        </div>
+
+                        <div class="col">
+                            <label for="isactive">Is Active:</label>
+                            <div class="form-group">
+                                <input type="checkbox" id="isactive" formControlName="isActive" class="form-check-input" />
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Footer buttons -->
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary mx-1" (click)="Onsubmit()">{{ isEditMode ? 'Update' : 'Save'}}</button>
+                        <button type="button" class="btn btn-outline-dark mx-1">Reset</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>

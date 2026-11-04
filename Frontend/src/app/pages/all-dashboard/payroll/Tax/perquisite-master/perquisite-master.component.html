@@ -1,0 +1,52 @@
+
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+         <!--  -->
+      <div class="card-header bg-primary">
+        <div class="row w-100">
+          <!-- Title Section -->
+          <div class="col-sm-7 col-md-7 col-lg-5 d-flex align-items-center justify-content-start"> 
+            <h4 class="text-white">{{ Isedit ? 'Update Perquisite Master' : 'Perquisite Master' }}</h4>
+          </div>
+       
+         
+          <!-- Back Button -->
+          
+          <div class="col-sm-6 col-md-6 col-lg-2 d-flex align-items-center justify-content-end ms-auto gap-2">
+            <button class="btn btnheader" routerLink="/dash/payroll/payrolldashboard/perquisiteMaster_list">
+               Back
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="card-body mt-4">
+        <form [formGroup]="PerquisiteForm">
+        <div class="row">
+           
+            <div class="col-md-4">
+                <label>Description<span style="color: red;">*</span></label>
+                <div class="form-group">
+                    <input type="text"class="form-control"formControlName="description" maxlength="100">
+                    <div *ngIf="showError  && PerquisiteForm.get('description')?.invalid" class="text-danger mt-1" style="font-size: 12px;">
+                      Please enter description
+                      </div>
+                </div>
+            </div>
+            
+        </div>
+        
+        
+           <div class="modal-footer"> 
+            <button type="submit" class="btn btn-primary mx-1"(click)="submitForm()">{{Isedit ? 'Update':'Save'}}</button>
+            <button type="reset" class="btn btn-outline-dark mx-1">Reset</button>
+            
+          </div>
+        </form>
+      </div>
+
+      
+  </div>
+</div>    
+
+</div>

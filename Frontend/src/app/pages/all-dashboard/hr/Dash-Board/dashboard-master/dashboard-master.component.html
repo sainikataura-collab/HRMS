@@ -1,0 +1,74 @@
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-primary">
+                <div class="row w-100">
+                  <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-between">
+                    <h4>
+                        {{Isedit? 'Update Dashboard Master' : 'Dashboard Master'}}</h4>
+                  </div>
+                  <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+                    <button class="btn btnheader" routerLink="/dash/hr/hrdashboard/dashboar-master_list">
+                      Back
+                    </button>
+                  </div>
+    
+                </div>
+            </div>
+
+            <div class="card-body mt-4">
+                <form [formGroup]="dashboardForm">
+                    <!-- Department Name -->
+                    <div class="row" class="row row-cols-1 row-cols-md-3 g-4">
+
+                        <div class="col">
+                            <label for="description">Description<span style="color: red;">*</span></label>
+                            <div class="form-group">
+                                <input id="description" type="text" class="form-control" formControlName="description" />
+                                <div *ngIf="showError  && dashboardForm.get('description')?.invalid" class="text-danger mt-1" style="font-size: 12px;">
+                                    Please enter description
+                                    </div>
+                            </div>
+                        </div>
+
+                        <div class="col">
+                            <label for="Dated" >Dated<span style="color: red;">*</span></label>
+                            <div class="form-group">
+                                <input type="date" id="Dated" formControlName="dated" class="form-control"/>
+                                <div *ngIf="showError  && dashboardForm.get('dated')?.invalid" class="text-danger mt-1" style="font-size: 12px;">
+                                    Please enter date
+                                    </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <label for="isactive" >Active</label>
+                            <div class="form-group">
+                                <input type="checkbox" id="isactive" formControlName="active" class="form-check-input" />
+
+                            </div>
+                        </div>
+                        <div class="col">
+                            <label for="Remarks" >Remarks</label>
+                            <div class="form-group">
+                           <textarea type="text" formControlName="remarks" class="form-control" ></textarea>
+                            </div>
+                        </div>
+                           <!-- Footer buttons -->
+                            <div class="col"></div>
+
+                    <div class="col d-flex align-items-center justify-content-md-end">
+                        <button type="submit"  class="btn btn-primary mx-1" (click)="submitForm()">{{Isedit? 'Update' : 'Save'}}</button>
+                        <button type="reset" class="btn btn-outline-dark mx-1">Reset</button>
+                        
+                    </div>
+                    
+                    </div>
+
+                 
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+

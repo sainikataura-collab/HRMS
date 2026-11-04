@@ -1,0 +1,122 @@
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card">
+
+      <!-- Header -->
+      <div class="card-header bg-blue">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-6 col-lg-6">
+            <h4>Action on Resignation</h4>
+          </div>
+          <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+            <button class="btn btnheader" routerLink="/dash/exit/exitdashboard/admin_resignation_list">Back</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Body -->
+      <div class="card-body mt-4">
+        <form [formGroup]="actionForm" class="row row-cols-1 row-cols-md-3">
+
+          <!-- Employee Code (Readonly) -->
+          <div class="col">
+            <label>Employee Code</label>
+            <div class="form-group">
+              <input type="text" class="form-control flex-grow-1" [value]="employeeDetails?.empCode" readonly>
+            </div>
+          </div>
+
+          <!-- Employee Name (Readonly) -->
+          <div class="col">
+            <label>Employee Name</label>
+            <div class="form-group">
+              <input type="text" class="form-control flex-grow-1" [value]="employeeDetails?.empName" readonly>
+            </div>
+          </div>
+
+          <!-- Department (Readonly) -->
+          <div class="col">
+            <label>Department</label>
+            <div class="form-group">
+              <input type="text" class="form-control flex-grow-1" [value]="employeeDetails?.department" readonly>
+            </div>
+          </div>
+
+          <!-- Resignation Date (Readonly) -->
+          <div class="col">
+            <label>Resignation Date</label>
+            <div class="form-group">
+              <input type="text" class="form-control flex-grow-1" [value]="employeeDetails?.resignationDate" readonly>
+            </div>
+          </div>
+
+          <!-- Expected LWD (Readonly) -->
+          <div class="col">
+            <label>Expected Last Working Day</label>
+            <div class="form-group">
+              <input type="text" class="form-control flex-grow-1" [value]="employeeDetails?.expectedLWD" readonly>
+            </div>
+          </div>
+
+          <!-- Reason (Readonly) -->
+          <div class="col">
+            <label>Reason</label>
+            <div class="form-group">
+              <input type="text" class="form-control flex-grow-1" [value]="employeeDetails?.reason" readonly>
+            </div>
+          </div>
+
+          <!-- Action -->
+          <div class="col">
+            <label for="status">Action<span style="color: red;">*</span></label>
+            <div class="form-group">
+              <ng-select id="status" [items]="actionOptions" bindLabel="name" bindValue="value"
+                formControlName="status" [clearable]="false" placeholder="--Select Action--" class="w-100">
+              </ng-select>
+              <span *ngIf="submitted && actionForm.get('status')?.invalid" class="text-danger mt-1" style="font-size: 12px;">
+                Please select an action.
+              </span>
+            </div>
+          </div>
+
+          <!-- Approved LWD -->
+          <div class="col">
+            <label for="actualLWD">Approved Last Working Day<span style="color: red;">*</span></label>
+            <div class="form-group">
+              <input type="date" id="actualLWD" class="form-control flex-grow-1" formControlName="actualLWD">
+              <span *ngIf="submitted && actionForm.get('actualLWD')?.invalid" class="text-danger mt-1" style="font-size: 12px;">
+                Please provide Approved Last Working Day.
+              </span>
+            </div>
+          </div>
+
+          <!-- Notice Period Waiver -->
+          <div class="col">
+            <label>Waive Notice Period?</label>
+            <div class="form-group">
+              <input id="waiveNoticePeriod" class="form-check-input fs-6" type="checkbox" formControlName="waiveNoticePeriod">
+            </div>
+          </div>
+
+          <!-- Approver Remarks -->
+          <div class="col">
+            <label for="approverRemarks">Approver Remarks</label>
+            <div class="form-group">
+              <textarea id="approverRemarks" class="form-control" formControlName="approverRemarks"></textarea>
+            </div>
+          </div>
+
+        </form>
+
+        <!-- Buttons -->
+        <div class="row">
+          <div class="col d-flex align-items-end justify-content-end pt-4 pb-3">
+            <button type="submit" class="btn btn-primary mx-1" (click)="submitForm()">Submit Action</button>
+            <button type="reset" class="btn btn-outline-dark mx-1">Reset</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

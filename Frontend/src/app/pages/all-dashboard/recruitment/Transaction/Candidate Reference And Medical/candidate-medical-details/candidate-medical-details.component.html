@@ -1,0 +1,162 @@
+<div class="step-indicator">
+    <!-- Step 1 -->
+    <div class="step" [ngClass]="{'active-step': currentStep === 1, 'completed-step': currentStep > 1}">
+        <div class="step-circle">
+            <a routerLink="goToCandidateMedicalDetails()">1</a>
+        </div>
+        <div class="step-label small"><span class="small">Candidate Medical Detaails</span></div>
+        <div class="step-line" *ngIf="currentStep > 1 || currentStep === 1"></div>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="step" [ngClass]="{'active-step': currentStep === 2, 'completed-step': currentStep > 2}">
+        <div class="step-circle">
+            <!-- <a routerLink="/dash/payroll/payrolldashboard/EmployeeAttendance">2</a> -->
+            <a (click)="goToCandidateMedicalDetails()">2</a>
+        </div>
+        <div class="step-label small"><span class="small">Canndidate Ref Details</span></div>
+        <div class="step-line" *ngIf="currentStep > 2 || currentStep === 2"></div>
+    </div>
+
+
+</div>
+
+
+
+
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+            <!--  -->
+            <div class="card-header bg-blue ">
+                <div class="row w-100 ">
+                    <div class="col-sm-12 col-md-6 col-lg-6  ">
+                        <h4 class="">
+                            Candidate Medical Details
+                        </h4>
+                    </div>
+                    <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+                        <button class="btn btnheader"
+                            routerLink="/dash/recruitment/recruitmentdashboard/CandidateMedicalDetails_list">Back
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body mt-4">
+                <form class="row row-cols-1 row-cols-md-3" [formGroup]="medicalForm">
+                    <div class="col">
+                        <label>Select Candidate<span style="color: red;">*</span></label>
+                        <div class="form-group">
+                            <ng-select id="jobReq" [items]="CandidateName" bindLabel="name" bindValue="value"
+                                formControlName="pk_recId" placeholder="--Select --" class="w-100"></ng-select>
+                            <span class="text-danger mt-1" style="font-size: 12px;"
+                                *ngIf="showError && medicalForm.controls['pk_recId'].invalid">
+                                Please Select Candidate
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="col"><label>Father Name</label>
+                        <div class="form-group">
+                            <input type="text" class="form-control flex-grow-1" formControlName="father_name">
+                        </div>
+                    </div>
+
+                    <div class="col"><label>Date of Birth</label>
+                        <div class="form-group">
+                            <input type="date" class="form-control flex-grow-1" formControlName="dateofbirth">
+                        </div>
+                    </div>
+
+                    <div class="col"><label>Email ID</label>
+                        <div class="form-group">
+                            <input type="email" class="form-control flex-grow-1" formControlName="email">
+                        </div>
+                    </div>
+
+                    <div class="col"><label>Mobile</label>
+                        <div class="form-group">
+                            <input type="text" class="form-control flex-grow-1" formControlName="mobile">
+                        </div>
+                    </div>
+                    <div class="col"><label>Phone No.</label>
+                        <div class="form-group">
+                            <input type="text" class="form-control flex-grow-1" formControlName="phone">
+                        </div>
+                    </div>
+                    <div class="col"><label>Corres. Contact No.</label>
+                        <div class="form-group">
+                            <input type="text" class="form-control flex-grow-1" formControlName="corresContactNo">
+                        </div>
+                    </div>
+                    <div class="col"><label>Per. Contact No.</label>
+                        <div class="form-group">
+                            <input type="text" class="form-control flex-grow-1" formControlName="permanentContactNo">
+                        </div>
+                    </div>
+                    <div class="col"><label>Corres. Address</label>
+                        <div class="form-group">
+                            <input type="text" class="form-control flex-grow-1" formControlName="corresAddress">
+                        </div>
+                    </div>
+                    <div class="col"><label>Per. Address</label>
+                        <div class="form-group">
+                            <input type="text" class="form-control flex-grow-1" formControlName="permanentAddress">
+                        </div>
+                    </div>
+
+                    <div class="card-header bg-blue ">
+                        <div class="row w-100 ">
+                            <div class="col-sm-12 col-md-6 col-lg-6  ">
+                                <h4 class="">
+                                    Candidate Medical Details
+                                </h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col"><label>Description</label>
+                        <div class="form-group">
+                            <input type="text" class="form-control flex-grow-1" formControlName="description">
+                        </div>
+                        <span *ngIf="showError &&medicalForm.controls['description'].invalid" class="text-danger "
+                            style="font-size: 12px;">
+                            Please enter description.
+                        </span>
+                    </div>
+                    <div class="col"><label>Dated</label>
+                        <div class="form-group">
+                            <input type="date" class="form-control flex-grow-1" formControlName="dated">
+                        </div>
+                        <span *ngIf="showError &&medicalForm.controls['dated'].invalid" class="text-danger "
+                            style="font-size: 12px;">
+                            Please enter dated.
+                        </span>
+                    </div>
+                    <div class="col"><label>Report</label>
+                        <div class="form-group">
+                            <input type="text" class="form-control flex-grow-1" formControlName="report">
+                        </div>
+                        <span *ngIf="showError &&medicalForm.controls['report'].invalid" class="text-danger"
+                            style="font-size: 12px;">
+                            Please enter report.
+                        </span>
+                    </div>
+
+                    <div class="row px-0   w-100 d-flex align-items-center justify-content-end">
+                        <div class="modal-footer mx-0 px-0 col-sm-12 col-md-12 col-lg-12 col-12">
+                            <button type="submit" class="btn btn-primary mx-1" (click)="onSubmit()">{{ isEditMode ?
+                                'Update'
+                                :
+                                'Save' }}</button>
+                            <button type="reset" class="btn btn-outline-dark mx-1">Reset</button>
+
+                        </div>
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+    </div>
+</div>

@@ -1,0 +1,80 @@
+
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+         <!--  -->
+
+      <div class="card-header bg-blue py-lg-1 mt-0">
+        <div class="row w-100 align-items-center">
+
+          <!-- Title Section -->
+          <div class="col-12 col-md-3">
+            <h4 class="text-white text-center text-md-start">Update Attendance</h4>
+          </div>
+
+             <div class="col-sm-12 col-md-12 col-lg-7 col-12">
+                    <div class="row w-100">
+                        <div class="col-sm-12 col-md-12 col-lg-12">
+                            <app-common-search (filtersChanged)="handleFilters($event)"></app-common-search>
+                        </div>
+                    </div>
+                </div>
+           
+
+        </div>
+      </div>
+
+
+      <div class="card-body mt-4">
+        <form [formGroup]="Form">
+
+        <div class="row row-cols-1 row-cols-md-3">
+      
+
+      
+          <div class="col">
+            <label>Employee code</label>
+            <div class="form-group">
+              <ng-select id="Year" [items]="EmployeeList" bindLabel="name" bindValue="value" formControlName="fk_empid"
+                placeholder="--Select --" class="w-100 " [searchable]="true" (search)="onEmployeeSearch($event)" [loading]="loadingEmployees" loadingText="Searching employees..."></ng-select>  
+             
+            </div>
+          </div>
+
+              <div class="col"><label>From Date</label>
+                <input type="date" class="form-control" formControlName="fromDate">
+              
+              </div>
+
+                 <div class="col"><label>To Date</label>
+                <input type="date" class="form-control" formControlName="toDate">
+              
+              </div>
+
+               <div class="col ">
+                <label class="d-block">Remove Attendance Log</label>
+                <input type="checkbox" formControlName="IsAttendancelog" class="ms-lg-1">
+              
+              </div>
+              
+          </div>
+          
+        </form>
+
+        <div class="row">
+          <div class="col d-flex align-items-end justify-content-end pt-4 pb-3">
+            <button type="submit" class="btn btn-primary mx-1" (click)="Update()">Update</button>
+              <button type="button" class="btn btn-outline-dark mx-1"(click)="resetForm()">Reset</button>
+            </div>
+        </div> 
+
+
+
+       
+      
+
+
+  </div>
+
+
+</div>   

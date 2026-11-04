@@ -1,0 +1,190 @@
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header">
+        <div class="row w-100">
+          <div
+            class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-between"
+          >
+            <h4>List of Candidate Details</h4>
+          </div>
+
+          <div
+            class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-center"
+          >
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Search..."
+              [(ngModel)]="searchText"
+            />
+          </div>
+          <div
+            class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-md-end"
+          >
+            <button
+              class="btn btnheader"
+              routerLink="/dash/on_boarding/on_boardingdashboard/onboardCandidateMaster"
+            >
+              Add
+            </button>
+            <button class="btn btn-light mx-1" (click)="exportToExcel()">
+              Download
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <div class="table-responsive table-invoice">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Sr.</th>
+                <th>Candidate&nbsp;Name</th>
+
+                <th>Mobile&nbsp;No</th>
+                <th>Picture</th>
+                <th>CV</th>
+                <th>Action</th>
+                <th>OnboardFormStatus</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                *ngFor="
+                  let item of filteredData()
+                    | paginate
+                      : {
+                          itemsPerPage: pageSize,
+                          currentPage: pageIndex,
+                          totalItems: totalItems
+                        };
+                  let i = index
+                "
+              >
+                <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+                <td>{{ item.candidate_name }}</td>
+                <td>{{ item.mobile }}</td>
+
+                <!-- if u want  only dounload 
+                            <td (click)="download(item.picturename)" style="cursor: pointer; text-align: center;">
+                        <i class="fa fa-eye" aria-hidden="true" title="View/Download Image"></i>
+                        </td> -->
+                <!-- if u want to only show 
+                         <td style="text-align: center;">
+                         <img *ngIf="imageMap[item.picturename]" 
+                          [src]="imageMap[item.picturename]" 
+                        width="50" height="50" style="object-fit: cover; border-radius: 4px;" />
+                      <span *ngIf="!imageMap[item.picturename]">
+                     <i class="fa fa-spinner fa-spin"></i>
+                         </span>
+                      </td> -->
+                <!--for the show the image and  download also -->
+                <td style="text-align: center">
+                  <img
+                    *ngIf="imageMap[item.picturename]"
+                    [src]="imageMap[item.picturename]"
+                    width="50"
+                    height="50"
+                    style="
+                      object-fit: cover;
+                      border-radius: 4px;
+                      cursor: pointer;
+                    "
+                    (click)="download(item.picturename)"
+                    title="Click to download image"
+                  />
+                  <span *ngIf="!imageMap[item.picturename]">
+                    <i class="fa fa-spinner fa-spin"></i>
+                  </span>
+                </td>
+
+                <td
+                  (click)="download(item.filename)"
+                  style="cursor: pointer; text-align: center"
+                >
+                  <i
+                    class="fa fa-eye"
+                    aria-hidden="true"
+                    title="View/Download Image"
+                  ></i>
+                </td>
+
+                <td>
+                  <button
+                    class="btn btn-sm btn-outline"
+                    (click)="isUpdate(encryption.encryptText(item.pk_recId))"
+                  >
+                    <i class="fa-regular fa-pen-to-square"></i>
+                  </button>
+                  <button
+                    class="btn btn-sm btn-outline"
+                    (click)="delete(item.pk_recId)"
+                  >
+                    <i class="fa fa-trash"></i>
+                  </button>
+                  <button
+                    *ngIf="item.onboardFormStatus != 'Completed'"
+                    class="btn btn-sm btn-outline"
+                    (click)="
+                      sendOnboardingEmail(item.pk_recId, item.candidate_name)
+                    "
+                    [disabled]="
+                      isSendingEmail && sendingEmailForId === item.pk_recId
+                    "
+                    title="Send Onboarding Email"
+                  >
+                    <!--  Show spinner when sending email for this specific candidate -->
+                    <i
+                      *ngIf="
+                        isSendingEmail && sendingEmailForId === item.pk_recId
+                      "
+                      class="fa fa-spinner fa-spin"
+                    ></i>
+                    <!--  Show envelope icon when not sending -->
+                    <i
+                      *ngIf="
+                        !(isSendingEmail && sendingEmailForId === item.pk_recId)
+                      "
+                      class="fa fa-envelope"
+                    ></i>
+                  </button>
+                </td>
+
+                <td>
+                  <span
+                    class="badge px-3 py-2"
+                    [ngClass]="{
+                      'bg-warning text-white':
+                        item.onboardFormStatus == 'Initiated',
+                      'bg-info text-white':
+                        item.onboardFormStatus == 'Inprogress',
+                      'bg-success text-white':
+                        item.onboardFormStatus == 'Completed',
+                      'bg-secondary text-white': !item.onboardFormStatus
+                    }"
+                  >
+                    {{ item.onboardFormStatus || "Not Initiated " }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <!--for pagination-->
+          <pagination-controls
+            (pageChange)="onPageChange($event)"
+            [responsive]="true"
+          >
+          </pagination-controls>
+
+          <ng-template #noData>
+            <tr>
+              <td colspan="4" class="text-center">No data available</td>
+            </tr>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

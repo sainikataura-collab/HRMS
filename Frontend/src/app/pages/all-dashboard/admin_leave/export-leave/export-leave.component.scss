@@ -1,0 +1,34 @@
+.scroll-active {
+  max-height: 600px;
+  /* or any height */
+  overflow-y: auto;
+  position: relative;
+}
+
+
+.table-invoice.scroll-active {
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.table thead th {
+
+  position: sticky;
+  // for top of table header overflow
+  top: -0.1rem;
+  background: #f8f9fa;
+  /* Or match your theme */
+  z-index: 2;
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+.table td {
+  white-space: nowrap;
+}
+
+.table th {
+  white-space: nowrap;
+}

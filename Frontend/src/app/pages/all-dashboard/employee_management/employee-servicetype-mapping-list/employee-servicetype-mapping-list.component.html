@@ -1,0 +1,106 @@
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+
+      <!-- Card Header -->
+      <div class="card-header bg-primary">
+        <div class="row w-100 align-items-center">
+
+          <!-- Title Section -->
+          <div class="col-sm-12 col-md-4 col-lg-4 d-flex align-items-center justify-content-between">
+            <h4 class="text-white mb-0">Employee Service Type Mapping</h4>
+          </div>
+
+          <!-- Search Section -->
+          <div class="col-sm-12 col-md-4 col-lg-4 d-flex align-items-center justify-content-center my-2 my-md-0">
+            <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchTerm"
+              (ngModelChange)="onSearch()" (keyup.enter)="onSearch()" />
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="col-sm-12 col-md-4 col-lg-4 d-flex align-items-center justify-content-md-end">
+            <button class="btn btnheader" routerLink="/dash/adminEmployeeManagement/adminEmployeeManagementdashboard/servicetype_mapping_form">
+              Add
+            </button>
+            <button class="btn btn-light mx-1" (click)="exportToExcel()">
+              Download
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Card Body / Table Section -->
+      <div class="card-body">
+        <div class="table-responsive table-invoice">
+          <table id="exportTable" class="table table-bordered">
+            <thead>
+              <tr>
+                <th style="width: 70px;" class="text-center">Action</th>
+                <th>Service Type</th>
+                <th class="text-center">ESI</th>
+                <th class="text-center">PF</th>
+                <th class="text-center">LWF</th>
+                <th class="text-center">PT</th>
+                <th>Created By</th>
+                <th>Created Date</th>
+                <th>Modified Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Data Rows -->
+              <tr
+                *ngFor="let item of mappingList | paginate : { itemsPerPage: pageSize, currentPage: pageIndex, totalItems: totalItems }">
+                <td class="text-center">
+                  <button class="btn btn-outline btn-sm cursor-pointer" (click)="editRecord(item)" title="Edit">
+                    <i class="fa-regular fa-pen-to-square"></i>
+                  </button>
+                </td>
+                <td>
+                  {{ item.serviceTypeName || item.serviceType }}
+                </td>
+                <td class="text-center">
+                  {{ isFlagTrue(item.esi ?? item.ESI) ? 'Yes' : 'No' }}
+                </td>
+                <td class="text-center">
+                  {{ isFlagTrue(item.pf ?? item.PF) ? 'Yes' : 'No' }}
+                </td>
+                <td class="text-center">
+                  {{ isFlagTrue(item.lwf ?? item.LWF) ? 'Yes' : 'No' }}
+                </td>
+                <td class="text-center">
+                  {{ isFlagTrue(item.pt ?? item.PT) ? 'Yes' : 'No' }}
+                </td>
+                <td>{{ item.createdBy || '-' }}</td>
+                <td>{{ item.createdDate ? (item.createdDate | date: 'dd-MMM-yyyy') : '-' }}</td>
+                <td>{{ item.modifiedDate ? (item.modifiedDate | date: 'dd-MMM-yyyy') : '-' }}</td>
+              </tr>
+
+              <!-- Loading State -->
+              <tr *ngIf="isLoading">
+                <td colspan="9" class="text-center py-4 text-muted">
+                  <div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div>
+                  Loading service type mappings...
+                </td>
+              </tr>
+
+              <!-- Empty State -->
+              <tr *ngIf="!isLoading && (!mappingList || mappingList.length === 0)">
+                <td colspan="9" class="text-center py-4 text-muted">
+                  No service type mappings found.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Pagination -->
+          <div class="d-flex justify-content-end p-3" *ngIf="mappingList && mappingList.length > 0">
+            <pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

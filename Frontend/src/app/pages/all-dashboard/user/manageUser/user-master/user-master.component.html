@@ -1,0 +1,177 @@
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+            <!-- Header -->
+            <div class="card-header bg-primary py-lg-2 mt-0">
+                <div class="row w-100">
+                    <div class="col-sm-12 col-md-6 col-9">
+                        <h4 class="text-white text-md-start">New User Creation</h4>
+                    </div>
+                    <div class="col-sm-12 col-md-6 col-3 d-flex align-items-center justify-content-md-end">
+                        <button class="btn btnheader" routerLink="/dash/user/userdashboard/user-master_list">
+                            Back
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Body -->
+            <div class="card-body p-0 px-3">
+                <form [formGroup]="UserMasterForm" class="">
+                    <!-- Row 1 -->
+                    <div class="row row-cols-1 row-cols-md-3 g-1 g-lg-3 ">
+                        <div class="col">
+                            <label>Login ID<span class="text-danger">*</span></label>
+                            <div class="form-group">
+                                <input type="text" class="form-control" formControlName="loginname" placeholder="Enter Login ID" (blur)="checkDesignationAvailability(UserMasterForm.get('loginname')?.value)">
+                                <span *ngIf="showError && UserMasterForm.controls['loginname'].invalid && !UserMasterForm.get('loginname')?.errors?.['duplicate']" 
+                                    class="text-danger mt-1" style="font-size: 12px;">Login ID is required! </span>
+
+                                    <!-- Show validation error message from API only if it exists -->
+                                    <div *ngIf="UserMasterForm.get('loginname')?.errors?.['duplicate']" 
+                                        class="text-danger" style="font-size:10px;">
+                                        {{ UserMasterForm.get('loginname')?.errors?.['duplicate'] }}
+                                    </div>
+
+                            </div>
+                        </div>
+                        <div class="col">
+                            <label>Password<span class="text-danger">*</span></label>
+                            <div class="form-group">
+                                <input type="password" class="form-control" formControlName="password"
+                                    placeholder="Enter Password">
+                                <div *ngIf="submitted && UserMasterForm.get('password')?.invalid"
+                                    class="text-danger mt-1" style="font-size: 12px;">
+                                    Password is required!
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <label>User Name<span class="text-danger">*</span></label>
+                            <div class="form-group">
+                                <input type="text" class="form-control" formControlName="name"
+                                    placeholder="Enter User Name">
+                                <div *ngIf="submitted && UserMasterForm.get('name')?.invalid" class="text-danger mt-1"
+                                    style="font-size: 12px;">
+                                    User Name is required!
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Row 2 -->
+                    <div class="row row-cols-1 row-cols-md-3">
+                        <div class="col">
+                            <label>Email</label>
+                            <div class="form-group">
+                                <input type="email" class="form-control" formControlName="email"
+                                    placeholder="Enter Email">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <label>Role of User<span class="text-danger">*</span></label>
+                            <div class="form-group">
+                                <ng-select [items]="RoleList" bindLabel="name" bindValue="value"
+                                    formControlName="fk_roleId" placeholder="--Select Role--" class="w-100">
+                                </ng-select>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <label>Employee Code</label>
+                            <div class="form-group">
+                                <ng-select [items]="EmployeeList" bindLabel="name" bindValue="value"
+                                    formControlName="fk_empId" placeholder="--Select Employee--" class="w-100">
+                                </ng-select>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Hidden Row (Father Name, Department, Designation) -->
+                    <div class="row row-cols-1 row-cols-md-3" [hidden]="true">
+                        <div class="col">
+                            <label>Father Name</label>
+                            <div class="form-group">
+                                <input type="text" class="form-control" formControlName="fathername"
+                                    placeholder="Enter Father Name">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <label>Department</label>
+                            <div class="form-group">
+                                <input type="text" class="form-control" formControlName="department"
+                                    placeholder="Enter Department">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <label>Designation</label>
+                            <div class="form-group">
+                                <input type="text" class="form-control" formControlName="designation"
+                                    placeholder="Enter Designation">
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Row 3 -->
+                    <div class="row row-cols-1 row-cols-md-3">
+                        <!-- Col 1: Remarks -->
+                        <div class="col">
+                            <label>Remarks</label>
+                            <div class="form-group">
+                                <textarea class="form-control" formControlName="remarks" placeholder="Enter Remarks"
+                                    rows="3"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Col 2: Is Vendor -->
+                        <div class="col align-content-center">
+                            <div>
+                                <label class="d-block">Is Vendor</label>
+                                <div class="form-group">
+                                    <input type="checkbox" class="form-check-input fs-6" formControlName="isVendor"
+                                        (change)="onVendorToggle()">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Col 3: Is Active (if not isVendor) OR Vendor Code (if isVendor) -->
+                        <div class="col align-content-center" *ngIf="!UserMasterForm.get('isVendor')?.value">
+                            <div>
+                                <label class="d-block">Active</label>
+                                <div class="form-group">
+                                    <input type="checkbox" class="form-check-input fs-6" formControlName="active">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col" *ngIf="UserMasterForm.get('isVendor')?.value">
+                            <label>Vendor Code</label>
+                            <div class="form-group">
+                                <ng-select [items]="VendorList" bindLabel="name" bindValue="value"
+                                    formControlName="fk_vendorId" placeholder="--Select Vendor--" class="w-100">
+                                </ng-select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Row 4: When isVendor is checked, Active is in 1st col; Buttons are always in 3rd col -->
+                    <div class="row row-cols-1 row-cols-md-3 mt-2">
+                        <!-- Col 1: Active (if isVendor) -->
+                        <div class="col align-content-center">
+                            <div *ngIf="UserMasterForm.get('isVendor')?.value">
+                                <label class="d-block">Active</label>
+                                <div class="form-group">
+                                    <input type="checkbox" class="form-check-input fs-6" formControlName="active">
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Col 2: Empty -->
+                        <div class="col"></div>
+                        <!-- Col 3: Action Buttons -->
+                        <div class="col d-flex align-items-end justify-content-end pb-2">
+                            <button type="submit" class="btn btn-primary mx-1" (click)="onSubmit()">
+                                {{ isEditMode ? 'Update' : 'Save' }}
+                            </button>
+                            <button type="button" class="btn btn-outline-dark mx-1" (click)="resetForm()">Reset</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

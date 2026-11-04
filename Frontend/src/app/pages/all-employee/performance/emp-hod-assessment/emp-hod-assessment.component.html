@@ -1,0 +1,265 @@
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+            <div class="card-header bg-primary">
+
+                <div class="row w-100 d-flex align-items-center justify-content-between">
+
+                    <div class="col-sm-12 col-md-12 col-lg-8 col-xxl-8 col-8">
+                        <h4 class="">Emp Assessment By HOD</h4>
+                    </div>
+
+
+
+                    <div
+                        class="col-sm-12 col-md-12 col-lg-4 col-xxl-4 col-4 d-flex align-items-center justify-content-end ">
+                        <!-- <button class="btn btnheader" routerLink="/dash/appraisal/appraisaldashboard/Report-manager-assessment-List">Back</button> -->
+                        <button class="btn btnheader"
+                            routerLink="/dash/performance/performancedashboard/HOD-assessment-List">Back</button>
+
+                    </div>
+
+                </div>
+            </div>
+
+
+            <div class="card-body  px-2 px-lg-4 " [formGroup]="EmpWiseForm">
+
+
+                <div class="row sticky-top bg-white p-0 m-0" id="stickyHeader">
+                    <div class="col-lg-4 px-0">
+                        <label class="form-label">Employee <span class="text-danger">*</span></label>
+                        <ng-select [items]="employeeList" bindLabel="name" bindValue="value"
+                            placeholder="Select employee" formControlName="fk_empid">
+                        </ng-select>
+                    </div>
+
+                    <div class="col-lg-4 px-4">
+                        <label class="form-label">Period <span class="text-danger">*</span></label>
+                        <ng-select [items]="PeriodData" bindLabel="name" bindValue="value" placeholder="Select employee"
+                            formControlName="fk_kraperiodId">
+                        </ng-select>
+
+                        <span *ngIf="showError && EmpWiseForm.controls['fk_kraperiodId'].invalid"
+                            class="text-danger mt-1" style="font-size: 12px;">
+                            Please select Period.
+                        </span>
+
+                    </div>
+
+
+
+                </div>
+
+                <div *ngIf="employeeSelected">
+
+                    <div formArrayName="cards">
+                        <div *ngFor="let card of cards.controls; let i = index" [formGroupName]="i"
+                            class="card emp-assesment-card my-3 py-2 px-3 ">
+
+
+
+                            <!--  -->
+
+                            <div class="row pt-2    gx-3 gb-0 gt-2 ">
+
+                                <!-- KRA -->
+                                <div class="col-12 col-md-12 d-flex">
+                                    <div class="fw-semibold me-2 small">KRA:</div>
+                                    <!-- <div>{{ card.value.kra }}</div> -->
+                                    <div class="small" [innerHTML]="card.get('kra')?.value | safeHtml"></div>
+
+                                    <!-- <div [innerHTML]="getSanitizedHtml(card.value.kra)"></div> -->
+                                </div>
+
+
+
+                                <!-- KPI -->
+                                <div class="col-12 col-md-12 d-flex">
+                                    <div class="fw-semibold me-2 small">KPI:</div>
+                                    <!-- <div>{{ card.value.kpi }}</div> -->
+                                    <div class="small" [innerHTML]="card.get('kra')?.value | safeHtml"></div>
+
+                                    <!-- <div [innerHTML]="getSanitizedHtml(card.value.kpi)"></div> -->
+                                </div>
+
+                                <div class="col-12 col-md-12 d-flex">
+                                    <div class="fw-semibold me-2 small">KPA:</div>
+                                    <!-- <div>{{ card.value.kpi }}</div> -->
+                                    <div class="small" [innerHTML]="card.value.kpi | safeHtml"></div>
+                                </div>
+
+                                <!-- Target -->
+                                <div class="col-12 col-md-12 d-flex">
+                                    <div class="fw-semibold me-2 small">Target:</div>
+                                    <!-- <div>{{ card.value.targetvalue }}</div> -->
+                                    <div class="small" [innerHTML]="card.value.targetvalue | safeHtml"></div>
+
+                                </div>
+
+                                <!-- Weightage -->
+                                <div class="col-12 col-md-6 d-flex">
+                                    <div class="fw-semibold me-2 small">Weightage:</div>
+                                    <div class="small">{{ card.value.weightage }}</div>
+
+                                    <!-- <div [innerHTML]="getSanitizedHtml(card.value.weightage)"></div> -->
+
+                                </div>
+
+                            </div>
+
+                            <hr style="border: 1px dashed #2b2e41; ">
+
+                            <div class="row mb-4">
+                                <div class="col-sm-12 col-md-12 col-lg-6">
+                                    <div class="row row-cols-1 row-cols-md-1">
+
+                                        <div class="col m-0">
+                                            <p class="m-0 small-sm"><span class="fw-semibold">Self Assessment :</span>
+                                                <span class="ps-3"
+                                                    [innerHTML]="card.get('selfAssessment')?.value | safeHtml"></span>
+                                            </p>
+                                        </div>
+
+
+                                        <div class="col m-0">
+                                            <p class="m-0 small-sm"><span class="fw-semibold">Self Remarks :</span>
+                                                <span class="ps-3"
+                                                    [innerHTML]="card.get('selfRemark')?.value | safeHtml"></span>
+                                            </p>
+                                        </div>
+
+
+                                        <div class="col m-0">
+                                            <p class="m-0 small-sm"><span class="fw-semibold">SelfAssessmentFile
+                                                    :</span> <span class="ps-3">{{ card.value.attachmentPath }}</span>
+                                            </p>
+
+                                        </div>
+
+                                        
+
+
+                                        
+
+
+
+
+
+
+
+                                    </div>
+                                </div>
+
+
+                                <div class="col-sm-12 col-md-12 col-lg-6">
+                                    <div class="row row-cols-1 row-cols-md-1">
+
+
+
+
+                                        <div class="col m-0">
+                                            <p class="m-0 small-sm"><span class="fw-semibold">RmAssessment :</span>
+                                                <span class="ps-3">{{ card.value.RMAssessment }}</span></p>
+                                        </div>
+
+
+                                        <div class="col m-0">
+                                            <p class="m-0 small-sm"><span class="fw-semibold">RmAssessmentRemark
+                                                    :</span> <span class="ps-3">{{ card.value.RMRemark }}</span></p>
+                                        </div>
+
+                                        <div class="col m-0">
+                                            <p class="m-0 small-sm"><span class="fw-semibold">RMFile:</span> <span
+                                                    class="ps-3">{{ card.value.rmFilePath }}</span></p>
+                                        </div>
+
+
+
+                                    </div>
+
+                                </div>
+                            </div>
+
+
+
+                            <!--  -->
+
+
+
+
+                            <!--  -->
+
+                            <div class="card">
+
+                                <div class="card-header py-0 m-0 small text-white"
+                                    style="background-color: rgb(40, 152, 244);">HOd Assessment</div>
+                                <div class=" row gy-2 p-3 pt-2 gt-0">
+
+
+
+                                    <div
+                                        class="col-sm-12 col-md-3 col-lg-2 d-flex align-items-center justify-content-between">
+                                        <label class="form-label">HOD Assessment</label>
+                                    </div>
+                                    
+                                    <div class="col-sm-12 col-md-9 col-lg-4">
+                                        <input formControlName="HODAssessment" type="number" class="form-control"
+                                            (input)="onAssessmentInput(i)" />
+
+                                        <span class="text-danger small" *ngIf="exceedMessages[i]">
+                                            HOD Assessment cannot exceed Weightage ({{ card.value.weightage }}).
+                                        </span>
+                                    </div>
+
+
+                                    <div
+                                        class="col-sm-12 col-md-3 col-lg-2 d-flex align-items-center justify-content-between">
+                                        <label [for]="'summernoteEditor2_' + i" class="form-label">HOD Remark</label>
+                                    </div>
+
+                                    <div class="col-sm-12 col-md-9 col-lg-4">
+
+                                        <textarea [id]="'summernoteEditor2_' + i" class="editor-box form-control"
+                                            formControlName="HODRemark"></textarea>
+
+
+                                    </div>
+
+
+                                    <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4">
+                                        <label class="form-label"> File Upload</label>
+                                        <div class="input-group">
+                                            <input type="file" class="form-control" placeholder="Choose File"
+                                                aria-label="" aria-describedby="basic-addon1"
+                                                (change)="onFileSelect($event, i, 'FileBytes')"
+                                                accept=".pdf,.doc,.docx,.jpg,.png" />
+
+
+                                            <span class="input-group-text" id="basic-addon1" style="cursor: pointer;"><i
+                                                    class="fa-solid fa-download text-primary fs-6"></i></span>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                            <div class="text-end mt-3">
+                                <button class="btn btn-primary" (click)="onSubOne(i)">Update</button>
+                            </div>
+
+
+
+                        </div>
+                    </div>
+
+                    <div class="text-end mt-3">
+                        <button class="btn btn-primary" (click)="onSubAll()">submit</button>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>

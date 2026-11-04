@@ -1,0 +1,166 @@
+
+<div class="row m-0">
+  <div class="col-12 px-0 py-0">
+    <div class="card" class="card px-0 m-0">
+
+   
+
+        <!-- <div class="card-header bg-primary">
+                <div class="row w-100">
+                    <div
+                        class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-between">
+                        <h4>Leave / OD Approved/Disapproved List</h4>
+
+                    </div>
+                    <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-center">
+                        <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText" />
+                    </div>
+
+                    <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-md-end">
+                        <button class="btn btnheader" routerLink="/dash/leaves/leavesdashboard/ApproveLeaveList">
+                            back
+                        </button>
+                       
+                    </div>
+
+                </div>
+            </div> -->
+        
+      <div class="card-header">
+                <div class="row w-100">
+                    <div
+                        class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-between">
+                        <h4 class="mb-0">Leave / OD Approved/Disapproved List</h4>
+
+                        <div class="dropdown d-flex align-items-center justify-content-center d-md-none">
+                            <button class="btn bg-transparent text-white px-0 mt-1" type="button"
+                                id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fa-solid fa-bars fs-6"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+
+                                <li><a class="dropdown-item" routerLink="/dash/leaves/leavesdashboard/ApproveLeaveList">Back</a></li> 
+                                <!-- <li><a class="dropdown-item">PDF</a></li> -->
+                            </ul>
+                        </div>
+                    </div>
+
+
+                    <div
+                        class="col-12 col-md-3 all-pickup-point-search-header d-flex align-items-center justify-content-md-end">
+                        <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText" />
+                    </div>
+
+
+                    <div class="col-12 col-md-3 d-flex justify-content-end align-items-center mt-md-0">
+                        <div class="d-none d-md-flex">
+                            <button class="btn btnheader mx-2" routerLink="/dash/leaves/leavesdashboard/ApproveLeaveList">Back</button> 
+                            <!-- <button class="btn btnheader"><i class="fa-solid fa-file-arrow-down"></i>&nbsp;Download</button>-->
+                        </div> 
+                    </div>
+                </div>
+            </div>
+
+
+        <!-- Leave List Table -->
+          <div class="card-body px-0  m-2">
+                <!-- table-responsive-md makes the full table scrollable ONLY above md breakpoint -->
+                <div class="table-responsive-md">
+                    <table Id="exportTable" class="table">
+                        <thead>
+                             <tr>
+        <th>Sr.No.</th>
+        <th>Request Date</th>
+        <th>Leave Type</th>
+        <th>Emp Code</th>
+        <th>Emp Name</th>
+        <th>From Date</th>
+        <th>To Date</th>
+        <th>Total Days</th>
+        <th>Reason</th>
+        <th>Approval Date</th>
+        <th>Approval Remarks</th>
+        <th>Approval Status</th>
+      </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let item of filteredData(); index as i">
+                                <td data-label="Sr.No. : ">{{ i + 1 }}</td>
+                                <td data-label="Request Date: ">{{ item.dated }}</td>
+                                <td data-label="Leave Type : ">{{ item.shortdesc }}</td>
+                                <td data-label="Emp Code: ">{{ item.empcode }}</td>
+                                 <td data-label="Emp Name: ">{{ item.empname }}</td>
+                                 <td data-label="From Date: ">{{ item.fromdate }}</td>
+                                 <td data-label="To Date: ">{{ item.todate }}</td>
+                                  <td data-label="Total Days: ">{{ item.totdays }}</td>
+                                  
+                                 <td data-label="Reason: ">{{ item.reason }}</td>
+                                  <td data-label="Approval Date: ">{{ item.approvedDate }}</td>
+                                  <td data-label="Approval Remarks: ">{{ item.approvedRemarks }}</td>
+                                  <td data-label="Approval Status: "  [ngClass]="{
+                  'text-success btn-success': item.approvedStatus === 'Approved',
+                  'text-warning btn-warning': item.approvedStatus === 'Rejected',
+
+                 
+                  }">{{ item.approvedStatus }}</td>
+                             
+
+
+                            
+
+
+                              
+
+                            </tr>
+
+                        </tbody>
+                    </table>
+                   </div>
+            </div>
+
+ 
+
+</div>
+<!-- End of Form Body -->
+
+    </div>
+  </div>
+
+
+
+    <!-- <div class="table-responsive" style="overflow-x: auto;">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>S.No.</th>
+        <th>Request Date</th>
+        <th>Leave Type</th>
+        <th>Emp Code</th>
+        <th>Emp Name</th>
+        <th>From Date</th>
+        <th>To Date</th>
+        <th>Total Days</th>
+        <th>Reason</th>
+        <th>Approval Date</th>
+        <th>Approval Remarks</th>
+        <th>Approval Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of filteredData(); index as i">
+        <td>{{ i + 1 }}</td>
+        <td>{{ item.dated }}</td>
+        <td>{{ item.shortdesc }}</td>
+        <td>{{ item.empcode }}</td>
+        <td>{{ item.empname }}</td>
+        <td>{{ item.fromdate }}</td>
+        <td>{{ item.todate }}</td>
+        <td>{{ item.totdays }}</td>
+        <td>{{ item.reason }}</td>
+        <td>{{ item.approvedDate }}</td>
+        <td>{{ item.approvedRemarks }}</td>
+        <td>{{ item.approvedStatus }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div> -->

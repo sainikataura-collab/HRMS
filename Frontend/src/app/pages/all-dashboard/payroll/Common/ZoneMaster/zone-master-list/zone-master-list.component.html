@@ -1,0 +1,66 @@
+
+  <div class="row">
+<div class="col-12">
+  <div class="card">
+    <!--  -->
+    <div class="card-header bg-primary">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-between">
+            <h4>List of Zone</h4>
+            
+          </div>
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-center">
+            <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText"/>
+          </div>
+        
+
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-md-end">
+            <button class="btn btnheader" routerLink="/dash/user/userdashboard/zonemaster">
+              Add
+          </button>
+              <button class="btn btn-light mx-1" (click)="exportToExcel()">
+                Download
+              </button>
+          </div>
+        
+        </div>
+      </div>  
+
+        <!--  -->
+        <div class="card-body">
+          <div class="table-responsive table-invoice">
+            <table Id="exportTable"  class="table">
+              <thead>
+                <tr>
+                  <th>Sr.No.</th>
+                  <th>Zone Code</th>
+                  <th>Zone Description</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Paginate filtered data -->
+                <!-- <tr *ngFor="let items of zones | paginate: { itemsPerPage: pageSize, currentPage: pageIndex }; let i = index"> -->
+                  <tr *ngFor="let items of  filteredData() | paginate: { itemsPerPage: pageSize, currentPage: pageIndex ,totalItems:totalItems};let i = index">
+
+                  <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+                  <td>{{items.zoneCode}}</td>
+                  <td>{{items.zoneDescription}}</td>                 
+                  <td>
+                    <!-- <button class="btn btn-sm btn-outline"(click)="isUpdate(encodeID(items.pk_zoneId))"><i class="fa-solid fa-pen-to-square" ></i></button> -->
+                    <button class="btn btn-sm btn-outline"(click)="isUpdate(this.encryptionService.encryptText(items.pk_zoneId).toString())"><i class="fa-solid fa-pen-to-square" ></i></button>
+
+                    <button class="btn btn-sm btn-outline"  (click)="deleteZone(items.pk_zoneId)" ><i class="fa-solid fa-trash"></i></button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+             <!-- Pagination controls -->
+          <pagination-controls (pageChange)="onPageChange($event)" >
+          </pagination-controls>
+  
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

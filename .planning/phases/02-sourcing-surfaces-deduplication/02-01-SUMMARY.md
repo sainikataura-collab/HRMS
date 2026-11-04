@@ -61,3 +61,4 @@
 - `Frontend/src/app/pages/all-dashboard/recruitment/vendor-passed-interview/vendor-passed-interview.component.ts`
 - `Frontend/src/app/pages/all-dashboard/recruitment/vendor-passed-interview/vendor-passed-interview.component.html`
 - Database: `dbo.usp_REC_SaveCandidateOnboardingDossier`, `dbo.usp_REC_ValidateAadhaarCard`, `dbo.usp_REC_CheckCandidateAadhaarStatus`
+

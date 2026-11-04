@@ -1,0 +1,456 @@
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card shadow-sm border-0 mb-4 location-tracker-card">
+      
+      <!-- Card Header in HrBook Theme -->
+      <div class="card-header bg-primary py-2 mt-0">
+        <div class="row w-100 align-items-center g-2">
+          
+          <!-- Title Section -->
+          <div class="col-12 col-md-5">
+            <h4 class="text-white mb-0 d-flex align-items-center">
+              <i class="fas fa-map-marked-alt me-2"></i>
+              <span>Location Tracker</span>
+            </h4>
+          </div>
+
+          <!-- Header Action / Mode Switcher -->
+          <div class="col-12 col-md-7 text-md-end mt-2 mt-md-0">
+            <div class="btn-group btn-group-sm w-100-mobile" role="group">
+              <button 
+                type="button" 
+                class="btn px-3 fw-bold transition-all"
+                [ngClass]="mode === 'live' ? 'btn-light text-primary shadow-sm' : 'btn-outline-light text-white'"
+                (click)="setMode('live')">
+                <i class="fas fa-broadcast-tower me-1"></i> Live Monitoring
+              </button>
+              <button 
+                type="button" 
+                class="btn px-3 fw-bold transition-all"
+                [ngClass]="mode === 'history' ? 'btn-light text-primary shadow-sm' : 'btn-outline-light text-white'"
+                (click)="setMode('history')">
+                <i class="fas fa-route me-1"></i> Route History
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Controls & Filter Panel -->
+      <div class="card-body bg-white border-bottom pt-3 pb-3">
+        <div class="row align-items-end g-3">
+          
+          <!-- Employee Selection -->
+          <div class="col-12 col-sm-6 col-md-4">
+            <label class="form-label text-dark fw-bold small mb-1">
+              <i class="fas fa-user-tie text-primary me-1"></i> Employee / User
+            </label>
+            <div class="form-group mb-0">
+              <ng-select 
+                [items]="employeesList" 
+                bindLabel="name" 
+                bindValue="id" 
+                placeholder="-- Select Employee --" 
+                [(ngModel)]="searchUserId" 
+                (change)="onUserSelectChange()"
+                class="w-100">
+              </ng-select>
+            </div>
+          </div>
+
+          <!-- Tracking Status ON / OFF Toggle -->
+          <div class="col-12 col-sm-6 col-md-3">
+            <label class="form-label text-dark fw-bold small mb-1">
+              <i class="fas fa-satellite text-primary me-1"></i> Tracking Permission
+            </label>
+            <div class="form-group mb-0">
+              <button 
+                type="button" 
+                class="btn btn-sm w-100 fw-bold d-flex align-items-center justify-content-between px-3 py-2 shadow-sm transition-all"
+                [ngClass]="isUserTrackingEnabled ? 'btn-outline-success bg-success-subtle text-success' : 'btn-outline-danger bg-danger-subtle text-danger'"
+                [disabled]="isTogglingStatus || !searchUserId"
+                (click)="toggleUserTracking()"
+                [title]="isUserTrackingEnabled ? 'Click to disable tracking for this employee' : 'Click to enable tracking for this employee'">
+                <span class="d-flex align-items-center gap-2">
+                  <span class="status-indicator-dot" [ngClass]="isUserTrackingEnabled ? 'dot-active' : 'dot-inactive'"></span>
+                  <span>{{ isUserTrackingEnabled ? 'Tracking: ACTIVE' : 'Tracking: OFF' }}</span>
+                </span>
+                <span *ngIf="isTogglingStatus" class="spinner-border spinner-border-sm" role="status"></span>
+                <i *ngIf="!isTogglingStatus" class="fas" [ngClass]="isUserTrackingEnabled ? 'fa-toggle-on fa-lg' : 'fa-toggle-off fa-lg'"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Date Picker (History Mode) -->
+          <div class="col-12 col-sm-6 col-md-3" *ngIf="mode === 'history'">
+            <label class="form-label text-dark fw-bold small mb-1">
+              <i class="fas fa-calendar-day text-primary me-1"></i> Route Date
+            </label>
+            <div class="form-group mb-0">
+              <input type="date" class="form-control form-control-sm py-2" [(ngModel)]="searchDate" (change)="onSearch()" />
+            </div>
+          </div>
+
+          <!-- Live Polling Controls (Live Mode) -->
+          <div class="col-12 col-sm-6 col-md-3" *ngIf="mode === 'live'">
+            <label class="form-label text-dark fw-bold small mb-1">
+              <i class="fas fa-clock text-primary me-1"></i> Auto-Refresh
+            </label>
+            <div class="form-group mb-0">
+              <button 
+                type="button" 
+                class="btn btn-sm w-100 fw-bold py-2 shadow-sm transition-all"
+                [ngClass]="autoRefreshLive ? 'btn-success text-white' : 'btn-outline-secondary'"
+                (click)="toggleAutoRefresh()">
+                <i class="fas me-1" [ngClass]="autoRefreshLive ? 'fa-sync fa-spin' : 'fa-play-circle'"></i>
+                {{ autoRefreshLive ? 'Polling Active (5s)' : 'Enable Live Polling' }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Search & Reset Actions -->
+          <div class="col-12 col-md-2">
+            <div class="d-flex gap-2 w-100">
+              <button 
+                type="button" 
+                class="btn btn-sm btn-primary fw-bold flex-grow-1 py-2 shadow-sm" 
+                [disabled]="isLoading || !searchUserId"
+                (click)="onSearch()">
+                <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-1" role="status"></span>
+                <i *ngIf="!isLoading" class="fas fa-search me-1"></i> View
+              </button>
+
+              <button 
+                type="button" 
+                class="btn btn-sm btn-outline-dark px-3 py-2"
+                (click)="resetFilters()">
+                <i class="fas fa-redo me-1"></i> Reset
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Mobile Tab View Switcher (Visible on mobile/tablet screens < 992px) -->
+      <div class="d-lg-none bg-light p-2 border-bottom">
+        <div class="btn-group btn-group-sm w-100 shadow-xs" role="group">
+          <button 
+            type="button" 
+            class="btn py-1"
+            [ngClass]="mobileActiveTab === 'all' ? 'btn-primary' : 'btn-white bg-white text-dark border'"
+            (click)="setMobileTab('all')">
+            <i class="fas fa-columns me-1"></i> Split View
+          </button>
+          <button 
+            type="button" 
+            class="btn py-1"
+            [ngClass]="mobileActiveTab === 'map' ? 'btn-primary' : 'btn-white bg-white text-dark border'"
+            (click)="setMobileTab('map')">
+            <i class="fas fa-map me-1"></i> Map Only
+          </button>
+          <button 
+            type="button" 
+            class="btn py-1"
+            [ngClass]="mobileActiveTab === 'data' ? 'btn-primary' : 'btn-white bg-white text-dark border'"
+            (click)="setMobileTab('data')">
+            <i class="fas fa-list-alt me-1"></i> Telemetry Only
+          </button>
+        </div>
+      </div>
+
+      <!-- Main Content Layout (Map & Telemetry) -->
+      <div class="card-body p-2 p-md-3">
+        <div class="row g-3">
+          
+          <!-- Map Container Column -->
+          <div 
+            class="col-12"
+            [ngClass]="{
+              'd-none': mobileActiveTab === 'data',
+              'col-lg-12': isMapExpanded,
+              'col-lg-8': !isMapExpanded
+            }">
+            <div class="map-card border rounded shadow-sm overflow-hidden bg-white">
+              
+              <!-- Map Sub-header -->
+              <div class="map-header bg-light px-3 py-2 border-bottom d-flex align-items-center justify-content-between flex-wrap gap-2">
+                <div class="d-flex align-items-center gap-2">
+                  <span class="badge bg-primary text-white"><i class="fas fa-map-marker-alt me-1"></i>Ola Maps</span>
+                  <span class="small text-dark fw-semibold d-none d-sm-inline">
+                    {{ mode === 'live' ? 'Live Telemetry Pin' : ('Route History - ' + searchDate) }}
+                  </span>
+                </div>
+                
+                <div class="d-flex align-items-center gap-2">
+                  <button type="button" class="btn btn-xs btn-outline-primary py-1 px-2" (click)="recenterMap()" title="Recenter Map">
+                    <i class="fas fa-crosshairs me-1"></i> Recenter
+                  </button>
+                  <button type="button" class="btn btn-xs btn-outline-secondary py-1 px-2" (click)="toggleMapExpand()" [title]="isMapExpanded ? 'Restore view' : 'Maximize map'">
+                    <i class="fas" [ngClass]="isMapExpanded ? 'fa-compress-arrows-alt' : 'fa-expand-arrows-alt'"></i>
+                    <span class="ms-1 d-none d-sm-inline">{{ isMapExpanded ? 'Compact' : 'Expand' }}</span>
+                  </button>
+                  <span class="badge" [ngClass]="isUserTrackingEnabled ? 'bg-success' : 'bg-danger'">
+                    {{ isUserTrackingEnabled ? 'Active' : 'Disabled' }}
+                  </span>
+                </div>
+              </div>
+              
+              <!-- Map Canvas Wrapper -->
+              <div class="position-relative map-canvas-wrapper" [ngClass]="{'map-expanded': isMapExpanded}">
+                <div id="olamapContainer"></div>
+
+                <!-- Map Loading Spinner -->
+                <div *ngIf="isLoading" class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-white bg-opacity-75" style="z-index: 1000;">
+                  <div class="text-center p-3 rounded bg-white shadow-sm border">
+                    <div class="spinner-border text-primary" role="status"></div>
+                    <p class="mt-2 mb-0 small fw-bold text-dark">Updating Ola Maps data...</p>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Telemetry & Details Column -->
+          <div 
+            class="col-12"
+            [ngClass]="{
+              'd-none': mobileActiveTab === 'map' || isMapExpanded,
+              'col-lg-4': !isMapExpanded
+            }">
+            
+            <!-- ================= LIVE MODE TELEMETRY ================= -->
+            <div *ngIf="mode === 'live'" class="telemetry-panel border rounded p-3 h-100 bg-light shadow-sm d-flex flex-column">
+              <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
+                <h6 class="fw-bold text-dark mb-0 d-flex align-items-center">
+                  <i class="fas fa-broadcast-tower text-primary me-2"></i> Live Telemetry
+                </h6>
+                <span *ngIf="liveRecord" class="badge" [ngClass]="{
+                  'bg-success': getFreshnessStatus(liveRecord.serverReceivedAt) === 'active',
+                  'bg-warning text-dark': getFreshnessStatus(liveRecord.serverReceivedAt) === 'idle',
+                  'bg-secondary': getFreshnessStatus(liveRecord.serverReceivedAt) === 'offline'
+                }">
+                  {{ getFreshnessStatus(liveRecord.serverReceivedAt) | uppercase }}
+                </span>
+              </div>
+              
+              <div *ngIf="liveRecord; else noLiveRecordTemplate" class="d-flex flex-column gap-3">
+                
+                <!-- Employee Summary Banner -->
+                <div class="card border bg-white p-2 shadow-xs">
+                  <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                      <small class="text-muted d-block">Employee ID</small>
+                      <strong class="text-primary">{{ liveRecord.userId }}</strong>
+                    </div>
+                    <div class="text-end">
+                      <small class="text-muted d-block">Last Ping</small>
+                      <span class="badge bg-light text-dark border">
+                        {{ getRelativeTime(liveRecord.serverReceivedAt) }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Metric Cards Row -->
+                <div class="row g-2">
+                  <!-- Battery -->
+                  <div class="col-6">
+                    <div class="card border bg-white p-2 text-center h-100">
+                      <small class="text-muted d-block mb-1">Battery</small>
+                      <div class="d-flex align-items-center justify-content-center gap-1">
+                        <i class="fas" [ngClass]="{
+                          'fa-battery-full text-success': (liveRecord.batteryLevel || 0) >= 80,
+                          'fa-battery-three-quarters text-info': (liveRecord.batteryLevel || 0) >= 50 && (liveRecord.batteryLevel || 0) < 80,
+                          'fa-battery-half text-warning': (liveRecord.batteryLevel || 0) >= 20 && (liveRecord.batteryLevel || 0) < 50,
+                          'fa-battery-quarter text-danger': (liveRecord.batteryLevel || 0) < 20
+                        }"></i>
+                        <strong class="h6 mb-0">{{ liveRecord.batteryLevel ?? 'N/A' }}%</strong>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Accuracy -->
+                  <div class="col-6">
+                    <div class="card border bg-white p-2 text-center h-100">
+                      <small class="text-muted d-block mb-1">GPS Accuracy</small>
+                      <div class="d-flex align-items-center justify-content-center gap-1">
+                        <i class="fas fa-crosshairs text-primary"></i>
+                        <strong class="h6 mb-0">{{ liveRecord.accuracy | number:'1.0-1' }} m</strong>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- App State -->
+                  <div class="col-6">
+                    <div class="card border bg-white p-2 text-center h-100">
+                      <small class="text-muted d-block mb-1">App State</small>
+                      <span class="badge" [ngClass]="liveRecord.isBackground ? 'bg-warning text-dark' : 'bg-info'">
+                        {{ liveRecord.isBackground ? 'Background' : 'Foreground' }}
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- Device -->
+                  <div class="col-6">
+                    <div class="card border bg-white p-2 text-center h-100">
+                      <small class="text-muted d-block mb-1">Device</small>
+                      <small class="text-truncate d-block fw-bold text-dark" [title]="liveRecord.deviceInfo">
+                        {{ liveRecord.deviceInfo || 'Mobile App' }}
+                      </small>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Detailed Coordinates Table -->
+                <div class="table-responsive bg-white border rounded">
+                  <table class="table table-sm table-bordered mb-0 align-middle">
+                    <tbody>
+                      <tr>
+                        <th class="bg-light text-muted small" style="width: 40%;">Latitude</th>
+                        <td class="font-monospace small">{{ liveRecord.latitude | number:'1.6-6' }}</td>
+                      </tr>
+                      <tr>
+                        <th class="bg-light text-muted small">Longitude</th>
+                        <td class="font-monospace small">{{ liveRecord.longitude | number:'1.6-6' }}</td>
+                      </tr>
+                      <tr>
+                        <th class="bg-light text-muted small">Recorded At</th>
+                        <td class="small">{{ liveRecord.clientTimestamp | date:'mediumTime' }}</td>
+                      </tr>
+                      <tr>
+                        <th class="bg-light text-muted small">Server Time</th>
+                        <td class="small text-primary fw-bold">{{ liveRecord.serverReceivedAt | date:'mediumTime' }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <!-- Quick Action Buttons -->
+                <div class="d-flex gap-2">
+                  <button type="button" class="btn btn-sm btn-outline-primary flex-grow-1 py-2" (click)="copyCoordinates(liveRecord)">
+                    <i class="fas fa-copy me-1"></i> Copy Coords
+                  </button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary flex-grow-1 py-2" (click)="openInGoogleMaps(liveRecord.latitude, liveRecord.longitude)">
+                    <i class="fas fa-external-link-alt me-1"></i> Google Maps
+                  </button>
+                </div>
+
+              </div>
+
+              <ng-template #noLiveRecordTemplate>
+                <div class="text-center py-4 my-auto">
+                  <i class="fas fa-satellite-dish fa-3x text-muted mb-3 opacity-50"></i>
+                  <h6 class="text-dark fw-bold">No Live Location Data</h6>
+                  <p class="text-muted small mb-0">Select an employee and click <strong>View</strong> to fetch continuous real-time coordinates.</p>
+                </div>
+              </ng-template>
+            </div>
+
+            <!-- ================= HISTORY MODE TELEMETRY ================= -->
+            <div *ngIf="mode === 'history'" class="telemetry-panel border rounded p-3 h-100 bg-light shadow-sm d-flex flex-column">
+              <div class="d-flex align-items-center justify-content-between mb-2 border-bottom pb-2">
+                <h6 class="fw-bold text-dark mb-0 d-flex align-items-center">
+                  <i class="fas fa-history text-success me-2"></i> Route Log Summary
+                </h6>
+                <span class="badge bg-primary">{{ historyRecords.length }} Pings</span>
+              </div>
+
+              <div *ngIf="historyRecords.length > 0; else noHistoryTemplate" class="d-flex flex-column flex-grow-1">
+                
+                <!-- KPI Stats Cards -->
+                <div class="row g-2 mb-2">
+                  <div class="col-6">
+                    <div class="card border bg-white p-2 text-center">
+                      <small class="text-muted d-block">Distance</small>
+                      <strong class="text-primary h6 mb-0">{{ totalDistanceKm }} km</strong>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="card border bg-white p-2 text-center">
+                      <small class="text-muted d-block">Active Pings</small>
+                      <strong class="text-dark h6 mb-0">{{ historyRecords.length }}</strong>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Playback Controls -->
+                <div class="card border bg-white p-2 mb-2 shadow-xs">
+                  <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
+                    <button 
+                      type="button" 
+                      class="btn btn-sm fw-bold px-3 py-1 shadow-xs"
+                      [ngClass]="isPlayingPlayback ? 'btn-warning text-dark' : 'btn-success text-white'"
+                      (click)="togglePlayback()">
+                      <i class="fas me-1" [ngClass]="isPlayingPlayback ? 'fa-pause' : 'fa-play'"></i>
+                      {{ isPlayingPlayback ? 'Pause' : 'Play Route' }}
+                    </button>
+                    
+                    <!-- Speed Switcher -->
+                    <div class="btn-group btn-group-sm" role="group">
+                      <button type="button" class="btn btn-xs px-2" [ngClass]="playbackSpeed === 1 ? 'btn-primary' : 'btn-outline-secondary'" (click)="setPlaybackSpeed(1)">1x</button>
+                      <button type="button" class="btn btn-xs px-2" [ngClass]="playbackSpeed === 2 ? 'btn-primary' : 'btn-outline-secondary'" (click)="setPlaybackSpeed(2)">2x</button>
+                      <button type="button" class="btn btn-xs px-2" [ngClass]="playbackSpeed === 4 ? 'btn-primary' : 'btn-outline-secondary'" (click)="setPlaybackSpeed(4)">4x</button>
+                    </div>
+                  </div>
+
+                  <div class="d-flex align-items-center justify-content-between small text-muted">
+                    <span>Point: <strong>{{ playbackIndex }}</strong> / {{ historyRecords.length }}</span>
+                    <span>Speed: <strong>{{ playbackSpeed }}x</strong></span>
+                  </div>
+                </div>
+
+                <!-- Pings History Table with Sticky Header -->
+                <div class="table-responsive bg-white border rounded flex-grow-1 history-table-container">
+                  <table class="table table-sm table-hover table-striped align-middle mb-0" style="font-size: 0.8rem;">
+                    <thead class="table-light sticky-top">
+                      <tr>
+                        <th class="ps-2">Time</th>
+                        <th>Battery</th>
+                        <th>Coordinates</th>
+                        <th class="text-center">Pin</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let rec of historyRecords" [ngClass]="{'table-primary': selectedPing === rec}">
+                        <td class="ps-2 fw-semibold">
+                          {{ rec.serverReceivedAt | date:'HH:mm:ss' }}
+                        </td>
+                        <td>
+                          <span class="badge bg-light text-dark border">{{ rec.batteryLevel ?? 'N/A' }}%</span>
+                        </td>
+                        <td>
+                          <span class="font-monospace small text-muted">{{ rec.latitude | number:'1.3-3' }}, {{ rec.longitude | number:'1.3-3' }}</span>
+                        </td>
+                        <td class="text-center">
+                          <button type="button" class="btn btn-xs btn-outline-primary py-1 px-2" (click)="selectPing(rec)" title="Show on map">
+                            <i class="fas fa-crosshairs"></i>
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+              </div>
+
+              <ng-template #noHistoryTemplate>
+                <div class="text-center py-4 my-auto">
+                  <i class="fas fa-route fa-3x text-muted mb-3 opacity-50"></i>
+                  <h6 class="text-dark fw-bold">No History Pings Found</h6>
+                  <p class="text-muted small mb-0">Select an employee and date, then click <strong>View</strong> to render the route path.</p>
+                </div>
+              </ng-template>
+
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

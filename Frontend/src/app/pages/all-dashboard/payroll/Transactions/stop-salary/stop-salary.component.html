@@ -1,0 +1,188 @@
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+
+
+
+    <div class="card">
+      <!--  -->
+      <div class="card-header bg-blue py-lg-1 mt-0">
+        <div class="row w-100 align-items-center">
+
+          <!-- Title Section -->
+          <div class="col-12 col-md-3">
+            <h4 class="text-white text-center text-md-start">Stop Salary</h4>
+          </div>
+
+          <!-- Search Section -->
+          <div class="col-12 col-md-7 mt-2 mt-md-0">
+            <app-common-search (filtersChanged)="handleFilters($event)"></app-common-search>
+          </div>
+
+
+
+        </div>
+      </div>
+
+
+
+      <div class="card-body mt-4">
+        <form [formGroup]="EmployeeForm">
+
+          <div class="row row-cols-1 row-cols-md-3">
+
+
+            <div class="col">
+              <label>Month</label>
+
+              <div class="form-group">
+                <ng-select id="year" [items]="Month" bindLabel="name" bindValue="value" formControlName="FkMonthId"
+                  placeholder="--Select --" class="w-100"></ng-select>
+                <span *ngIf="showError &&EmployeeForm.controls['FkMonthId'].invalid" class="text-danger mt-1"
+                  style="font-size: 12px;">
+                  Please enter Month.
+                </span>
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Year</label>
+              <div class="form-group">
+                <ng-select id="Year" [items]="Year" bindLabel="name" bindValue="value" formControlName="FkYearId"
+                  placeholder="--Select --" class="w-100"></ng-select>
+                <span *ngIf="showError &&EmployeeForm.controls['FkYearId'].invalid" class="text-danger mt-1"
+                  style="font-size: 12px;">
+                  Please enter Year.
+                </span>
+              </div>
+            </div>
+
+
+            <div class="col d-flex align-items-center justify-content-end pt-4 pb-3">
+              <button type="submit" class="btn btn-primary mx-1" (click)="toggleEmployeeList()"
+                (click)="getList()">View</button>
+              <button type="button" class="btn btn-outline-dark mx-1" (click)="resetForm()">Reset</button>
+            </div>
+
+          </div>
+
+
+        </form>
+       
+
+        
+
+
+      
+      </div>
+      <!-- List of Employee processed -->
+       <div class="card-body">
+        <div *ngIf="processSalaryList.length > 0">
+
+
+          <div class="d-flex justify-content-between align-items-center mt-4 mb-2">
+            <p class="text-primary m-0 fw-bold ">List of Employee (Un-Stopped Salary)</p>
+            <input
+              type="text"
+              class="form-control w-auto"
+              placeholder="Search employee..."
+              [(ngModel)]="searchTextProcessed"
+            />
+          </div>
+        
+          <!-- <div class="bg-primary rounded-1 mt-2 page-seperator">
+            <p class="p-1 text-white ms-4">List of Employee (Salary Processed)</p>
+          </div> -->
+        
+          
+            <div class="table-responsive table-invoice scrollable-table">
+              <table class="table table-bordered">
+                <thead class="sticky-top table-secondary" style="background-color: rgb(250, 251, 251);top:-2">
+                  <tr class="sticky-top">
+                    <th> <input type="checkbox" [(ngModel)]="masterSelected" (change)="selectAll()"class="rounded-checkbox " /> &nbsp; All
+                    </th>
+                    <th>Sr.</th>
+                    <th>Code</th>
+                    <th>Name</th>
+                    <th>Location</th>
+                    <th>Department</th>
+                    <th>Designation</th>
+                    <th>Paid Days</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let emp of filteredProcessedList; let i = index">
+                    <!-- <td><input type="checkbox" /></td> -->
+                    <td><input type="checkbox" [(ngModel)]="emp.isSelected" class="rounded-checkbox"/></td>
+                    <td>{{ i + 1 }}</td>
+                    <td>{{ emp.empcode }}</td>
+                    <td>{{ emp.empname }}</td>
+                    <td>{{ emp.location }}</td>
+                    <td>{{ emp.department }}</td>
+                    <td>{{ emp.designation }}</td>
+                    <td>{{ emp.paiddays }}</td>
+                  </tr>
+                </tbody>
+        
+              </table>
+            </div>
+        
+        
+            <!-- List of Stopped Salary -->
+            
+           
+            <div class="d-flex justify-content-between align-items-center mt-4 mb-2">
+              <p class="text-primary m-0 fw-bold">List of Employee (Stopped Salary)</p>
+              <input
+                type="text"
+                class="form-control w-auto"
+                placeholder="Search employee..."
+                [(ngModel)]="searchTextStop"
+              />
+            </div>
+              
+                <div class="table-responsive table-invoice scrollable-table">
+                  <table class="table table-bordered">
+                    <thead class="sticky-top table-secondary" style="background-color: rgb(250, 251, 251);top:-2">
+                      <tr class="sticky-top">
+                        <th><input type="checkbox" [(ngModel)]="Selected" (change)="AllSelectStopSalary()"/> &nbsp;All</th>
+        
+                        <th>Sr.</th>
+                        <th>Code</th>
+                        <th>Name</th>
+                        <th>Location</th>
+                        <th>Department</th>
+                        <th>Designation</th>
+                        <th>Paid Days</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let emp of filteredStopProcessedList; let i = index">
+                        <td><input type="checkbox" [(ngModel)]="emp.isSelected" /></td>
+                        <td>{{ i + 1 }}</td>
+                        <td>{{ emp.empcode }}</td>
+                        <td>{{ emp.empname }}</td>
+                        <td>{{ emp.location }}</td>
+                        <td>{{ emp.department }}</td>
+                        <td>{{ emp.designation }}</td>
+                        <td>{{ emp.paiddays }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+        
+                </div>
+        
+            <div class="col d-flex align-items-end justify-content-end flex-wrap gap-2 pt-4 pb-3">
+              <button type="submit" class="btn btn-danger" (click)="StopSalary()">Stop Salary</button>
+              <button type="submit" class="btn btn-primary" (click)="UnstopSalaryData()">Un-Stop Salary</button>
+            </div>
+        
+        </div>
+       </div>
+
+
+
+   
+
+
+    </div>
+  </div>

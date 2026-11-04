@@ -1,0 +1,427 @@
+<div class="container-fluid pt-2">
+  <div class="row">
+    <div class="col-12">
+
+      <!-- ENTRY / UPLOAD CONTAINER CARD -->
+      <div class="card shadow-sm border-0 mb-3">
+        <div class="card-header bg-white border-bottom-0 pb-0 pt-2 d-flex justify-content-between align-items-center flex-wrap gap-2">
+          <ul class="nav nav-tabs card-header-tabs" role="tablist">
+            <li class="nav-item">
+              <button class="nav-link fw-semibold" [class.active]="activeTab === 'single'" (click)="activeTab = 'single'">
+                <i class="fa fa-plus-circle me-1 text-primary"></i> Single Entry Form
+              </button>
+            </li>
+            <li class="nav-item">
+              <button class="nav-link fw-semibold" [class.active]="activeTab === 'bulk'" (click)="activeTab = 'bulk'">
+                <i class="fa fa-file-excel-o me-1 text-success"></i> Bulk Excel Upload
+              </button>
+            </li>
+          </ul>
+          <small class="text-muted d-none d-md-inline">
+            <i class="fa fa-info-circle me-1 text-primary"></i>Seed legacy vendor deficit balances into the Carry-Forward Ledger
+          </small>
+        </div>
+
+        <div class="card-body p-3 bg-white border-top">
+
+          <!-- TAB 1: SINGLE ENTRY FORM -->
+          <div *ngIf="activeTab === 'single'">
+            <div class="alert alert-primary py-2 px-3 mb-3 border-0 d-flex align-items-center bg-primary-subtle text-primary-emphasis" style="font-size: 0.85rem;">
+              <i class="fa fa-info-circle me-2 fs-5 text-primary"></i>
+              <div>
+                Opening deficits recorded here are entered into the <strong>Carry-Forward Ledger</strong> prior to the cutoff date.
+                When the vendor's transaction cycle is synced, this amount will automatically appear as <strong>Brought-Forward Deficit (In)</strong>.
+              </div>
+            </div>
+
+            <form [formGroup]="singleForm" (ngSubmit)="saveSingleOpeningDeficit()">
+              <div class="row g-2 align-items-end mb-1">
+                
+                <!-- Client -->
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                  <label class="form-label">Client <span class="text-danger">*</span></label>
+                  <ng-select [items]="clientList" bindLabel="name" bindValue="value" appendTo="body"
+                    placeholder="Select Client..." formControlName="clientId">
+                  </ng-select>
+                  <div *ngIf="singleForm.get('clientId')?.touched && singleForm.get('clientId')?.invalid" class="text-danger small mt-1">
+                    Client is required.
+                  </div>
+                </div>
+
+                <!-- Model -->
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                  <label class="form-label">Model <span class="text-danger">*</span></label>
+                  <ng-select [items]="modelList" bindLabel="name" bindValue="value" appendTo="body"
+                    placeholder="Select Model..." formControlName="modelId">
+                  </ng-select>
+                  <div *ngIf="singleForm.get('modelId')?.touched && singleForm.get('modelId')?.invalid" class="text-danger small mt-1">
+                    Model is required.
+                  </div>
+                </div>
+
+                <!-- Location / Hub -->
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                  <label class="form-label">Location / Hub <span class="text-muted small">(optional)</span></label>
+                  <ng-select [items]="locationList" bindLabel="name" bindValue="value" appendTo="body"
+                    placeholder="All Locations..." formControlName="locationId">
+                  </ng-select>
+                </div>
+
+                <!-- Search Active Vendor -->
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                  <label class="form-label">Search Linked Vendor <span class="text-muted small">(auto-fills)</span></label>
+                  <ng-select [items]="linkedVendors" bindLabel="displayName" appendTo="body"
+                    [loading]="isLoadingVendors"
+                    placeholder="Pick active vendor..."
+                    (change)="onLinkedVendorSelect($event)">
+                  </ng-select>
+                </div>
+
+                <!-- FHR ID -->
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                  <label class="form-label">Vendor FHR ID <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control" formControlName="fhrid" placeholder="e.g. 208226290" />
+                  <div *ngIf="singleForm.get('fhrid')?.touched && singleForm.get('fhrid')?.invalid" class="text-danger small mt-1">
+                    FHR ID is required.
+                  </div>
+                </div>
+
+                <!-- Vendor Code -->
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                  <label class="form-label">Vendor Code <span class="text-muted small">(optional)</span></label>
+                  <input type="text" class="form-control" formControlName="vendorCode" placeholder="e.g. V4031" />
+                </div>
+
+                <!-- Cutoff Date -->
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                  <label class="form-label">Cutoff Date <span class="text-danger">*</span></label>
+                  <input type="date" class="form-control" formControlName="cutoffDate" />
+                  <div *ngIf="singleForm.get('cutoffDate')?.touched && singleForm.get('cutoffDate')?.invalid" class="text-danger small mt-1">
+                    Cutoff Date is required.
+                  </div>
+                </div>
+
+                <!-- Opening Deficit Amount -->
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                  <label class="form-label">Opening Deficit Amount (₹) <span class="text-danger">*</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-light text-muted">₹</span>
+                    <input type="number" class="form-control" formControlName="deficitAmount" placeholder="0.00" min="0.01" step="0.01" />
+                  </div>
+                  <div *ngIf="singleForm.get('deficitAmount')?.touched && singleForm.get('deficitAmount')?.invalid" class="text-danger small mt-1">
+                    Positive deficit amount required.
+                  </div>
+                </div>
+
+                <!-- Remarks -->
+                <div class="col-12 col-md-8 col-lg-9">
+                  <label class="form-label">Remarks</label>
+                  <input type="text" class="form-control" formControlName="remarks" placeholder="e.g. Legacy system opening deficit balance" />
+                </div>
+
+                <!-- Buttons -->
+                <div class="col-12 col-md-4 col-lg-3 d-flex justify-content-end gap-2 mt-2">
+                  <button type="button" class="btn btn-outline-secondary btn-sm px-3" (click)="resetSingleForm()" [disabled]="isSavingSingle">
+                    <i class="fa fa-refresh me-1"></i> Reset
+                  </button>
+                  <button type="submit" class="btn btn-primary btn-sm px-4" [disabled]="isSavingSingle">
+                    <i class="fa" [ngClass]="isSavingSingle ? 'fa-spinner fa-spin' : 'fa-save me-1'"></i>
+                    {{ isSavingSingle ? 'Saving...' : 'Save Deficit' }}
+                  </button>
+                </div>
+
+              </div>
+            </form>
+          </div>
+
+          <!-- TAB 2: BULK EXCEL UPLOAD -->
+          <div *ngIf="activeTab === 'bulk'">
+            <div class="row g-3 align-items-center">
+              
+              <!-- Step 1: Download Template -->
+              <div class="col-12 col-md-5">
+                <div class="border rounded p-3 bg-white text-center shadow-sm h-100">
+                  <i class="fa fa-file-excel-o fa-3x text-success mb-2"></i>
+                  <h6 class="fw-bold mb-1">1. Download Template</h6>
+                  <p class="text-muted small mb-3">
+                    Download the official Excel template with column structure & example row.
+                  </p>
+                  <button type="button" class="btn btn-outline-success btn-sm px-3" (click)="downloadTemplate()">
+                    <i class="fa fa-download me-1"></i> Download Template (.xlsx)
+                  </button>
+                </div>
+              </div>
+
+              <!-- Step 2: Upload File -->
+              <div class="col-12 col-md-7">
+                <div class="border rounded p-3 bg-white shadow-sm h-100">
+                  <h6 class="fw-bold mb-2"><i class="fa fa-upload me-2 text-primary"></i>2. Upload Completed Excel Sheet</h6>
+                  <div class="mb-3">
+                    <label class="form-label small text-muted">Select Excel file (.xlsx or .xls)</label>
+                    <input type="file" class="form-control form-control-sm" accept=".xlsx, .xls" (change)="onBulkFileSelected($event)" />
+                    <div class="mt-1" *ngIf="selectedBulkFile">
+                      <small class="text-success fw-semibold">
+                        <i class="fa fa-check-circle me-1"></i>Ready: {{ selectedBulkFile.name }} ({{ (selectedBulkFile.size / 1024) | number:'1.1-1' }} KB)
+                      </small>
+                    </div>
+                  </div>
+
+                  <div class="alert alert-warning py-2 px-3 mb-3 border-0 bg-warning-subtle text-warning-emphasis" style="font-size: 0.8rem;">
+                    <i class="fa fa-exclamation-triangle me-1"></i>
+                    Required: <code>FHRID</code>, <code>ClientID</code>, <code>ModelID</code>, <code>DeficitAmount</code>, <code>CutoffDate</code>. Optional: <code>VendorCode</code>, <code>LocationID</code>, <code>Remarks</code>.
+                  </div>
+
+                  <div class="d-flex justify-content-end">
+                    <button type="button" class="btn btn-primary btn-sm px-4" (click)="uploadBulkFile()" [disabled]="!selectedBulkFile || isUploadingBulk">
+                      <i class="fa" [ngClass]="isUploadingBulk ? 'fa-spinner fa-spin' : 'fa-upload me-1'"></i>
+                      {{ isUploadingBulk ? 'Uploading & Processing...' : 'Upload & Seed Deficits' }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- EXECUTIVE KPI SUMMARY METRICS -->
+      <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-2 mb-3">
+
+        <!-- 1. Total Opening Records -->
+        <div class="col">
+          <div class="card p-2 border-0 border-start border-3 border-primary rounded-1 shadow-sm bg-primary-subtle h-100">
+            <div class="d-flex align-items-center gap-2">
+              <span class="icon-box bg-primary text-white p-1 px-2 rounded-1">
+                <i class="fas fa-file-alt"></i>
+              </span>
+              <div class="overflow-hidden">
+                <p class="small fw-semibold mb-0 text-dark text-truncate" title="Total Opening Records">Total Records</p>
+                <span class="fw-bold text-primary">{{ totalCount }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Total Opening Deficit -->
+        <div class="col">
+          <div class="card p-2 border-0 border-start border-3 border-dark rounded-1 shadow-sm bg-secondary-subtle h-100">
+            <div class="d-flex align-items-center gap-2">
+              <span class="icon-box bg-dark text-white p-1 px-2 rounded-1">
+                <i class="fas fa-balance-scale"></i>
+              </span>
+              <div class="overflow-hidden">
+                <p class="small fw-semibold mb-0 text-dark text-truncate" title="Total Opening Deficit">Total Opening Deficit</p>
+                <span class="fw-bold text-dark">{{ totalOpeningAmount | currency:'INR':'symbol':'1.0-0' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Recovered So Far -->
+        <div class="col">
+          <div class="card p-2 border-0 border-start border-3 border-success rounded-1 shadow-sm bg-success-subtle h-100">
+            <div class="d-flex align-items-center gap-2">
+              <span class="icon-box bg-success text-white p-1 px-2 rounded-1">
+                <i class="fas fa-check-circle"></i>
+              </span>
+              <div class="overflow-hidden">
+                <p class="small fw-semibold mb-0 text-dark text-truncate" title="Recovered in payment syncs">Recovered So Far</p>
+                <span class="fw-bold text-success">{{ totalRecoveredAmount | currency:'INR':'symbol':'1.0-0' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. Pending Outstanding -->
+        <div class="col">
+          <div class="card p-2 border-0 border-start border-3 border-danger rounded-1 shadow-sm bg-danger-subtle h-100">
+            <div class="d-flex align-items-center gap-2">
+              <span class="icon-box bg-danger text-white p-1 px-2 rounded-1">
+                <i class="fas fa-times-circle"></i>
+              </span>
+              <div class="overflow-hidden">
+                <p class="small fw-semibold mb-0 text-dark text-truncate" title="Pending legacy recovery">Pending Outstanding</p>
+                <span class="fw-bold text-danger">{{ totalPendingBalance | currency:'INR':'symbol':'1.0-0' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. Recovery Rate -->
+        <div class="col">
+          <div class="card p-2 border-0 border-start border-3 border-warning rounded-1 shadow-sm bg-warning-subtle h-100">
+            <div class="d-flex align-items-center gap-2">
+              <span class="icon-box bg-warning text-white p-1 px-2 rounded-1">
+                <i class="fas fa-percentage"></i>
+              </span>
+              <div class="overflow-hidden">
+                <p class="small fw-semibold mb-0 text-dark text-truncate" title="Recovery Rate (%)">Recovery Rate</p>
+                <span class="fw-bold text-warning-emphasis">{{ recoveryRate | number:'1.1-1' }}%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RECORDED OPENING DEFICITS LEDGER CARD -->
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-white d-flex flex-wrap justify-content-between align-items-center py-2 gap-2 border-bottom">
+          <h5 class="mb-0 fs-6 text-primary">
+            <i class="fa fa-table me-2"></i>Recorded Opening Balances Ledger
+          </h5>
+
+          <div class="d-flex align-items-center gap-2 flex-wrap">
+            <button class="btn btn-outline-secondary btn-sm" (click)="copyForExcel()" [disabled]="filteredDeficits.length === 0" title="Copy to clipboard for Excel">
+              <i class="fa fa-clipboard me-1"></i> Copy for Excel
+            </button>
+            <button class="btn btn-outline-primary btn-sm" (click)="loadDeficitsList()" [disabled]="isLoadingList">
+              <i class="fa fa-refresh me-1" [class.fa-spin]="isLoadingList"></i> Refresh
+            </button>
+            <div style="width: 220px;">
+              <input type="text" class="form-control form-control-sm" placeholder="Search in results..." 
+                [(ngModel)]="searchTerm" (ngModelChange)="applyFilter()" />
+            </div>
+          </div>
+        </div>
+
+        <!-- INLINE FILTER ROW -->
+        <div class="card-body bg-light border-bottom py-2 px-3">
+          <form [formGroup]="filterForm" class="row g-2 align-items-center">
+            
+            <!-- Client -->
+            <div class="col-12 col-sm-6 col-md-3">
+              <ng-select [items]="clientList" bindLabel="name" bindValue="value" appendTo="body"
+                placeholder="Filter by Client..." formControlName="clientId">
+              </ng-select>
+            </div>
+
+            <!-- Model -->
+            <div class="col-12 col-sm-6 col-md-3">
+              <ng-select [items]="filterModelList" bindLabel="name" bindValue="value" appendTo="body"
+                placeholder="Filter by Model..." formControlName="modelId">
+              </ng-select>
+            </div>
+
+            <!-- Location -->
+            <div class="col-12 col-sm-6 col-md-3">
+              <ng-select [items]="locationList" bindLabel="name" bindValue="value" appendTo="body"
+                placeholder="Filter by Location / Hub..." formControlName="locationId">
+              </ng-select>
+            </div>
+
+            <!-- Status Filter -->
+            <div class="col-12 col-sm-6 col-md-2">
+              <select class="form-select form-select-sm" formControlName="status">
+                <option value="ALL">All Statuses</option>
+                <option value="Pending">Pending</option>
+                <option value="Partially_Recovered">Partially Recovered</option>
+                <option value="Fully_Recovered">Fully Recovered</option>
+              </select>
+            </div>
+
+            <div class="col-12 col-md-1 d-flex justify-content-end">
+              <button type="button" class="btn btn-outline-secondary btn-sm w-100" (click)="resetListFilters()" title="Reset Filters">
+                <i class="fa fa-refresh me-1"></i> Reset
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- TABLE BODY -->
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-bordered table-striped table-hover mb-0 text-nowrap align-middle" style="font-size: 0.82rem;">
+              <thead class="table-light">
+                <tr>
+                  <th style="width: 50px;">#</th>
+                  <th>Cutoff Date</th>
+                  <th>Client</th>
+                  <th>Model</th>
+                  <th>Location / Hub</th>
+                  <th>FHR ID</th>
+                  <th>Vendor</th>
+                  <th class="text-end">Opening Deficit (₹)</th>
+                  <th class="text-end">Recovered (₹)</th>
+                  <th class="text-end">Pending Bal (₹)</th>
+                  <th class="text-center">Status</th>
+                  <th>Remarks</th>
+                  <th class="text-center" style="width: 70px;">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngIf="isLoadingList">
+                  <td colspan="13" class="text-center text-muted py-4">
+                    <i class="fa fa-spinner fa-spin fa-2x mb-2 text-primary d-block"></i>
+                    Loading opening deficit records...
+                  </td>
+                </tr>
+
+                <tr *ngIf="!isLoadingList && filteredDeficits.length === 0">
+                  <td colspan="13" class="text-center text-muted py-4">
+                    No opening deficit records found for the selected criteria.
+                  </td>
+                </tr>
+
+                <tr *ngFor="let row of filteredDeficits | paginate: { itemsPerPage: pageSize, currentPage: pageIndex }">
+                  <td class="fw-bold text-muted">{{ row.carryForwardId }}</td>
+                  <td>{{ row.cutoffDate | date:'dd-MM-yyyy' }}</td>
+                  <td>{{ row.clientName }}</td>
+                  <td>{{ row.modelName }}</td>
+                  <td>{{ row.locationId || '-' }}</td>
+                  <td class="fw-bold">{{ row.fhrid }}</td>
+                  <td>
+                    <div class="fw-semibold">{{ row.vendorName }}</div>
+                    <small class="text-muted" *ngIf="row.vendorCode"><code>{{ row.vendorCode }}</code></small>
+                  </td>
+                  <td class="text-end fw-bold">{{ row.deficitAmount | currency:'INR':'symbol':'1.2-2' }}</td>
+                  <td class="text-end text-success fw-bold">{{ row.recoveredAmount | currency:'INR':'symbol':'1.2-2' }}</td>
+                  <td class="text-end fw-bold" [ngClass]="row.pendingBalance > 0 ? 'text-danger' : 'text-muted'">
+                    {{ row.pendingBalance | currency:'INR':'symbol':'1.2-2' }}
+                  </td>
+                  <td class="text-center">
+                    <span *ngIf="row.recoveryStatus === 'Fully_Recovered'" class="badge bg-success">
+                      Fully Recovered
+                    </span>
+                    <span *ngIf="row.recoveryStatus === 'Partially_Recovered'" class="badge bg-warning text-dark">
+                      Partially Recovered
+                    </span>
+                    <span *ngIf="row.recoveryStatus === 'Pending'" class="badge bg-danger">
+                      Pending
+                    </span>
+                  </td>
+                  <td class="text-truncate" style="max-width: 180px;" title="{{ row.remarks }}">
+                    {{ row.remarks || '-' }}
+                  </td>
+                  <td class="text-center">
+                    <button *ngIf="row.recoveryStatus === 'Pending' && row.recoveredAmount === 0" 
+                      class="btn btn-outline-danger btn-sm py-0 px-2"
+                      (click)="deleteOpeningDeficit(row)"
+                      title="Delete this opening deficit entry">
+                      <i class="fa fa-trash"></i>
+                    </button>
+                    <span *ngIf="row.recoveryStatus !== 'Pending' || row.recoveredAmount > 0" class="text-muted small" title="Locked: Recovery in progress">
+                      <i class="fa fa-lock"></i>
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- FOOTER PAGINATION -->
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center py-2" *ngIf="filteredDeficits.length > 0">
+          <small class="text-muted">
+            Showing {{ (pageIndex - 1) * pageSize + 1 }} to {{ pageIndex * pageSize > filteredDeficits.length ? filteredDeficits.length : pageIndex * pageSize }} of {{ filteredDeficits.length }} records
+          </small>
+          <pagination-controls (pageChange)="pageIndex = $event" [maxSize]="7" [responsive]="true" previousLabel="Prev" nextLabel="Next"></pagination-controls>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>

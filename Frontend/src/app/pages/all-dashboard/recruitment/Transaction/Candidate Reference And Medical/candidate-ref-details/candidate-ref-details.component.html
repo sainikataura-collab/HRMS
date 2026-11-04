@@ -1,0 +1,229 @@
+<div class="step-indicator">
+    <!-- Step 1 -->
+    <div class="step" [ngClass]="{'active-step': currentStep === 1, 'completed-step': currentStep > 1}">
+      <div class="step-circle">
+        <a routerLink="goToCandidateRefDetails()">1</a>
+      </div>
+      <div class="step-label small"><span class="small">Candidate Ref Details</span></div>
+      <div class="step-line" *ngIf="currentStep > 1 || currentStep === 1"></div>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="step" [ngClass]="{'active-step': currentStep === 2, 'completed-step': currentStep > 2}">
+      <div class="step-circle">
+        <!-- <a routerLink="/dash/payroll/payrolldashboard/EmployeeAttendance">2</a> -->
+        <a (click)="goToCandidateMedicalDetails()">2</a>
+    </div>
+      <div class="step-label small"><span class="small">Canndidate Medical  Details</span></div>
+      <div class="step-line" *ngIf="currentStep > 2 || currentStep === 2"></div>
+    </div>
+
+</div>
+
+
+
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+            <div class="card-header bg-blue py-lg-1 mt-0">
+                <div class="row w-100">
+                    <div class="col-sm-12 col-md-6 col-lg-6">
+                        <h4>Candidate Reference Details</h4>
+                    </div>
+                    <div class="col-sm-12 col-md-6 col-lg-6 d-flex align-items-center justify-content-md-end">
+                        <button class="btn btnheader"
+                            routerLink="/dash/recruitment/recruitmentdashboard/CandidateRefrenceDetails_list">
+                            Back
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body mt-4">
+                <form [formGroup]="CandidateReferenceForm">
+                    <div class="row">
+                        <div class="col">
+                            <label>Select Candidate<span style="color: red;">*</span></label>
+                            <div class="form-group">
+                                <ng-select id="jobReq" [items]="CandidateName" bindLabel="name" bindValue="value"
+                                    formControlName="pk_recId" placeholder="--Select --" class="w-100"></ng-select>
+                                <span class="text-danger " style="font-size: 12px;"
+                                    *ngIf="showError && CandidateReferenceForm.controls['pk_recId'].invalid">
+                                    Please Select Candidate
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label>Father Name</label>
+                            <div class="form-group">
+                                <input type="text" class="form-control" formControlName="father_name">
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label>Date of Birth</label>
+                            <div class="form-group">
+                                <input type="date" class="form-control" formControlName="dateofbirth">
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label>Email ID</label>
+                            <div class="form-group">
+                                <input type="email" class="form-control" formControlName="Email">
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label>Mobile</label>
+                            <div class="form-group">
+                                <input type="text" class="form-control" formControlName="Mobile">
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label>Phone No.</label>
+                            <div class="form-group">
+                                <input type="text" class="form-control" formControlName="Phone">
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label>Correspondence Contact No.</label>
+                            <div class="form-group">
+                                <input type="text" class="form-control" formControlName="corresContactNo">
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label>Permanent Contact No.</label>
+                            <div class="form-group">
+                                <input type="text" class="form-control" formControlName="permanentContactNo">
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label>Correspondence Address</label>
+                            <div class="form-group">
+                                <input type="text" class="form-control" formControlName="corresAddress">
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label>Permanent Address</label>
+                            <div class="form-group">
+                                <input type="text" class="form-control" formControlName="permanentAddress">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-header bg-blue mt-4">
+                        <div class="row w-100">
+                            <div class="col-sm-12 col-md-6 col-lg-6">
+                                <h4>Reference Details</h4>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-2">
+                        <div class="col-md-4">
+                            <label>Reference Name</label>
+                            <div class="form-group">
+                                <input type="text" class="form-control" formControlName="refname">
+                            </div>
+                            <span *ngIf="showError &&CandidateReferenceForm.controls['refname'].invalid" class="text-danger "
+                            style="font-size: 12px;">
+                            Please enter refname.
+                        </span>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label>Company Name</label>
+                            <div class="form-group">
+                                <input type="text" class="form-control" formControlName="compname">
+                            </div>
+                            <span *ngIf="showError &&CandidateReferenceForm.controls['compname'].invalid" class="text-danger "
+                            style="font-size: 12px;">
+                            Please enter compname.
+                        </span>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label>Designation</label>
+                            <div class="form-group">
+                                <input type="text" class="form-control" formControlName="designation">
+                            </div>
+                            <span *ngIf="showError &&CandidateReferenceForm.controls['designation'].invalid" class="text-danger "
+                            style="font-size: 12px;">
+                            Please enter designation.
+                        </span>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label>Email ID</label>
+                            <div class="form-group">
+                                <input type="email" class="form-control" formControlName="email">
+                            </div>
+                            <span *ngIf="showError &&CandidateReferenceForm.controls['email'].invalid" class="text-danger "
+                            style="font-size: 12px;">
+                            Please enter email.
+                        </span>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label>Mobile</label>
+                            <div class="form-group">
+                                <input type="text" class="form-control" formControlName="mobile">
+                            </div>
+                            <span *ngIf="showError &&CandidateReferenceForm.controls['mobile'].invalid" class="text-danger py-0 m-0 "
+                            style="font-size: 12px;">
+                            Please enter mobile.
+                        </span>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label>Phone No.</label>
+                            <div class="form-group">
+                                <input type="text" class="form-control" formControlName="phone">
+                            </div>
+                            <span *ngIf="showError &&CandidateReferenceForm.controls['phone'].invalid" class="text-danger "
+                            style="font-size: 12px;">
+                            Please enter phone.
+                        </span>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label>Address</label>
+                            <div class="form-group">
+                                <input type="text" class="form-control" formControlName="address">
+                            </div>
+                            <span *ngIf="showError &&CandidateReferenceForm.controls['address'].invalid" class="text-danger"
+                            style="font-size: 12px;">
+                            Please enter address.
+                        </span>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label>File Name</label>
+                            <div class="form-group d-flex align-items-center">
+                                <input type="file" (change)="onFileChange($event)" class="form-control me-2" />
+                                <a *ngIf="ImageUrl && !selectedFile" [href]="ImageUrl" target="self"
+                                    class="btn btn-primary">
+                                    View
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="modal-footer mt-3">
+                        <button type="submit" class="btn btn-primary mx-1" (click)="onSubmit()">
+                            {{ isEditMode ? 'Update' : 'Save' }}
+                        </button>
+                        <button type="button" class="btn btn-outline-dark mx-1" (click)="resetForm()">Reset</button>
+                    </div>
+                </form>
+            </div>  
+        </div>
+    </div>
+</div>

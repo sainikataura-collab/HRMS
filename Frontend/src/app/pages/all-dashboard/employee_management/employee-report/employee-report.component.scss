@@ -1,0 +1,42 @@
+.scroll-active {
+    max-height: 600px; /* or any height */
+    overflow-y: auto;
+    position: relative;
+  }
+  
+
+  .table{
+    margin-bottom: 0.2rem;
+  }
+
+  .table-invoice.scroll-active {
+    max-height: 600px;
+    overflow-y: auto;
+  }
+
+  .table thead th {
+   
+    position: sticky;
+    top: 0;
+    background: #f8f9fa; /* Or match your theme */
+    z-index: 2;
+    text-align: start !important;
+    padding-top: 0px !important;
+    padding-bottom: 0px !important;
+    height: 35px !important;
+  }
+  .table-responsive{
+    overflow-x: auto;
+  }
+  .table td {
+    white-space: nowrap;
+    text-align: start !important;
+    height: 20px !important;
+  }
+  .table th {
+    white-space: nowrap;
+    height: 30px !important;
+  }
+  tbody td {
+    border: none !important;
+  }

@@ -1,0 +1,365 @@
+<div class="step-indicator">
+    <!-- Step 1 -->
+    <div class="step" [ngClass]="{'active-step': currentStep === 1, 'completed-step': currentStep > 1}" (click)="goToEmployeeMst()" style="cursor: pointer;">
+        <div class="step-circle">
+            <a (click)="goToEmployeeMst()">1</a>
+        </div>
+        <div class="step-label small"><span class="small">Employee Master</span></div>
+        <div class="step-line" *ngIf="currentStep > 1 || currentStep === 1"></div>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="step" [ngClass]="{'active-step': currentStep === 2, 'completed-step': currentStep > 2}" (click)="goToAttendance()" style="cursor: pointer;">
+        <div class="step-circle">
+            <a (click)="goToAttendance()">2</a>
+        </div>
+        <div class="step-label small"><span class="small">Shift & Attandance Details</span></div>
+        <div class="step-line" *ngIf="currentStep > 2 || currentStep === 2"></div>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="step" [ngClass]="{'active-step': currentStep === 3,'completed-step': currentStep > 3}" (click)="goToOtherDetails()" style="cursor: pointer;">
+        <div class="step-circle">
+            <a (click)="goToOtherDetails()">3</a>
+        </div>
+        <div class="step-label small"><span class="small">Compliance Details</span></div>
+        <div class="step-line" *ngIf="currentStep > 3 || currentStep === 3"></div>
+    </div>
+
+    <!-- Step 4 -->
+    <div class="step" [ngClass]="{'active-step': currentStep === 4, 'completed-step': currentStep > 4}" (click)="goTohead()" style="cursor: pointer;">
+        <div class="step-circle">
+            <a (click)="goTohead()">4</a>
+        </div>
+        <div class="step-label small"><span class="small">Salary Details </span></div>
+        <div class="step-line" *ngIf="currentStep > 4 || currentStep === 4"></div>
+    </div>
+
+    <!-- Step 5 -->
+    <div class="step" [ngClass]="{'active-step': currentStep === 5, 'completed-step': currentStep > 5}" (click)="goToDemographic()" style="cursor: pointer;">
+        <div class="step-circle">
+            <a (click)="goToDemographic()">5</a>
+        </div>
+        <div class="step-label small"><span class="small">Demographic Details</span></div>
+        <div class="step-line" *ngIf="currentStep > 5 || currentStep === 5"></div>
+    </div>
+
+    <!-- Step 6 -->
+    <div class="step" [ngClass]="{'active-step': currentStep === 6, 'completed-step': currentStep > 6}" (click)="goToQualification()" style="cursor: pointer;">
+        <div class="step-circle">
+            <a (click)="goToQualification()">6</a>
+        </div>
+        <div class="step-label small"><span class="small">Qualification Details</span></div>
+        <div class="step-line" *ngIf="currentStep > 6 || currentStep === 6"></div>
+    </div>
+
+    <!-- Step 7 -->
+    <div class="step" [ngClass]="{'active-step': currentStep === 7}" (click)="goToExperience()" style="cursor: pointer;">
+        <div class="step-circle">
+            <a (click)="goToExperience()">7</a>
+        </div>
+        <div class="step-label small"><span class="small">Experience Details</span></div>
+    </div>
+</div>
+
+
+<!-- Tab Content -->
+<div class="tab-content">
+</div>
+
+<div class="row mt-2">
+    <div [ngClass]="isFactBoxOpen ? 'col-sm-12 col-md-8 col-lg-9' : 'col-12'">
+
+        <div class="card mt-lg-3 border-top border-2 border-primary">
+
+
+            <div class="row row-cols-1 row-cols-md-4 g-3 pt-1 px-3">
+                <div class="col">
+                    <p class="small" style="font-size: 12px;"><span>Emp Code : </span> <span style="color:red;">{{
+                            EmployeeForm.value.empcode }}</span> </p>
+                </div>
+
+                <div class="col">
+                    <p class="small " style="font-size: 12px;"><span>Emp Name : </span> <span style="color:red;">{{
+                            EmployeeForm.value.empname }}</span> </p>
+                </div>
+            </div>
+
+
+            <div class="card">
+                <!-- Heading -->
+                <div class="card-header bg-blue d-flex justify-content-between align-items-center flex-wrap">
+                    <div class="d-flex align-items-center">
+                        <h4 class="small mb-0">Attendance Time Schedule</h4>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-end gap-2">
+                        <button *ngIf="pk_empid && !isFactBoxOpen" class="btn btn-outline-light btn-sm d-flex align-items-center"
+                            (click)="toggleFactBox()" title="Open Audit Log">
+                            <i class="fa fa-history me-1"></i> Audit Log
+                        </button>
+                        <button class="btn btn-light" (click)="onBack()">
+                            Back
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+
+                    <form [formGroup]="EmployeeForm">
+                        <div class="row" class="row row-cols-1 row-cols-md-3 g-4">
+
+                            <div class="col">
+                                <label class="">Attendance Source</label>
+                                <ng-select [items]="AttendanceSource" bindLabel="name" bindValue="value"
+                                    formControlName="attendanceSource" placeholder="--Select Attendance Source--"
+                                    class="w-100 small"></ng-select>
+                            </div>
+
+                            <div class="col">
+                                <label>Attendance Location</label>
+                                <ng-select [items]="Location" bindLabel="name" bindValue="value" [multiple]="true"
+                                    [closeOnSelect]="false" placeholder="--Select Locations--" class="w-100 small"
+                                    formControlName="attendancelocation" [disabled]="Isedit">
+                                    <!-- Disable in update mode -->
+
+                                    <!-- Custom Template for Displaying Selected Items -->
+                                    <ng-template ng-multi-label-tmp>
+                                        <span>{{ getLocationDisplayText() || "--Select Locations--" }}</span>
+                                    </ng-template>
+
+                                    <!-- Custom Checkbox for Select All -->
+                                    <ng-template ng-option-tmp let-item="item" let-index="index">
+                                        <div *ngIf="index === 0">
+                                            <input type="checkbox" (change)="toggleSelectAll()"
+                                                [checked]="isAllSelected()" class="form-check-input fs-6 mx-1" />
+                                            <strong>&nbsp;Select All</strong>
+                                        </div>
+                                        <div *ngIf="index !== 0">
+                                            <input type="checkbox" [checked]="selectedLocations.includes(item.value)"
+                                                (change)="toggleLocation(item.value)"
+                                                class="form-check-input fs-6 mx-1" />
+                                            {{ item.name }}
+                                        </div>
+                                    </ng-template>
+
+                                </ng-select>
+                            </div>
+<!-- 
+                            <div class="col">
+                                <label class="form-label mb-2" for="switchCheckChecked">Geo Fence</label>
+
+                                <div class="form-check form-switch custom-switch-lg">
+                                    <input class="form-check-input" type="checkbox" role="switch"
+                                        id="switchCheckChecked" [checked]="EmployeeForm.get('geofence')?.value === '1'"
+                                        (change)="onGeoToggle($event)" />
+
+                                    <label class="form-check-label custom-switch-label ms-4" for="switchCheckChecked">
+                                        {{ EmployeeForm.get('geofence')?.value === '1' ? 'Enabled' : 'Disabled' }}
+                                    </label>
+                                </div>
+                            </div> -->
+
+                            <div class="col">
+                                <label class="form-label mb-2" for="switchCheckChecked">Geo Fence</label>
+                                 <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch"
+                                        id="switchCheckChecked" [checked]="EmployeeForm.get('geofence')?.value === '1'"
+                                        (change)="onGeoToggle($event)">
+                                    <label class="form-check-label custom-switch-label ps-5" for="switchCheckChecked">
+                                        {{ EmployeeForm.get('geofence')?.value === '1' ? 'Enabled' : 'Disabled'
+                                        }}</label>
+                                </div>
+                            </div>
+
+
+                        </div>
+                   </form>
+
+
+
+                    <div class="d-flex justify-content-between align-items-center mt-4 mb-2">
+                        <p class="text-primary m-0 fw-bold "> Default Shift</p>
+                    </div>
+
+                    <form [formGroup]="EmployeeForm">
+
+
+                        <div class="row" class="row row-cols-1 row-cols-md-3 g-4">
+
+                            <div class="col">
+                                <label>
+                                    Default Shift <span style="color: red;">*</span></label>
+                                <ng-select [items]="DefaultShift" bindLabel="name" bindValue="value"
+                                    formControlName="fk_shiftId" placeholder="-select Shift-"
+                                    (change)="onShiftChange($event)"></ng-select>
+
+                                <!-- Validation message below input field -->
+                                <span *ngIf="showError && EmployeeForm.controls['fk_shiftId'].invalid"
+                                    class="text-danger mt-1" style="font-size: 12px;">
+                                    enter From Date.
+                                </span>
+
+                            </div>
+
+
+
+                            <div class="col">
+                                <label class="">In Time</label>
+                                <input type="time" class="form-control " formControlName="Intime">
+                            </div>
+
+
+                            <div class="col">
+                                <label class="">Out Time</label>
+                                <input type="time" class="form-control" formControlName="Outtime">
+                            </div>
+
+
+                            <div class="col">
+                                <label class="">Grace Period</label>
+                                <input type="time" class="form-control " formControlName="gracetime">
+                            </div>
+                        </div>
+
+                                 <div class="col align-items-end justify-content-end">
+                                <div class="form-check" style="margin-top:2.3rem;">
+                                    <input class="form-check-input" type="checkbox" formControlName="OTApp"
+                                        id="isactiveCheck">
+                                    <label class="form-check-label" for="isactiveCheck">OT Applicable</label>
+                                </div>
+                            </div>
+
+
+
+
+                    </form>
+
+                    <div class="d-flex justify-content-between align-items-center mt-4 mb-2">
+                        <p class="text-primary m-0 fw-bold "> Date Wise Shift</p>
+                    </div>
+
+
+                    <form [formGroup]="EmployeeShiftForm">
+
+                        <div class="row" class="row row-cols-1 row-cols-md-3 g-4">
+
+                            <div class="col">
+                                <label>From Date<span style="color: red;">*</span></label>
+                                <input type="date" class="form-control" formControlName="fromdate">
+
+                                <!-- Validation message below input field -->
+                                <span *ngIf="showError && EmployeeShiftForm.controls['fromdate'].invalid"
+                                    class="text-danger mt-1" style="font-size: 12px;">
+                                    enter From Date.
+                                </span>
+
+                            </div>
+                            <div class="col">
+                                <label>To Date<span style="color: red;">*</span></label>
+                                <input type="date" class="form-control" formControlName="todate">
+
+                                <!-- Validation message below input field -->
+                                <span *ngIf="showError && EmployeeShiftForm.controls['todate'].invalid"
+                                    class="text-danger mt-1" style="font-size: 12px;">
+                                    Enter To Date.
+                                </span>
+
+                            </div>
+                            <div class="col">
+                                <label>Shift <span style="color: red;">*</span></label>
+                                <ng-select [items]="DefaultShift" bindLabel="name" bindValue="value"
+                                    formControlName="fk_shiftId" placeholder="-select Shift-">
+                                </ng-select>
+                                <!-- Validation message below input field -->
+                                <span *ngIf="showError && EmployeeShiftForm.controls['fk_shiftId'].invalid"
+                                    class="text-danger mt-1" style="font-size: 12px;">
+                                    Select Shift.
+                                </span>
+
+                            </div>
+
+                            <!-- <div class="col">
+                               
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" formControlName="isactive"
+                                        id="isactiveCheck">
+                                    <label class="form-check-label" >Is Active</label>
+                                </div>
+                            </div> -->
+
+                            <div class="col">
+    <div class="form-check">
+        <input class="form-check-input" type="checkbox" formControlName="isactive"
+            id="shiftIsActiveCheck">
+        <label class="form-check-label" for="shiftIsActiveCheck">Is Active</label>
+    </div>
+</div>
+
+                        </div>
+                    </form>
+
+                    <button type="button" class="btn btn-primary mt-2" (click)="addShiftEntry()">{{ editIndex !== null ?
+                        'Update' : 'Add ' }}</button>
+
+                    <!-- Table -->
+                    <div class="row">
+
+                        <div class="table-invoice table-responsive">
+                            <table class="table mt-3" *ngIf="TempShiftData.length > 0">
+                                <thead>
+                                    <tr>
+                                        <th>From Date</th>
+                                        <th>To Date</th>
+                                        <th>Shift</th>
+                                        <th>Is Active</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let item of TempShiftData; let i = index">
+                                        <!-- <td>{{ item.fromdate }}</td>
+                                    <td>{{ item.todate }}</td> -->
+                                        <td>{{ item.fromdate | date: 'yyyy-MM-dd' }}</td>
+                                        <td>{{ item.todate | date: 'yyyy-MM-dd' }}</td>
+                                        <td>{{ getShiftLabelByValue(item.fk_shiftId) }}</td>
+                                        <td>{{ item.isactive ? 'Yes' : 'No' }}</td>
+                                        <td>
+                                            <button class="btn btn-outline btn-sm" (click)="onEdit(i)">
+                                                <i class="fa-pen-to-square fa-solid"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <!-- Pagination controls -->
+
+                        </div>
+
+                    </div>
+
+
+
+
+                    <div class="row">
+                        <div class="col d-flex align-items-end justify-content-end pt-4 pb-3">
+                            <button type="button" class="btn btn-primary  mx-1" (click)="onSubmit()">Update</button>
+                            <button type="button" class="btn btn-outline-dark mx-1" (click)="resetForm()">Reset</button>
+                        </div>
+                        <!-- <div class="col d-flex align-items-end justify-content-end pt-4 pb-3" *ngIf="editIndex" >
+                        <button type="submit"  class="btn btn-primary"  (click)="onSave()">Save</button>
+                    </div> -->
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Side: Employee Master Tab-Wise Audit Log Fact Box -->
+    <app-employee-fact-box 
+        [ngClass]="isFactBoxOpen ? 'col-sm-12 col-md-4 col-lg-3' : ''"
+        [documentId]="pk_empid"
+        [documentName]="'Employee Master - Shift & Attendance'"
+        [isOpen]="isFactBoxOpen"
+        (onToggle)="toggleFactBox()">
+    </app-employee-fact-box>
+</div>

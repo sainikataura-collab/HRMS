@@ -1,0 +1,109 @@
+
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+         <!--  -->
+    <div class="card-header bg-blue ">
+        <div class="row w-100 ">
+      <div class="col-sm-12 col-md-6 col-lg-6 ">                    
+        <h4>{{pk_slabid ? 'Update Tax Deduction Slab Details':'Add Tax Deduction Slab Details'}}</h4>  
+ 
+      </div>
+      <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+        <button class="btn btnheader" routerLink="/dash/payroll/payrolldashboard/deductionSlab_list">Back
+          </button>
+      </div>
+  </div>
+  
+      
+      </div>
+      <div class="card-body mt-4">
+        <form [formGroup]="DeductionSlabform"class="row row-cols-1 row-cols-md-3">
+            <div class="col">
+                <label>Person Type<span style="color: red;">*</span></label>
+           
+                <div class="form-group">
+                  <ng-select id="year" [items]="types" bindLabel="name" bindValue="value"
+                  formControlName="personType" placeholder="--Select --"
+                  class="w-100"></ng-select>
+                  <span *ngIf="showError && DeductionSlabform.controls['personType'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                    Please enter Person Type.
+                  </span>
+                </div>  
+            </div>
+            <!-- add new field Tax Regime    -->
+
+
+<div class="col">
+                <label>Tax Regime<span style="color: red;">*</span></label>
+           
+                <div class="form-group">
+                  <ng-select id="year" [items]="selectResime" bindLabel="name" bindValue="value"
+                  formControlName="taxRegime" placeholder="--Select --"
+                  class="w-100"></ng-select>
+                  <span *ngIf="showError && DeductionSlabform.controls['taxRegime'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                    Please enter Tax Regime.
+                  </span>
+                </div>  
+            </div>
+
+
+
+             <!--  -->
+            <div class="col">
+                <label>Sequence<span style="color: red;">*</span></label>
+                <div class="form-group">
+                    <input type="text"class="form-control"formControlName="sno"(keypress)="restrictInput($event)"maxlength="3">
+                    <span *ngIf="showError && DeductionSlabform.controls['sno'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                        Please enter Sequence.
+                      </span>
+                </div>
+            </div>
+            <div class="col">
+                <label>Lower Limit<span style="color: red;">*</span></label>
+                <div class="form-group">
+                    <input type="text"class="form-control"formControlName="lowerLimit"maxlength="8"(keypress)="restrictInputDecimal($event)" >
+                    <span *ngIf="showError && DeductionSlabform.controls['lowerLimit'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                        Please enter Lower Limit.
+                      </span>
+                </div>
+            </div>
+           
+       
+            <div class="col">
+                <label>Upper Limit<span style="color: red;">*</span></label>
+                <div class="form-group">
+                    <input type="text"class="form-control"formControlName="upperLimit"maxlength="8"(keypress)="restrictInputDecimal($event)">
+                    <span *ngIf="showError && DeductionSlabform.controls['upperLimit'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                        Please enter Upper Limit.
+                      </span>
+                </div>
+            </div>
+            <div class="col">
+                <label>Tax Percentage<span style="color: red;">*</span></label>
+                <div class="form-group">
+                    <input type="text"class="form-control"formControlName="tax_Percent" maxlength="5"(keypress)="restrictInputDecimal($event)">
+                    <span *ngIf="showError && DeductionSlabform.controls['tax_Percent'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                        Please enter Tax Percentage.
+                      </span>
+                </div>
+            </div>
+           
+        
+        </form>
+        <div class="row">
+            <div class="col d-flex align-items-end justify-content-end pt-4 pb-3">
+              <button type="submit" class="btn btn-primary mx-1" (click)="onSubmit()">{{pk_slabid ? 'Update' : 'Save' }}</button>
+      
+                <button type="button" class="btn btn-outline-dark mx-1"(click)="resetForm()">Reset</button>
+                      
+            </div>
+           
+        </div>
+      </div>
+
+      
+  </div>
+</div>    
+
+</div>

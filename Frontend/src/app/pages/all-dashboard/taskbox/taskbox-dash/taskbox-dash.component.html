@@ -1,0 +1,151 @@
+<!-- first section -->
+<section>
+    <div class="container-fluid">
+        <div class="row border-bottom">
+           <div class="col-sm-12 col-md-12 col-lg-7 col-xxl-7">
+                <p class="small"><span>Taskbox Dashboard</span><br>
+                    <span class="fw-bold fs-6 text-success">
+                        <i class="fa-solid fa-user fw-bold"></i> Pending Task
+                    </span>
+                </p>
+            </div>
+
+            <form class="col-sm-12 col-md-12 col-lg-5 col-xxl-5" [formGroup]="form">
+              <p class="row row-cols-3 row-cols-md-3 g-2 pt-lg-3">
+            <span class="col"></span>
+            <span class="col">
+            <ng-select [items]="months" bindLabel="name" bindValue="value" formControlName="month" placeholder="Select Month" (change)="onSelectionChange()"></ng-select>
+             </span>
+           <span class="col">
+           <ng-select id="fk_yearId" [items]="years" bindLabel="name" bindValue="value"formControlName="year" placeholder="--Year --" class="w-100" (change)="onSelectionChange()"></ng-select></span></p>
+             </form>
+         </div>
+ </div>
+</section>
+<!--now pending task and qucik action-->
+<section>
+    <div class="container-fluid">
+        <div class="row">
+    <!-- Left Content -->
+        <div class="col-sm-12 col-md-12 col-lg-8">
+
+
+
+<!-- Taskbox Insights -->
+                <div class="row pt-2">
+                    <div class="col-lg-12">
+                        <div class="card shadow-sm px-3 py-2 border-top border-2 border-primary">
+                            <p class="fw-semibold text-primary small">
+                                <i class="fa-solid fa-user-shield"></i> Taskbox Overview (Detailed)
+                            </p>
+
+                           
+                          
+   <!-- Metric Cards -->
+                <div class="row row-cols-1 row-cols-md-3 g-3 pt-lg-3">
+                       <div class="col">
+                        <div class="card rounded pt-2">
+                            <h4 class="text-center">
+                                <span class="badge bg-success rounded">
+                                    <i class="fa-solid fa-calendar-xmark text-white fs-5"></i>
+                                </span>
+                            </h4>
+                            <p class="small text-center fw-semibold">Pending Leave/OD <br><span
+                                    class="text-success fw-semibold">{{dashboardSummary.PendingLeaveOD}}</span></p>
+                        </div>
+                    </div>
+                       <div class="col">
+                        <div class="card rounded pt-2">
+                            <h4 class="text-center">
+                                <span class="badge bg-danger rounded">
+                                    <i class="fa-solid fa-clock text-white fs-5"></i>
+                                </span>
+                            </h4>
+                            <p class="small text-center fw-semibold"> Pending Short Leave<br><span
+                                    class="text-danger fw-semibold">{{dashboardSummary.PendingShortLeave}}</span></p>
+                        </div>
+                    </div>
+                       <div class="col">
+                        <div class="card rounded pt-2">
+                            <h4 class="text-center">
+                                <span class="badge bg-warning rounded">
+                                    <i class="fa-solid fa-scale-balanced text-white fs-5"></i>
+                                </span>
+                            </h4>
+                            <p class="small text-center fw-semibold"> Pending Compoff<br><span
+                                    class="text-warning fw-semibold">{{dashboardSummary.PendingCompoff}}</span></p>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card rounded pt-2">
+                            <h4 class="text-center">
+                                <span class="badge bg-info rounded">
+                                    <i class="fa-solid fa-pen-to-square text-white fs-5"></i>
+                                </span>
+                            </h4>
+                            <p class="small text-center fw-semibold"> Pending Regulazation<br><span
+                                    class="text-info fw-semibold">{{dashboardSummary.PendingRegulazation}}</span></p>
+                        </div>
+                    </div>
+
+                      <div class="col">
+                        <div class="card rounded pt-2">
+                            <h4 class="text-center">
+                                <span class="badge bg-secondary rounded">
+                                    <i class="fa-solid fa-folder-open text-white fs-5"></i>
+                                </span>
+                            </h4>
+                            <p class="small text-center fw-semibold"> Pending Documentation<br><span
+                                    class="text-dark fw-semibold">{{dashboardSummary.PendingDocumentation}}</span></p>
+                        </div>
+                    </div>
+                     <div class="col">
+                        <div class="card rounded pt-2">
+                            <h4 class="text-center">
+                                <span class="badge bg-primary rounded">
+                                    <i class="fa-solid fa-file-shield text-white fs-5"></i>
+                                </span>
+                            </h4>
+                            <p class="small text-center fw-semibold"> Pending Compliance<br><span
+                                    class="text-primary fw-semibold">{{dashboardSummary.PendingCompliance}}</span></p>
+                        </div>
+                    </div>
+
+               
+
+               
+              
+                </div>
+                          
+                        </div>
+                    </div>
+                </div>
+
+              
+             
+
+              
+            </div>
+
+            <!-- Right Sidebar -->
+            <div class="col -sm-12 col-md-12 col-lg-4 pt-2">
+        <!-- Quick Actions -->
+                <div class="card shadow-sm p-3 mb-3 border-top border-2 border-success">
+                    <p class="fw-semibold text-success small mb-2"><i class="fa-solid fa-bolt"></i> Quick Actions</p>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-outline-primary btn-sm small" routerLink="/dash/adminTaskbox/adminTaskboxdashboard/PendingLeave/OD"><i class="fa-solid fa-calendar-xmark"></i> 
+                            Pending Leave/OD</button>
+                        <button class="btn btn-outline-success btn-sm small" routerLink="/dash/adminTaskbox/adminTaskboxdashboard/PendingsShortLeave_list"><i class="fa-solid fa-clock"></i>
+                            Pending Short Leave</button>
+                        <button class="btn btn-outline-secondary btn-sm small" routerLink="/dash/adminTaskbox/adminTaskboxdashboard/PendingCampOff_list"><i class="fa-solid fa-scale-balanced"></i>
+                            Pending Compoff</button>
+                             <button class="btn btn-outline-warning btn-sm small" routerLink="/dash/adminTaskbox/adminTaskboxdashboard/PendingRegulazation"><i class="fa-solid fa-pen-to-square"></i>
+                            Pending Regulazation</button>
+                    </div> 
+                    
+                </div>
+           </div>
+
+        </div>
+    </div>
+</section>

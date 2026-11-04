@@ -1,0 +1,128 @@
+<div class="row">
+  <div class="col-12">
+    <div class="card w-100">
+
+      <!-- Header with bg-primary matching HRBook Vendor pages -->
+      <div class="card-header bg-primary py-2">
+        <div class="row w-100 align-items-center">
+          <div class="col-sm-12 col-md-6 col-lg-6">
+            <h4 class="text-white mb-0">
+              <i class="fa fa-cloud-upload me-2"></i>Vendor Excel Upload
+            </h4>
+          </div>
+          <div class="col-sm-12 col-md-6 col-lg-6 d-flex align-items-center justify-content-md-end mt-2 mt-md-0">
+            <button type="button" class="btn bg-white text-primary shadow-sm" [routerLink]="'/dash/vendor_management/vendor_managementdashboard/vendor_excel_list'" (click)="navigateToList()">
+              <i class="fa fa-arrow-left me-2"></i>Back
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card Body with Form -->
+      <div class="card-body">
+        <form [formGroup]="uploadForm" (ngSubmit)="onSubmit()" class="row g-3">
+          
+          <!-- Select Client -->
+          <div class="col-12 col-sm-6 col-md-6 col-lg-3">
+            <label class="form-label">Select Client <span class="text-danger">*</span></label>
+            <ng-select
+              [items]="clients"
+              bindLabel="name"
+              bindValue="value"
+              placeholder="Select Client"
+              formControlName="clientId"
+              [clearable]="true"
+              [searchable]="true"
+              [ngClass]="{'is-invalid': uploadForm.get('clientId')?.touched && uploadForm.get('clientId')?.invalid}">
+            </ng-select>
+            <div *ngIf="uploadForm.get('clientId')?.touched && uploadForm.get('clientId')?.invalid" class="text-danger small mt-1">
+              Client is required.
+            </div>
+          </div>
+
+          <!-- Select Model -->
+          <div class="col-12 col-sm-6 col-md-6 col-lg-3">
+            <label class="form-label">Select Model <span class="text-danger">*</span></label>
+            <ng-select
+              [items]="models"
+              bindLabel="name"
+              bindValue="value"
+              placeholder="Select Model"
+              formControlName="modelId"
+              [clearable]="true"
+              [searchable]="true"
+              [loading]="isLoadingModels"
+              [ngClass]="{'is-invalid': uploadForm.get('modelId')?.touched && uploadForm.get('modelId')?.invalid}">
+            </ng-select>
+            <div *ngIf="uploadForm.get('modelId')?.touched && uploadForm.get('modelId')?.invalid" class="text-danger small mt-1">
+              Model is required.
+            </div>
+            <div *ngIf="!uploadForm.get('clientId')?.value" class="text-muted small mt-1">
+              <i class="fa fa-info-circle me-1"></i>Select a Client first to load models.
+            </div>
+          </div>
+
+          <!-- From Date -->
+          <div class="col-12 col-sm-6 col-md-6 col-lg-3">
+            <label class="form-label">From Date <span class="text-danger">*</span></label>
+            <input
+              type="date"
+              class="form-control"
+              formControlName="fromDate"
+              [ngClass]="{'is-invalid': uploadForm.get('fromDate')?.touched && uploadForm.get('fromDate')?.invalid}">
+            <div *ngIf="uploadForm.get('fromDate')?.touched && uploadForm.get('fromDate')?.errors?.['required']" class="text-danger small mt-1">
+              From Date is required.
+            </div>
+          </div>
+
+          <!-- To Date -->
+          <div class="col-12 col-sm-6 col-md-6 col-lg-3">
+            <label class="form-label">To Date <span class="text-danger">*</span></label>
+            <input
+              type="date"
+              class="form-control"
+              formControlName="toDate"
+              [min]="uploadForm.get('fromDate')?.value"
+              [ngClass]="{'is-invalid': (uploadForm.get('toDate')?.touched && uploadForm.get('toDate')?.invalid) || (uploadForm.hasError('dateRangeInvalid') && uploadForm.get('toDate')?.touched)}">
+            <div *ngIf="uploadForm.get('toDate')?.touched && uploadForm.get('toDate')?.errors?.['required']" class="text-danger small mt-1">
+              To Date is required.
+            </div>
+            <div *ngIf="uploadForm.hasError('dateRangeInvalid') && uploadForm.get('toDate')?.touched && !uploadForm.get('toDate')?.errors?.['required']" class="text-danger small mt-1">
+              To Date must be on or after From Date.
+            </div>
+          </div>
+
+          <!-- Select File -->
+          <div class="col-12 col-sm-12 col-md-6 col-lg-3">
+            <label class="form-label">Select File <span class="text-danger">*</span></label>
+            <input
+              type="file"
+              class="form-control"
+              accept=".xlsx, .xls"
+              (change)="onFileChange($event)"
+              [ngClass]="{'is-invalid': (uploadForm.get('file')?.touched && uploadForm.get('file')?.invalid) || fileError}">
+            <div *ngIf="fileError" class="text-danger small mt-1">
+              {{ fileError }}
+            </div>
+            <div *ngIf="uploadForm.get('file')?.touched && uploadForm.get('file')?.invalid && !fileError" class="text-danger small mt-1">
+              File is required.
+            </div>
+            <div class="form-text small text-muted">Allowed formats: .xlsx, .xls</div>
+          </div>
+
+          <!-- Action Buttons (Matching HRBook Form Actions) -->
+          <div class="col-12 d-flex justify-content-end gap-2 mt-4">
+            <button type="submit" class="btn btn-primary" [disabled]="uploadForm.invalid || !selectedFile || isSubmitting">
+              <i class="fa fa-upload me-1"></i>{{ isSubmitting ? 'Uploading...' : 'Save & Upload' }}
+            </button>
+            <button type="button" class="btn btn-outline-dark" (click)="resetForm()" [disabled]="isSubmitting">
+              Reset
+            </button>
+          </div>
+
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>

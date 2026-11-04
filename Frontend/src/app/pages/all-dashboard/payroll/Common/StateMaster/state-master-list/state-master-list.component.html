@@ -1,0 +1,78 @@
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <!-- heading -->
+      <div class="card-header bg-primary">
+        <div class="row w-100">
+          <!-- Title Section -->
+          <div class="col-sm-6 col-md-6 col-lg-4 d-flex align-items-center justify-content-start">
+            <h4 class="text-white">State Master List</h4>
+          </div>
+          <div class="col-sm-12 col-md-6 col-lg-4 d-flex align-items-center justify-content-center">
+            <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText" (ngModelChange)="onSearchTextChanged()" />
+          </div>
+          <!-- Back Button -->
+          <div class="col-sm-6 col-md-6 col-lg-4 d-flex align-items-center justify-content-end ms-auto gap-2">
+            <button class="btn btn-light" routerLink="/dash/user/userdashboard/StateMaster">
+              Add
+            </button>
+            <button class="btn btn-light" (click)="exportToExcel()">
+              Download
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table Section -->
+      <div class="mt-4">
+        <table id="exportTable" class="table table-bordered">
+          <thead>
+            <tr>
+              <th>S.No</th>
+              <th>State</th>
+              <th>LWF&nbsp;Applicable</th>
+              <th>PT&nbsp;Applicable</th>
+              <th>PT&nbsp;Number</th>
+              <th>LWF&nbsp;Number</th>
+              <th>ESI&nbsp;Number</th>
+              <th>PF&nbsp;Number</th>
+               <th>MInimum&nbsp;Wages</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              *ngFor="let data of filteredData() | paginate : { itemsPerPage: pageSize, currentPage: pageIndex ,totalItems: totalItems }; let i = index">
+              <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+              <td>{{ data.description}}</td>
+              <td>{{ data.lwf_applicable_status}}</td>
+              <td>{{ data.pt_applicable_status}}</td>
+              <td>{{ data.pt_number}}</td>
+              <td>{{ data.lwf_number}}</td>
+              <td>{{ data.esi_number}}</td>
+              <td>{{ data.pf_number}}</td>
+              <td>{{ data.is_minimum_wages_status}}</td>
+              <td>
+                <button class="btn " (click)="editStateDetail(this.encryptionService.encryptText(data.pk_stateid))">
+                  <i class="fa-solid fa-pen-to-square"></i>
+                </button>
+                <button class="btn" (click)="deleteStateDetail(data.pk_stateid)">
+                  <i class="fa fa-trash"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <pagination-controls (pageChange)="onPageChange($event)">
+        </pagination-controls>
+        <ng-template #noData>
+          <tr>
+            <td colspan="3" class="text-center">No data available</td>
+          </tr>
+        </ng-template>
+      </div>
+
+
+    </div>
+  </div>
+</div>

@@ -1,0 +1,27 @@
+.table td, .table th {
+  white-space: nowrap;
+  text-align: center !important;
+  vertical-align: middle;
+}
+
+.btn:disabled{
+  background-color: transparent !important;
+  border: none !important;
+  display: none !important;
+}
+
+
+#pdf-content {
+
+  position: relative;
+
+  border:1px solid #2b2e41 dashed !important;
+
+   width:98% !important;
+   margin:auto;
+  }
+
+  .small{
+  font-size: 12px;
+}
+

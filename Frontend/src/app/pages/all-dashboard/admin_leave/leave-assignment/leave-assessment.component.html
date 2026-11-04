@@ -1,0 +1,175 @@
+<div class="row">
+    <div class="col-12">
+      <div class="card">
+        <!-- main header  -->
+
+<div class="card-header bg-blue py-lg-1 mt-0">
+  <div class="col-sm-12 col-md-12 col-lg-3 col-12">
+
+      <div class="row w-100">
+          <div class="col-sm-12 col-md-12 col-lg-12 ">
+            <h4 class="text-white">{{Isedit?'Update Employee Leave Assignment':'Employee Leave Assignment'}}</h4>
+          </div>
+      </div>
+
+  </div>
+
+  <div class="col-sm-12 col-md-12 col-lg-7 col-12">
+      <div class="row w-100">
+          <div class="col-sm-12 col-md-12 col-lg-12">
+              <app-common-search (filtersChanged)="handleFilters($event)"></app-common-search>
+          </div>
+      </div>
+  </div>
+
+ 
+
+</div>
+
+<!-- main header close -->
+
+        <!-- <div class="card-header bg-primary">
+          <div class="row w-100">
+            
+            <div class="col-sm-7 col-md-7 col-lg-5 d-flex align-items-center justify-content-start">
+              <h4 class="text-white">Assessment Master</h4>
+            </div>
+          </div>
+        </div> -->
+        
+        <div class="card-body mt-3">
+          <form [formGroup]="leaveAssignment">
+            <!-- <div class="row mb-3"> 
+              <app-common-search (filtersChanged)="handleFilters($event)"></app-common-search>
+           </div>   -->
+
+
+
+          <!-- <div class="page-seperator bg-primary mx-2 rounded-1">
+            <p class="text-white ms-4 p-1">{{Isedit?'Update Employee Leave Assignment':'Employee Leave Assignment'}}</p>
+          </div> -->
+
+        
+
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+              <div class="col">
+                <label for="employeeCode">Employee Code<span style="color: red;">*</span></label>
+                <ng-select placeholder="select employee" [items]=" EmployeeList" bindLabel="name" bindValue="value" formControlName="empcode" (change)="onEmpCodeChange($event)"  [searchable]="true"
+                                (search)="onEmployeeSearch($event)" [loading]="loadingEmployees" loadingText="Searching employees..."></ng-select>
+                <span *ngIf="showError && leaveAssignment.controls['empcode'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                  Please choose employee.
+                </span>
+              </div>
+              <div class="col">
+                <label for="employeeName">Employee Name</label>
+                <input id="employeeName" type="text" formControlName="empname" class="form-control"  />
+
+              </div>
+              <div class="col">
+                <label for="designation">Designation</label>
+                <input id="designation" type="text" formControlName="designation" class="form-control" />
+
+              </div>
+              <div class="col">
+                <label for="department">Department:</label>
+                <input id="department" type="text" formControlName="dept" class="form-control" />
+
+              </div>
+              <div class="col">
+                <label for="leaveType">Leave Type<span style="color: red;">*</span></label>
+                <ng-select placeholder="select leave type" [items]="Leave" bindLabel="name" bindValue="value" formControlName="leavetype" (change)="onLeaveTypeChange($event)"></ng-select>
+                <span *ngIf="showError && leaveAssignment.controls['leavetype'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                  Please choose leave type.
+                </span>
+              </div>
+              <div class="col">
+                <label for="currentYearLeave">Current Year Leave<span style="color: red;">*</span></label>
+                <input id="currentYearLeave" type="text" formControlName="currentyearleaves" required class="form-control" (keypress)="validateNumber($event)" maxlength="3"/>
+                <span *ngIf="showError && leaveAssignment.controls['currentyearleaves'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                  Please enter Current Year Leave.
+                </span>
+              </div>
+              <div class="col">
+                <label for="previousYearLeave">Previous Year Leave</label>
+                <input id="previousYearLeave" type="text" formControlName="totalleavesearned" required class="form-control" (keypress)="validateNumber($event)" maxlength="3"/>
+
+              </div>
+              <div class="col">
+                <label for="leaveAvailed">Leave Availed</label>
+                <input id="leaveAvailed" type="text" formControlName="leaveavailed" class="form-control" (keypress)="validateNumber($event)" maxlength="3"/>
+
+              </div>
+
+              <div class="modal-footer">
+             
+                <button type="submit" class="btn btn-primary mx-1" (click)="onSave()">{{Isedit ? 'Update':'Save'}}</button>
+                <button type="reset" class="btn btn-outline-dark mx-1">Reset</button> 
+               </div>
+
+            </div>
+</form>
+ </div>
+   <!--list-->
+<div *ngIf="list.length > 0">
+ 
+      <!-- <div class="card-header">
+        <div class="row w-100 ">
+      <div class="col-sm-12 col-md-6 col-lg-6 ">                    
+        <h4>List of Leaves</h4>   
+      </div>
+    </div>
+      </div> -->
+      <p class="text-dark m-0 d  ps-3 text-primary ">List of Leaves</p>     
+      <div class="card-body">
+        <div class="table-responsive table-invoice">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>S. No.</th>
+                <th>Leave Type</th>
+                <th>Curr. Year Leave</th>
+                <th>Prev. Year Leave</th>
+                <th>Leave Availed</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+               <!-- <tr *ngFor="let items of list | paginate: { itemsPerPage: pageSize, currentPage: pageIndex }; let i = index"> 
+                  -->
+                <tr *ngFor="let items of list | paginate: { itemsPerPage: pageSize, currentPage: pageIndex ,totalItems:totalItems};let i = index">
+
+                  <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+                  <td>{{items.leavetype}}</td>
+                  <td>{{items.currentyearleaves}}</td>   
+                  <td>{{items.totalleavesearned}}</td>
+                  <td> {{items.leaveavailed}}</td>                 
+                 
+              
+               <td>
+                <button class="btn btn-sm btn-outline"><i class="fa-regular fa-pen-to-square" (click)="editLeaveAssignment(items.pk_assignid)"></i></button>
+                <button class="btn btn-sm btn-outline" (click)="deleteleave(items.pk_assignid)"><i class="fa fa-trash"></i></button>
+              </td>
+             </tr> 
+           </tbody>
+          </table>
+          
+          
+          
+        </div>
+      </div>
+   
+</div>
+<!-- No Records Message -->
+<ng-template #noRecords>
+  <div class="alert alert-warning text-center mt-3">
+    <strong>No leave records found for this employee.</strong>
+  </div>
+</ng-template>
+
+
+<!--list-->
+
+
+      </div>
+    </div>
+  </div>

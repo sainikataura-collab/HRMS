@@ -1,0 +1,112 @@
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card">
+
+      <!-- Header -->
+      <div class="card-header bg-blue">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-6 col-lg-6 col-9">
+            <h4>Comp Off Request</h4>
+          </div>
+          <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 col-3 d-flex align-items-center justify-content-md-end">
+            <button class="btn btnheader" routerLink="/dash/leaves/leavesdashboard/CompOffrequestList">Back</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Body -->
+      <div class="card-body mt-4">
+        <form [formGroup]="CompOffForm" class="row row-cols-1 row-cols-md-3">
+
+
+          <!-- Comp Off Date -->
+          <div class="col">
+            <div class="row">
+              <div class="col-9">
+                <label>Comp Off Date <span style="color: red;">*</span></label>
+                <div class="form-group">
+                  <input type="date" class="form-control" formControlName="compoffdate" />
+                  <span *ngIf="showError && CompOffForm.controls['compoffdate'].invalid"
+                    class="text-danger mt-1 lh-base" style="font-size: 12px;">
+                    Please select Comp Off Date
+                  </span>
+                </div>
+              </div>
+              <div class="col-3 d-flex align-items-center justify-content-center">
+                <button class="btn btn-primary" type="button" (click)="calculateAttendance()">
+                  Calculate
+                </button>
+              </div>
+            </div>
+          </div>
+
+
+          <!-- Total Days -->
+          <div class="col">
+            <label>Total Days <span style="color: red;">*</span></label>
+            <div class="form-group">
+              <input type="text" class="form-control" formControlName="compoffdays" readonly />
+              <span *ngIf="showError && CompOffForm.controls['compoffdays'].invalid" class="text-danger mt-1"
+                style="font-size: 12px;">
+                Total days required
+              </span>
+            </div>
+          </div>
+
+          <!-- In Time -->
+          <div class="col">
+            <label>In Time <span style="color: red;">*</span></label>
+            <div class="form-group">
+              <input type="time" class="form-control" formControlName="intime" readonly />
+              <span *ngIf="showError && CompOffForm.controls['intime'].invalid" class="text-danger mt-1"
+                style="font-size: 12px;">
+                Please enter In Time
+              </span>
+            </div>
+          </div>
+
+          <!-- Out Time -->
+          <div class="col">
+            <label>Out Time <span style="color: red;">*</span></label>
+            <div class="form-group">
+              <input type="time" class="form-control" formControlName="outtime" readonly />
+              <span *ngIf="showError && CompOffForm.controls['outtime'].invalid" class="text-danger mt-1"
+                style="font-size: 12px;">
+                Please enter Out Time
+              </span>
+            </div>
+          </div>
+
+          <!-- Total Hours -->
+          <div class="col">
+            <label>Total Hrs. <span style="color: red;">*</span></label>
+            <div class="form-group">
+              <input type="text" class="form-control" formControlName="totalhours" readonly />
+              <span *ngIf="showError && CompOffForm.controls['totalhours'].invalid" class="text-danger mt-1"
+                style="font-size: 12px;">
+                Total hours required
+              </span>
+            </div>
+          </div>
+
+
+          <!-- Remarks -->
+          <div class="col">
+            <label>Remarks</label>
+            <div class="form-group">
+              <textarea class="form-control" formControlName="reason" rows="1"></textarea>
+            </div>
+          </div>
+
+          <!-- Buttons -->
+          <div class="col-sm-12 col-md-12 col-lg-12 d-flex align-items-center justify-content-end">
+            <button type="button" class="btn btn-primary mx-1" (click)="onSubmit()">Save</button>
+            <button type="button" class="btn btn-outline-dark mx-1" (click)="resetForm()">Reset</button>
+          </div>
+
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>

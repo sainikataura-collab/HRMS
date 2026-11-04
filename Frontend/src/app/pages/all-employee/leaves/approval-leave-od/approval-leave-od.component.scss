@@ -1,0 +1,420 @@
+// @media screen and (max-width: 767.98px) {
+
+//     #exportTable thead {
+//         display: none;
+//     }
+
+//     /* Make table rows behave like flex containers (cards) */
+//     #exportTable tbody tr {
+//         display: flex; 
+//         flex-wrap: wrap; 
+//         margin-bottom: 15px;
+//         border: 1px solid #ddd; 
+//         border-radius: 8px;
+//         padding: 10px;
+//         box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
+//         background-color: transparent; 
+//         align-items: flex-start; 
+//         overflow: hidden; 
+//     }
+
+
+//     #exportTable tbody td {
+//         display: flex; 
+//         align-items: baseline; 
+//         min-width: 120px; 
+//         padding: 0px 10px; /* Adjust padding for visual spacing */
+//         box-sizing: border-box; /* Include padding in width calculation */
+//         border-bottom: none; /* Remove individual cell borders */
+//         word-break: break-word; /* Breaks words if they are too long */
+//         overflow-wrap: break-word; /* Another property for word breaking */
+//         hyphens: auto; /* Allow hyphenation for better text flow */
+       
+       
+//     }
+
+    
+//     #exportTable tbody td:nth-last-child(odd):last-child:not(:nth-of-type(13)) { /* Exclude Action column */
+//         flex-basis: 100%; /* Make it full width if it's the only one left */
+//         min-width: 100%; /* Ensure it spans fully */
+//     }
+
+
+//     /* Style the data-label (header) */
+//     #exportTable tbody td::before {
+//         content: attr(data-label); /* Get label from data-label attribute */
+//         font-weight: 600; /* Slightly bolder for clarity */
+//         color: #3080e8; /* Your specified color for the label */
+//         flex-shrink: 0; /* Prevent label from shrinking */
+//         margin-right: 8px; /* Space between label and value */
+//         text-align: left;
+//         line-height: 1; /* Adjusted line-height for better alignment with content */
+//     }
+
+//     /* Specific styling for the 'Action' column in card view */
+//     #exportTable tbody td:nth-of-type(13) { /* Assuming 'Action' is the 4th column */
+//         flex: 0 0 100%; /* Fix this column to always take 100% width and not grow/shrink */
+//         justify-content: center; /* Center the buttons within their 100% width */
+//         padding-top: 10px; /* Add some space above action buttons */
+//         border-top: 1px dashed #eee; /* Add a subtle separator above actions */
+//         margin-top: 5px;
+//         flex-wrap: wrap; /* If buttons are many, allow them to wrap within this column */
+//     }
+
+//     #exportTable tbody td:nth-of-type(13)::before {
+//         content: ""; /* Hide the pseudo-element for the action column */
+//         display: none;
+//     }
+
+//     .table:not(.table-sm):not(.table-md):not(.dataTable) td,
+// .table:not(.table-sm):not(.table-md):not(.dataTable) th {
+//     height: auto;
+// }
+// }
+
+
+// custom css added using view attendance by vishal maurya
+
+@media screen and (max-width: 767.98px) {
+
+
+.table:not(.table-sm):not(.table-md):not(.dataTable) td, .table:not(.table-sm):not(.table-md):not(.dataTable) th {
+
+    height: 30px;
+
+}
+  
+  /* 1. Hide Table Header */
+  #exportTable thead {
+    display: none;
+  }
+
+  /* 2. Card Container (The Box) */
+  #exportTable tbody tr {
+    display: block;
+    margin: 1rem 0.5rem;
+    background: #ffffff;
+    border: 1px dashed #87dabc;
+    /* Default Green Border */
+    border-left: 5px solid #10b981; 
+    border-radius: 6px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    position: relative; /* Essential for absolute positioning of Status */
+    padding-bottom: 0px;
+  }
+
+  /* Blue border for even rows */
+  #exportTable tbody tr:nth-child(even) {
+    border-left: 5px solid #3080e8;
+  }
+
+  /* 3. Global Cell Reset */
+  #exportTable tbody td {
+    display: block;
+    border: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  /* Hide the default data-labels to clean up the look */
+  #exportTable tbody td::before {
+    display: none !important;
+  }
+
+  /* Hide columns we don't need in mobile view to reduce clutter */
+  #exportTable tbody td[data-label^="Sr.No. : "] {
+    display: none;
+  }
+
+  /* =========================================
+     HEADER SECTION: Date & Status
+     ========================================= */
+
+  /* 4. Attendance Date (The Green Header Bar) */
+  #exportTable tbody td[data-label^="Request Date: "] {
+    background-color: #e6f4ed; /* Light green background */
+    padding: 5px 15px;
+    font-weight: 700;
+    color: #2b2e41;
+    font-size: 0.75rem;
+    border-bottom: 1px solid #f0f0f0;
+    width: 100%;
+    text-align: start;
+
+  }
+
+  /* Add Calendar Icon */
+  #exportTable tbody td[data-label^="Request Date: "]::before {
+    content: 'Req Date :- ';
+    display: inline-block !important;
+    margin-right: 8px;
+  }
+
+  /* 5. Status Badge (Absolute Position Top Right) */
+  #exportTable tbody td[data-label^="checkbok"] {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    width: auto;
+  
+    padding: 0;
+  }
+
+  /* Style the text inside the status cell to look like a Pill */
+  #exportTable tbody td[data-label^="checkbok"] {
+    font-size: 0.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 20px;
+    line-height: 1.2;
+    // box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    background-color: transparent !important;
+    height: 20px;
+  }
+
+
+  /* =========================================
+     BODY SECTION: Time & Type
+     ========================================= */
+
+  /* 6. Time Row Container */
+
+
+   /* We use In Time as the anchor for the row */
+  #exportTable tbody td[data-label^="Leave Type: "] {
+    display: inline-flex;
+    align-items: center;
+  
+    margin-top: 0px;
+    padding-left: 8px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #333;
+    width: 50%;
+  }
+
+  #exportTable tbody td[data-label^="Leave Type: "]::before {
+    content: 'Leave Type : ' !important; /* Clock Icon */
+    display: inline-flex !important;
+    font-size: 0.7rem;
+    margin-right: 8px;
+    color: #666;
+  }
+
+  #exportTable tbody td[data-label^="Leave Balance: "] {
+    display: inline-flex;
+    align-items: center;
+ 
+    margin-top: 0px;
+    padding-left: 8px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #333;
+    width: 50%;
+  }
+
+    #exportTable tbody td[data-label^="Leave Balance: "]::before {
+    content: 'Balance : ' !important; /* Clock Icon */
+    display: inline-flex !important;
+    font-size: 0.7rem;
+    margin-right: 8px;
+    color: #666;
+  }
+
+
+
+  #exportTable tbody td[data-label^="Emp Code: "] {
+    display: inline-flex;
+    align-items: center;
+    margin-top: 0px;
+    padding-left: 8px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: #333;
+    width: 55%;
+    text-align: center;
+  }
+
+  #exportTable tbody td[data-label^="Emp Code: "]::before {
+    content: 'Employee  : ( ' !important; /* Clock Icon */
+    display: inline-block !important;
+    font-size: 0.6rem;
+    margin-right: 8px;
+    color: #666;
+  }
+  #exportTable tbody td[data-label^="Emp Code: "]::after {
+    content: ' ‎ )' !important; /* Clock Icon */
+    display: inline-block !important;
+    font-size: 0.6rem;
+    margin-right: 8px;
+    color: #666;
+    font-weight: 700;
+  }
+
+
+   #exportTable tbody td[data-label^="Emp Name: "] {
+    display: inline-flex;
+    align-items: center;
+    margin-top: 0px;
+    padding-left: 8px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #333;
+    width: 40%;
+  }
+
+ 
+
+   
+  
+
+
+
+  /* We use In Time as the anchor for the row */
+  #exportTable tbody td[data-label^="From Date: "] {
+    display: inline-flex;
+    align-items: center;
+    margin-top: 0px;
+    padding-left: 8px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #333;
+    width: auto;
+  }
+
+  #exportTable tbody td[data-label^="From Date: "]::before {
+    content: '🕒' !important; /* Clock Icon */
+    display: inline-flex !important;
+    font-size: 0.8rem;
+    margin-right: 8px;
+    color: #666;
+  }
+
+  /* 7. Out Time (Sit next to In Time) */
+  #exportTable tbody td[data-label^="To Date: "] {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #333;
+    margin-top: 0px;
+  }
+
+  /* The Arrow between times */
+  #exportTable tbody td[data-label^="To Date: "]::before {
+    content: '⟶' !important;
+    display: inline-block !important;
+    margin: 0 10px;
+    color: #888;
+    font-weight: 300;
+  }
+
+
+  /* We use In Time as the anchor for the row */
+  #exportTable tbody td[data-label^="Reason : "] {
+    display: inline-flex;
+    align-items: center;
+    border-top:1px dashed #88888840;
+    margin-top: 0px;
+    padding-left: 8px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #333;
+    width: 100%;
+  }
+
+
+
+  /* 8. The "Type" (e.g., Late Coming) - Position to the right */
+  #exportTable tbody td[data-label^="Total Days: "] {
+    position: absolute;
+    right: 15px;
+    bottom: -1px; /* Aligned with button */
+    // background-color: #f8fafc;
+    padding: 0px 10px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #3080e8 !important;
+   
+    margin: 0;
+  }
+
+
+  /* =========================================
+     FOOTER SECTION: Action Button
+     ========================================= */
+
+  /* 9. Action Column - Adjusted for right-side badges */
+  #exportTable tbody td:last-child {
+    margin-top: 0px;
+    padding-top: 0px;
+    border-top: 1px dashed #eee;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+    padding-left: 15px;
+    padding-right: 150px; /* Make room for Apply Date and Type */
+  }
+
+  /* Style the button itself to be cleaner */
+  #exportTable tbody td:last-child button {
+    width: auto;
+    min-width: 80px;
+    margin: 0;
+  
+    color: #449cef;
+    font-weight: 600;
+ 
+    padding: 0px 10px;
+  }
+  
+  /* Add text to the button for clarity */
+  #exportTable tbody td:last-child button::after {
+    content: "view";
+    font-size: 0.7rem;
+    margin-left: 5px;
+    padding: 0;
+  }
+}
+
+// 
+
+
+.card-header{
+  background-color: #3080e8;
+  font-weight: bold;
+}
+
+
+.bg-light-success {
+  background-color: #caf8d4; /* Light green background */
+  color: #155724; /* Dark green text */
+  padding: 5px 10px;
+  border-radius: 7px;
+}
+
+.bg-light-error {
+  background-color: #ffeaca; /* Light red background */
+  color: #721c24; /* Dark red text */
+  padding: 5px 10px;
+  border-radius: 7px;
+}
+
+@media screen and (max-width:1024px){
+  .card-header{
+  padding: 5px 0px 0px 20px;
+  }
+  }
+
+  @media screen and (max-width:1024px) {
+    .all-pickup-point-search-header{
+      margin-bottom: 7px;
+    }
+  }
+
+  .text-danger:hover{
+color:#fff !important;
+}

@@ -1,0 +1,101 @@
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+
+
+
+
+            <!--  -->
+
+            <!--  -->
+            <div class="card-header bg-primary">
+                <div class="row w-100">
+                    <!-- Title Section -->
+                    <div
+                        class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-between">
+                        <h4 class="text-white">List of Outlet</h4>
+                    </div>
+
+                    <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-center">
+                        <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText" />
+                    </div>
+                    <!-- Back Button -->
+                    <div
+                        class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 py-1 py-lg-0 d-flex align-items-center justify-content-end">
+                        <button class="btn btnheader mx-1" routerLink="/dash/user/userdashboard/DealerOutlet"> Add
+                        </button>
+                        <button class="btn btnheader mx-1" (click)="exportToExcel()"> Download </button>
+
+
+                    </div>
+                </div>
+            </div>
+
+            <!--  -->
+
+            <div class="card-body p-0">
+                <div class="table-responsive table-invoice">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                            <tr>
+                                <th>Sr No.</th>
+                                <th>Outlet Code</th>
+                                <th>Outlet Name</th>
+                                <th>Dealer Code</th>
+                                <th>Client</th>
+                                <th>City</th>
+                                <th>State</th>
+                                <th>Region</th>
+                                <th>Address</th>
+                                <th>Action</th>
+                            </tr>
+
+                        </thead>
+                        <tbody>
+                            <tr
+                                *ngFor=" let item of filteredData() | paginate : { itemsPerPage: pageSize, currentPage: pageIndex ,totalItems: totalItems };let i = index">
+                                <td>{{(pageIndex-1)* pageSize+i+1}}</td>
+                                <td>{{ item.OutletCode }}</td>
+                                <td>{{ item.OutletName }}</td>
+                                <td>{{ item.DealerCode }}</td>
+                                <td>{{ item.CostCentreName }}</td>
+                                <td>{{ item.CityName }}</td>
+                                <td>{{ item.StateName }}</td>
+                                <td>{{ item.RegionName }}</td>
+                                <td>{{ item.Address }}</td>
+                                <!-- 
+                                       <td>
+                      <button class="btn btn-sm btn-outline" > <i class="fa-regular fa-pen-to-square" (click)="edit(encryption.encryptText(item.pk_locid))"></i></button>
+                      <button class="btn btn-sm btn-outline" ><i class="fa fa-trash" (click)="delete(item.pk_locid)"></i> </button>
+                                    
+                  </td>  -->
+
+
+                                <td>
+                                    <button class="btn btn-sm btn-outline"> <i class="fa-regular fa-pen-to-square"
+                                            (click)="edit(item.pk_dealerOutletId)"></i></button>
+
+                                    <button class="btn btn-sm btn-outline"><i class="fa fa-trash"
+                                            (click)="delete(item.pk_dealerOutletId)"></i> </button>
+
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <pagination-controls (pageChange)="onPageChange($event)" [responsive]="true">
+                    </pagination-controls>
+
+                    <ng-template #noData>
+                        <tr>
+                            <td colspan="4" class="text-center">No data available</td>
+                        </tr>
+                    </ng-template>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

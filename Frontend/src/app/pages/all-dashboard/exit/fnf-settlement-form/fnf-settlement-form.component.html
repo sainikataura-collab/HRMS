@@ -1,0 +1,346 @@
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card">
+
+      <div class="card-header bg-blue">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-6 col-lg-6">
+            <h4>Process Full & Final Settlement</h4>
+          </div>
+          <div class="col-sm-12 col-md-6 col-lg-6 d-flex align-items-center justify-content-md-end">
+            <button class="btn btnheader" routerLink="/dash/exit/exitdashboard/fnf_settlement_list">Back</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-body mt-4">
+        <form [formGroup]="fnfForm">
+
+          <div class="row row-cols-1 row-cols-md-3">
+            <div class="col">
+              <label>Employee Code</label>
+              <input type="text" class="form-control" [value]="employeeDetails?.empcode" readonly>
+            </div>
+
+            <div class="col">
+              <label>Employee Name</label>
+              <input type="text" class="form-control" [value]="employeeDetails?.empname" readonly>
+            </div>
+
+            <div class="col">
+              <label>Designation</label>
+              <input type="text" class="form-control" [value]="employeeDetails?.designation" readonly>
+            </div>
+
+            <div class="col mt-3">
+              <label>Department</label>
+              <input type="text" class="form-control" [value]="employeeDetails?.department" readonly>
+            </div>
+
+            <div class="col mt-3">
+              <label>Grade</label>
+              <input type="text" class="form-control" [value]="employeeDetails?.classname" readonly>
+            </div>
+
+            <div class="col mt-3">
+              <label>Date of Joining</label>
+              <input type="text" class="form-control" [value]="employeeDetails?.dateofjoining" readonly>
+            </div>
+
+            <div class="col mt-3">
+              <label>Remove from Attendance</label>
+              <input type="text" class="form-control" [value]="employeeDetails?.leftdate" readonly>
+            </div>
+
+            <div class="col mt-3">
+              <label>Date of Leaving</label>
+              <input type="text" class="form-control" [value]="employeeDetails?.leftdate" readonly>
+            </div>
+
+            <div class="col mt-3">
+              <label>Location</label>
+              <input type="text" class="form-control" [value]="employeeDetails?.locname" readonly>
+            </div>
+
+            <div class="col mt-3">
+              <label>Total no. of days worked with us</label>
+              <input type="number" class="form-control" formControlName="totNoOfDaysWorked" readonly>
+            </div>
+
+            <div class="col mt-3">
+              <label>No. of days notice required</label>
+              <input type="number" class="form-control" formControlName="daysNoticeReq" readonly>
+            </div>
+
+            <div class="col mt-3">
+              <label>No. of days notice given <span style="color:red">*</span></label>
+              <input type="number" class="form-control" formControlName="daysNoticeGiven"
+                (focus)="$any($event.target).select()" (input)="calculateNoticeFields()">
+            </div>
+
+            <div class="col mt-3">
+              <label>No. of days shortfall</label>
+              <input type="number" class="form-control" formControlName="daysShortfallNotice" readonly>
+            </div>
+
+            <div class="col mt-3">
+              <label>Shortfall adjusted</label>
+              <input type="number" class="form-control" formControlName="shortfallAdjusted"
+                (focus)="$any($event.target).select()">
+            </div>
+
+            <div class="col mt-3">
+              <label>Notice recovery days</label>
+              <input type="number" class="form-control" formControlName="noticerecoverydays" readonly>
+            </div>
+
+            <div class="col mt-3">
+              <label>No. of days worked in the month <span style="color:red">*</span></label>
+              <input type="number" class="form-control" formControlName="noOfDaysWorkdInMonth" readonly>
+            </div>
+
+            <div class="col mt-3">
+              <label>No. of days to be considered</label>
+              <input type="number" class="form-control" formControlName="noOfDaysConsidered" readonly>
+            </div>
+
+            <div class="col mt-3">
+              <label>Balance Annual Leave Total</label>
+              <input type="number" class="form-control" formControlName="balAnnualLeaveTot"
+                (focus)="$any($event.target).select()">
+            </div>
+          </div>
+
+          <div class="card-header py-1 bg-primary mt-4">
+            <h4>Salary Details</h4>
+          </div>
+
+          <!-- Section 1: Salary Earnings & Salary Deductions Headers -->
+          <div class="row mt-3">
+            <div class="col-sm-12 col-md-6 col-lg-6 pe-md-4 border-end">
+              <h6 class="text-primary fw-semibold mb-3" style="font-size:16px; line-height:1.2;">Salary Earnings</h6>
+              <div class="row fw-semibold mt-3 mb-2" style="font-size:13px;">
+                <div class="col-8">Earning Head</div>
+                <div class="col-4">Amount</div>
+              </div>
+            </div>
+            <div class="col-sm-12 col-md-6 col-lg-6 ps-md-4">
+              <h6 class="text-primary fw-semibold mb-3" style="font-size:16px; line-height:1.2;">Salary Deductions</h6>
+              <div class="row fw-semibold mt-3 mb-2" style="font-size:13px;">
+                <div class="col-8">Deduction Head</div>
+                <div class="col-4">Amount</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Rows of Salary Earnings & Salary Deductions aligned -->
+          <div class="row" *ngFor="let idx of getSalaryRows()">
+            <!-- Left Side: Earning -->
+            <div class="col-sm-12 col-md-6 col-lg-6 pe-md-4 border-end" [formGroup]="$any(earnings.at(idx))"
+              *ngIf="idx < earnings.length; else emptyEarning">
+              <div class="row align-items-center mb-2">
+                <div class="col-8">
+                  <label class="mb-0">{{ earnings.at(idx).get('headName')?.value }}</label>
+                </div>
+                <div class="col-4">
+                  <input type="number" class="form-control" formControlName="amount"
+                    (focus)="$any($event.target).select()" (input)="calculateTotals()">
+                </div>
+              </div>
+            </div>
+            <ng-template #emptyEarning>
+              <div class="col-sm-12 col-md-6 col-lg-6 pe-md-4 border-end">
+                <div class="row align-items-center mb-2" style="visibility: hidden;">
+                  <div class="col-8"><label class="mb-0">Spacer</label></div>
+                  <div class="col-4"><input type="number" class="form-control"></div>
+                </div>
+              </div>
+            </ng-template>
+
+            <!-- Right Side: Deduction -->
+            <div class="col-sm-12 col-md-6 col-lg-6 ps-md-4" [formGroup]="$any(deductions.at(idx))"
+              *ngIf="idx < deductions.length; else emptyDeduction">
+              <div class="row align-items-center mb-2">
+                <div class="col-8">
+                  <label class="mb-0">{{ deductions.at(idx).get('headName')?.value }}</label>
+                </div>
+                <div class="col-4">
+                  <input type="number" class="form-control" formControlName="amount"
+                    (focus)="$any($event.target).select()" (input)="calculateTotals()">
+                </div>
+              </div>
+            </div>
+            <ng-template #emptyDeduction>
+              <div class="col-sm-12 col-md-6 col-lg-6 ps-md-4">
+                <div class="row align-items-center mb-2" style="visibility: hidden;">
+                  <div class="col-8"><label class="mb-0">Spacer</label></div>
+                  <div class="col-4"><input type="number" class="form-control"></div>
+                </div>
+              </div>
+            </ng-template>
+          </div>
+
+          <hr>
+
+          <!-- Total Earnings & Total Deductions just under them -->
+          <div class="row mt-3 mb-4">
+            <!-- Left Side Total -->
+            <div class="col-sm-12 col-md-6 col-lg-6 pe-md-4 border-end">
+              <div class="row align-items-center">
+                <div class="col-8">
+                  <label class="mb-0 fw-semibold">Total Earnings</label>
+                </div>
+                <div class="col-4">
+                  <input type="number" class="form-control fw-semibold" formControlName="totEarnings" readonly>
+                </div>
+              </div>
+            </div>
+            <!-- Right Side Total -->
+            <div class="col-sm-12 col-md-6 col-lg-6 ps-md-4">
+              <div class="row align-items-center">
+                <div class="col-8">
+                  <label class="mb-0 fw-semibold">Total Deductions</label>
+                </div>
+                <div class="col-4">
+                  <input type="number" class="form-control fw-semibold" formControlName="totDeductions" readonly>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <hr>
+
+          <!-- Section 2: Other Earnings & Other Deductions Headers -->
+          <div class="row mt-3">
+            <div class="col-sm-12 col-md-6 col-lg-6 pe-md-4 border-end">
+              <h6 class="text-primary fw-semibold mb-3" style="font-size:16px; line-height:1.2;">Other Earnings</h6>
+              <div class="row fw-semibold mt-3 mb-2" style="font-size:13px;">
+                <div class="col-8">Earning Head</div>
+                <div class="col-4">Amount</div>
+              </div>
+            </div>
+            <div class="col-sm-12 col-md-6 col-lg-6 ps-md-4">
+              <h6 class="text-primary fw-semibold mb-3" style="font-size:16px; line-height:1.2;">Other Deductions</h6>
+              <div class="row fw-semibold mt-3 mb-2" style="font-size:13px;">
+                <div class="col-8">Deduction Head</div>
+                <div class="col-4">Amount</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Rows of Other Earnings & Other Deductions aligned -->
+          <div class="row" *ngFor="let idx of getOtherRows()">
+            <!-- Left Side: Other Earning -->
+            <div class="col-sm-12 col-md-6 col-lg-6 pe-md-4 border-end" [formGroup]="$any(otherEarnings.at(idx))"
+              *ngIf="idx < otherEarnings.length; else emptyOtherEarning">
+              <div class="row align-items-center mb-2">
+                <div class="col-8">
+                  <label class="mb-0">{{ otherEarnings.at(idx).get('headName')?.value }}</label>
+                </div>
+                <div class="col-4">
+                  <input type="number" class="form-control" formControlName="amount"
+                    (focus)="$any($event.target).select()" (input)="calculateTotals()">
+                </div>
+              </div>
+            </div>
+            <ng-template #emptyOtherEarning>
+              <div class="col-sm-12 col-md-6 col-lg-6 pe-md-4 border-end">
+                <div class="row align-items-center mb-2" style="visibility: hidden;">
+                  <div class="col-8"><label class="mb-0">Spacer</label></div>
+                  <div class="col-4"><input type="number" class="form-control"></div>
+                </div>
+              </div>
+            </ng-template>
+
+            <!-- Right Side: Other Deduction -->
+            <div class="col-sm-12 col-md-6 col-lg-6 ps-md-4" [formGroup]="$any(otherDeductions.at(idx))"
+              *ngIf="idx < otherDeductions.length; else emptyOtherDeduction">
+              <div class="row align-items-center mb-2">
+                <div class="col-8">
+                  <label class="mb-0">{{ otherDeductions.at(idx).get('headName')?.value }}</label>
+                </div>
+                <div class="col-4">
+                  <input type="number" class="form-control" formControlName="amount"
+                    (focus)="$any($event.target).select()" (input)="calculateTotals()">
+                </div>
+              </div>
+            </div>
+            <ng-template #emptyOtherDeduction>
+              <div class="col-sm-12 col-md-6 col-lg-6 ps-md-4">
+                <div class="row align-items-center mb-2" style="visibility: hidden;">
+                  <div class="col-8"><label class="mb-0">Spacer</label></div>
+                  <div class="col-4"><input type="number" class="form-control"></div>
+                </div>
+              </div>
+            </ng-template>
+          </div>
+
+          <hr>
+          <!-- Other Earnings Total, Other Deductions Total, Gross Earnings & Gross Deductions just under them -->
+          <div class="row mt-3 mb-4">
+            <!-- Left Side Totals -->
+            <div class="col-sm-12 col-md-6 col-lg-6 pe-md-4 border-end">
+              <div class="row align-items-center mb-3">
+                <div class="col-8">
+                  <label class="mb-0 fw-semibold">Other Earnings Total</label>
+                </div>
+                <div class="col-4">
+                  <input type="number" class="form-control fw-semibold" formControlName="totOtherEarnings" readonly>
+                </div>
+              </div>
+              <div class="row align-items-center">
+                <div class="col-8">
+                  <label class="mb-0 fw-semibold">Gross Earnings</label>
+                </div>
+                <div class="col-4">
+                  <input type="number" class="form-control fw-semibold" formControlName="totGEarnings" readonly>
+                </div>
+              </div>
+            </div>
+            <!-- Right Side Totals -->
+            <div class="col-sm-12 col-md-6 col-lg-6 ps-md-4">
+              <div class="row align-items-center mb-3">
+                <div class="col-8">
+                  <label class="mb-0 fw-semibold">Other Deductions Total</label>
+                </div>
+                <div class="col-4">
+                  <input type="number" class="form-control fw-semibold" formControlName="totOtherDeductions" readonly>
+                </div>
+              </div>
+              <div class="row align-items-center">
+                <div class="col-8">
+                  <label class="mb-0 fw-semibold">Gross Deductions</label>
+                </div>
+                <div class="col-4">
+                  <input type="number" class="form-control fw-semibold" formControlName="totGDeductions" readonly>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </form>
+        <hr>
+        <div class="row align-items-end pt-3 pb-2">
+          <div class="col-sm-12 col-md-6 col-lg-6 ms-md-auto">
+            <div class="row align-items-center">
+              <div class="col-4">
+                <label class="mb-0">Net Pay</label>
+              </div>
+              <div class="col-8">
+                <input type="number" class="form-control" [value]="fnfForm.get('NetPay')?.value" readonly>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <hr>
+
+        <div class="row pt-3 pb-3">
+          <div class="col d-flex align-items-end justify-content-end">
+            <button type="submit" class="btn btn-primary mx-1" (click)="submitForm()">Submit</button>
+            <button type="button" class="btn btn-outline-dark mx-1" (click)="resetForm()">Reset</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

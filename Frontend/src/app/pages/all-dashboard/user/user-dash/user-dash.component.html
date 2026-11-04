@@ -1,0 +1,222 @@
+<section>
+    <div class="container">
+        <div class="row border-bottom">
+            <div class="col-lg-8">
+                <p class="small fw-semibold">
+                    <span>Setting Dashboard</span><br>
+                    <span class="fw-semibold text-success"><i class="fa-solid fa-users"></i> Total Users:</span>
+                    <span class="fw-semibold text-success ps-2">{{dashboardSummary.TotalUsers}}</span>
+                </p>
+            </div>
+             
+            <div class="col-lg-4">
+                 <form [formGroup]="form">
+                <p class="row row-cols-2 g-2 pt-lg-3">
+                  <span class="col">
+            <ng-select [items]="months" bindLabel="name" bindValue="value" formControlName="month"
+              placeholder="Select Month"
+               (change)="onSelectionChange()"
+          [clearable]="false">
+
+            </ng-select>
+
+
+          </span>
+
+          <span class="col">
+            <ng-select id="fk_yearId" [items]="years" bindLabel="name" bindValue="value" formControlName="year"
+              placeholder="--Year --" class="w-100"
+               (change)="onSelectionChange()"
+          [clearable]="false"></ng-select>
+
+          </span>
+
+                </p>
+                </form>
+            </div>
+           
+        </div>
+    </div>
+</section>
+
+<section>
+    <div class="container-fluid">
+        <div class="row">
+
+            <!-- Left Content -->
+            <div class="col-sm-12 col-md-12 col-lg-8">
+
+
+
+
+                <!-- User Status Insights -->
+                <div class="row pt-2">
+                    <div class="col-lg-12">
+                        <div class="card shadow-sm px-3 py-2 border-top border-2 border-primary">
+                            <p class="fw-semibold text-primary small">
+                                <i class="fa-solid fa-user-shield"></i> User Status Overview (Detailed)
+                            </p>
+
+                            <!-- Total and Progress Bar -->
+                          
+   <!-- Metric Cards -->
+                <div class="row row-cols-1 row-cols-md-3 g-3 pt-lg-3">
+                       <div class="col">
+                        <div class="card rounded pt-2">
+                            <h4 class="text-center">
+                                <span class="badge bg-success rounded">
+                                    <i class="fa-solid fa-user-check text-white fs-5"></i>
+                                </span>
+                            </h4>
+                            <p class="small text-center fw-semibold">Active<br><span
+                                    class="text-success fw-semibold">{{dashboardSummary.ActiveUsers}}</span></p>
+                        </div>
+                    </div>
+                       <div class="col">
+                        <div class="card rounded pt-2">
+                            <h4 class="text-center">
+                                <span class="badge bg-danger rounded">
+                                    <i class="fa-solid fa-user-xmark text-white fs-5"></i>
+                                </span>
+                            </h4>
+                            <p class="small text-center fw-semibold">Inactive<br><span
+                                    class="text-danger fw-semibold">{{dashboardSummary.InactiveUsers}}</span></p>
+                        </div>
+                    </div>
+                       <div class="col">
+                        <div class="card rounded pt-2">
+                            <h4 class="text-center">
+                                <span class="badge bg-warning rounded">
+                                    <i class="fa-solid fa-user-clock text-white fs-5"></i>
+                                </span>
+                            </h4>
+                            <p class="small text-center fw-semibold">Pending<br><span
+                                    class="text-warning fw-semibold">{{dashboardSummary.PendingUsers}}</span></p>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card rounded pt-2">
+                            <h4 class="text-center">
+                                <span class="badge bg-info rounded">
+                                    <i class="fas fa-sign-in-alt text-white fs-5"></i>
+                                </span>
+                            </h4>
+                            <p class="small text-center fw-semibold">Monthly Logins<br><span
+                                    class="text-info fw-semibold">{{dashboardSummary.MonthlyLogins}}</span></p>
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        <div class="card rounded pt-2">
+                            <h4 class="text-center">
+                                <span class="badge bg-warning rounded">
+                                    <i class="fas fa-clock text-white fs-5"></i>
+                                </span>
+                            </h4>
+                            <p class="small text-center fw-semibold">Avg Active Time<br><span
+                                    class="text-warning fw-semibold">{{dashboardSummary.AvgActiveTime}}</span></p>
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        <div class="card rounded pt-2">
+                            <h4 class="text-center">
+                                <span class="badge bg-primary rounded">
+                                    <i class="fas fa-user-check text-white fs-5"></i>
+                                </span>
+                            </h4>
+                            <p class="small text-center fw-semibold">Profile Completion<br><span
+                                    class="text-primary fw-semibold">{{dashboardSummary.ProfileCompletion}}</span></p>
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        <div class="card rounded pt-2">
+                            <h4 class="text-center">
+                                <span class="badge bg-danger rounded">
+                                    <i class="fas fa-ban text-white fs-5"></i>
+                                </span>
+                            </h4>
+                            <p class="small text-center fw-semibold">Locked Accounts<br><span
+                                    class="text-danger fw-semibold">{{dashboardSummary.LockedAccounts}}</span></p>
+                        </div>
+                    </div>
+
+               
+              
+                </div>
+                          
+                        </div>
+                    </div>
+                </div>
+
+
+             
+
+              
+            </div>
+
+            <!-- Right Sidebar -->
+            <div class="col -sm-12 col-md-12 col-lg-4 pt-2">
+
+
+
+                <!-- Quick Actions -->
+                <div class="card shadow-sm p-3 mb-3 border-top border-2 border-success">
+                    <p class="fw-semibold text-success small mb-2"><i class="fa-solid fa-bolt"></i> Quick Actions</p>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-outline-primary btn-sm small" routerLink="/dash/user/userdashboard/user-master"><i class="fa-solid fa-user-plus"></i> Add
+                            New User</button>
+                        <button class="btn btn-outline-success btn-sm small" routerLink="/dash/user/userdashboard/PageRights"><i class="fa-solid fa-list-check"></i>
+                            Manage Page Rights</button>
+                        <button class="btn btn-outline-secondary btn-sm small" routerLink="/dash/user/userdashboard/roleMaster"><i class="fa-solid fa-users-gear"></i>
+                            Create Roles</button>
+                             <button class="btn btn-outline-warning btn-sm small" routerLink="/dash/user/userdashboard/locationMaster"><i class="fa-solid fa-location-dot"></i>
+                            Create location</button>
+                    </div>
+                    
+                </div>
+
+
+                <!-- Recent Registrations -->
+                <div class="card shadow-sm p-3 mb-3 border-top border-2 border-primary">
+                    <p class="fw-semibold text-primary small mb-2"><i class="fa-solid fa-user-plus"></i> Recent
+                        Active/Inactive User</p>
+                    <!-- <ul class="list-group small">
+                        <li class="list-group-item d-flex justify-content-between">Vishal Maurya <span
+                                class="badge bg-success">Verified</span></li>
+                        <li class="list-group-item d-flex justify-content-between">Neha Jain <span
+                                class="badge bg-warning text-dark">Pending</span></li>
+                        <li class="list-group-item d-flex justify-content-between">Ravi Singh <span
+                                class="badge bg-danger">Rejected</span></li>
+                    </ul>
+                     -->
+              
+              <ul class="list-group small">
+  <!-- Active Users -->
+  <li *ngFor="let name of activeUserList"
+      class="list-group-item d-flex justify-content-between align-items-center">
+    {{ name.trim() }}
+    <span class="badge bg-success">Active</span>
+  </li>
+
+  <!-- Inactive Users -->
+  <li *ngFor="let name of inactiveUserList"
+      class="list-group-item d-flex justify-content-between align-items-center">
+    {{ name.trim() }}
+    <span class="badge bg-danger">Inactive</span>
+  </li>
+</ul>
+                    </div>
+
+
+
+
+             
+
+
+            </div>
+
+        </div>
+    </div>
+</section>

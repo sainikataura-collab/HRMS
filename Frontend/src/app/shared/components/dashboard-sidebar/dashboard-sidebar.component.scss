@@ -1,0 +1,50 @@
+
+#sidebar-wrapper {
+  // position: fixed;           /* Keep sidebar fixed */
+  height: 100vh;             /* Full viewport height */
+  overflow-y: auto;          /* Enable vertical scrolling */
+  overflow-x: hidden;        /* Prevent horizontal scrolling */
+  background-color: #fff;
+  // width:250px;    /* Adjust as needed */
+}
+
+
+// add to new sidebar scrollbar styles
+
+
+
+::-webkit-scrollbar-track
+{
+-webkit-box-shadow: inset 0 0 6px #3080e8;
+border-radius: 10px;
+background-color: #3080e8;
+overflow-x: auto;
+}
+
+::-webkit-scrollbar
+{
+width:4px;
+height: 3px;
+background-color: #F5F5F5;
+overflow-x: auto;
+}
+
+::-webkit-scrollbar-thumb
+{
+border-radius: 10px;
+-webkit-box-shadow: inset 0 0 6px #3080e8;
+background-color: #3080e8;
+overflow-x: auto;
+}
+
+:host ::ng-deep {
+  .main-sidebar .sidebar-menu li ul.dropdown-menu li a {
+    white-space: nowrap !important;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+}
+
+
+
+

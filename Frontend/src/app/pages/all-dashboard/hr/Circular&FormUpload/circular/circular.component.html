@@ -1,0 +1,164 @@
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-primary">
+                <div class="row w-100">
+                  <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-between">
+                    <h4>{{Isedit? 'Update Company Policy Details' : 'Company Policy Details'}}</h4>
+                  </div>
+                  <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+                    <button class="btn btnheader" routerLink="/dash/hr/hrdashboard/Circular-Forms-Uploads_list">
+                      Back
+                    </button>
+                  </div>
+    
+                </div>
+            </div>
+
+            <div class="card-body mt-4">
+                <form [formGroup]="CircularFormsUploads" >
+                    <!-- Department Name -->
+                    <div class="row" class="row row-cols-1 row-cols-md-3 g-4">
+
+                        <div class="col">
+                            <label for="CompanyPolicy">Circular/Forms No.:</label>
+                            <div class="form-group">
+                                <input id="CircularFormsNo" type="text" class="form-control" formControlName="CircularFormsNo" />
+                                <span *ngIf="showError && CircularFormsUploads.controls['CircularFormsNo'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                                    Please enter HOD Code.
+                                </span> 
+                        </div>
+      
+                        </div>
+
+                        <div class="col">
+                            <label for="CircularFormsName">Circular/Forms Name:</label>
+                            <div class="form-group">
+                                <input id="CircularFormsName" type="text" class="form-control" formControlName="CircularFormsName" />
+                                <span *ngIf="showError && CircularFormsUploads.controls['CircularFormsName'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                                    Please enter Circular/Forms Name
+                                </span> 
+                            </div>
+      
+                        </div>
+                        <div class="col">
+                            <label for="CompanyPolicy">Description:</label>
+                            <div class="form-group">
+                                <input id="Description" type="text" class="form-control" formControlName="Description" />
+                                <span *ngIf="showError && CircularFormsUploads.controls['Description'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                                    Please enter Description.
+                                </span> 
+                            </div>
+      
+                        </div>
+                        <div class="col">
+                            <label>Department</label>
+                           
+                            <ng-select 
+                              [items]="NewDepartment" 
+                              bindLabel="name" 
+                              bindValue="value" 
+                              [multiple]="true"
+                              [closeOnSelect]="false"
+                              placeholder="--Select Department--" 
+                              class="w-100 small"
+                              formControlName="Department"
+                             
+                             >  <!-- Disable in update mode -->
+                            
+                              <!-- Custom Template for Displaying Selected Items -->
+                              <ng-template ng-multi-label-tmp>
+                                <span>{{ getDepartmentDisplayText() || "--Select Department--" }}</span>
+                              </ng-template>
+                            
+                              <!-- Custom Checkbox for Select All -->
+                              <ng-template ng-option-tmp let-item="item" let-index="index">
+                                <div *ngIf="index === 0">
+                                  <input type="checkbox" (change)="toggleSelectAll()" [checked]="isAllSelected()" class="form-check-input fs-6 mx-1" />
+                                  <strong>&nbsp;Select All</strong>
+                                </div>
+                                <div *ngIf="index !== 0">
+                                  <input type="checkbox" [checked]="selectedDepartment.includes(item.value)"
+                                         (change)="toggleLocation(item.value)" class="form-check-input fs-6 mx-1"/>
+                                  {{ item.name }}
+                                </div>
+                              </ng-template>
+                            
+                            </ng-select> 
+                        </div>
+                          
+
+
+
+                  
+
+                        <div class="col">
+                            <label for="filename" >FileType:</label>
+                            <div class="form-group">
+                                <ng-select [items]="FileType" id="FileType" bindLabel="name" bindValue="value" formControlName="fileType"  placeholder="-select code-"></ng-select>
+
+                            </div> 
+                        </div>
+                        <div class="col">
+                            <label for="date">Dated</label>
+                            <div class="form-group">
+                                <input id="Dated" type="date" class="form-control" formControlName="Dated" />
+                                <span *ngIf="showError && CircularFormsUploads.controls['Dated'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                                    Please enter Dated.
+                                </span> 
+                            </div> 
+                        </div>
+
+
+                        <div class="col">
+                            <label for="Details" >Remarks:</label>
+                            <div class="form-group">
+                                <textarea id="Remarks" type="text" class="form-control" formControlName="Remarks"></textarea>
+                                    <!-- Validation message below input field -->
+                                   
+                            </div> 
+                        </div>
+
+                        <div class="col">
+                            <label for="filename" >File Name:</label>
+                            <!-- Show existing file as link -->
+                               
+                            <div class="form-group">
+                                <!-- <input id="filename" type="file" class="form-control" formControlName="filename" /> -->
+                              <input type="file" (change)="onFileSelected($event)"  />
+                              <div *ngIf="CircularFormsUploads.get('filename')?.value">
+                                <p >
+                                    {{ CircularFormsUploads.get('filename')?.value }}
+                                </p>
+                                </div>
+                            </div> 
+                             
+                        </div>
+                        <div class="col">
+                            <label for="isactive" >Active:</label>
+                            <div class="form-group">
+                                <input type="checkbox" id="isactive" formControlName="isActive" class="form-check-input" />
+                            </div>
+                        </div>
+                        <div class="col">
+                            <label for="isactive" >Show All Compony:</label>
+                            <div class="form-group">
+                                <input type="checkbox" id="isactive" formControlName="showAllCompony" class="form-check-input" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Footer buttons -->
+                    <div class="modal-footer">
+                        <button type="submit"  class="btn btn-primary mx-1" (click)=" Onsubmit()">{{Isedit? 'Update' : 'Save'}}</button>
+                        <button type="button" class="btn btn-outline-dark mx-1">Reset</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+

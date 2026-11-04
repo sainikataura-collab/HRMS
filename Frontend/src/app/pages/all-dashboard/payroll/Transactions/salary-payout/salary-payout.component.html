@@ -1,0 +1,573 @@
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card">
+
+      <!-- ══════════ CARD HEADER ══════════ -->
+      <div class="card-header bg-primary py-lg-1 mt-0">
+        <div class="row w-100 align-items-center">
+          <div class="col-12 col-md-3">
+            <h4>Salary Payout</h4>
+          </div>
+          <div class="col-12 col-md-7 mt-2 mt-md-0">
+            <app-common-search (filtersChanged)="handleFilters($event)"></app-common-search>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════ CARD BODY ══════════ -->
+      <div class="card-body mt-4">
+
+        <!-- ─── Filter Form ──────────────────────────────────────────── -->
+        <form [formGroup]="EmployeeForm" (ngSubmit)="searchClick()">
+          <div class="row row-cols-1 row-cols-md-4 g-4">
+
+            <div class="col">
+              <label>Month <span class="text-danger">*</span></label>
+              <ng-select [items]="months" bindLabel="name" bindValue="value" formControlName="fk_monthId"
+                placeholder="--Select --" class="w-100">
+              </ng-select>
+              <span *ngIf="showError && EmployeeForm.controls['fk_monthId'].invalid" class="text-danger mt-1"
+                style="font-size:12px;">
+                Please select Month.
+              </span>
+            </div>
+
+            <div class="col">
+              <label>Year <span class="text-danger">*</span></label>
+              <ng-select [items]="years" bindLabel="name" bindValue="value" formControlName="fk_yearId"
+                placeholder="--Select --" class="w-100">
+              </ng-select>
+              <span *ngIf="showError && EmployeeForm.controls['fk_yearId'].invalid" class="text-danger mt-1"
+                style="font-size:12px;">
+                Please select Year.
+              </span>
+            </div>
+
+            <div class="col" *ngIf="isContractApplicable">
+              <label>Contractor Name <span class="text-danger">*</span></label>
+              <ng-select [items]="CostCenter" bindLabel="name" bindValue="value" formControlName="fk_costcentreid"
+                placeholder="--Select --" class="w-100">
+              </ng-select>
+              <span *ngIf="showError && EmployeeForm.controls['fk_costcentreid'].invalid" class="text-danger mt-1"
+                style="font-size:12px;">
+                Please select Contractor Name.
+              </span>
+            </div>
+            <div class="col d-flex align-items-end justify-content-end pt-4 pb-3">
+              <button type="submit" class="btn btn-primary mx-1">View</button>
+              <button type="reset" class="btn btn-outline-dark mx-1"
+                (click)="showEmployeeList=false; submitted=false; showError=false; lastBatchKey=''">
+                Reset
+              </button>
+            </div>
+
+          </div>
+
+
+
+
+        </form>
+
+        <!-- ══════════════════════════════════════════════════════════════
+             LISTS — visible after successful View
+             ══════════════════════════════════════════════════════════════ -->
+        <div *ngIf="showEmployeeList && (filteredPendingList.length > 0 || filteredPaidOutList.length > 0)">
+
+
+          <!-- ── Last batch info banner ─────────────────────────────── -->
+          <div *ngIf="lastBatchKey" class="alert alert-success d-flex align-items-center mb-3" role="alert">
+            <i class="fa fa-check-circle me-2"></i>
+            <span>
+              Last payout completed.
+              <strong>Batch Key: {{ lastBatchKey }}</strong>
+              — use the batch filter below to view those employees.
+            </span>
+          </div>
+
+
+          <!-- ═══════════════════════════════════════════════════════════
+               TABLE 1 — Pending Payout (checkboxes)
+               ═══════════════════════════════════════════════════════════ -->
+          <div class="card-header mt-2">
+            <div class="row w-100 align-items-center">
+
+              <div class="col-12 col-md-4 col-lg-4 mb-2 mb-md-0">
+                <h4 class="text-primary mb-0 fw-semibold text-center text-md-start">
+                  Salary Payout Pending
+                  <span class=" text-dark badge badge badge-warning ms-2">{{ totalItemsPending }}</span>
+                </h4>
+              </div>
+
+              <div class="col-12 col-md-8 col-lg-8">
+                <div class="d-flex align-items-center justify-content-center justify-content-md-end gap-2 flex-wrap">
+
+                  <!-- Export Excel -->
+                  <button *ngIf="pendingHeaders.length > 0 || paidOutHeaders.length > 0" class="btn btn-primary btn-sm"
+                    (click)="downloadExcel('all')" [disabled]="exportingState !== null">
+                    <i *ngIf="exportingState !== 'all-excel'" class="fa fa-download me-1"></i>
+                    <i *ngIf="exportingState === 'all-excel'" class="fa fa-spinner fa-spin me-1"></i>
+                    {{ exportingState === 'all-excel' ? 'Exporting...' : 'Export Excel' }}
+                  </button>
+
+                  <!-- Export PDF -->
+                  <button *ngIf="pendingHeaders.length > 0 || paidOutHeaders.length > 0" class="btn btn-primary btn-sm"
+                    (click)="downloadPdf('all')" [disabled]="exportingState !== null">
+                    <i *ngIf="exportingState !== 'all-pdf'" class="fa fa-download me-1"></i>
+                    <i *ngIf="exportingState === 'all-pdf'" class="fa fa-spinner fa-spin me-1"></i>
+                    {{ exportingState === 'all-pdf' ? 'Exporting...' : 'Export PDF' }}
+                  </button>
+
+                  <!-- Payout button -->
+                  <!-- <button class="btn btn-success btn-sm" [disabled]="selectedCount === 0 || isPayingOut"
+                    (click)="processPayout()">
+                    <i *ngIf="!isPayingOut" class="fa fa-money me-1"></i>
+                    <i *ngIf="isPayingOut" class="fa fa-spinner fa-spin me-1"></i>
+                    {{ isPayingOut ? 'Processing...' : 'Payout (' + selectedCount + ')' }}
+                  </button> -->
+
+                  <!-- Search pending -->
+                  <input type="text" class="form-control form-control-sm" style="width:180px;" placeholder="Search..."
+                    [(ngModel)]="searchTextPending" (ngModelChange)="onSearchTextChanged('pending')" />
+
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="table-responsive table-invoice table-scroll">
+            <table class="table table-bordered table-hover text-nowrap" id="exportTable">
+              <thead class="sticky-header">
+                <tr>
+                  <!-- Master checkbox -->
+                  <th style="width:45px; text-align:center;">
+                    <input type="checkbox" class="form-check-input" [checked]="masterChecked"
+                      [indeterminate]="masterIndeterminate" (change)="toggleMaster()" title="Select / Deselect All" />
+                  </th>
+                  <th style="width: 100px; text-align: center;">Action</th>
+                  <th *ngFor="let h of pendingHeaders">{{ h | titlecase }}</th>
+                </tr>
+              </thead>
+              <tbody>
+
+                <tr
+                  *ngFor="let item of filteredPendingList | paginate: { id: 'pendingPage', itemsPerPage: pageSizePending, currentPage: pageIndexPending, totalItems: totalItemsPending }"
+                  [class.table-warning]="isChecked(item)" style="cursor:pointer;" (click)="toggleRow(item)">
+
+                  <td style="text-align:center;" (click)="$event.stopPropagation(); toggleRow(item)">
+                    <input type="checkbox" class="form-check-input" [checked]="isChecked(item)"
+                      (change)="toggleRow(item)" (click)="$event.stopPropagation()" />
+                  </td>
+
+                  <td style="text-align: center;">
+                    <!-- Download Button -->
+                    <!-- <button class="btn text-dark px-0" title="Download Salary Slip"
+                        (click)="$event.stopPropagation(); downloadAndDisplaySalarySlip(requestBody, item.EmpCode || item.empcode)">
+                        <i class="fa fa-download me-1"></i>
+                    </button> -->
+                    <!-- View Button -->
+                    <button class="btn text-dark px-0 ms-2" title="View Salary Slip" data-bs-toggle="modal"
+                      data-bs-target="#staticBackdrop"
+                      (click)="$event.stopPropagation(); viewData(requestBody, item.EmpCode || item.empcode)">
+                      <i class="fa fa-eye"></i>
+                    </button>
+                  </td>
+
+                  <td *ngFor="let h of pendingHeaders">{{ item[h] }}</td>
+                </tr>
+
+                <tr *ngIf="filteredPendingList.length === 0">
+                  <td [attr.colspan]="pendingHeaders.length + 1" class="text-center fw-semibold py-3">
+                    No pending payout records found.
+                  </td>
+                </tr>
+
+              </tbody>
+            </table>
+          </div>
+          <div class="d-flex justify-content-end my-2" *ngIf="filteredPendingList.length > 0">
+            <pagination-controls id="pendingPage" (pageChange)="onPendingPageChange($event)"></pagination-controls>
+          </div>
+
+          <!-- Bottom payout button & Bank Details -->
+          <div class="row row-cols-1 row-cols-md-3 g-4" *ngIf="filteredPendingList.length > 0">
+            <div class="col">
+              <label>Bank<span style="color: red;">*</span></label>
+              <div class="form-group">
+                <ng-select [items]="bankList" bindLabel="name" bindValue="value" [(ngModel)]="payoutBankId"
+                  placeholder="--Select Bank--">
+                </ng-select>
+              </div>
+            </div>
+
+
+            <div class="col">
+              <label>Bank Ref No<span style="color: red;">*</span></label>
+              <div class="form-group">
+                <input type="text" class="form-control" [(ngModel)]="payoutBankRefNo" placeholder="Ref No" />
+              </div>
+            </div>
+
+
+            <div class="col">
+              <label>Remark<span style="color: red;">*</span></label>
+              <div class="form-group">
+                <textarea type="text" class="form-control" [(ngModel)]="payoutRemark" placeholder="Remark"></textarea>
+              </div>
+            </div>
+
+
+
+
+            <div class="col-12 col-lg-12 col-md-12 align-items-end text-end">
+
+
+              <button class="btn btn-success btn-sm  px-3" [disabled]="selectedCount === 0 || isPayingOut"
+                (click)="processPayout()">
+                <i *ngIf="!isPayingOut" class="fa fa-money me-1"></i>
+                <i *ngIf="isPayingOut" class="fa fa-spinner fa-spin me-1"></i>
+                {{ isPayingOut ? 'Processing...' : 'Payout (' + selectedCount + ')' }}
+              </button>
+
+
+
+
+
+            </div>
+          </div>
+
+
+          <!-- ═══════════════════════════════════════════════════════════
+               TABLE 2 — Already Paid Out (with batch filter dropdown)
+               ═══════════════════════════════════════════════════════════ -->
+          <div class="card-header mt-2">
+            <div class="row w-100 align-items-center">
+
+              <div class="col-12 col-md-3 col-lg-3 mb-2 mb-md-0">
+                <h4 class="text-primary mb-0 fw-semibold text-center text-md-start">
+                  Salary Payout Completed
+                  <span class="text-dark ms-2 badge badge-success">{{ totalItemsPaidOut }}</span>
+                </h4>
+              </div>
+
+              <div class="col-12 col-md-4 col-lg-4 mb-2 mb-md-0">
+                <!-- ── Batch filter dropdown ─────────────────────── -->
+                <div *ngIf="batchList.length > 0" class="d-flex justify-content-center justify-content-md-start">
+                  <ng-select [items]="batchList" bindLabel="name" bindValue="value" [(ngModel)]="selectedBatchKey"
+                    (change)="onBatchFilterChange()" placeholder="--All Batch--" class=" form-control-sm"
+                    style="min-width: 330px;"></ng-select>
+                </div>
+              </div>
+              <div class="col-12 col-md-3 col-lg-3"> <!-- Search paid-out -->
+                <div class="d-flex justify-content-center justify-content-md-end gap-2 flex-wrap">
+                  <button *ngIf="paidOutHeaders.length > 0" class="btn btn-primary btn-sm"
+                    (click)="downloadExcel('payout')" [disabled]="exportingState !== null">
+                    <i *ngIf="exportingState !== 'payout-excel'" class="fa fa-download me-1"></i>
+                    <i *ngIf="exportingState === 'payout-excel'" class="fa fa-spinner fa-spin me-1"></i>
+                    {{ exportingState === 'payout-excel' ? 'Exporting...' : 'Excel' }}
+                  </button>
+                  <button *ngIf="paidOutHeaders.length > 0" class="btn btn-primary btn-sm"
+                    (click)="downloadPdf('payout')" [disabled]="exportingState !== null">
+                    <i *ngIf="exportingState !== 'payout-pdf'" class="fa fa-download me-1"></i>
+                    <i *ngIf="exportingState === 'payout-pdf'" class="fa fa-spinner fa-spin me-1"></i>
+                    {{ exportingState === 'payout-pdf' ? 'Exporting...' : 'PDF' }}
+                  </button>
+
+                </div>
+              </div>
+
+              <div class="col-sm-12 col-lg-2">
+                <input type="text" class="form-control  form-control-sm lh-sm" style="width:180px;"
+                  placeholder="Search..." [(ngModel)]="searchTextPaidOut"
+                  (ngModelChange)="onSearchTextChanged('paidout')" />
+              </div>
+
+            </div>
+          </div>
+
+          <div class="table-responsive table-invoice table-scroll">
+            <table class="table table-bordered table-hover text-nowrap" id="exportTable">
+              <thead class="sticky-header ">
+                <tr>
+                  <th style="width: 100px; text-align: center;">Action</th>
+                  <th style="min-width: 250px;">Remark</th>
+                  <th *ngFor="let h of paidOutHeaders">{{ h | titlecase }}</th>
+                </tr>
+              </thead>
+              <tbody>
+
+                <tr
+                  *ngFor="let item of filteredPaidOutList | paginate: { id: 'paidOutPage', itemsPerPage: pageSizePaidOut, currentPage: pageIndexPaidOut, totalItems: totalItemsPaidOut }">
+
+                  <td style="text-align: center;">
+                    <button class="btn btn-primary btn-sm" [disabled]="item.isUnPayingOut"
+                      (click)="processSingleUnPayout(item)">
+                      <i *ngIf="item.isUnPayingOut" class="fa fa-spinner fa-spin"></i>
+                      <i *ngIf="!item.isUnPayingOut" class="fa fa-undo"></i> Un-Payout
+                    </button>
+                  </td>
+                  <td>
+                    <input type="text" class="form-control form-control-sm" [(ngModel)]="item.remark"
+                      (ngModelChange)="item.showRemarkError = false" placeholder="Enter remark for un-payout"
+                      [ngModelOptions]="{standalone: true}" />
+                    <span *ngIf="item.showRemarkError" class="text-danger mt-1 d-block" style="font-size:11px;">
+                      Please enter remark.
+                    </span>
+                  </td>
+
+                  <td *ngFor="let h of paidOutHeaders">{{ item[h] }}</td>
+                </tr>
+
+                <tr *ngIf="filteredPaidOutList.length === 0">
+                  <td [attr.colspan]="paidOutHeaders.length + 2" class="text-center fw-semibold py-3">
+                    No payout records found
+                    <span *ngIf="selectedBatchKey"> for batch <strong>{{ selectedBatchKey }}</strong></span>.
+                  </td>
+                </tr>
+
+              </tbody>
+            </table>
+
+
+          </div><!-- /showEmployeeList -->
+          <div class="d-flex justify-content-end my-2" *ngIf="filteredPaidOutList.length > 0">
+            <pagination-controls id="paidOutPage" (pageChange)="onPaidOutPageChange($event)"></pagination-controls>
+          </div>
+        </div><!-- /card-body -->
+      </div><!-- /card -->
+    </div>
+  </div>
+</div>
+
+<!-- view pdf and  download pdf (Salary Slip Modal) -->
+<div class="modal fade pt-lg-5" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+  aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header border-0 p-0 me-3 mt-2 mb-1">
+        <button type="btn" data-bs-dismiss="modal" class="btn-close btn-transparent btn-sm" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="payslip">
+          <div id="pdf-content" class="border border-dark px-2" *ngIf="salarySlipData">
+            <div class="row m-0 pb-0 border-dark border-bottom">
+              <!-- Logo Section -->
+              <div class="col-1 d-flex align-items-center justify-content-center ps-4">
+                <img src="assets/Image/Logo/tcci.jpeg" alt="Logo" height="50" width="60" style="object-fit: contain;"
+                  class="align-content-center mt-0">
+              </div>
+              <div class="col-8">
+                <div class="comapny">
+                  <p class="fw-semibold text-center small text-center lh-sm lh-sm-custom text-dark pt-lg-2">
+                    <span>{{salarySlipData[0]?.compname}}</span>
+                  </p>
+                  <p *ngIf="salarySlipData[0]?.regno"
+                    class="text-center small s-small text-center lh-sm lh-sm-custom text-dark">
+                    <span class="pe-2 fw-semibold">CIN No - : </span>
+                    <span>{{salarySlipData[0]?.regno}}</span>
+                  </p>
+                  <p *ngIf="salarySlipData[0]?.address1"
+                    class="text-center small s-small text-center lh-sm lh-sm-custom text-dark">
+                    <span class="pe-2 fw-semibold">Registered Office - : </span>
+                    <span>{{salarySlipData[0]?.address1}}</span>
+                  </p>
+                  <p *ngIf="salarySlipData[0]?.address2"
+                    class="text-center small s-small text-center lh-sm lh-sm-custom text-dark">
+                    <span class="pe-2 fw-semibold">Corporate office - : </span>
+                    <span>{{salarySlipData[0]?.address2}}</span>
+                  </p>
+                  <p class="text-center s-small lh-sm lh-sm-custom text-dark">
+                    <span *ngIf="salarySlipData[0]?.email" class="fw-semibold">Email:</span>
+                    <span>{{salarySlipData[0]?.email}}</span>
+                    <span *ngIf="salarySlipData[0]?.mobile" class="fw-semibold ps-2">Contact NO:</span>
+                    {{salarySlipData[0]?.mobile}}
+                  </p>
+                </div>
+              </div>
+              <!-- Right Side Info -->
+              <div class="col-3 d-flex align-items-center justify-content-end">
+                <div class="pe-lg-2 text-center">
+                  <p class="text-dark small lh-sm pt-lg-2">
+                    <span class="fw-semibold">{{salarySlipData[0]?.monthyear}}</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="row row-cols-1 row-cols-md-2 g-1 pt-1">
+              <div class="col">
+                <table style="width: 100%; font-size: 12px; border-collapse: collapse;">
+                  <tr>
+                    <td style="padding: 4px; font-weight: bold; text-align: start;">Employee Name:</td>
+                    <td style="padding: 4px; text-align: start;">:</td>
+                    <td style="padding: 4px; text-align: start;">{{ salarySlipData[2]?.empname }}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 4px; font-weight: bold; text-align: start;">Employee Code:</td>
+                    <td style="padding: 4px; text-align: start;">:</td>
+                    <td style="padding: 4px; text-align: start;">{{ salarySlipData[2]?.empcode }}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 4px; font-weight: bold; text-align: start;">Grade:</td>
+                    <td style="padding: 4px; text-align: start;">:</td>
+                    <td style="padding: 4px; text-align: start;">{{ salarySlipData[2]?.grade }}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 4px; font-weight: bold; text-align: start;">Bank Name:</td>
+                    <td style="padding: 4px; text-align: start;">:</td>
+                    <td style="padding: 4px; text-align: start;">{{ salarySlipData[2]?.bankname }}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 4px; font-weight: bold; text-align: start;">Account No.:</td>
+                    <td style="padding: 4px; text-align: start;">:</td>
+                    <td style="padding: 4px; text-align: start;">{{ salarySlipData[2]?.bankacno }}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 4px; font-weight: bold; text-align: start;">Pan No.:</td>
+                    <td style="padding: 4px; text-align: start;">:</td>
+                    <td style="padding: 4px; text-align: start;">{{ salarySlipData[2]?.panno }}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 4px; font-weight: bold; text-align: start;">Aadhar No.:</td>
+                    <td style="padding: 4px; text-align: start;">:</td>
+                    <td style="padding: 4px; text-align: start;">{{ salarySlipData[2]?.costcenter }}</td>
+                  </tr>
+                </table>
+              </div>
+              <div class="col">
+                <table style="width: 100%; font-size: 12px; border-collapse: collapse;">
+                  <tr>
+                    <td style="padding: 4px; font-weight: bold; text-align: start;">Designation</td>
+                    <td style="padding: 4px; text-align: start;">:</td>
+                    <td style="padding: 4px; text-align: start;">{{ salarySlipData[2]?.designation }}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 4px; font-weight: bold; text-align: start;">Department</td>
+                    <td style="padding: 4px; text-align: start;">:</td>
+                    <td style="padding: 4px; text-align: start;">{{ salarySlipData[2]?.Department }}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 4px; font-weight: bold; text-align: start;">Date of Joining</td>
+                    <td style="padding: 4px; text-align: start;">:</td>
+                    <td style="padding: 4px; text-align: start;">{{ salarySlipData[2]?.doj }}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 4px; font-weight: bold; text-align: start;">Date of Birth</td>
+                    <td style="padding: 4px; text-align: start;">:</td>
+                    <td style="padding: 4px; text-align: start;">{{ salarySlipData[2]?.dob }}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 4px; font-weight: bold; text-align: start;">UAN No.</td>
+                    <td style="padding: 4px; text-align: start;">:</td>
+                    <td style="padding: 4px; text-align: start;">{{ salarySlipData[2]?.UAN }}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 4px; font-weight: bold; text-align: start;">ESI No.</td>
+                    <td style="padding: 4px; text-align: start;">:</td>
+                    <td style="padding: 4px; text-align: start;">{{ salarySlipData[2]?.esino }}</td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+
+            <div class="row pt-lg-3">
+              <div class="col-sm-12 col-md-12 col-lg-12 table-responsive">
+                <table class="table-responsive px-2" style="border-bottom: 1px solid black; width: 100%;">
+                  <thead>
+                    <tr style="border-top:1px solid #000; border-bottom: 1px solid #000; font-weight: bold;"
+                      class="salary-slip px-lg-2">
+                      <th scope="col">Fixed</th>
+                      <th scope="col" class="text-end">Rate</th>
+                      <th scope="col" class="text-end">Earnings</th>
+                      <th scope="col" class="text-center">Arrears</th>
+                      <th scope="col">Deduction</th>
+                      <th scope="col" class="text-end">Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let item of combinedData" class="salary-slip px-lg-2">
+                      <td>{{item.pay.Fixed}}</td>
+                      <td class="text-end">{{item.pay.Rate}}</td>
+                      <td class="text-end">{{item.pay.Earnings}}</td>
+                      <td class="text-center">{{item.pay.Arrears}}</td>
+                      <td>{{item.ded.Fixed}}</td>
+                      <td class="text-end">{{item.ded.Amount}}</td>
+                    </tr>
+                    <tr style="font-weight: bold; border-top: 1px solid black;" class="salary-slip px-lg-2">
+                      <td class="fw-semibold">Total</td>
+                      <td class="text-end">₹ {{salarySlipData[3]?.RateGross}}</td>
+                      <td class="text-end">₹ {{salarySlipData[3]?.EarnGross}}</td>
+                      <td>&nbsp;</td>
+                      <td class="fw-semibold">Total Deductions:</td>
+                      <td class="text-end">₹ {{salarySlipData[3]?.TotalDeductions}}</td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <div class="row row-cols-1 row-cols-md-4 pt-1">
+                  <div class="col d-flex align-items-start justify-content-start">
+                    <p class="fw-semibold small mx-2">Gross Total</p>
+                  </div>
+                  <div class="col d-flex align-items-center justify-content-center">
+                    <p class="fw-semibold small">₹ {{salarySlipData[3]?.GrossTotal}}</p>
+                  </div>
+                  <div class="col d-flex align-items-start justify-content-start">
+                    <p class="fw-semibold small">Net Amount Payable</p>
+                  </div>
+                  <div class="col d-flex align-items-center justify-content-center">
+                    <p class="fw-semibold small">₹ {{salarySlipData[3]?.NetPay}}</p>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-sm-12 col-md-12 col-lg-12 d-flex align-items-start justify-content-start">
+                    <p class="small mx-2">{{salarySlipData[0]?.website}}</p>
+                  </div>
+                </div>
+                <div class="row row-cols-1 row-cols-md-4">
+                  <div class="col d-flex align-items-start justify-content-start">
+                    <p class="small mx-2">Days for Salary : <span class="small">{{salarySlipData[3]?.paiddays}}</span>
+                    </p>
+                  </div>
+                  <div class="col d-flex align-items-center justify-content-center">
+                    <p class="small"></p>
+                  </div>
+                  <div class="col d-flex align-items-start justify-content-start">
+                    <p class="small">Lwp Days : <span class="small text-danger">{{salarySlipData[3]?.LWP}}</span></p>
+                  </div>
+                  <div class="col d-flex align-items-center justify-content-center">
+                    <p class="small text-danger"></p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-sm-12 col-md-12 col-lg-12 mt-2 table-responsive" *ngIf="LeaveList.length>0">
+                <p class="small fw-semibold mx-2" style="font-size: 13px;">Leave Details</p>
+                <table class="table table-responsive">
+                  <tr
+                    style="font-size: 11px; border-top:1px solid #000; border-bottom: 1px solid #000; font-weight: bold; text-align: left;">
+                    <th>Leave Type</th>
+                    <th>Opening</th>
+                    <th>Availed</th>
+                    <th>Balance</th>
+                  </tr>
+                  <tbody>
+                    <tr *ngFor="let item of LeaveList">
+                      <td> {{item.leavetype}}</td>
+                      <td> {{item.opbal}}</td>
+                      <td> {{item.availed}}</td>
+                      <td> {{item.balance}}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer d-flex align-items-start justify-content-end">
+        <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End Here -->

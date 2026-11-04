@@ -1,0 +1,400 @@
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+            <div class="card-header bg-blue py-lg-1 mt-0">
+
+                <div class="row w-100">
+                    <div class="col-lg-3">
+                        <h4>Generate Letters</h4>
+                    </div>
+
+                    <div class="col-lg-7">
+                        <app-common-search (filtersChanged)="handleFilters($event)"></app-common-search>
+                    </div>
+
+                    <div class="col-lg-2 d-flex justify-content-end">
+                        <button class="btn btnheader"
+                            routerLink="/dash/hr/hrdashboard/Generate_letters_list">Back</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body mt-4">
+                <form [formGroup]="form">
+
+                    <div class="row">
+                        <!-- Employee -->
+                        <div class="col-md-4">
+                            <label>Employee Name <span style="color: red;">*</span></label>
+                            <ng-select [items]="EmployeeList" bindLabel="name" bindValue="value"
+                                formControlName="fk_empid" placeholder="--Select--" class="w-100"  (change)="onEmployeeChange($event)"></ng-select>
+
+                            <div *ngIf="submitted && form.get('fk_empid')?.invalid"
+                                class="text-danger mt-1" style="font-size: 12px;">
+                                Please select Employee code.
+                            </div>
+                        </div>
+
+                         <div class="col-md-4">
+                <label>Name <span style="color: red;">*</span></label>
+                <div class="form-group">
+                    <input type="text" class="form-control" formControlName="name">
+
+                    <div *ngIf="submitted   && form.get('name')?.invalid" class="text-danger mt-1" style="font-size: 12px;">
+                        Please enter name
+                      </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <label>Last Name </label>
+                <div class="form-group">
+                    <input type="text" class="form-control" formControlName="nname">
+
+                    <!-- <div *ngIf="submitted   && form.get('nname')?.invalid" class="text-danger mt-1" style="font-size: 12px;">
+                        Please enter last name
+                      </div> -->
+                </div>
+            </div>
+  
+            <div class="col-md-4">
+                <label>Location<span style="color: red;">*</span></label>
+                 <div class="form-group">
+                   <ng-select id="year" [items]="locationList" bindLabel="name" bindValue="value" formControlName="fk_locid"
+                    placeholder="--Select --" class="w-100"></ng-select>
+                  <div *ngIf="submitted   && form.get('fk_locid')?.invalid" class="text-danger mt-1" style="font-size: 12px;">
+                    Please choose Location
+                  </div>
+                </div>
+               
+              </div>
+              <div class="col-md-4">
+                <label>Department<span style="color: red;">*</span></label>
+                 <div class="form-group">
+                   <ng-select id="year" [items]="departmentList" bindLabel="name" bindValue="value" formControlName="fk_deptid"
+                    placeholder="--Select --" class="w-100"></ng-select>
+                  <div *ngIf="submitted   && form.get('fk_deptid')?.invalid" class="text-danger mt-1" style="font-size: 12px;">
+                    Please choose department
+                  </div>
+                </div>
+               
+              </div>
+
+              <div class="col-md-4">
+                <label>Designation<span style="color: red;">*</span></label>
+                 <div class="form-group">
+                   <ng-select id="year" [items]="designationList" bindLabel="name" bindValue="value" formControlName="fk_desgid"
+                    placeholder="--Select --" class="w-100"></ng-select>
+                  <div *ngIf="submitted   && form.get('fk_desgid')?.invalid" class="text-danger mt-1" style="font-size: 12px;">
+                    Please choose designation
+                  </div>
+                </div>
+               
+              </div>
+              <div class="col-md-4">
+                <label>City<span style="color: red;">*</span></label>
+                 <div class="form-group">
+                   <ng-select id="year" [items]="cityList" bindLabel="name" bindValue="value" formControlName="fk_cityid"
+                    placeholder="--Select --" class="w-100"></ng-select>
+                  <div *ngIf="submitted   && form.get('fk_cityid')?.invalid" class="text-danger mt-1" style="font-size: 12px;">
+                    Please choose city
+                  </div>
+                </div>
+               
+              </div>
+              <div class="col-md-4">
+                <label>Pin no </label>
+                <div class="form-group">
+                    <input type="text" class="form-control" formControlName="pinno" (keypress)="validateNumber($event)" maxlength="6">
+
+                                    </div>
+            </div>
+            <div class="col-md-4">
+                <label>Joining date <span style="color: red;">*</span></label>
+                <div class="form-group">
+                    <input type="date" class="form-control" formControlName="joiningdate">
+
+                    <div *ngIf="submitted   && form.get('joiningdate')?.invalid" class="text-danger mt-1" style="font-size: 12px;">
+                        Please enter date
+                      </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <label>CTC <span style="color: red;">*</span></label>
+                <div class="form-group">
+                    <input type="text" class="form-control" formControlName="ctc" (keypress)="validateNumber($event)" maxlength="10">
+
+                    <div *ngIf="submitted   && form.get('ctc')?.invalid" class="text-danger mt-1" style="font-size: 12px;">
+                        Please enter ctc
+                      </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <label>Contact <span style="color: red;">*</span></label>
+                <div class="form-group">
+                    <input type="text" class="form-control" formControlName="contactno" (keypress)="validateNumber($event)" maxlength="10">
+
+                    <div *ngIf="submitted   && form.get('contactno')?.invalid" class="text-danger mt-1" style="font-size: 12px;">
+                        Please enter contact no
+                      </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <label>HR Name<span style="color: red;">*</span></label>
+                 <div class="form-group">
+                   <ng-select id="year" [items]="HRList" bindLabel="name" bindValue="value" formControlName="fk_emphrid"
+                    placeholder="--Select --" class="w-100"></ng-select>
+                  <div *ngIf="submitted   && form.get('fk_emphrid')?.invalid" class="text-danger mt-1" style="font-size: 12px;">
+                    Please choose HR name
+                  </div>
+                </div>
+               
+              </div>
+  
+            <div class="col-md-4">
+                <label>Address </label>
+                <div class="form-group">
+                    <input type="text" class="form-control" formControlName="address">
+
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <label>Vendor Name <span *ngIf="selectedFormType === 'O'" style="color: red;">*</span></label>
+                <div class="form-group">
+                    <ng-select [items]="vendorList" bindLabel="name" bindValue="value"
+                        formControlName="fk_vendorid" placeholder="--Select Vendor--" class="w-100"
+                        (change)="onVendorChange($event)"></ng-select>
+                </div>
+            </div>
+    <!-- Format Type -->
+                        <div class="col-md-4">
+                            <label>Format Type <span style="color: red;">*</span>
+                            </label>
+
+                            <ng-select [items]="FormateType" bindLabel="name" bindValue="value"
+                                (change)="onFormTypeChange($event)" formControlName="formattype"
+                                placeholder="--Select--" class="w-100"></ng-select>
+
+                            <div *ngIf="submitted && form.get('formattype')?.invalid"
+                                class="text-danger mt-1" style="font-size: 12px;">
+                                Please select Format Type.
+                            </div>
+                        </div>
+             <div class="col-md-4">
+                <label>Ref no. </label>
+                <div class="form-group">
+                    <input type="text" class="form-control" formControlName="refno">
+
+                </div>
+            </div>
+
+                <div class="col-md-4">
+                <label> Issue Date<span style="color: red;">*</span> </label>
+                <div class="form-group">
+                    <input type="date" class="form-control" formControlName="dated">
+                     <div *ngIf="submitted && form.get('dated')?.invalid"
+                                class="text-danger mt-1" style="font-size: 12px;">
+                                Please select Date.
+                            </div>
+
+                </div>
+            </div>
+
+               <div class="col-md-4">
+                <label>Description </label>
+                <div class="form-group me-2">
+                    <input type="text" class="form-control" formControlName="description">
+
+                </div>
+            </div>
+
+<!-- .....Anajli             --> 
+               <div class="col-md-4">
+                        <label for="IsPublish">Publish</label>
+                        <div class="form-group">
+                          <input class="form-check-input" type="checkbox" formControlName="statusId">
+                        </div>      
+                      </div>
+
+                    
+                    </div>
+
+                    <!-- ====================== Confirmation Extension ======================= -->
+                    <div *ngIf="selectedFormType === 'X'">
+                        <h6 class="mt-4 text-primary">Confirmation Extension</h6>
+                        <div class="row mt-3">
+
+                            <div class="col-md-4">
+                                <label>Extended Period (Months)</label>
+                                <input class="form-control" formControlName="eperiod">
+                            </div>
+
+                            <div class="col-md-4">
+                                <label>Comments 1</label>
+                                <input class="form-control" formControlName="comments1">
+                            </div>
+
+                            <div class="col-md-4">
+                                <label>Comments 2</label>
+                                <input class="form-control" formControlName="comments2">
+                            </div>
+
+                            <div class="col-md-4 mt-2">
+                                <label>Comments 3</label>
+                                <input class="form-control" formControlName="comments3">
+                            </div>
+
+                            <div class="col-md-4 mt-2">
+                                <label>Comments 4</label>
+                                <input class="form-control" formControlName="comments4">
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- ================= Confirmation with Increment (B) ================= -->
+                    <div *ngIf="selectedFormType === 'B'">
+                        <h6 class="mt-4 text-primary">Confirmation Letter with Increment</h6>
+
+                        <div class="row mt-3">
+                            <div class="col-md-4">
+                                <label>Increment Amount</label>
+                                <input type="number" class="form-control" formControlName="IncrementAmount">
+                            </div>
+
+                            <div class="col-md-4">
+                                <label>Per Month Salary</label>
+                                <input type="number" class="form-control" formControlName="PerMonthSalary">
+                            </div>
+
+                            <div class="col-md-4">
+                                <label>PLI (If any)</label>
+                                <textarea class="form-control" formControlName="PLI"></textarea>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- ====================== Appointment Letter (A) / Offer Letter (O) ======================= -->
+                    <div *ngIf="selectedFormType === 'A' || selectedFormType === 'O'">
+
+                        <h6 class="mt-4 text-primary">{{ selectedFormType === 'O' ? 'Offer Letter Compensation Structure' : 'Appointment Letter' }}</h6>
+
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>S.No</th>
+                                    <th>Description</th>
+                                    <th>Annual Amount</th>
+                                    <th>Amount</th>
+                                </tr>
+                            </thead>
+
+                           
+
+
+                               
+  
+<tbody formArrayName="FormatHeads">
+
+  <tr *ngFor="let row of FormatHeads.controls; let i = index" [formGroupName]="i">
+
+    <td>{{ i + 1 }}</td>
+
+    <td>{{ row.get('headname')?.value }}</td>
+
+    <td>
+      <input type="number" formControlName="annualamount" (input)="onAnnualAmountChange(i)" class="form-control" />
+    </td>
+
+    <td>
+      <input type="number" formControlName="amount" (input)="onMonthlyAmountChange(i)" class="form-control" />
+    </td>
+
+  </tr>
+
+</tbody>
+
+
+                        </table>
+
+                    </div>
+
+                    <!-- ====================== Promotion Letter (R) ======================= -->
+                    <div *ngIf="selectedFormType === 'R'">
+                        <h6 class="mt-4 text-primary">Promotion Letter</h6>
+
+                        <div class="row mt-3">
+                            <div class="col-md-4">
+                                <label>Promoted Designation</label>
+                                <input class="form-control" formControlName="fk_pdesgid">
+                            </div>
+
+                            <div class="col-md-4">
+                                <label>New CTC</label>
+                                <input class="form-control" formControlName="newctc">
+                            </div>
+
+                            <div class="col-md-4">
+                                <label>COO Name</label>
+                                <input class="form-control" formControlName="fk_empcooid">
+                            </div>
+
+                            <div class="col-md-4 mt-2">
+                                <label>Effective Date</label>
+                                <input type="date" class="form-control" formControlName="effectivedate">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ====================== Transfer Letter (F) ======================= -->
+                    <div *ngIf="selectedFormType === 'F'">
+                        <h6 class="mt-4 text-primary">Transfer Letter</h6>
+
+                        <div class="row mt-3">
+                            <div class="col-md-4">
+                                <label>Location</label>
+                                <ng-select [items]="Location" bindLabel="name" bindValue="value"
+                                    formControlName="fk_tran_tolocid" placeholder="--Select Location--"
+                                    class="w-100 small"></ng-select>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label>Transfer Date</label>
+                                <input type="date" class="form-control" formControlName="trandate">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ====================== Retirement Letter (L) ======================= -->
+                    <div *ngIf="selectedFormType === 'L'">
+                        <h6 class="mt-4 text-primary">Retirement Letter</h6>
+                        <div class="row mt-3">
+
+                            <div class="col-md-4">
+                                <label>Resignation Date</label>
+                                <input type="date" class="form-control" formControlName="resigndate">
+                            </div>
+
+                            <div class="col-md-4">
+                                <label>Relieving Date</label>
+                                <input type="date" class="form-control" formControlName="relievedate">
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- ====================== Save Reset ======================= -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary me-2" (click)="save()">Save</button>
+                        <button type="button" class="btn btn-outline-dark" (click)="reset()">Reset</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

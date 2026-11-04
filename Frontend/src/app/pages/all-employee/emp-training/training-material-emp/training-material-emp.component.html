@@ -1,0 +1,133 @@
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <!-- heading -->
+      <div class="card-header bg-blue">
+        <div class="row w-100">
+          <!-- Title Section -->
+
+          <div class="col-sm-12 col-md-6 col-lg-4 d-flex align-items-center justify-content-start">
+            <h4 class="text-white">Training Content</h4>
+          </div>
+
+          <div class="col-sm-12 col-md-6 col-lg-4 d-flex align-items-center justify-content-center">
+            <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText" />
+          </div>
+        </div>
+      </div>
+
+      <!--  -->
+
+
+
+      <div class="card-body">
+        <!-- 🔍 Filter Section -->
+        <form class="row g-3 mb-3 align-items-end">
+          <!-- Training Program -->
+          <div class="col-md-4">
+            <label class="form-label">Training Programs <span class="text-danger">*</span></label>
+            <ng-select [items]="trainingPrograms" bindLabel="name" bindValue="value" [(ngModel)]="filter.fk_planningId"
+              name="fk_planningId" placeholder="Select Training Program" (change)="onFilterChange()"></ng-select>
+            <div *ngIf="showError && !filter.fk_planningId" class="text-danger small mt-1">
+              Please select a training program.
+            </div>
+          </div>
+
+
+          <!-- Material Type -->
+          <div class="col-md-3">
+            <label class="form-label">Material Type</label>
+            <ng-select [items]="materialTypes" bindLabel="name" bindValue="id" [(ngModel)]="filter.materialType"
+              name="materialType" placeholder="Select Type (Optional)" (change)="onFilterChange()" [clearable]="true">
+            </ng-select>
+          </div>
+
+
+          <!-- <div class="col-md-3">
+          <button class="btn btn-primary w-100 mt-4" type="button" (click)="loadMaterials()">
+            <i class="bi bi-search"></i> Search
+          </button>
+        </div> -->
+          <div class="col-md-2">
+            <button class="btn btn-secondary w-100 mt-4" type="button" (click)="resetFilters()">
+              Reset
+            </button>
+          </div>
+        </form>
+
+        <!-- 📋 Table Section -->
+        <div class="table-responsive table-invoice">
+          <table Id="exportTable" class="table table-bordered table-hover">
+            <thead>
+              <tr>
+                <th>Sr No.</th>
+                <th>Material Title</th>
+                <th>Type</th>
+                <!-- <th>Description</th> -->
+                <th>Path / URL</th>
+                <th>File Size</th>
+                <th>Uploaded By</th>
+                <!-- <th>Uploaded Date</th> -->
+              </tr>
+            </thead>
+            <tbody>
+              <!-- <tr *ngFor="let item of materials; let i = index"> -->
+              <tr
+                *ngFor="let item of filteredData() | paginate: { itemsPerPage: pageSize, currentPage: pageIndex ,totalItems:totalItems};let i = index">
+
+                <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+                <td>{{ item.materialTitle }}</td>
+                <td>{{ item.materialType }}</td>
+                <!-- <td [innerHTML]="item.description"></td> -->
+                <td class="text-center">
+                  <!-- For YouTube or external URL -->
+                  <a *ngIf="item.materialUrl && !item.materialPath" [href]="item.materialUrl" target="_blank"
+                    rel="noopener noreferrer">
+                    {{ item.materialType === 'youtube' ? 'Watch Video' : 'Open Link' }}
+                  </a>
+
+                  <!-- For downloadable / viewable file -->
+                  <ng-container *ngIf="item.materialPath">
+                    <i class="fa fa-eye text-primary" style="cursor: pointer;"
+                      (click)="downloadMaterial(item.materialPath)" title="View / Download File"></i>
+                  </ng-container>
+
+                  <!-- Show 'N/A' if no URL or path -->
+                  <span *ngIf="!item.materialUrl && !item.materialPath">N/A</span>
+                </td>
+
+                <!-- <td>
+            
+                <a *ngIf="item.materialUrl" [href]="item.materialUrl" target="_blank" rel="noopener noreferrer">
+                  {{ item.materialType === 'youtube' ? 'Watch Video' : 'Open Link' }}
+                </a>
+
+                
+                <a *ngIf="item.materialPath" [href]="item.materialPath" target="_blank" rel="noopener noreferrer">
+                  Download
+                </a>
+
+                
+              </td> -->
+
+                <td>{{ item.fileSize || '-' }}</td>
+
+                <td>{{ item.uploadedBy }}</td>
+                <!-- <td>{{ item.uploadedDate | date: 'dd-MMM-yyyy hh:mm a' }}</td> -->
+              </tr>
+              <tr *ngIf="materials.length === 0">
+                <td colspan="10" class="text-center text-muted py-3">No data found</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Pagination controls -->
+          <pagination-controls (pageChange)="onPageChange($event)">
+          </pagination-controls>
+        </div>
+      </div>
+
+
+    </div>
+  </div>
+</div>

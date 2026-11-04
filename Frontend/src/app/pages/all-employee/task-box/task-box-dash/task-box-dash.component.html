@@ -1,0 +1,295 @@
+<section class="pt-3">
+  <div class="container-fluid">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
+
+      <div>
+        <p class="fw-semibold small mb-0">
+          <span>Taskbook Dashboard</span><br>
+          <span class="text-primary fw-semibold">
+            <i class="fa-solid fa-list-check"></i> Total Tasks:
+          </span>
+          <span class="ps-1 fw-semibold text-primary">58</span>
+        </p>
+      </div>
+
+      <div>
+        <button class="btn btn-primary btn-sm">
+          <i class="fa-solid fa-plus"></i> Add Task
+        </button>
+      </div>
+
+
+
+
+    </div>
+
+    <div class="row g-3">
+      <!-- Left (Main content) -->
+      <div class="col-lg-8">
+
+        <!-- Slide / Scrollable Task Highlights -->
+        <div class="card shadow-sm border-0">
+          <div class="card-body">
+            <p class="fw-semibold text-primary mb-2">
+              <i class="fa-solid fa-bolt"></i> Highlighted Tasks
+            </p>
+            <div class="d-flex overflow-auto">
+              <div class="card shadow-sm me-2" style="min-width: 200px;">
+                <div class="card-body small">
+                  <p class="fw-semibold mb-1"><i class="fa-solid fa-spinner text-info me-1"></i> API Integration</p>
+                  <p class="mb-0 text-muted">Due: 25-Jul</p>
+                  <span class="badge bg-info">In Progress</span>
+                </div>
+              </div>
+              <div class="card shadow-sm me-2" style="min-width: 200px;">
+                <div class="card-body small">
+                  <p class="fw-semibold mb-1"><i class="fa-solid fa-hourglass-half text-warning me-1"></i> UI Redesign
+                  </p>
+                  <p class="mb-0 text-muted">Due: 28-Jul</p>
+                  <span class="badge bg-warning text-dark">Pending</span>
+                </div>
+              </div>
+              <div class="card shadow-sm me-2" style="min-width: 200px;">
+                <div class="card-body small">
+                  <p class="fw-semibold mb-1"><i class="fa-solid fa-circle-check text-success me-1"></i> Database Backup
+                  </p>
+                  <p class="mb-0 text-muted">Completed: 21-Jul</p>
+                  <span class="badge bg-success">Completed</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Task Summary Cards (vertical) -->
+        <div class="row g-3 mt-1">
+          <div class="col-md-4">
+            <div class="card shadow-sm border-start border-3 border-warning">
+              <div class="card-body small text-center">
+                <i class="fa-solid fa-hourglass-half text-warning mb-2 fs-4"></i>
+                <p class="fw-semibold mb-0">Pending Tasks</p>
+                <h6 class="fw-bold text-warning mb-0">12</h6>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card shadow-sm border-start border-3 border-info">
+              <div class="card-body small text-center">
+                <i class="fa-solid fa-spinner text-info mb-2 fs-4"></i>
+                <p class="fw-semibold mb-0">In Progress</p>
+                <h6 class="fw-bold text-info mb-0">34</h6>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card shadow-sm border-start border-3 border-success">
+              <div class="card-body small text-center">
+                <i class="fa-solid fa-circle-check text-success mb-2 fs-4"></i>
+                <p class="fw-semibold mb-0">Completed</p>
+                <h6 class="fw-bold text-success mb-0">12</h6>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- Task Categories -->
+        <div class="card shadow-sm mb-3 border-top border-2 border-warning">
+          <div class="card-body small">
+            <p class="fw-semibold text-warning mb-2"><i class="fa-solid fa-layer-group"></i> Task Categories</p>
+            <div class="row text-center">
+              <div class="col-4">
+                <div class="fw-semibold">18</div>
+                <small class="text-muted">Bug Fixes</small>
+              </div>
+              <div class="col-4">
+                <div class="fw-semibold">25</div>
+                <small class="text-muted">Features</small>
+              </div>
+              <div class="col-4">
+                <div class="fw-semibold">15</div>
+                <small class="text-muted">Enhancements</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- Quick Task KPIs -->
+
+        <div class="card shadow-sm mb-3 border-0">
+          <div class="card-body small">
+            <p class="fw-semibold text-primary mb-3">
+              <i class="fa-solid fa-table-cells-large"></i> Quick Task KPIs
+            </p>
+            <div class="row g-2 text-center">
+              <div class="col-4">
+                <div class="border rounded p-2">
+                  <div class="text-success fs-4 mb-1">
+                    <i class="fa-solid fa-check-circle"></i>
+                  </div>
+                  <div class="fw-bold">14</div>
+                  <small class="text-muted">Completed Today</small>
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="border rounded p-2">
+                  <div class="text-warning fs-4 mb-1">
+                    <i class="fa-solid fa-hourglass-half"></i>
+                  </div>
+                  <div class="fw-bold">7</div>
+                  <small class="text-muted">Due Today</small>
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="border rounded p-2">
+                  <div class="text-danger fs-4 mb-1">
+                    <i class="fa-solid fa-exclamation-circle"></i>
+                  </div>
+                  <div class="fw-bold">3</div>
+                  <small class="text-muted">Overdue</small>
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="border rounded p-2">
+                  <div class="text-info fs-4 mb-1">
+                    <i class="fa-solid fa-user-check"></i>
+                  </div>
+                  <div class="fw-bold">5</div>
+                  <small class="text-muted">Assigned to Me</small>
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="border rounded p-2">
+                  <div class="text-primary fs-4 mb-1">
+                    <i class="fa-solid fa-list-check"></i>
+                  </div>
+                  <div class="fw-bold">58</div>
+                  <small class="text-muted">Total Tasks</small>
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="border rounded p-2">
+                  <div class="text-secondary fs-4 mb-1">
+                    <i class="fa-solid fa-plus-circle"></i>
+                  </div>
+                  <div class="fw-bold">4</div>
+                  <small class="text-muted">New Tasks Today</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+
+      </div>
+
+      <!-- Right Sidebar -->
+      <div class="col-lg-4">
+
+
+        <!-- Task Progress & Deadlines Panel -->
+
+
+        <div class="card shadow-sm mb-3 border-0">
+          <div class="card-body small">
+            <p class="fw-semibold text-primary mb-3">
+              <i class="fa-solid fa-bars-progress"></i> Task Progress & Deadlines
+            </p>
+
+            <div class="mb-2">
+              <div class="d-flex justify-content-between mb-1">
+                <span class="text-muted small">API Integration</span>
+                <span class="small fw-semibold">75%</span>
+              </div>
+              <div class="progress" style="height:6px;">
+                <div class="progress-bar bg-success" role="progressbar" style="width:75%;"></div>
+              </div>
+              <small class="text-muted">Due: 25-Jul</small>
+            </div>
+
+            <div class="mb-2">
+              <div class="d-flex justify-content-between mb-1">
+                <span class="text-muted small">UI Redesign</span>
+                <span class="small fw-semibold">40%</span>
+              </div>
+              <div class="progress" style="height:6px;">
+                <div class="progress-bar bg-warning" role="progressbar" style="width:40%;"></div>
+              </div>
+              <small class="text-muted">Due: 28-Jul</small>
+            </div>
+
+            <div class="mb-2">
+              <div class="d-flex justify-content-between mb-1">
+                <span class="text-muted small">Database Backup</span>
+                <span class="small fw-semibold">100%</span>
+              </div>
+              <div class="progress" style="height:6px;">
+                <div class="progress-bar bg-info" role="progressbar" style="width:100%;"></div>
+              </div>
+              <small class="text-muted">Completed: 21-Jul</small>
+            </div>
+
+            <div class="mb-2">
+              <div class="d-flex justify-content-between mb-1">
+                <span class="text-muted small">Testing & QA</span>
+                <span class="small fw-semibold">20%</span>
+              </div>
+              <div class="progress" style="height:6px;">
+                <div class="progress-bar bg-danger" role="progressbar" style="width:20%;"></div>
+              </div>
+              <small class="text-muted">Due: 30-Jul</small>
+            </div>
+
+          </div>
+        </div>
+
+
+        <!-- Quick Actions -->
+
+
+        <div class="card shadow-sm mb-3 border-top border-2 border-success">
+          <div class="card-body small">
+            <p class="fw-semibold text-success mb-2"><i class="fa-solid fa-lightbulb"></i> Quick Actions</p>
+            <div class="d-grid gap-2">
+              <button class="btn btn-outline-primary btn-sm">
+                <i class="fa-solid fa-plus"></i> New Task
+              </button>
+              <button class="btn btn-outline-success btn-sm">
+                <i class="fa-solid fa-file-export"></i> Export
+              </button>
+              <button class="btn btn-outline-secondary btn-sm">
+                <i class="fa-solid fa-sliders"></i> Settings
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Top Performers -->
+
+
+        <div class="card shadow-sm border-top border-2 border-info">
+          <div class="card-body small">
+            <p class="fw-semibold text-info mb-2"><i class="fa-solid fa-star"></i> Top Performers</p>
+            <ul class="list-group small">
+              <li class="list-group-item d-flex justify-content-between">Vishal Maurya <span class="fw-semibold">14
+                  tasks</span></li>
+              <li class="list-group-item d-flex justify-content-between"> Vishal Maurya <span class="fw-semibold">12
+                  tasks</span></li>
+            </ul>
+          </div>
+        </div>
+
+
+
+        <!--  -->
+
+
+
+      </div>
+    </div>
+  </div>
+</section>

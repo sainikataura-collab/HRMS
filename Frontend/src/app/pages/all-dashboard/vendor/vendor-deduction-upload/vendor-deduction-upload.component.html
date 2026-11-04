@@ -1,0 +1,317 @@
+<div class="row position-relative">
+  <!-- Left Main Column -->
+  <div [ngClass]="isFactBoxOpen ? 'col-sm-12 col-md-8 col-lg-9' : 'col-12'">
+    <div class="card shadow-sm border-0">
+
+      <!-- Card Header with Export Pre-Populated Template Button -->
+      <div class="card-header bg-primary">
+        <div class="row  w-100 align-items-center">
+          <div class="col-4">
+            <h4 class="text-white mb-0">
+              <i class="fa fa-file-excel-o me-2"></i>Deduction Excel Upload
+            </h4>
+          </div>
+          <div class="col-8 d-flex align-items-center justify-content-end gap-2">
+            <button type="button" class="btn btn-outline-light btn-sm" (click)="navigateToSingleEntry()" title="Go to Single / Split Deduction Entry">
+              <i class="fa fa-pencil me-1"></i> Single / Split Entry
+            </button>
+            <button type="button" class="btn bg-white text-primary btn-sm fw-bold shadow-xs" 
+              (click)="downloadTemplate()" 
+              [disabled]="!isTemplateDownloadReady || isDownloadingTemplate"
+              [title]="!isTemplateDownloadReady ? 'Please select Client, Model, Location, From Date, and To Date to enable download' : 'Export Pre-Populated Template'">
+              <i class="fa" [ngClass]="isDownloadingTemplate ? 'fa-spinner fa-spin me-1' : 'fa-download me-1'"></i>
+              Export Pre-Populated Template
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card Body with Filter and Upload Form -->
+      <div class="card-body">
+
+        <!-- Workflow & Validation Guide Banner -->
+        <div class="alert alert-light border d-flex flex-wrap align-items-center justify-content-between p-2 mb-3 small">
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge" [ngClass]="isTemplateDownloadReady ? 'bg-success' : 'bg-warning text-dark'">
+              <i class="fa" [ngClass]="isTemplateDownloadReady ? 'fa-check' : 'fa-lock'"></i>
+              {{ isTemplateDownloadReady ? 'Template Ready' : 'Step 1: Selection Required' }}
+            </span>
+            <span class="text-dark">
+              <strong class="text-dark">Workflow:</strong> Select <strong>Client</strong> &rarr; <strong>Model</strong> &rarr; <strong>Location</strong> &rarr; <strong>Cycle Dates</strong> &rarr; Download pre-populated Excel template &rarr; Fill & Upload.
+            </span>
+          </div>
+          <div class="d-flex align-items-center gap-2 mt-1 mt-md-2">
+            <span class="badge bg-warning-subtle text-dark border border-warning-subtle" title="Shipment ID is mandatory for Shipment Deductions. Split = 'NO' enforces unique single ID. Split = 'YES' allows sharing across different vendors.">
+              <i class="fa fa-info-circle text-warning me-1"></i>Shipment ID mandatory for Shipment Deductions | Is Split: NO = Single, YES = Shared
+            </span>
+            <span class="badge bg-info-subtle text-info border border-info-subtle" *ngIf="isAmazonDspSelected">
+              <i class="fa fa-truck me-1"></i>Amazon DSP
+            </span>
+          </div>
+        </div>
+
+        <form [formGroup]="uploadForm" (ngSubmit)="uploadDeductions()" class="row g-2 align-items-start mb-3">
+
+          <!-- 1. Select Client -->
+          <div class="col-12 col-sm-6 col-md-4 col-lg-2">
+            <label class="form-label small fw-semibold">Select Client <span style="color: red;">*</span></label>
+            <ng-select [items]="clientList" bindLabel="name" bindValue="value" appendTo="body"
+              placeholder="Select Client" formControlName="client" (change)="onClientChange($event)">
+            </ng-select>
+            <div class="error-space">
+              <span *ngIf="uploadForm.get('client')?.hasError('required') && uploadForm.get('client')?.touched" class="text-danger small">
+                Client is required.
+              </span>
+            </div>
+          </div>
+
+          <!-- 2. Select Model -->
+          <div class="col-12 col-sm-6 col-md-4 col-lg-2">
+            <label class="form-label small fw-semibold">Select Model <span style="color: red;">*</span></label>
+            <ng-select [items]="modelList" bindLabel="name" bindValue="value" appendTo="body"
+              placeholder="Select Model" formControlName="model" (change)="onModelChange($event)">
+            </ng-select>
+            <div class="error-space">
+              <span *ngIf="uploadForm.get('model')?.hasError('required') && uploadForm.get('model')?.touched" class="text-danger small">
+                Model is required.
+              </span>
+            </div>
+          </div>
+
+          <!-- 3. Select Location / Hub -->
+          <div class="col-12 col-sm-6 col-md-4 col-lg-2">
+            <label class="form-label small fw-semibold">Location / Hub <span style="color: red;">*</span></label>
+            <ng-select [items]="locationList" bindLabel="name" bindValue="value" appendTo="body"
+              [loading]="isLocationsLoading"
+              placeholder="Select Location / Hub" formControlName="location" (change)="resetResults()">
+            </ng-select>
+            <div class="error-space">
+              <span *ngIf="uploadForm.get('location')?.hasError('required') && uploadForm.get('location')?.touched" class="text-danger small">
+                Location is required.
+              </span>
+            </div>
+          </div>
+
+          <!-- 4. Select From Date -->
+          <div class="col-12 col-sm-6 col-md-4 col-lg-2">
+            <label class="form-label small fw-semibold">From Date <span style="color: red;">*</span></label>
+            <input type="date" class="form-control form-control-sm" formControlName="fromDate" (change)="resetResults()">
+            <div class="error-space">
+              <span *ngIf="uploadForm.get('fromDate')?.hasError('required') && uploadForm.get('fromDate')?.touched" class="text-danger small">
+                From Date required.
+              </span>
+            </div>
+          </div>
+
+          <!-- 5. Select To Date -->
+          <div class="col-12 col-sm-6 col-md-4 col-lg-2">
+            <label class="form-label small fw-semibold">To Date <span style="color: red;">*</span></label>
+            <input type="date" class="form-control form-control-sm" formControlName="toDate" (change)="resetResults()">
+            <div class="error-space">
+              <span *ngIf="uploadForm.get('toDate')?.hasError('required') && uploadForm.get('toDate')?.touched" class="text-danger small">
+                To Date required.
+              </span>
+            </div>
+          </div>
+
+          <!-- 6. Select File -->
+          <div class="col-12 col-sm-6 col-md-4 col-lg-2">
+            <label class="form-label small fw-semibold">Select File <span style="color: red;">*</span></label>
+            <div class="input-group input-group-sm">
+              <input type="file" class="form-control" (change)="onFileChange($event)" #fileInput id="deductionFileInput" accept=".xlsx, .xls">
+              <button *ngIf="selectedFile" type="button" class="btn btn-outline-danger" (click)="resetFileOnly()" title="Clear File">
+                <i class="fa fa-times"></i>
+              </button>
+            </div>
+            <div class="error-space">
+              <span *ngIf="uploadForm.get('file')?.hasError('required') && uploadForm.get('file')?.touched" class="text-danger small">
+                File is required.
+              </span>
+            </div>
+          </div>
+
+          <!-- Action Buttons (Import & Reset) -->
+          <div class="col-12 d-flex align-items-center justify-content-end gap-2 mt-2 pt-1 border-top">
+            <button type="submit" class="btn btn-primary btn-sm px-4 fw-bold shadow-xs" [disabled]="isUploading">
+              <i class="fa" [ngClass]="isUploading ? 'fa-spinner fa-spin me-1' : 'fa-upload me-1'"></i>
+              {{ isUploading ? 'Processing Deductions...' : 'Import' }}
+            </button>
+            <button type="button" class="btn btn-outline-dark btn-sm px-3" (click)="resetForm()" [disabled]="isUploading">
+              Reset
+            </button>
+          </div>
+
+        </form>
+
+        <!-- Inline Loader for Processing -->
+        <div class="row" *ngIf="isUploading || isFiltering">
+          <div class="col-12 text-center py-5">
+            <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <h5 class="mt-3 text-primary">{{ isFiltering ? 'Filtering Data...' : 'Processing Deductions File...' }}</h5>
+            <p class="text-dark small">Please wait while the system validates deduction types, split amounts, and payout sync statuses.</p>
+          </div>
+        </div>
+
+        <!-- Filter & Search Bar (Rendered when Excel Data is Imported) -->
+        <div class="row mb-2" *ngIf="!isUploading && importedData.length > 0">
+
+          <!-- Search Control -->
+          <div class="col-12 col-md-4 mb-2 mb-md-0">
+            <input type="text" class="form-control form-control-sm" [formControl]="searchControl" placeholder="🔍 Search by vendor, FHRID, shipment, or type..." />
+          </div>
+
+          <!-- Filter Pills & Export Button -->
+          <div class="col-12 col-md-8">
+            <div class="d-flex flex-wrap gap-2 justify-content-start justify-content-md-end align-items-center">
+
+              <button class="btn btn-sm d-flex align-items-center shadow-xs"
+                [ngClass]="currentFilter === 'All' ? 'btn-primary text-white fw-bold' : 'btn-outline-primary'" (click)="setFilter('All')">
+                <span>All Data</span>
+                <span class="bg-white rounded px-1 ms-2 fw-bold text-primary" style="font-size:11px;">
+                  {{ importedData.length }}
+                </span>
+              </button>
+
+              <button class="btn btn-sm d-flex align-items-center shadow-xs"
+                [ngClass]="currentFilter === 'Uploaded' ? 'btn-success text-white fw-bold' : 'btn-outline-success'"
+                (click)="setFilter('Uploaded')">
+                <span>Uploaded</span>
+                <span class="bg-white rounded px-1 ms-2 fw-bold text-success" style="font-size:11px;">
+                  {{ uploadedCount }}
+                </span>
+              </button>
+
+              <button class="btn btn-sm d-flex align-items-center shadow-xs"
+                [ngClass]="currentFilter === 'Not Uploaded' ? 'btn-danger text-white fw-bold' : 'btn-outline-danger'"
+                (click)="setFilter('Not Uploaded')">
+                <span>Not Uploaded</span>
+                <span class="bg-white rounded px-1 ms-2 fw-bold text-danger" style="font-size:11px;">
+                  {{ notUploadedCount }}
+                </span>
+              </button>
+
+              <button class="btn btn-sm btn-primary d-flex align-items-center fw-bold shadow-xs" (click)="downloadExcelList()">
+                <i class="fa fa-download me-1"></i> Export List
+              </button>
+
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Data Preview Table (Compact, Enterprise Layout) -->
+        <div class="table-responsive mt-3" *ngIf="!isUploading && !isFiltering && importedData.length > 0"
+          style="max-height: 440px; overflow-y: auto;">
+          <table class="table table-bordered table-hover align-middle mb-0 text-nowrap" style="font-size: 12px;">
+            <thead class="sticky-top bg-light" style="top: 0; z-index: 2;">
+              <tr>
+                <th style="width: 110px;">Status</th>
+                <th style="min-width: 220px; max-width: 320px;">Reason / Error Details</th>
+                <th style="width: 100px;">Vendor Code</th>
+                <th style="width: 120px;">FHRID</th>
+                <th>Vendor Name</th>
+                <th style="width: 110px;">Location / Hub</th>
+                <th style="width: 110px;">Vehicle Type</th>
+                <th style="width: 110px;">Route / Block</th>
+                <th style="width: 140px;">Deduction Type</th>
+                <th style="width: 110px;" class="text-end">Amount (₹)</th>
+                <th style="width: 140px;">Shipment / Waybill ID <span class="text-danger" title="Mandatory for Shipment Deductions">*</span></th>
+                <th style="width: 90px;" class="text-center" title="YES = Split shared shipment penalty across multiple vendors; NO = Single unique vendor deduction">Is Split?</th>
+                <th>Remarks</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of filteredData">
+                <td style="width: 110px;">
+                  <span *ngIf="row.Status === 'Uploaded' || row.status === 'Uploaded'" class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">
+                    <i class="fa fa-check-circle me-1"></i>Uploaded
+                  </span>
+                  <span *ngIf="row.Status !== 'Uploaded' && row.status !== 'Uploaded'" class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1">
+                    <i class="fa fa-times-circle me-1"></i>Not Uploaded
+                  </span>
+                </td>
+                <td style="max-width: 320px; white-space: normal;">
+                  <div *ngIf="row.Status !== 'Uploaded' && row.status !== 'Uploaded'" 
+                       class="text-danger fw-semibold d-flex align-items-start gap-1" 
+                       [title]="row.Reason || row.reason || 'Validation error'" 
+                       style="font-size: 11.5px; line-height: 1.35;">
+                    <i class="fa fa-exclamation-triangle text-danger mt-1 flex-shrink-0"></i>
+                    <span>{{ row.Reason || row.reason || 'Validation error' }}</span>
+                  </div>
+                  <span *ngIf="row.Status === 'Uploaded' || row.status === 'Uploaded'" class="text-dark small">
+                    <i class="fa fa-check text-success me-1"></i>Success
+                  </span>
+                </td>
+                <td>
+                  <span class="badge bg-light text-dark border font-monospace fw-bold">
+                    {{ row.VendorCode || row.vendorCode }}
+                  </span>
+                </td>
+                <td class="font-monospace fw-semibold text-dark">
+                  {{ row.FHRID || row.fhrid }}
+                </td>
+                <td class="fw-semibold text-dark">
+                  {{ row.VendorName || row.vendorName }}
+                </td>
+                <td>
+                  <span class="badge bg-light text-dark border">
+                    {{ row.Location || row.location || '-' }}
+                  </span>
+                </td>
+                <td>
+                  <span *ngIf="row.VehicleType || row.vehicleType" class="badge bg-light text-dark border">
+                    {{ row.VehicleType || row.vehicleType }}
+                  </span>
+                  <span *ngIf="!row.VehicleType && !row.vehicleType" class="text-dark">-</span>
+                </td>
+                <td>
+                  <span *ngIf="row.Route || row.route" class="badge bg-light text-dark border">
+                    {{ row.Route || row.route }}
+                  </span>
+                  <span *ngIf="!row.Route && !row.route" class="text-dark">-</span>
+                </td>
+                <td>
+                  <span class="fw-bold text-primary">
+                    {{ row.DeductionType || row.deductionType }}
+                  </span>
+                </td>
+                <td class="text-end fw-bold text-dark font-monospace">
+                  {{ (row.Amount || row.amount || 0) | currency:'INR' }}
+                </td>
+                <td>
+                  <span *ngIf="row.ShipmentId || row.shipmentId" class="badge bg-secondary-subtle text-dark border font-monospace">
+                    {{ row.ShipmentId || row.shipmentId }}
+                  </span>
+                  <span *ngIf="!row.ShipmentId && !row.shipmentId" class="text-dark">-</span>
+                </td>
+                <td class="text-center">
+                  <span class="badge py-1 px-2" [ngClass]="(row.IsSplit === 'YES' || row.isSplit === 'YES') ? 'bg-primary text-white' : 'bg-light text-dark border'">
+                    {{ row.IsSplit || row.isSplit || 'NO' }}
+                  </span>
+                </td>
+                <td class="text-dark text-truncate" style="max-width: 180px;" [title]="row.Remarks || row.remarks || ''">
+                  {{ row.Remarks || row.remarks || '-' }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Right Side Column: Fact Box (Matching Screenshot 3) -->
+  <app-fact-box [ngClass]="isFactBoxOpen ? 'col-sm-12 col-md-4 col-lg-3' : ''" 
+    [title]="'Previously Uploaded Files'"
+    [files]="uploadedFiles" 
+    [isLoading]="isLoadingFiles" 
+    [isOpen]="isFactBoxOpen" 
+    (onToggle)="toggleFactBox()" 
+    (onDownload)="downloadUploadedFile($event)">
+  </app-fact-box>
+
+</div>

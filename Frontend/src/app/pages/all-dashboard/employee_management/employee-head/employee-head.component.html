@@ -1,0 +1,327 @@
+<div class="step-indicator">
+
+  <!-- Step 1 -->
+  <div class="step" [ngClass]="{'active-step': currentStep === 1, 'completed-step': currentStep > 1}" (click)="goToEmployeeMst()" style="cursor: pointer;">
+    <div class="step-circle">
+      <a (click)="goToEmployeeMst()">1</a>
+    </div>
+    <div class="step-label small"><span class="small">Employee Master</span></div>
+    <div class="step-line" *ngIf="currentStep > 1 || currentStep === 1"></div>
+  </div>
+
+  <!-- Step 2 -->
+  <div class="step" [ngClass]="{'active-step': currentStep === 2, 'completed-step': currentStep > 2}" (click)="goToAttendance()" style="cursor: pointer;">
+    <div class="step-circle">
+      <a (click)="goToAttendance()">2</a>
+    </div>
+    <div class="step-label small"><span class="small">Shift & Attandance Details</span></div>
+    <div class="step-line" *ngIf="currentStep > 2 || currentStep === 2"></div>
+  </div>
+
+  <!-- Step 3 -->
+  <div class="step" [ngClass]="{'active-step': currentStep === 3,'completed-step': currentStep > 3}" (click)="goToOtherDetails()" style="cursor: pointer;">
+    <div class="step-circle">
+      <a (click)="goToOtherDetails()">3</a>
+    </div>
+    <div class="step-label small"><span class="small">Compliance  Details</span></div>
+    <div class="step-line" *ngIf="currentStep > 3 || currentStep === 3"></div>
+  </div>
+
+  <!-- Step 4 -->
+  <div class="step" [ngClass]="{'active-step': currentStep === 4, 'completed-step': currentStep > 4}" (click)="goTohead()" style="cursor: pointer;">
+    <div class="step-circle">
+      <a (click)="goTohead()">4</a>
+    </div>
+    <div class="step-label small"><span class="small">Salary Details </span></div>
+    <div class="step-line" *ngIf="currentStep > 4 || currentStep === 4"></div>
+  </div>
+
+  <!-- Step 5 -->
+  <div class="step" [ngClass]="{'active-step': currentStep === 5, 'completed-step': currentStep > 5}" (click)="goToDemographic()" style="cursor: pointer;">
+    <div class="step-circle">
+      <a (click)="goToDemographic()">5</a>
+    </div>
+    <div class="step-label small"><span class="small">Demographic Details</span></div>
+    <div class="step-line" *ngIf="currentStep > 5 || currentStep === 5"></div>
+  </div>
+
+  <!-- Step 6 -->
+  <div class="step" [ngClass]="{'active-step': currentStep === 6, 'completed-step': currentStep > 6}" (click)="goToQualification()" style="cursor: pointer;">
+    <div class="step-circle">
+      <a (click)="goToQualification()">6</a>
+    </div>
+    <div class="step-label small"><span class="small">Qualification Details</span></div>
+    <div class="step-line" *ngIf="currentStep > 6 || currentStep === 6"></div>
+  </div>
+
+  <!-- Step 7 -->
+  <div class="step" [ngClass]="{'active-step': currentStep === 7}" (click)="goToExperience()" style="cursor: pointer;">
+    <div class="step-circle">
+      <a (click)="goToExperience()">7</a>
+    </div>
+    <div class="step-label small"><span class="small">Experience Details</span></div>
+  </div>
+</div>
+<!--  -->
+
+<!--  -->
+
+<div class="row mt-2">
+  <div [ngClass]="isFactBoxOpen ? 'col-sm-12 col-md-8 col-lg-9' : 'col-12'">
+    <div class="card mt-lg-3 border-top border-2 border-primary">
+<div class="row row-cols-1 row-cols-md-4 g-3 pt-1 px-3">
+<div class="col">
+<p class="small" style="font-size: 12px;"><span>Emp Code : </span> <span style="color:red;">{{ EmployeeForm.value.empcode }}</span> </p>
+</div>
+
+<div class="col">
+  <p class="small " style="font-size: 12px;"><span>Emp Name : </span> <span style="color:red;">{{ EmployeeForm.value.empname }}</span> </p>
+</div>
+</div>
+
+      <div class="card-header bg-blue d-flex justify-content-between align-items-center flex-wrap py-1">
+        <div class="d-flex align-items-center">
+          <h4 class="small mb-0">Salary Breakup</h4>
+        </div>
+        <div class="d-flex align-items-center justify-content-end gap-2">
+          <button *ngIf="pk_empid && !isFactBoxOpen" class="btn btn-outline-light btn-sm d-flex align-items-center"
+            (click)="toggleFactBox()" title="Open Audit Log">
+            <i class="fa fa-history me-1"></i> Audit Log
+          </button>
+          <button class="btn btn-light" (click)="onBack()">
+            Back
+          </button>
+        </div>
+      </div>
+      <!-- <div class="card-body my-1">
+                <form [formGroup]="EmployeeForm">
+                    <div class="row row-cols-1 row-cols-md-3">
+                        <div class="col">
+                            <label for="inputEmail3">CTC<span style="color: red;">*</span></label>
+                            <input type="text" class="form-control"formControlName="ctc"(keypress)="restrictInputDecimal($event)">
+                            <span *ngIf="showError && EmployeeForm.controls['ctc'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                                Please enter CTC.
+                              </span>
+                        </div>
+                        <div class="col">
+                            <label for="inputEmail3">Variable CTC<span style="color: red;">*</span></label>
+                            <input type="text" class="form-control"formControlName="VariableCTCAmount"(keypress)="restrictInputDecimal($event)">
+                            <span *ngIf="showError && EmployeeForm.controls['VariableCTCAmount'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                                Please enter Variable CTC.
+                              </span>
+                        </div>
+                    </div>
+                </form>
+            </div> -->
+      <!-- <div class="card-header py-1  mt-3 bg-blue">
+                <div class="row w-100 ">
+                    <div class="col-sm-12 col-md-12 col-lg-12">
+                        <h4 class="small">Calculate Heads</h4>
+                    </div>
+                </div>
+            </div> -->
+      <div class="card-body">
+
+        <form [formGroup]="headForm">
+          <div class="row row-cols-1 row-cols-md-3 gy-2 gx-4">
+
+            <!-- Based On -->
+            <div class="col">
+              <label>Based On</label><br>
+              <div class="form-check form-check-inline pt-2">
+                <input class="form-check-input" type="radio" id="inlineRadio3" value="g" formControlName="basedon">
+                <label class="form-check-label" for="inlineRadio3">Gross</label>
+              </div>
+              <div class="form-check form-check-inline pt-2">
+                <input class="form-check-input" type="radio" id="inlineRadio4" value="b" formControlName="basedon">
+                <label class="form-check-label" for="inlineRadio4">Basic</label>
+              </div>
+            </div>
+
+            <!-- Location -->
+            <div class="col">
+              <label>Location <span class="text-danger">*</span></label>
+              <ng-select [items]="Location" bindLabel="name" bindValue="value" formControlName="locid"
+                placeholder="--Select Location--" class="w-100 small"></ng-select>
+              <span *ngIf="showErrorhead && headForm.controls['locid'].invalid" class="text-danger mt-1"
+                style="font-size: 12px;">
+                Please enter Location.
+              </span>
+            </div>
+
+             <div class="col">
+              <label>GL Posting <span class="text-danger">*</span></label>
+              <ng-select [items]="glposting" bindLabel="name" bindValue="value" formControlName="glposting"
+                placeholder="--Select GL Posting--" class="w-100 small"></ng-select>
+             
+            </div>
+
+            <!-- Grade -->
+            <div class="col">
+              <label>Grade <span class="text-danger">*</span></label>
+              <ng-select [items]="Grade" bindLabel="name" bindValue="value" formControlName="fkGradeId"
+                placeholder="--Select Grade Type--" class="w-100 small"></ng-select>
+              <span *ngIf="showErrorhead && headForm.controls['fkGradeId'].invalid" class="text-danger mt-1"
+                style="font-size: 12px;">
+                Please enter Grade.
+              </span>
+            </div>
+
+              <div class="col">
+              <label>Fixed Income Tax</label>
+              <input type="number" class="form-control" formControlName="FixedIncomeTax">
+             
+            </div>
+            <!-- Amount -->
+            <div class="col">
+              <label>Amount <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" formControlName="amount"
+                (keypress)="restrictInputDecimal($event)">
+              <span *ngIf="showErrorhead && headForm.controls['amount'].invalid" class="text-danger mt-1"
+                style="font-size: 12px;">
+                Please enter Amount.
+              </span>
+            </div>
+
+            <!-- ESOPS -->
+            <!-- <div class="col">
+                        <label>ESOPS</label>
+                        <input type="text" class="form-control" formControlName="ESOPS" (keypress)="restrictInputDecimal($event)">
+                      </div> -->
+
+            <!-- Joining Bonus -->
+            <!-- <div class="col">
+                        <label>Joining Bonus</label>
+                        <input type="text" class="form-control" formControlName="JoiningBonus" (keypress)="restrictInputDecimal($event)">
+                      </div> -->
+
+            <!-- Retention Bonus -->
+            <!-- <div class="col">
+                        <label>Retention Bonus</label>
+                        <input type="text" class="form-control" formControlName="RetentionBonus" (keypress)="restrictInputDecimal($event)">
+                      </div> -->
+
+            <!-- Retention Frequency -->
+            <!-- <div class="col">
+                        <label>Retention Frequency</label>
+                        <ng-select [items]="RetentionFrequency" bindLabel="name" bindValue="value"
+                                   formControlName="RetentionFrequency"
+                                   placeholder="--Select Retention Frequency--"
+                                   class="w-100 small"></ng-select>
+                      </div> -->
+
+            <!-- Buttons -->
+            <div class="col">
+              <div class="d-flex align-items-center justify-content-start pt-4 mt-2">
+                <button type="button" class="btn btn-primary btn-sm mx-1" (click)="getHeadList()">Get Heads</button>
+                <button type="button" class="btn btn-outline-dark btn-sm mx-1" (click)="clearForm()">Reset</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Head Tables -->
+       
+            <div class="row g-4">
+
+              <!-- Earning Heads Table -->
+              <div class="col-md-6">
+                <br>
+                <p class="text-dark m-0 d  ps-3 text-primary ">List of Earning Heads</p>
+
+                <table class="table" formArrayName="earningHeads">
+                  <thead>
+                    <tr>
+                      <th>Sr.No.</th>
+                      <th>Description</th>
+                      <th>Amount</th>
+                      <th>Effective From<span class="text-danger fw-bold">*</span></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let item of earningHeads.controls; let i = index" [formGroupName]="i">
+                      <td>{{ i + 1 }}</td>
+                      <td>{{ item.get('shortDesc')?.value }}</td>
+                      <td><input type="text" class="form-control" formControlName="amount"
+                          (keypress)="restrictInputDecimal($event)" maxlength="8"></td>
+                      <td><input type="date" class="form-control" formControlName="effectDate">
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+                <div class="row row-cols-1 row-cols-md-3 g-2 d-flex align-items-center justify-content-center">
+                  <div class="col pt-2">
+                    <label for="inputEmail3"><span class="fw-semibold">Total Earnings : </span> <span class="px-2 fw-bold text-success">{{totalEarningCount}}</span></label>
+                   
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- Deduction Heads Table -->
+              <div class="col-md-6">
+                <br>
+                <p class="text-dark m-0 d  ps-3 text-primary ">List of Deduction Heads</p>
+                <table class="table" formArrayName="deductionHeads">
+                  <thead>
+                    <tr>
+                      <th>Sr.No.</th>
+                      <th>Description</th>
+                      <th>Amount</th>
+                      <th>Effective From<span class="text-danger fw-bold">*</span></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let item of deductionHeads.controls; let i = index" [formGroupName]="i">
+                      <td>{{ i + 1 }}</td>
+                      <td>{{ item.get('shortDesc')?.value }}</td>
+                      <td><input type="text" class="form-control" formControlName="amount"
+                          (keypress)="restrictInputDecimal($event)" maxlength="8"></td>
+                      <td><input type="date" class="form-control" formControlName="effectDate"></td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <div class="row row-cols-1 row-cols-md-3 g-2 d-flex align-items-center justify-content-center">
+
+                  <!-- Total Deductions -->
+                  <div class="col pt-2">
+                    <label for="inputEmail3"><span class="fw-semibold">Total Deductions : </span> <span class="ps-1 fw-bold text-danger">{{totalDeductionCount}}</span></label>
+                   
+                  </div>
+                </div>
+
+
+              
+
+              </div>
+
+            </div>
+        
+        </form>
+
+      </div>
+
+      <!-- <div class="card-header py-1 bg-blue mt-3">
+                <div class="row w-100">
+                    <div class="col-sm-12 col-md-12 col-lg-12">
+                        <h4 class="">Flexi Heads</h4>
+                    </div>
+                </div>
+            </div> -->
+
+      <div class="modal-footer mb-1 ">
+        <button type="button" class="btn btn-primary btn-sm  mx-1" (click)="onSubmit()">Update</button>
+        <button type="button" class="btn btn-outline-dark btn-sm mx-1" (click)="resetForm()">Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Side: Employee Master Tab-Wise Audit Log Fact Box -->
+  <app-employee-fact-box 
+      [ngClass]="isFactBoxOpen ? 'col-sm-12 col-md-4 col-lg-3' : ''"
+      [documentId]="pk_empid"
+      [documentName]="'Employee Master - Salary Details'"
+      [isOpen]="isFactBoxOpen"
+      (onToggle)="toggleFactBox()">
+  </app-employee-fact-box>
+</div>

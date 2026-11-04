@@ -1,0 +1,99 @@
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header bg-primary">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-3 col-lg-3 d-flex align-items-center">
+            <h4>Training Contents List</h4>
+          </div>
+
+
+          <!-- Filter by Material Type -->
+
+          <div class="col-sm-12 col-md-3 col-lg-3">
+            <select class="form-control" [(ngModel)]="filter.materialType" (change)="onFilterChange()">
+              <option value="">All Types</option>
+              <option *ngFor="let type of materialTypes" [value]="type.id">{{ type.name }}</option>
+            </select>
+          </div>
+
+
+         
+
+          <!-- Search by Title -->
+          <div class="col-sm-12 col-md-3 col-lg-3">
+            <input type="text" class="form-control" placeholder="Search Title..." [(ngModel)]="searchText" />
+          </div>
+          <div class="col-sm-12 col-lg-3 col-3 d-flex align-items-center justify-content-sm-end">
+            <button class="btn btnheader" routerLink="/dash/training/trainingdashboard/Training_content">Add</button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div class="card-body">
+        <div class="table-responsive table-invoice">
+          <table id="exportTable" class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Sr.No.</th>
+                <th>Material Type</th>
+                <th>Material Title</th>
+                <th>Material Files</th>
+                <th>Material URL</th>
+
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- <tr *ngFor="let item of materials; let i = index"> -->
+              <tr
+                *ngFor="let item of  filteredData() | paginate: { itemsPerPage: pageSize, currentPage: pageIndex ,totalItems:totalItems};let i = index">
+
+                <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+                <td>{{ item.materialType }}</td>
+                <td>{{ item.materialTitle }}</td>
+
+                <!-- <td>
+                  <a *ngIf="item.materialPath" [href]="item.materialPath" target="_blank">{{ item.materialPath | slice:0:30 }}...</a>
+                </td> -->
+
+                <td (click)="downloadMaterial(item.materialPath)" style="cursor: pointer; text-align: center;">
+                  <i class="fa fa-eye" aria-hidden="true" title="View/Download Image"></i>
+                </td>
+
+
+                <td>
+                  <ng-container *ngIf="item.materialUrl; else noMaterial">
+                    <a [href]="item.materialUrl" target="_blank">
+                      {{ item.materialUrl | slice:0:30 }}...
+                    </a>
+                  </ng-container>
+                  <ng-template #noMaterial>N/A</ng-template>
+                </td>
+
+                <td>
+
+                  <!-- <button class="btn btn-sm " (click)="editMaterial(item.materialId)">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                  </button> -->
+
+                  <button class="btn btn-sm btn-outline" (click)="isUpdate(item.pk_materialId)"><i
+                      class="fa-solid fa-pen-to-square"></i></button>
+<!-- 
+                  <button class="btn btn-sm " (click)="deleteMaterial(item.pk_materialId)">
+                    <i class="fa-solid fa-trash"></i>
+                  </button> -->
+
+                
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

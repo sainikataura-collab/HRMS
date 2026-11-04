@@ -1,0 +1,63 @@
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card">
+
+      <!-- Card Header -->
+      <div class="card-header bg-blue">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-6 col-lg-6">
+            <h4>Confirmation Email Setting</h4>
+          </div>
+          <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+            <button class="btn btnheader" routerLink="/dash/hr/hrdashboard/HR_Confirmation_EmailSetting_list">
+              View
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card Body -->
+      <div class="card-body mt-4">
+        <form [formGroup]="HrConfirmationEmailsettingform" class="row row-cols-1 row-cols-md-3 g-4">
+
+          <div class="col">
+            <div class="form-group">
+              <label>Approval Level</label>
+              <ng-select [items]="orderno" bindLabel="name" bindValue="value"
+                formControlName="orderno" placeholder="--Select --" class="w-100">
+              </ng-select>
+              <div *ngIf="submitted && HrConfirmationEmailsettingform.get('orderno')?.invalid"
+                class="text-danger mt-1" style="font-size: 12px;">
+                Approval Level is required!
+              </div>
+            </div>
+          </div>
+
+          <div class="col">
+            <div class="form-group">
+              <label>Remainder Days</label>
+              <input type="number" class="form-control" formControlName="days">
+              <div *ngIf="submitted && HrConfirmationEmailsettingform.get('days')?.invalid"
+                class="text-danger mt-1" style="font-size: 12px;">
+                Remainder Days is required!
+              </div>
+            </div>
+          </div>
+
+        </form>
+
+        <div class="row">
+          <div class="col d-flex align-items-end justify-content-end pt-4 pb-3">
+            <button type="submit" class="btn btn-primary btn-sm mx-1 px-2" (click)="submit()">
+              Save
+            </button>
+            <button type="button" class="btn btn-outline-dark btn-sm mx-1 px-2" (click)="resetForm()">
+              Reset
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

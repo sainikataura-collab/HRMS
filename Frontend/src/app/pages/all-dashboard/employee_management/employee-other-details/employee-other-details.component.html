@@ -1,0 +1,420 @@
+
+<div class="step-indicator">
+    <!-- Step 1 -->
+    <div class="step" [ngClass]="{'active-step': currentStep === 1, 'completed-step': currentStep > 1}"
+        (click)="goToEmployeeMst()" style="cursor: pointer;">
+        <div class="step-circle">
+            <a (click)="goToEmployeeMst()">1</a>
+        </div>
+        <div class="step-label small"><span class="small">Employee Master</span></div>
+        <div class="step-line" *ngIf="currentStep > 1 || currentStep === 1"></div>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="step" [ngClass]="{'active-step': currentStep === 2, 'completed-step': currentStep > 2}"
+        (click)="goToAttendance()" style="cursor: pointer;">
+        <div class="step-circle">
+            <a (click)="goToAttendance()">2</a>
+        </div>
+        <div class="step-label small"><span class="small">Shift & Attandance Details</span></div>
+        <div class="step-line" *ngIf="currentStep > 2 || currentStep === 2"></div>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="step" [ngClass]="{'active-step': currentStep === 3,'completed-step': currentStep > 3}"
+        (click)="goToOtherDetails()" style="cursor: pointer;">
+        <div class="step-circle">
+            <a (click)="goToOtherDetails()">3</a>
+        </div>
+        <div class="step-label small"><span class="small">Compliance Details</span></div>
+        <div class="step-line" *ngIf="currentStep > 3 || currentStep === 3"></div>
+    </div>
+
+    <!-- Step 4 -->
+    <div class="step" [ngClass]="{'active-step': currentStep === 4, 'completed-step': currentStep > 4}"
+        (click)="goTohead()" style="cursor: pointer;">
+        <div class="step-circle">
+            <a (click)="goTohead()">4</a>
+        </div>
+        <div class="step-label small"><span class="small">Salary Details </span></div>
+        <div class="step-line" *ngIf="currentStep > 4 || currentStep === 4"></div>
+    </div>
+
+    <!-- Step 5 -->
+    <div class="step" [ngClass]="{'active-step': currentStep === 5, 'completed-step': currentStep > 5}" (click)="goToDemographic()"
+        style="cursor: pointer;">
+        <div class="step-circle">
+            <a (click)="goToDemographic()">5</a>
+        </div>
+        <div class="step-label small"><span class="small">Demographic Details</span></div>
+        <div class="step-line" *ngIf="currentStep > 5 || currentStep === 5"></div>
+    </div>
+
+    <!-- Step 6 -->
+    <div class="step" [ngClass]="{'active-step': currentStep === 6, 'completed-step': currentStep > 6}" (click)="goToQualification()" style="cursor: pointer;">
+        <div class="step-circle">
+            <a (click)="goToQualification()">6</a>
+        </div>
+        <div class="step-label small"><span class="small">Qualification Details</span></div>
+        <div class="step-line" *ngIf="currentStep > 6 || currentStep === 6"></div>
+    </div>
+
+    <!-- Step 7 -->
+    <div class="step" [ngClass]="{'active-step': currentStep === 7}" (click)="goToExperience()" style="cursor: pointer;">
+        <div class="step-circle">
+            <a (click)="goToExperience()">7</a>
+        </div>
+        <div class="step-label small"><span class="small">Experience Details</span></div>
+    </div>
+</div>
+
+
+<div class="row mt-2">
+    <div [ngClass]="isFactBoxOpen ? 'col-sm-12 col-md-8 col-lg-9' : 'col-12'">
+
+        <div class="card mt-lg-3 border-top border-2 border-primary">
+            <div class="row row-cols-1 row-cols-md-4 g-3 pt-1 px-3">
+                <div class="col">
+                    <p class="small" style="font-size: 12px;"><span>Emp Code : </span> <span style="color:red;">{{
+                            EmployeeForm.value.empcode }}</span> </p>
+                </div>
+
+                <div class="col">
+                    <p class="small " style="font-size: 12px;"><span>Emp Name : </span> <span style="color:red;">{{
+                            EmployeeForm.value.empname }}</span> </p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header bg-blue d-flex justify-content-between align-items-center flex-wrap">
+                    <div class="d-flex align-items-center">
+                        <h4 class="mb-0">Compliance Details</h4>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-end gap-2">
+                        <button *ngIf="pk_empid && !isFactBoxOpen" class="btn btn-outline-light btn-sm d-flex align-items-center"
+                            (click)="toggleFactBox()" title="Open Audit Log">
+                            <i class="fa fa-history me-1"></i> Audit Log
+                        </button>
+                        <button class="btn btnheader"
+                            routerLink="/dash/adminEmployeeManagement/adminEmployeeManagementdashboard/Employee_list">
+                            Back
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <form [formGroup]="EmployeeForm">
+                        <div class="row row-cols-1 row-cols-md-3 g-3">
+                            <!-- 1. PF Applicable -->
+                            <div class="col">
+                                <div class="form-check pt-md-4 mt-md-1">
+                                    <input class="form-check-input" type="checkbox" id="PFApplicable"
+                                        formControlName="pf_app">
+                                    <label class="form-check-label" for="PFApplicable">PF Applicable</label>
+                                </div>
+                            </div>
+
+                            <!-- 2. PF Fixed Amount -->
+                            <div class="col">
+                                <label for="pffixedamount" class="form-label">PF Fixed Amount</label>
+                                <input type="text" id="pffixedamount" class="form-control"
+                                    formControlName="pffixedamount" (keypress)="restrictInputDecimal($event)"
+                                    placeholder="0">
+                            </div>
+
+                            <!-- 3. PF No -->
+                            <div class="col">
+                                <label for="pfno" class="form-label">PF No.</label>
+                                <input type="text" id="pfno" class="form-control" formControlName="pfno"
+                                    placeholder="Enter PF No.">
+                            </div>
+
+                            <!-- 4. Voluntary PF Applicable -->
+                            <div class="col">
+                                <div class="form-check pt-md-4 mt-md-1">
+                                    <input class="form-check-input" type="checkbox" id="VoluntaryPFApplicable"
+                                        formControlName="volpf_app">
+                                    <label class="form-check-label" for="VoluntaryPFApplicable">Voluntary PF
+                                        Applicable</label>
+                                </div>
+                            </div>
+
+                            <!-- 5. Vol PF Type -->
+                            <div class="col">
+                                <label class="form-label">Vol PF Type</label>
+                                <div class="d-flex align-items-center pt-2">
+                                    <div class="form-check form-check-inline me-4">
+                                        <input class="form-check-input" type="radio" name="volpfType" id="inlineRadio1"
+                                            value="P" formControlName="volpfType">
+                                        <label class="form-check-label" for="inlineRadio1">Percent</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="volpfType" id="inlineRadio2"
+                                            value="A" formControlName="volpfType">
+                                        <label class="form-check-label" for="inlineRadio2">Amount</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 6. VOL PF Percent / Amt -->
+                            <div class="col">
+                                <label for="volpfTypeAmt" class="form-label">VOL PF Percent / Amt.</label>
+                                <input type="text" id="volpfTypeAmt" class="form-control" formControlName="volpfTypeAmt"
+                                    (keypress)="restrictInputDecimal($event)" placeholder="0">
+                            </div>
+
+                            <!-- 7. ESI Applicable -->
+                            <div class="col">
+                                <div class="form-check pt-md-4 mt-md-1">
+                                    <input class="form-check-input" type="checkbox" id="ESIApplicable"
+                                        formControlName="esi_app">
+                                    <label class="form-check-label" for="ESIApplicable">ESI Applicable</label>
+                                </div>
+                            </div>
+
+                            <!-- 8. LWF Applicable -->
+                            <div class="col">
+                                <div class="form-check pt-md-4 mt-md-1">
+                                    <input class="form-check-input" type="checkbox" id="lwfapplicable"
+                                        formControlName="lwfapplicable">
+                                    <label class="form-check-label" for="lwfapplicable">LWF Applicable</label>
+                                </div>
+                            </div>
+
+
+                            
+
+                            <!-- 9. Is ESI Cycle -->
+                            <div class="col">
+                                <div class="form-check pt-md-4 mt-md-1">
+                                    <input class="form-check-input" type="checkbox" id="inESICycle"
+                                        formControlName="inESICycle">
+                                    <label class="form-check-label" for="inESICycle">Is ESI Cycle</label>
+                                </div>
+                            </div>
+
+                            <!-- 10. ESI No -->
+                            <div class="col">
+                                <label for="esino" class="form-label">ESI No.</label>
+                                <input type="text" id="esino" class="form-control" formControlName="esino"
+                                    placeholder="Enter ESI No.">
+                            </div>
+
+                            <!-- 11. ESI Zone -->
+                            <div class="col">
+                                <label for="esiZone" class="form-label">ESI Zone</label>
+                                <select id="esiZone" class="form-select" formControlName="esiZone">
+                                    <option value="" disabled selected>Select ESI Zone</option>
+                                    <option *ngFor="let zone of zones" [value]="zone.value">
+                                        {{ zone.name }}
+                                    </option>
+                                </select>
+                            </div>
+
+                            <!-- 12. Professional Tax -->
+                            <div class="col">
+                                <div class="form-check pt-md-4 mt-md-1">
+                                    <input class="form-check-input" type="checkbox" id="ProfessionalTax"
+                                        formControlName="proftax_app">
+                                    <label class="form-check-label" for="ProfessionalTax">Professional Tax</label>
+                                </div>
+                            </div>
+
+                            <!-- 13. PF Max Limit App -->
+                            <div class="col">
+                                <div class="form-check pt-md-4 mt-md-1">
+                                    <input class="form-check-input" type="checkbox" id="PFMaxLimitApp"
+                                        formControlName="pfmaxlimit_app">
+                                    <label class="form-check-label" for="PFMaxLimitApp">PF Max Limit App</label>
+                                </div>
+                            </div>
+
+                            <!-- 14. UAN No -->
+                            <div class="col">
+                                <label for="uanNo" class="form-label">UAN No.</label>
+                                <input type="text" id="uanNo" class="form-control" formControlName="uanNo"
+                                    maxlength="30" placeholder="Enter UAN No.">
+                            </div>
+
+                            <!-- 15. Reverse Salary -->
+                            <div class="col">
+                                <div class="form-check pt-md-4 mt-md-1">
+                                    <input class="form-check-input" type="checkbox" id="ReverseSalary"
+                                        formControlName="isreverse">
+                                    <label class="form-check-label" for="ReverseSalary">Reverse Salary</label>
+                                </div>
+                            </div>
+
+                            <!-- 16. Nominee Name -->
+                            <div class="col">
+                                <label for="NomineeName" class="form-label">Nominee Name</label>
+                                <input type="text" id="NomineeName" class="form-control" formControlName="NomineeName"
+                                    placeholder="Enter Nominee Name">
+                            </div>
+
+                            <!-- 17. Nominee Relation -->
+                            <div class="col">
+                                <label for="NomineeRelation" class="form-label">Nominee Relation with Candidate</label>
+                                <input type="text" id="NomineeRelation" class="form-control"
+                                    formControlName="NomineeRelation"
+                                    placeholder="Enter Relation (e.g. Father, Spouse)">
+                            </div>
+
+                            <!-- 18. Nominee Mobile No -->
+                            <div class="col">
+                                <label for="NomineeMobileNo" class="form-label">Nominee Mobile Number</label>
+                                <input type="text" id="NomineeMobileNo" class="form-control"
+                                    formControlName="NomineeMobileNo" maxlength="10"
+                                    placeholder="Enter 10-digit Mobile Number">
+                                <span
+                                    *ngIf="EmployeeForm.controls['NomineeMobileNo']?.invalid && EmployeeForm.controls['NomineeMobileNo']?.touched"
+                                    class="text-danger mt-1 d-block" style="font-size: 12px;">
+                                    Please enter a valid 10-digit mobile number.
+                                </span>
+                            </div>
+                                
+
+
+                            <!-- 19. Policy Applicable -->
+                            <div class="col">
+                                <div class="form-check pt-md-4 mt-md-1">
+                                    <input class="form-check-input" type="checkbox" id="policyapplicable"
+                                        formControlName="policy_app">
+                                    <label class="form-check-label" for="policyapplicable">Policy Applicable</label>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+
+                    <div class="d-flex justify-content-between align-items-center mt-4 mb-2">
+                        <p class=" "> <span class="text-primary m-0 fw-bold">Policy Details</span><span
+                                class="text-muted">(only show when applicable)</span></p>
+                    </div>
+
+                    <form [formGroup]="EmployeeForm">
+
+                        <!-- Conditional Policy Fields -->
+                        <div class="row row-cols-1 row-cols-md-3 mt-3" *ngIf="EmployeeForm.get('policy_app')?.value">
+                            <div class="col mb-3">
+                                <label for="policyNo" class="form-label">Policy No</label>
+                                <input type="text" id="policyNo" class="form-control" formControlName="policyNo"
+                                    placeholder="Enter policy number" />
+                            </div>
+
+                            <div class="col mb-3">
+                                <label for="policyDate" class="form-label">Policy Date</label>
+                                <input type="date" id="policyDate" class="form-control" formControlName="policyDate" />
+                            </div>
+
+                            <div class="col mb-3">
+                                <label for="policyAmount" class="form-label">Policy Amount</label>
+                                <input type="number" id="policyAmount" class="form-control"
+                                    formControlName="policyAmount" placeholder="Enter amount" />
+                            </div>
+
+                            <div class="col mb-3">
+                                <label for="tillValid" class="form-label">Till Valid</label>
+                                <input type="date" id="tillValid" class="form-control" formControlName="tillValid" />
+                            </div>
+
+                            <!-- <div class="col mb-3">
+                                <label for="policyImage" class="form-label">Policy Card</label>
+                                <input type="file" id="policyImage" class="form-control"
+                                    (change)="onFileSelect($event)" />
+                                      <a *ngIf="picImageUrl && !selectedFile" [href]="picImageUrl" target="_blank"
+                                        class="d-flex align-items-center justify-content-center btn btn-outline-primary p-2">
+                                        <i class="fa-solid fa-eye" style="font-size: 0.9rem;"></i>
+                                    </a>
+
+                          
+                            <div *ngIf="fileError" class="text-danger small mt-1">
+                                {{ fileError }}
+                            </div>
+
+                             
+                                
+                                
+                                <div *ngIf="selectedFile" class="mt-2">
+                                    <img [src]="imagePreview" alt="Policy Preview" class="img-thumbnail"
+                                        style="max-width: 150px;" />
+                                </div>
+                            </div> -->
+
+                            <div class="col mb-3">
+                                <label for="policyImage" class="form-label">Policy Card</label>
+
+                                <div class="form-group">
+                                    <input type="file" id="policyImage" class="form-control"
+                                        (change)="onFileSelect($event)" />
+                                </div>
+
+                                <!-- File Error -->
+                                <div *ngIf="fileError" class="text-danger small mt-1">
+                                    {{ fileError }}
+                                </div>
+
+                                <!-- ✅ Inline Image Display Section
+                                <div *ngIf="selectedFile || picImageUrl" class=" mt-1 p-2 border rounded bg-light">
+                                    <h6 class="text-secondary text-center ">Policy Card </h6>
+
+                                    <img [src]="selectedFile ? imagePreview : picImageUrl" alt="Policy Preview"
+                                        class="img-thumbnail shadow-sm d-block mx-auto"
+                                        style="max-width: 250px; border: 1px solid #ccc;" />
+                                </div> -->
+                            </div>
+
+
+
+
+                        </div>
+
+                    </form>
+
+
+
+                    <!-- ✅ Show the Image Outside the Form -->
+
+
+
+                    <!-- ✅ Policy Details Section (outside form) -->
+                    <div *ngIf="EmployeeForm.get('policy_app')?.value && (selectedFile || picImageUrl)"
+                        class="mt-4 text-center">
+                        <h5 class=" text-primary mb-3">Policy Details</h5>
+
+                        <img [src]="selectedFile ? imagePreview : picImageUrl" alt="Policy Card" class="policy-image" />
+                    </div>
+
+                    <div class="row">
+                        <div class="col d-flex align-items-end justify-content-end pt-4 pb-3">
+                            <button type="button" class="btn btn-primary  mx-1" (click)="onSubmit()">Update</button>
+
+                            <button type="button" class="btn btn-outline-dark mx-1" (click)="resetForm()">Reset</button>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- <div class="row">
+                    <div class="col d-flex align-items-end justify-content-end pt-4 pb-3">
+                      <button type="button" class="btn btn-primary  mx-1" (click)="onSubmit()">Update</button> 
+              
+                        <button type="button" class="btn btn-outline-dark mx-1"(click)="resetForm()">Reset</button>
+                              
+                    </div>
+                   
+                </div> -->
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Side: Employee Master Tab-Wise Audit Log Fact Box -->
+    <app-employee-fact-box 
+        [ngClass]="isFactBoxOpen ? 'col-sm-12 col-md-4 col-lg-3' : ''"
+        [documentId]="pk_empid"
+        [documentName]="'Employee Master - Compliance & Other Details'"
+        [isOpen]="isFactBoxOpen"
+        (onToggle)="toggleFactBox()">
+    </app-employee-fact-box>
+</div>

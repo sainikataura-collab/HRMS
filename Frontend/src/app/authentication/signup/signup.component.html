@@ -1,0 +1,284 @@
+<section class="h-100 signup-section" style="background:url('assets/Image/123.png') no-repeat; width: 100%; ">
+  <div class="container-fluid register-form-section" >
+    <div class="row" >
+      <div class="col-lg-6 d-none d-lg-block pt-lg-5 mt-lg-4">
+        <img src="assets/Image/hrms-register.png" alt="coolie-register-images" class="object-fit-cover w-100">
+      </div>
+
+      <div class="col-12 col-lg-6 pt-4">
+        <div class="row">
+          <!-- <div class="col-sm-0 col-lg-2"></div> -->
+          <div class="col-12 col-lg-10 mx-auto">
+            <h4 class="fw-bold" style="color: #3080e8;">Register Now</h4>
+            <p class="fw-semibold">Hello! Let's get started with a few steps!</p>
+
+            <!-- Form Begins -->
+            <div [formGroup]="registerForm">
+              <div class="row">
+                
+                <!-- First Name -->
+                <div class="col-lg-6 mb-3">
+                  <div class="input-group">
+                    <span class="input-group-text p-3"><i class="fa-solid fa-user"></i></span>
+                    <input type="text" class="form-control" placeholder="First name" aria-label="First name"
+                      formControlName="customerFirstName" maxlength="100" minlength="3"
+                      [ngClass]="{'is-invalid': submitted && validate['customerFirstName'].errors}">
+                  </div>
+                  <div *ngIf="submitted && validate['customerFirstName'].errors" class="text-danger">
+                    <div *ngIf="validate['customerFirstName'].errors['required']">First name is required.</div>
+                    <div *ngIf="validate['customerFirstName'].errors['minlength']">First name must be at least 3 characters long.</div>
+                    <div *ngIf="validate['customerFirstName'].errors['maxlength']">First name cannot exceed 100 characters.</div>
+                  </div>
+                </div>
+
+                <!-- Last Name -->
+                <div class="col-lg-6 mb-3">
+                  <div class="input-group">
+                    <span class="input-group-text p-3"><i class="fa-solid fa-user"></i></span>
+                    <input type="text" class="form-control" placeholder="Last name" aria-label="Last name"
+                      formControlName="customerLastName" maxlength="100" minlength="3"
+                      [ngClass]="{'is-invalid': submitted && validate['customerLastName'].errors}">
+                  </div>
+                  <div *ngIf="submitted && validate['customerLastName'].errors" class="text-danger">
+                    <div *ngIf="validate['customerLastName'].errors['required']">Last name is required.</div>
+                    <div *ngIf="validate['customerLastName'].errors['minlength']">Last name must be at least 3 characters long.</div>
+                    <div *ngIf="validate['customerLastName'].errors['maxlength']">Last name cannot exceed 100 characters.</div>
+                  </div>
+                </div>
+
+                <!-- Email -->
+                <div class="col-lg-6 mb-3">
+                  <div class="input-group">
+                    <span class="input-group-text p-3"><i class="fa-solid fa-envelope"></i></span>
+                    <input type="email" class="form-control" placeholder="Email" aria-label="Email"
+                      formControlName="emailId" maxlength="50"
+                      [ngClass]="{'is-invalid': submitted && validate['emailId'].errors}">
+                  </div>
+                  <div *ngIf="submitted && validate['emailId'].errors" class="text-danger">
+                    <div *ngIf="validate['emailId'].errors['required']">Email is required.</div>
+                    <div *ngIf="validate['emailId'].errors['minlength']">Email must be at least 5 characters long.</div>
+                    <div *ngIf="validate['emailId'].errors['maxlength']">Email cannot exceed 50 characters.</div>
+                    <div *ngIf="validate['emailId'].errors['pattern']">Please enter a valid email address.</div>
+                  </div>
+                </div>
+
+
+                <!-- Mobile -->
+                <div class="col-lg-6 mb-3">
+                  <div class="input-group">
+                    <span class="input-group-text p-3"><i class="fa-solid fa-phone"></i></span>
+                    <input type="text" class="form-control" placeholder="Number" aria-label="Number"
+                      (keypress)="restrictNonNumeric($event)" (input)="formatInput($event)"
+                      formControlName="mobileNo" maxlength="10"
+                      [ngClass]="{'is-invalid': submitted && validate['mobileNo'].errors}">
+                  </div>
+                  <div *ngIf="submitted && validate['mobileNo'].errors" class="text-danger">
+                    <div *ngIf="validate['mobileNo'].errors['required']">Mobile number is required.</div>
+                    <div *ngIf="validate['mobileNo'].errors['pattern']">Please enter a valid mobile number.</div>
+                  </div>
+                </div>
+
+
+                
+            <!-- Password -->
+            <div class="col-lg-6 mb-3">
+              <div class="input-group">
+                <span class="input-group-text p-3"><i class="fa-solid fa-lock"></i></span>
+                <input [type]="showPassword ? 'text' : 'password'" class="form-control" placeholder="Password"
+                  aria-label="Password" formControlName="password" maxlength="25" minlength="8"
+                  [ngClass]="{'is-invalid': submitted && validate['password'].errors}">
+                <span class="input-group-text p-3 password-toggle" (click)="togglePasswordVisibility()">
+                  <i [class]="showPassword ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
+                </span>
+              </div>
+              <div *ngIf="submitted && validate['password'].errors" class="text-danger">
+                <div *ngIf="validate['password'].errors['required']">Password is required.</div>
+                <div *ngIf="validate['password'].errors['minlength']">
+                  Password must be at least 8 characters long.
+                </div>
+                <div *ngIf="validate['password'].errors['pattern']">
+                  Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character.
+                </div>
+              </div>
+            </div>
+            
+
+
+                <!-- Confirm Password -->
+                <div class="col-lg-6 mb-3">
+                  <div class="input-group">
+                    <span class="input-group-text p-3"><i class="fa-solid fa-lock"></i></span>
+                    <input [type]="NewshowPassword ? 'text' : 'password'"   class="form-control" placeholder="Confirm Password" aria-label="Confirm Password"
+                      formControlName="confirmPassword" maxlength="25" minlength="8"
+                      [ngClass]="{'is-invalid': submitted && validate['confirmPassword'].errors}">
+                      <span class="input-group-text p-3 password-toggle" (click)="NewPasswordVisibility()">
+                        <i [class]="NewshowPassword ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
+                      </span>
+                  </div>
+                  <div *ngIf="submitted && validate['confirmPassword'].errors" class="text-danger">
+                    <div *ngIf="validate['confirmPassword'].errors['required']">Confirm Password is required.</div>
+                    <div *ngIf="validate['confirmPassword'].errors['mismatch']">Passwords must match.</div>
+                  </div>
+                </div>
+
+                <!-- Terms and Conditions Checkbox -->
+                <div class="col-lg-12 mb-1">
+                  <div class="form-check">
+                    <input type="checkbox" id="term" formControlName="terms" />
+                    <label class="form-check-label" for="term">
+                      I agree to these <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal" class="text-decoration-none">Terms and Conditions</a>.
+                    </label>
+                    <div *ngIf="submitted && validate['terms'].errors" class="text-danger">
+                      <div *ngIf="validate['terms'].errors['required']"> Please accept T&C!</div>
+                    </div>
+                  </div>
+                </div>
+
+                
+
+              </div>
+            </div>
+            <!-- CAPTCHA -->
+            <div class="col-lg-12 mb-3" >
+              <div class="captcha-display" style="background:url('assets/Image/background8.jpg')no-repeat; object-fit: contain; " (copy)="$event.preventDefault()" 
+                (cut)="$event.preventDefault()" 
+                (paste)="$event.preventDefault()">{{ captcha }}</div>
+              <button type="button" (click)="generateCaptcha()" class="refreshicon">
+                <i class="fa-solid fa-arrows-rotate"></i>
+              </button>
+              <input type="text" [(ngModel)]="captchaInput" placeholder="Enter CAPTCHA" 
+                (paste)="$event.preventDefault()" 
+                (copy)="$event.preventDefault()" 
+                class="form-control" required />
+              <div *ngIf="captchaError" class="text-danger">{{ captchaError }}</div>
+            </div>
+
+            <!-- Register Button -->
+             <div class="row">
+            <div class="col-lg-6 d-grid">
+              <button type="button" (click)="register()" class="btn btn-primary mt-2 fs-6" style="background-color: #3080e8; color: white;">Register</button>
+            </div>
+
+            <!-- <p class="text-center fw-bold pt-2">or</p> -->
+
+            <!-- Register With Google -->
+
+            
+            <!-- <div class="col-lg-6 d-grid">
+              <button class="btn btn-primary mt-2 bg-transparent border-2 border-dark-subtle text-dark fw-bold register-button" style="font-size: 14px;" type="button">
+                <i class="fa-brands fa-google google-icon"></i> Register With Google
+              </button>
+            </div> -->
+
+
+              <!--  -->
+          </div>
+
+        
+            <p class="text-center pt-4">If you have an account? <a routerLink="/auth/login" class="text-decoration-none">
+              <span class="fw-bold" style="color: #3080e8;">Login</span></a>
+            </p>
+            <!-- Form Ends -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Terms and Conditions Modal -->
+<div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header p-0">
+        <div class="modal-logo">
+          <!-- <img src="assets/Image/coolie-logo-bg.png" class="header-logo" alt="Logo" height="40px" />
+       -->
+                    <img src="assets/Image/Logo/logo.png" class="header-logo" alt="Logo" height="40px" />
+
+        </div>
+        <strong class="modal-title" id="termsModalLabel">Terms and Conditions</strong>
+      
+      </div>
+      
+      <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+        <p>Welcome to xyz. By using our services, you agree to comply with the following Terms and Conditions. Please read them carefully.</p>
+        <hr>
+        
+        <strong>1. Introduction</strong>
+        <p>• These Terms and Conditions ("Terms") govern your access to and use of Sampark India Logistics Ltd's website, mobile app, and delivery services.<br>
+        • By creating an account or booking a delivery with us, you agree to be bound by these Terms.<br>
+        • Sampark India Logistics Ltd. reserves the right to update these Terms at any time. Changes will be effective once posted on our website/app. Your continued use of our services constitutes your acceptance of the revised Terms.</p>
+        <strong>2. Services Offered</strong>
+        <p>• Sampark India Logistics Ltd. provides delivery services for documents and small parcels via air and surface transport within India. We offer express, standard, and economy delivery options.<br>
+        • Delivery times and services are subject to availability and may vary depending on the delivery location and selected service type.</p>
+
+        <strong>3. User Responsibilities</strong>
+        <p>• You are responsible for providing accurate information when creating a booking, including pickup and delivery addresses, contact details, and package descriptions.<br>
+        • You must ensure that the contents of the parcel comply with all applicable laws and regulations.<br>
+        • You agree not to send any prohibited, hazardous, or illegal items through our service. These include, but are not limited to, explosives, weapons, flammable materials, illegal substances, or items that violate intellectual property rights.</p>
+
+        <strong>4. Account and KYC Verification</strong>
+        <p>• You must create an account to access our services. You are responsible for maintaining the confidentiality of your account credentials and for all activities that occur under your account.<br>
+        • For certain transactions, KYC (Know Your Customer) verification is required. You agree to provide valid government-issued identification and address proof when requested.<br>
+        • We reserve the right to suspend or terminate accounts that fail to provide accurate KYC details or engage in fraudulent or suspicious activities.</p>
+
+        <strong>5. Booking and Payments</strong>
+        <p>• All bookings must be made through our website or mobile app. You will receive a confirmation email or SMS once the booking is successfully created.<br>
+        • The delivery fee is calculated based on the package weight, dimensions, delivery distance, and selected service type.<br>
+        • Payment must be made at the time of booking via the available payment methods (credit/debit card, UPI, net banking, COD, etc.). Bookings are non-refundable once the parcel has been picked up.<br>
+        • We reserve the right to cancel any booking if payment is not received or if the parcel violates our terms or applicable laws.</p>
+
+        <strong>6. Delivery and Tracking</strong>
+        <p>• We will make reasonable efforts to deliver your parcel within the estimated time frame provided during booking. However, delivery times are not guaranteed and may be affected by unforeseen events such as weather, traffic, strikes, or natural disasters.<br>
+        • You can track the status of your parcel using the tracking number provided at the time of booking. Sampark India Logistics Ltd. is not liable for any delays caused by incorrect address information or unforeseen circumstances.<br>
+        • In case of non-delivery due to incorrect addresses or unavailability of the recipient, we will attempt a redelivery or return the package to the sender. Additional charges may apply for redelivery or returns.</p>
+
+        <strong>7. Cancellation and Modifications</strong>
+        <p>• You may cancel or modify your booking before the parcel is picked up. Once the parcel is picked up, cancellations are no longer possible, and no refunds will be issued.<br>
+        • If a booking is cancelled before pickup, a cancellation fee may apply depending on the terms of the specific service selected.</p>
+
+        <strong>8. Lost or Damaged Parcels</strong>
+        <p>• Sampark India Logistics Ltd. takes reasonable care in handling your parcel. However, in the event of loss or damage, our liability is limited to the declared value of the parcel or as per the insurance option selected during booking.<br>
+        • Claims for lost or damaged parcels must be submitted within 7 days of the delivery date. For insured items, please follow the claims process provided at the time of booking.</p>
+
+        <strong>9. Prohibited Items</strong>
+        <p>• The following items are prohibited and cannot be shipped using our services:<br>
+        o Explosives, flammable items, or hazardous materials<br>
+        o Firearms, ammunition, and weapons<br>
+        o Narcotics and illegal drugs<br>
+        o Items that infringe on intellectual property rights<br>
+        o Perishable goods (unless agreed upon by the service)<br>
+        o Valuable items like cash, precious metals, or antiques without proper declaration and insurance.<br>
+        • Sampark India Logistics Ltd. reserves the right to refuse, return, or destroy any prohibited items found in a parcel, and no refund will be issued.</p>
+
+        <strong>10. Data Protection and Privacy</strong>
+        <p>• We are committed to protecting your personal data and comply with applicable data protection laws. Your personal information will only be used for the purpose of providing our services, verifying KYC details, and improving user experience.<br>
+        • For more details on how we collect, use, and protect your data, please refer to our Privacy Policy.</p>
+
+        <strong>11. Limitation of Liability</strong>
+        <p>• Sampark India Logistics Ltd. is not responsible for any indirect, incidental, or consequential damages arising from the use of our services, including delays, loss, or damage to parcels.<br>
+        • Our liability is limited to the delivery charges paid for the specific booking or the declared value of the parcel, whichever is lower, unless the parcel is insured.</p>
+
+        <strong>12. Force Majeure</strong>
+        <p>• Sampark India Logistics Ltd. will not be held liable for any failure to deliver or delay in performance caused by circumstances beyond our control, including but not limited to acts of nature, strikes, accidents, or governmental restrictions.</p>
+
+        <strong>13. Governing Law</strong>
+        <p>• These Terms are governed by the laws of India. Any disputes arising from the use of our services will be subject to the exclusive jurisdiction of the courts in [City/State].</p>
+
+        <strong>14. Contact Information</strong>
+        <p>If you have any questions or concerns regarding these Terms, please contact our support team at:</p>
+        <ul>
+          <li>Email: [Support Email]</li>
+          <li>Phone: [Support Phone Number]</li>
+          <li>Address: [Company Address]</li>
+        </ul>
+      </div>
+      
+      <div class="modal-footer">
+        <button type="button"  class="btn  mt-3" style="background-color: #3080e8; color: white;" data-bs-dismiss="modal">Close</button>
+      </div>
+      </div>
+  </div>
+</div>
+

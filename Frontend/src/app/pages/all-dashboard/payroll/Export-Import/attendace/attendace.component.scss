@@ -1,0 +1,20 @@
+.modal-backdrop.show {
+    z-index: 10500 !important;
+  }
+  
+  .modal.modal-fullscreen {
+    z-index: 10550 !important;
+    position: fixed !important;
+  }
+  
+  .table td {
+    white-space: nowrap;
+  }
+  .table th {
+    white-space: nowrap;
+  }
+  
+  .table-responsive {
+    overflow-x: auto;
+  }
+  

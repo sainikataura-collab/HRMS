@@ -1,0 +1,272 @@
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card">
+      <div class="card-header bg-blue">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-6 col-lg-6">
+            <h4 class="">{{ Isedit ? 'Update Customer Rate Card' : 'Customer Rate Card' }}</h4>
+          </div>
+          <div class="col-sm-12 col-md-6 col-lg-6 d-flex align-items-center justify-content-md-end">
+            <button class="btn btnheader" routerLink="/dash/user/userdashboard/customerRateCard_list">Back</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-body mt-4">
+        <form [formGroup]="rateCardForm">
+          <div class="row row-cols-1 row-cols-md-3">
+
+            <!-- Customer -->
+            <div class="col">
+              <label>Customer<span style="color: red;">*</span></label>
+              <div class="form-group">
+                <ng-select [items]="CustomerList" bindLabel="name" bindValue="value" formControlName="CustomerId"
+                  placeholder="--Select Customer--" class="w-100" (change)="onCustomerChange($event)" (clear)="onCustomerClear()">
+                </ng-select>
+                <span *ngIf="submitted && rateCardForm.controls['CustomerId'].invalid" class="text-danger mt-1"
+                  style="font-size: 12px;">
+                  Please select Customer.
+                </span>
+              </div>
+            </div>
+
+            <!-- Location -->
+            <div class="col">
+              <label>Location<span style="color: red;">*</span></label>
+              <div class="form-group">
+                <ng-select [items]="LocationList" bindLabel="name" bindValue="value" formControlName="LocationId"
+                  placeholder="--Select Location--" class="w-100">
+                </ng-select>
+                <span *ngIf="submitted && rateCardForm.controls['LocationId'].invalid" class="text-danger mt-1"
+                  style="font-size: 12px;">
+                  Please select Location.
+                </span>
+                <span *ngIf="rateCardForm.controls['CustomerId'].value && LocationList.length === 0" class="text-warning mt-1 d-block"
+                  style="font-size: 12px;">
+                  <i class="fa fa-info-circle me-1"></i>No location mapped with this customer.
+                </span>
+              </div>
+            </div>
+
+            <!-- Service Type -->
+            <div class="col">
+              <label>Service Type<span style="color: red;">*</span></label>
+              <div class="form-group">
+                <ng-select [items]="ServiceTypeList" bindLabel="name" bindValue="value" formControlName="ServiceTypeId"
+                  placeholder="--Select Service Type--" class="w-100">
+                </ng-select>
+                <span *ngIf="submitted && rateCardForm.controls['ServiceTypeId'].invalid" class="text-danger mt-1"
+                  style="font-size: 12px;">
+                  Please select Service Type.
+                </span>
+              </div>
+            </div>
+
+            <!-- Category -->
+            <div class="col">
+              <label>Category<span style="color: red;">*</span></label>
+              <div class="form-group">
+                <ng-select [items]="CategoryList" bindLabel="name" bindValue="value" formControlName="CategoryId"
+                  placeholder="--Select Category--" class="w-100">
+                </ng-select>
+                <span *ngIf="submitted && rateCardForm.controls['CategoryId'].invalid" class="text-danger mt-1"
+                  style="font-size: 12px;">
+                  Please select Category.
+                </span>
+              </div>
+            </div>
+
+            <!-- Work Duration -->
+            <div class="col">
+              <label>Work Duration<span style="color: red;">*</span></label>
+              <div class="form-group">
+                <ng-select [items]="WorkDurationList" bindLabel="name" bindValue="value" formControlName="WorkDuration"
+                  placeholder="--Select Work Duration--" class="w-100">
+                </ng-select>
+                <span *ngIf="submitted && rateCardForm.controls['WorkDuration'].invalid" class="text-danger mt-1"
+                  style="font-size: 12px;">
+                  Please select Work Duration.
+                </span>
+              </div>
+            </div>
+
+
+
+          </div>
+
+          <!-- Header -->
+          <div class="row mt-3 d-flex align-items-center mb-2 ">
+            <div class="col-6">
+              <p class="text-primary fw-bold mb-0">Salary Structure (Earning Heads)</p>
+            </div>
+            <div class="col-6 text-end">
+              <button type="button" class="btn btn-danger btn-sm" (click)="getHeads()">
+                Refresh Heads
+              </button>
+            </div>
+          </div>
+
+          <!-- Dynamic Heads Structure - Two Columns with State Master Table UI -->
+          <div class="row g-3" formArrayName="earningHeads">
+
+            <!-- Left Column Table: Even indexed heads (0,2,4...) -->
+            <div class="col-md-6">
+              <div class="table-responsive rate-card-table-wrap">
+                <table class="table table-bordered table-hover align-middle mb-0">
+                  <thead>
+                    <tr>
+                      <th scope="col" class="text-start">Earning Head</th>
+                      <th scope="col" class="text-end" style="width: 130px;">Amount (₹)</th>
+                      <th scope="col" class="text-center" style="width: 110px;">Min Wage</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <ng-container *ngFor="let head of earningHeadsList.controls; let i = index">
+                      <tr *ngIf="i % 2 === 0" [formGroupName]="i">
+                        <td class="text-start">
+                          <span class="fw-semibold text-truncate d-block" [title]="head.value.shortDesc">
+                            {{ head.value.shortDesc }}
+                          </span>
+                        </td>
+                        <td class="text-end">
+                          <input type="text" class="form-control form-control-sm text-end"
+                            formControlName="amount" placeholder="0.00"
+                            (keypress)="restrictInputDecimal($event)"
+                            [ngClass]="{'is-invalid': (head.get('amount')?.touched || head.get('amount')?.dirty || submitted) && isLessThanMinWage(head)}">
+                          <span *ngIf="submitted && head.get('amount')?.invalid" class="text-danger mt-1 d-block text-start"
+                            style="font-size: 10px;">
+                            Required
+                          </span>
+                          <span *ngIf="(head.get('amount')?.touched || head.get('amount')?.dirty || submitted) && isLessThanMinWage(head)" 
+                            class="text-danger mt-1 d-block text-start" style="font-size: 10px;">
+                            Min: {{ getMinWageForHead(head.value.fk_headid) | number: '1.2-2' }}
+                          </span>
+                        </td>
+                        <td class="text-center">
+                          <span *ngIf="getMinWageForHead(head.value.fk_headid) > 0" 
+                            class="badge bg-info-subtle text-dark px-2 py-1 fw-semibold" style="font-size: 10px;">
+                            ₹ {{ getMinWageForHead(head.value.fk_headid) | number: '1.2-2' }}
+                          </span>
+                          <span *ngIf="getMinWageForHead(head.value.fk_headid) <= 0" class="text-muted" style="font-size: 10px;">
+                            -
+                          </span>
+                        </td>
+                      </tr>
+                    </ng-container>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Right Column Table: Odd indexed heads (1,3,5...) -->
+            <div class="col-md-6">
+              <div class="table-responsive rate-card-table-wrap">
+                <table class="table table-bordered table-hover align-middle mb-0">
+                  <thead>
+                    <tr>
+                      <th scope="col" class="text-start">Earning Head</th>
+                      <th scope="col" class="text-end" style="width: 130px;">Amount (₹)</th>
+                      <th scope="col" class="text-center" style="width: 110px;">Min Wage</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <ng-container *ngFor="let head of earningHeadsList.controls; let i = index">
+                      <tr *ngIf="i % 2 !== 0" [formGroupName]="i">
+                        <td class="text-start">
+                          <span class="fw-semibold text-truncate d-block" [title]="head.value.shortDesc">
+                            {{ head.value.shortDesc }}
+                          </span>
+                        </td>
+                        <td class="text-end">
+                          <input type="text" class="form-control form-control-sm text-end"
+                            formControlName="amount" placeholder="0.00"
+                            (keypress)="restrictInputDecimal($event)"
+                            [ngClass]="{'is-invalid': (head.get('amount')?.touched || head.get('amount')?.dirty || submitted) && isLessThanMinWage(head)}">
+                          <span *ngIf="submitted && head.get('amount')?.invalid" class="text-danger mt-1 d-block text-start"
+                            style="font-size: 10px;">
+                            Required
+                          </span>
+                          <span *ngIf="(head.get('amount')?.touched || head.get('amount')?.dirty || submitted) && isLessThanMinWage(head)" 
+                            class="text-danger mt-1 d-block text-start" style="font-size: 10px;">
+                            Min: {{ getMinWageForHead(head.value.fk_headid) | number: '1.2-2' }}
+                          </span>
+                        </td>
+                        <td class="text-center">
+                          <span *ngIf="getMinWageForHead(head.value.fk_headid) > 0" 
+                            class="badge bg-info-subtle text-dark px-2 py-1 fw-semibold" style="font-size: 10px;">
+                            ₹ {{ getMinWageForHead(head.value.fk_headid) | number: '1.2-2' }}
+                          </span>
+                          <span *ngIf="getMinWageForHead(head.value.fk_headid) <= 0" class="text-muted" style="font-size: 10px;">
+                            -
+                          </span>
+                        </td>
+                      </tr>
+                    </ng-container>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Bottom Minimum Wage Bar (Exact styling from State Master wages part) -->
+          <div class="min-wage-bar bg-warning-subtle d-flex flex-wrap align-items-center justify-content-between mt-3 rounded border border-warning-subtle"
+               *ngIf="earningHeadsList.controls.length > 0">
+            <!-- Left: Minimum Wage Info -->
+            <div class="d-flex align-items-center gap-2">
+              <span class="min-wage-label text-nowrap d-flex align-items-center gap-1 mb-0">
+                <i class="fa fa-money-bill-wave text-warning" style="font-size: 11px;"></i>
+                Applicable Minimum Wages:
+              </span>
+              <span class="badge bg-info-subtle text-dark px-2 py-1 fw-semibold" style="font-size: 11px;">
+                ₹ {{ (minWageTotal || 0) | number:'1.2-2' }}
+              </span>
+            </div>
+
+            <!-- Right: Total Rate Card Earning & Compliance Pills -->
+            <div class="d-flex align-items-center gap-2 mt-1 mt-sm-0 ms-auto">
+              <!-- Total Earning Pill -->
+              <div class="d-flex align-items-center bg-white border rounded-pill pill-badge shadow-sm px-2 py-1">
+                <span class="text-muted me-1" style="font-size: 10.5px;">Total Earning:</span>
+                <span class="fw-bold" [ngClass]="{
+                    'text-success': minWageTotal > 0 && totalEarningCount >= minWageTotal,
+                    'text-danger': minWageTotal > 0 && totalEarningCount < minWageTotal,
+                    'text-dark': minWageTotal === 0
+                }" style="font-size: 11.5px;">
+                  ₹ {{ totalEarningCount | number:'1.2-2' }}
+                </span>
+              </div>
+
+              <!-- Compliance Status Pill -->
+              <span *ngIf="minWageTotal > 0 && totalEarningCount >= minWageTotal"
+                class="badge bg-success-subtle text-success border border-success rounded-pill pill-badge fw-medium" style="font-size: 10px;">
+                <i class="fa fa-check-circle me-1"></i> Compliant
+              </span>
+              <span *ngIf="minWageTotal > 0 && totalEarningCount < minWageTotal"
+                class="badge bg-danger-subtle text-danger border border-danger rounded-pill pill-badge fw-medium" style="font-size: 10px;"
+                title="Total earning is less than Minimum Wage">
+                <i class="fa fa-exclamation-triangle me-1"></i> Below Min Wage (Diff: ₹ {{ (minWageTotal - totalEarningCount) | number:'1.2-2' }})
+              </span>
+            </div>
+          </div>
+
+          <div *ngIf="earningHeadsList.controls.length === 0" class="text-muted mt-2">
+            No earning heads available.
+          </div>
+
+          <div class="row mt-4">
+            <div class="col d-flex align-items-end justify-content-end">
+              <button type="submit" class="btn btn-primary mx-1" (click)="onSubmit()">
+                {{ Isedit ? 'Update' : 'Save' }}
+              </button>
+              <button type="reset" class="btn btn-outline-dark mx-1" (click)="clearForm()">
+                Reset
+              </button>
+            </div>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

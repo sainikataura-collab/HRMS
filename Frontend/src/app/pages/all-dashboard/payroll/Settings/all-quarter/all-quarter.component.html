@@ -1,0 +1,46 @@
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-primary ">
+                <div class="row w-100 ">
+                    <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-between">
+                        <h4>List of Quarter</h4>
+                    </div>
+                    <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+                        <button class="btn btnheader" routerLink="/dash/payroll/payrolldashboard/Quarter">
+                            Add
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive table-invoice">
+                    <table id="exportTable" class="table">
+                        <thead>
+                            <tr>
+                                <th>S. No</th>    
+                                <th>Financial Year</th> 
+                                <th>Quarter</th>           
+                                <th>End Date</th>
+                                <th>Delete</th> 
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let quarter of QuarterList; let i = index">
+                                <td>{{ i + 1 }}</td>
+                                <td>{{ quarter.financialYear }}</td>
+                                <td>{{ quarter.quarter }}</td>
+                                <td>{{ quarter.endDate }}</td>
+                                <td>
+                                    <button class="btn" (click)="deleteBank(quarter.id)">
+                                        <i class="fa fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>   
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

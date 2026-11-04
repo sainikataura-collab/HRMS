@@ -1,0 +1,102 @@
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header bg-primary">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-between">
+            <h4 class="text-white">CTC Configuration List</h4>
+          </div>
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-center">
+            <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText" (ngModelChange)="onSearchChange()" />
+          </div>
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 py-1 py-lg-0 d-flex align-items-center justify-content-end">
+            <button class="btn btnheader mx-1" routerLink="/dash/user/userdashboard/CtcConfiguration"> Add </button>
+          </div>
+        </div>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive table-invoice">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Sr.</th>
+                <th>Configuration Name</th>
+                <th>Effective From</th>
+                <th>Category</th>
+                <th>Location</th>
+                <th>Department</th>
+                <th>Grade</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of configList | paginate : { itemsPerPage: pageSize, currentPage: pageIndex, totalItems: totalItems }; let i = index">
+                <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+                <td>
+                  <strong>{{ item.configName }}</strong>
+                  <div *ngIf="item.description" class="text-muted small">{{ item.description }}</div>
+                </td>
+                <td>{{ item.effectiveFrom | date:'dd-MMM-yyyy' }}</td>
+                <td>
+                  {{ getShortNames(item.fk_categoryIds, categoryList) }}
+                  <span *ngIf="hasMoreNames(item.fk_categoryIds, categoryList)" class="tooltip-trigger ms-1">
+                    +{{ getMoreCount(item.fk_categoryIds, categoryList) }}
+                    <span class="custom-tooltip-content">
+                      {{ getAllNames(item.fk_categoryIds, categoryList) }}
+                    </span>
+                  </span>
+                </td>
+                <td>
+                  {{ getShortNames(item.fk_locationIds, locationList) }}
+                  <span *ngIf="hasMoreNames(item.fk_locationIds, locationList)" class="tooltip-trigger ms-1">
+                    +{{ getMoreCount(item.fk_locationIds, locationList) }}
+                    <span class="custom-tooltip-content">
+                      {{ getAllNames(item.fk_locationIds, locationList) }}
+                    </span>
+                  </span>
+                </td>
+                <td>
+                  {{ getShortNames(item.fk_departmentIds, departmentList) }}
+                  <span *ngIf="hasMoreNames(item.fk_departmentIds, departmentList)" class="tooltip-trigger ms-1">
+                    +{{ getMoreCount(item.fk_departmentIds, departmentList) }}
+                    <span class="custom-tooltip-content">
+                      {{ getAllNames(item.fk_departmentIds, departmentList) }}
+                    </span>
+                  </span>
+                </td>
+                <td>
+                  {{ getShortNames(item.fk_gradeIds, gradeList) }}
+                  <span *ngIf="hasMoreNames(item.fk_gradeIds, gradeList)" class="tooltip-trigger ms-1">
+                    +{{ getMoreCount(item.fk_gradeIds, gradeList) }}
+                    <span class="custom-tooltip-content">
+                      {{ getAllNames(item.fk_gradeIds, gradeList) }}
+                    </span>
+                  </span>
+                </td>
+                <td>
+                  <button class="btn btn-sm btn-outline px-1 mx-1" (click)="isUpdate(item.pk_ctcConfigId)">
+                    <i class="fa-regular fa-pen-to-square fw-semibold"></i>
+                  </button>
+                  <button class="btn btn-sm btn-outline px-1 mx-1" (click)="deleteConfig(item.pk_ctcConfigId, item.configName)">
+                    <i class="fa fa-trash text-dark"></i>
+                  </button>
+                </td>
+              </tr>
+              <tr *ngIf="configList.length === 0">
+                <td colspan="8" class="text-center text-muted py-4">
+                  <i class="fa fa-info-circle me-1"></i> No CTC configurations found.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Pagination controls -->
+          <pagination-controls
+            (pageChange)="onPageChange($event)"
+            [responsive]="true">
+          </pagination-controls>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

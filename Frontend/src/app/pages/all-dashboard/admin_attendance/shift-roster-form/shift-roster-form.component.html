@@ -1,0 +1,131 @@
+<div class="row">
+  <div class="col-sm-12">
+    <div class="card">
+      <!-- Card Header -->
+      <div class="card-header bg-primary">
+        <div class="row w-100 align-items-center">
+          <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-between">
+            <h4>{{ isEditMode ? 'Edit Shift Roster' : 'Shift Roster' }}</h4>
+          </div>
+          <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end gap-2">
+            <button class="btn btn-light" routerLink="/dash/adminAttendance/adminAttendancedashboard/shift_roster_upload">
+              <i class="fa fa-upload me-1"></i> Bulk Upload
+            </button>
+            <button class="btn btn-light" (click)="exportTemplate()" title="Export Blank Excel">
+              <i class="fa fa-download me-1"></i> Download Template
+            </button>
+            <button class="btn btnheader" routerLink="/dash/adminAttendance/adminAttendancedashboard/shift_roster_list">
+              Back
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card Body -->
+      <div class="card-body mt-4">
+        <form (ngSubmit)="onSubmit()" novalidate>
+          <div class="row row-cols-1 row-cols-md-4 g-4">
+            <!-- Employee Name -->
+            <div class="col">
+              <label for="employee">Employee Name<span class="text-danger">*</span></label>
+              <ng-select
+                id="employee"
+                [items]="employees"
+                bindLabel="name"
+                bindValue="value"
+                placeholder="--Select emp --"
+                [(ngModel)]="formData.fk_empId"
+                name="fk_empId"
+                class="w-100 small"
+                [clearable]="false"
+                [searchable]="true"
+                (search)="onEmployeeSearch($event)"
+                [loading]="loadingEmployees"
+                loadingText="Searching employees..."
+                required
+              >
+              </ng-select>
+              <span *ngIf="showError && !formData.fk_empId" class="text-danger mt-1" style="font-size: 12px;">
+                Please select Employee.
+              </span>
+            </div>
+
+            <!-- Shift Name -->
+            <div class="col">
+              <label for="shift">Shift Name<span class="text-danger">*</span></label>
+              <ng-select
+                id="shift"
+                [items]="shifts"
+                bindLabel="shiftName"
+                bindValue="pk_shiftId"
+                placeholder="--Select Shift--"
+                [(ngModel)]="formData.fk_shiftId"
+                name="fk_shiftId"
+                class="w-100 small"
+                [clearable]="false"
+                [searchable]="true"
+                required
+              >
+              </ng-select>
+              <span *ngIf="showError && !formData.fk_shiftId" class="text-danger mt-1" style="font-size: 12px;">
+                Please select Shift Name.
+              </span>
+            </div>
+
+            <!-- Week Off Day -->
+            <div class="col">
+              <label for="weekOffDay">Week Off Day<span class="text-danger">*</span></label>
+              <ng-select
+                id="weekOffDay"
+                [items]="weekDays"
+                bindLabel="name"
+                bindValue="value"
+                placeholder="--Select Week Off Day--"
+                [(ngModel)]="formData.weekOffDay"
+                name="weekOffDay"
+                class="w-100 small"
+                [clearable]="false"
+                [searchable]="true"
+                required
+              >
+              </ng-select>
+              <span *ngIf="showError && !formData.weekOffDay" class="text-danger mt-1" style="font-size: 12px;">
+                Please select Week Off Day.
+              </span>
+            </div>
+
+            <!-- Effective From -->
+            <div class="col">
+              <label for="effectiveFrom">Effective From<span class="text-danger">*</span></label>
+              <input
+                id="effectiveFrom"
+                type="date"
+                class="form-control"
+                [(ngModel)]="formData.effectiveFrom"
+                name="effectiveFrom"
+                required
+              />
+              <span *ngIf="showError && !formData.effectiveFrom" class="text-danger mt-1" style="font-size: 12px;">
+                Please select Effective From date.
+              </span>
+            </div>
+          </div>
+
+          <!-- Submit Buttons -->
+          <div class="modal-footer mt-4">
+            <button type="submit" class="btn btn-primary mx-1">
+              {{ isEditMode ? 'Update' : 'Save' }}
+            </button>
+            <button
+              type="button"
+              class="btn btn-secondary mx-1"
+              routerLink="/dash/adminAttendance/adminAttendancedashboard/shift_roster_list"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

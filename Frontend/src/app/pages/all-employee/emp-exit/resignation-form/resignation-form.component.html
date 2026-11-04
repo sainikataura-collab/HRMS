@@ -1,0 +1,109 @@
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card">
+
+      <!-- Header -->
+      <div class="card-header bg-blue">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-6 col-lg-6">
+            <h4>{{ isEdit ? 'Update Resignation' : 'Apply Resignation' }}</h4>
+          </div>
+          <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+            <button class="btn btnheader" routerLink="/dash/emp-exit/emp-exitdashboard/resignation_list">Back</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Body -->
+      <div class="card-body mt-4">
+        <form [formGroup]="resignationForm" class="row row-cols-1 row-cols-md-3">
+
+          <!-- Resignation Date -->
+          <div class="col">
+            <label for="resignationDate">Resignation Date<span style="color: red;">*</span></label>
+            <div class="form-group">
+              <input type="date" id="resignationDate" class="form-control flex-grow-1"
+                formControlName="resignationDate">
+              <span *ngIf="submitted && resignationForm.get('resignationDate')?.invalid" class="text-danger mt-1"
+                style="font-size: 12px;">
+                Please provide Resignation Date.
+              </span>
+            </div>
+          </div>
+
+          <!-- Expected Last Working Day -->
+          <div class="col">
+            <label for="expectedLWD">Expected Last Working Day<span style="color: red;">*</span></label>
+            <div class="form-group">
+              <input type="date" id="expectedLWD" class="form-control flex-grow-1" formControlName="expectedLWD">
+              <span *ngIf="submitted && resignationForm.get('expectedLWD')?.invalid" class="text-danger mt-1"
+                style="font-size: 12px;">
+                Please provide Expected Last Working Day.
+              </span>
+            </div>
+          </div>
+
+          <!-- Notice Period -->
+          <div class="col">
+            <label>Notice Period (Days)</label>
+            <div class="form-group">
+              <input type="number" class="form-control" formControlName="noticePeriod" readonly>
+            </div>
+          </div>
+
+          <!-- Is Notice Period Served -->
+          <div class="col">
+            <label class="d-block">Notice Period Served</label>
+            <div class="form-check mt-2">
+              <input type="checkbox" class="form-check-input" id="isNoticePeriodServed"
+                formControlName="isNoticePeriodServed">
+              <label class="form-check-label" for="isNoticePeriodServed">
+                Yes
+              </label>
+            </div>
+          </div>
+
+          <!-- Reason for Leaving -->
+          <div class="col">
+            <label for="reason">Reason for Leaving<span style="color: red;">*</span></label>
+            <div class="form-group">
+              <ng-select id="reason" placeholder="Select Reason for Leaving" [items]="reasonOptions" bindLabel="name"
+                bindValue="value" formControlName="reason" [clearable]="false" class="w-100">
+              </ng-select>
+              <span *ngIf="submitted && resignationForm.get('reason')?.invalid" class="text-danger mt-1"
+                style="font-size: 12px;">
+                Please select a Reason.
+              </span>
+            </div>
+          </div>
+
+          <!-- Remarks -->
+          <div class="col">
+            <label for="remarks">Remarks <span style="color:red">*</span></label>
+            <div class="form-group">
+              <textarea id="remarks" class="form-control" formControlName="remarks" placeholder="Enter Remarks">
+              </textarea>
+
+              <span *ngIf="submitted && resignationForm.get('remarks')?.invalid" class="text-danger mt-1"
+                style="font-size: 12px;">
+                Please enter Remarks.
+              </span>
+            </div>
+          </div>
+
+
+        </form>
+
+        <!-- Buttons -->
+        <div class="row">
+          <div class="col d-flex align-items-end justify-content-end pt-4 pb-3">
+            <button type="submit" class="btn btn-primary mx-1" (click)="submitForm()">{{ isEdit ? 'Update' : 'Save'
+              }}</button>
+            <button type="reset" class="btn btn-outline-dark mx-1" (click)="resetForm()">Reset</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

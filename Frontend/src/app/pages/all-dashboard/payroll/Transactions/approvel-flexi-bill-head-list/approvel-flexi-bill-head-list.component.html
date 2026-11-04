@@ -1,0 +1,126 @@
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+         
+          <div class="card-header bg-primary py-lg-1 mt-0">
+            <div class="row w-100 align-items-center">
+          
+                <!-- Title Section -->
+                <div class="col-12 col-md-3">
+                  <h4>Flexi bill Approval</h4>   
+                </div>
+          
+                <!-- Search Section -->
+                <div class="col-12 col-md-7 mt-2 mt-md-0">
+                  <app-common-search (filtersChanged)="handleFilters($event)"></app-common-search>
+                </div>
+          
+
+          
+            </div>
+          </div>
+     
+
+     
+
+     <!-- Pending List -->
+      <div class="card-body mt-4">
+        <p class="text-primary fw-semibold mb-3">List of Pending Flexi Bill</p>
+        <div class="table-responsive">
+          <table id="pendingTable" class="table">
+            <thead>
+              <tr>
+                <th>S.No.</th>
+                <th>Bill Date</th>
+                <th>Head Name</th>
+                <th>Amount</th>
+                <th>Emp Code</th>
+                <th>Emp Name</th>
+                <th>Location</th>
+                <th>File</th>
+                <th>Edit</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of pendingList; let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>{{ item.billDate }}</td>
+                <td>{{ item.description }}</td>
+                <td>{{ item.amount | currency:'INR' }}</td>
+                <td>{{ item.empcode }}</td>
+                <td>{{ item.empname }}</td>
+                <td>{{ item.locname }}</td>
+                <td style="text-align: center;">
+                <a *ngIf="item.filename" (click)="download(item.filename)" style="cursor: pointer;">
+                  <i class="fa fa-eye" title="View/Download File"></i>
+                </a>
+                <span *ngIf="!item.filename">No File</span>
+              </td>
+                <td>
+                  <button class="btn btn-sm btn-outline px-1 mx-1" (click)="edit(item.pk_flexibillId)">
+                    <i class="fa-regular fa-pen-to-square fw-semibold"></i>
+                  </button>
+                </td>
+              </tr>
+              <tr *ngIf="pendingList.length === 0">
+                <td colspan="9" class="text-center">No pending records found.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <!-- Pending List -->
+    <!-- Approved List -->
+      <div class="card-body mt-4">
+        <p class="text-primary fw-semibold mb-3">List of Approved Flexi Bill</p>
+        <div class="table-responsive">
+          <table id="approvedTable" class="table">
+            <thead>
+              <tr>
+                <th>S.No.</th>
+                <th>Bill Date</th>
+                <th>Head Name</th>
+                <th>Amount</th>
+                <th>Emp Code</th>
+                <th>Emp Name</th>
+                <th>Location</th>
+                <th>Status</th>
+                <th>File</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of submittedList; let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>{{ item.billDate }}</td>
+                <td>{{ item.description }}</td>
+                <td>{{ item.amount | currency:'INR' }}</td>
+                <td>{{ item.empcode }}</td>
+                <td>{{ item.empname }}</td>
+                <td>{{ item.locname }}</td>
+                <td>{{ item.status }}</td>
+                <!-- <td>
+                  <ng-container *ngIf="item.filename; else noFileApproved">
+                    <a [href]="item.filename" target="_blank" download>
+                      <i class="fa-solid fa-download text-dark"></i>
+                    </a>
+                  </ng-container>
+                  <ng-template #noFileApproved>—</ng-template>
+                </td> -->
+                <td style="text-align: center;">
+                <a *ngIf="item.filename" (click)="download(item.filename)" style="cursor: pointer;">
+                  <i class="fa fa-eye" title="View/Download File"></i>
+                </a>
+                <span *ngIf="!item.filename">No File</span>
+              </td>
+              </tr>
+              <tr *ngIf="submittedList.length === 0">
+                <td colspan="9" class="text-center">No approval records found.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</div>

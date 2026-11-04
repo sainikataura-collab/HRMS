@@ -1,0 +1,104 @@
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-primary">
+                <div class="row w-100">
+                  <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-between">
+                    <h4>Experience Details List</h4>
+                  </div>
+                  <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-center">
+                    <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText" />
+                  </div>
+
+                  <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-md-end">
+                    <button class="btn btnheader" routerLink="/dash/adminEmployeeManagement/adminEmployeeManagementdashboard/SAL_EmployeePreviousJob_Details" [queryParams]="{ from: 'experience_list' }">
+                      Add
+                    </button>
+                    <button class="btn btn-light mx-1" (click)="exportToExcel()">
+                        Download
+                    </button>
+                  </div>
+           
+                </div>
+            </div>
+            <!-- <div class="card-body">
+              <div class="row g-4">
+                <div class="col-md-4"><label>Year</label>
+              <ng-select id="year" 
+                  [items]="years" 
+                  bindLabel="name" 
+                  bindValue="value"
+                  placeholder="--Select Year--"
+                  [(ngModel)]="fk_yearid"
+                  (change)="onYearChange(fk_yearid)"
+                  class="w-100">
+              </ng-select>
+              
+                  
+                </div>
+              </div>
+              
+            </div> -->
+            <div class="card-body">
+              <div class="table-responsive table-invoice">
+                    <table id="exportTable" class="table table-bordered">
+                        <thead>
+                          <tr>
+                            <th>Sr.No</th>
+                            <th>Name</th>
+                            <th>Code</th>
+                            <th>Company Name </th>
+                            <th>Designation</th>
+                            <th>Department</th>
+                            <th>FromDate</th>
+                            <th>Todate</th>
+                            <th>LeaveReason</th>
+                            <th>File</th>
+                            <th>Action</th>
+                          </tr>
+                        </thead>
+                       
+                      <tbody>
+                        <tr *ngFor=" let item of filteredData()
+                        | paginate : { itemsPerPage: pageSize, currentPage: page ,totalItems: totalItems };let i = index">
+      
+                          <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+                          <td>{{item.empname}}</td>
+                          <td>{{item.empcode}}</td>
+                          
+                          <td>{{ item.compname }}</td>
+                          <td>{{ item.designation }}</td>
+                          <td>{{ item.department }}</td>
+                          <td>{{ item.fromdate}}</td>
+                          <td>{{ item.todate }}</td>
+                          <td>{{ item.leavingreason }}</td>
+                          <td (click)="downloadFile(item.documentupload)"  style="cursor: pointer;">{{item.documentupload}}</td>
+                          <td>
+                            <button class="btn btn-sm btn-outline" (click)="isUpdate(item.pk_pjobid)">
+                              <i class="fa-regular fa-pen-to-square"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline"  (click)="deleteExperience(item.pk_pjobid)">
+                              <i class="fa fa-trash"></i>
+                            </button>
+                          </td>
+                        </tr>
+                      </tbody>
+                      
+                    </table>
+                    <pagination-controls
+                    (pageChange)="onPageChange($event)"
+                    [responsive]="true">
+                  </pagination-controls>
+                  
+                        <ng-template #noData>
+                          <tr>
+                            <td colspan="4" class="text-center">No data available</td>
+                          </tr>
+                        </ng-template>
+                    
+                  </div>
+            </div>
+        </div>
+    </div>
+</div>

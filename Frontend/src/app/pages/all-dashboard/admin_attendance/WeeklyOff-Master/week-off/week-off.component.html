@@ -1,0 +1,77 @@
+<div class="card">
+  <div class="card-header bg-primary">
+    <div class="row w-100">
+      <div class="col-sm-5 col-md-6 col-lg-5">
+        <h4 class="text-white">Weekly Off Master</h4>
+      </div>
+      <div class="col-sm-7 col-md-6 col-lg-7 d-flex align-items-center justify-content-end">
+        <button class="btn btn-light" routerLink="/dash/adminAttendance/adminAttendancedashboard/WeeklyOff-Master-data_list">
+          Back
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card-body">
+    <form [formGroup]="weeklyOffForm" (ngSubmit)="onSubmit()">
+      <div class="row row-cols-1 row-cols-md-3 g-4">
+        <div class="col">
+          <label>Location</label>
+          <ng-select [items]="Location" bindLabel="name" bindValue="value" [multiple]="true" [closeOnSelect]="false"
+            placeholder="--Select Locations--" class="w-100 small" formControlName="fk_locid">
+
+            <!-- Custom Template for Displaying Selected Items -->
+            <ng-template ng-multi-label-tmp>
+              <span>{{ getLocationDisplayText() || '--Select Locations--' }}</span>
+            </ng-template>
+
+            <!-- Custom Checkbox for Select All -->
+            <ng-template ng-option-tmp let-item="item" let-index="index">
+              <div *ngIf="index === 0">
+                <input type="checkbox" (change)="toggleSelectAll()" [checked]="isAllSelected()"
+                  class="form-check-input fs-6 mx-1" />
+                <strong> Select All</strong>
+              </div>
+              <div *ngIf="index !== 0">
+                <input type="checkbox" [checked]="selectedLocations.includes(item.value)"
+                  (change)="toggleLocation(item.value)" class="form-check-input fs-6 mx-1" />
+                {{ item.name }}
+              </div>
+            </ng-template>
+          </ng-select>
+        </div>
+      </div>
+
+      <!-- Week Off Day Details -->
+      <div class="table-responsive mt-3">
+        <table class="table table-bordered">
+          <thead class="bg-secondary text-white">
+            <tr>
+              <th>S.No</th>
+              <th>Day / Occurrence</th>
+              <th *ngFor="let n of [1,2,3,4,5]">{{n}}st</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let day of weekDays; let i = index">
+              <td>{{ i + 1 }}</td>
+              <td>{{ day }}</td>
+              <td *ngFor="let n of [0,1,2,3,4]">
+                <input type="checkbox" [formControl]="getCheckboxControl(i, n)">
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Buttons -->
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary mx-1" [disabled]="weeklyOffForm.invalid">
+          {{ isEditMode  ? 'Update' : 'Save' }}
+        </button>
+        <button type="button" class="btn btn-outline-dark mx-1"(click)="onReset()">Reset</button>
+        
+      </div>
+    </form>
+  </div>
+</div>

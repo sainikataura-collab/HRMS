@@ -1,0 +1,1766 @@
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card">
+      <!--  -->
+      <div class="card-header bg-primary">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-6 col-lg-6">
+            <h4 class="">
+              {{
+                Isedit
+                  ? "Update Company Parameter Settings"
+                  : "Company Parameter Settings"
+              }}
+            </h4>
+          </div>
+          <div
+            class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end"
+          >
+            <button
+              class="btn btnheader"
+              routerLink="/dash/user/userdashboard/Compony-Parameter_list"
+            >
+              Back
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!--  -->
+
+      <div class="card-body mt-4">
+        <form [formGroup]="CompanyParameterForm">
+          <div class="row row-cols-1 row-cols-md-4 gy-0 gx-4">
+            <div class="col">
+              <label>Company Code<span style="color: red">*</span></label>
+              <div class="form-group">
+                <input
+                  type="text"
+                  class="form-control"
+                  formControlName="compcode"
+                  (blur)="
+                    checkDesignationAvailability(
+                      CompanyParameterForm.get('compcode')?.value
+                    )
+                  "
+                />
+                <span
+                  *ngIf="showError && CompanyParameterForm.controls['compcode'].invalid && !CompanyParameterForm.get('compcode')?.errors?.['duplicate']"
+                  class="text-danger mt-1"
+                  style="font-size: 12px"
+                >
+                  Please enter Code
+                </span>
+                <!-- Show validation error message from API only if it exists -->
+                <div
+                  *ngIf="CompanyParameterForm.get('compcode')?.errors?.['duplicate']"
+                  class="text-danger"
+                  style="font-size: 10px"
+                >
+                  {{ CompanyParameterForm.get('compcode')?.errors?.['duplicate'] }}
+                </div>
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Company Name<span style="color: red">*</span></label>
+              <div class="form-group">
+                <input
+                  type="text"
+                  class="form-control"
+                  formControlName="compname"
+                  (blur)="
+                    checkAvailability(
+                      CompanyParameterForm.get('compname')?.value
+                    )
+                  "
+                />
+                <span
+                  *ngIf="showError && CompanyParameterForm.controls['compname'].invalid && !CompanyParameterForm.get('compname')?.errors?.['duplicate']"
+                  class="text-danger mt-1"
+                  style="font-size: 12px"
+                >
+                  Please enter Name
+                </span>
+                <div
+                  *ngIf="CompanyParameterForm.get('compname')?.errors?.['duplicate']"
+                  class="text-danger"
+                  style="font-size: 10px"
+                >
+                  {{ CompanyParameterForm.get('compname')?.errors?.['duplicate'] }}
+                </div>
+              </div>
+            </div>
+
+            <div class="col">
+              <label
+                >Contact Person Name<span style="color: red">*</span></label
+              >
+              <div class="form-group">
+                <input
+                  type="text"
+                  class="form-control"
+                  formControlName="ContactPerson"
+                />
+                <span
+                  *ngIf="
+                    showError &&
+                    CompanyParameterForm.controls['ContactPerson'].invalid
+                  "
+                  class="text-danger mt-1"
+                  style="font-size: 12px"
+                >
+                  Please enter Bank Name
+                </span>
+              </div>
+            </div>
+
+            <div class="col">
+              <label class="ps-2"
+                >E-mail<span style="color: red">*</span></label
+              >
+              <div class="form-group">
+                <input
+                  type="email"
+                  class="form-control"
+                  formControlName="email"
+                />
+                <span
+                  *ngIf="
+                    showError && CompanyParameterForm.controls['email'].invalid
+                  "
+                  class="text-danger mt-1"
+                  style="font-size: 12px"
+                >
+                  Please enter Bank Name
+                </span>
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Website</label>
+              <div class="form-group">
+                <input
+                  type="text"
+                  class="form-control"
+                  formControlName="website"
+                />
+                <!-- <div *ngIf="submitted && BankDetail.get('FirstContactNumber')?.errors?.['max']" class="text-white">
+                        Mobile No. 10 units
+                      </div> -->
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Address1</label>
+              <div class="form-group">
+                <input
+                  type="text"
+                  class="form-control"
+                  formControlName="address1"
+                />
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Address2</label>
+              <div class="form-group">
+                <input
+                  type="text"
+                  class="form-control"
+                  formControlName="address2"
+                />
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Phone No.</label>
+
+              <input
+                type="text"
+                class="form-control"
+                formControlName="phone"
+                (keypress)="validateNumber($event)"
+                maxlength="10"
+              />
+            </div>
+
+            <div class="col">
+              <label>Mobile</label>
+              <div class="form-group">
+                <input
+                  type="text"
+                  class="form-control"
+                  formControlName="mobile"
+                  (keypress)="validateNumber($event)"
+                  maxlength="10"
+                />
+              </div>
+            </div>
+
+            <div class="col">
+              <label>FAX No.</label>
+              <div class="form-group">
+                <input class="form-control" formControlName="faxno" />
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Registration No.</label>
+              <div class="form-group">
+                <input class="form-control" formControlName="regno" />
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Service Tax No.</label>
+              <div class="form-group">
+                <input class="form-control" formControlName="staxno" />
+              </div>
+            </div>
+
+            <div class="col">
+              <label>TAN No</label>
+              <div class="form-group">
+                <input class="form-control" formControlName="tanno" />
+              </div>
+            </div>
+
+            <div class="col">
+              <label>GST No</label>
+              <div class="form-group">
+                <input class="form-control" formControlName="gst_no" />
+              </div>
+            </div>
+
+            <div class="col">
+              <label>GST State</label>
+              <div class="form-group">
+                <ng-select
+                  id="gst_state"
+                  [items]="StateList"
+                  bindLabel="name"
+                  bindValue="value"
+                  formControlName="gst_state"
+                  placeholder="--Select GST State--"
+                  class="w-100"
+                ></ng-select>
+              </div>
+            </div>
+            <!-- // addded by pp 23/02/2026-->
+            <div class="col">
+              <label class=""> Is Otp Required</label>
+              <div class="form-group">
+                <input
+                  type="checkbox"
+                  class="form-control"
+                  formControlName="isotprequired"
+                  class="form-check-input"
+                />
+              </div>
+            </div>
+            <!-- // addded by pp 23/02/2026-->
+
+            <!-- // addded by pp 21/04/2026-->
+            <div class="col">
+              <label class="">Validate Master on Import Employee</label>
+              <div class="form-group">
+                <input
+                  type="checkbox"
+                  class="form-control"
+                  formControlName="isvalidateemployee"
+                  class="form-check-input"
+                />
+              </div>
+            </div>
+            <!-- // addded by pp 21/04/2026-->
+            <div class="col">
+              <label class=""> Contractor Applicable</label>
+              <div class="form-group">
+                <input
+                  type="checkbox"
+                  class="form-control"
+                  formControlName="Contractor_Applicable"
+                  class="form-check-input"
+                />
+              </div>
+            </div>
+
+            <!-- Custom Label Name for Contractor -->
+            <div
+              class="col"
+              *ngIf="CompanyParameterForm.get('Contractor_Applicable')?.value"
+            >
+              <label class="">Contractor Label Name</label>
+              <div class="form-group">
+                <input
+                  type="text"
+                  class="form-control"
+                  formControlName="contractor_LabelName"
+                  placeholder="Default: Contractor Name"
+                />
+              </div>
+            </div>
+
+            <!-- // addded by pp 05/05/2026-->
+            <div class="col">
+              <label class="">Show Client Details</label>
+              <div class="form-group">
+                <input
+                  type="checkbox"
+                  class="form-control"
+                  formControlName="showclientdetails"
+                  class="form-check-input"
+                />
+              </div>
+            </div>
+            <!-- // addded by pp 05/05/2026-->
+
+            <!--added by pp date 2/09/2025-->
+            <div class="col">
+              <label class=""> Vendor Applicable</label>
+              <div class="form-group">
+                <input
+                  type="checkbox"
+                  class="form-control"
+                  formControlName="Vendor_Applicable"
+                  class="form-check-input"
+                />
+              </div>
+            </div>
+
+            <!-- // addded by pp 21/04/2026-->
+          </div>
+
+          <div class="page-seperator bg-primary rounded-1">
+            <p class="text-white ms-4 p-1">PF Details</p>
+          </div>
+
+          <!-- PF Details -->
+          <div class="row row-cols-1 row-cols-md-4 gy-0 gx-4">
+            <div class="col">
+              <label>Company PF Number</label>
+              <div class="form-group">
+                <input class="form-control" formControlName="pfno" />
+              </div>
+            </div>
+
+            <div class="col">
+              <label>DBF File Code</label>
+              <div class="form-group">
+                <input class="form-control" formControlName="DBFFile_Code" />
+              </div>
+            </div>
+
+            <div class="col">
+              <label>DBF File Extn.</label>
+              <div class="form-group">
+                <input class="form-control" formControlName="DBFFile_Extn" />
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Employee PF (%)</label>
+              <div class="form-group">
+                <input
+                  class="form-control"
+                  formControlName="pf_percent"
+                  (keypress)="validateDecimalNumber($event)"
+                />
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Employee PF Share CutOff</label>
+              <div class="form-group">
+                <input
+                  class="form-control"
+                  formControlName="pfmax_limit"
+                  (keypress)="validateDecimalNumber($event)"
+                />
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Acc. No. 10 (% EPS)</label>
+              <div class="form-group">
+                <input
+                  class="form-control"
+                  formControlName="ac10_percent"
+                  (keypress)="validateDecimalNumber($event)"
+                />
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Acc. No. 02(% Admin Charges)</label>
+              <div class="form-group">
+                <input
+                  class="form-control"
+                  formControlName="ac2_percent"
+                  (keypress)="validateDecimalNumber($event)"
+                />
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Acc. No. 1 (%)</label>
+              <div class="form-group">
+                <input
+                  class="form-control"
+                  formControlName="ac1_percent"
+                  (keypress)="validateDecimalNumber($event)"
+                />
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Acc. No. 21 (% EDLI)</label>
+              <div class="form-group">
+                <input
+                  class="form-control"
+                  formControlName="ac21_percent"
+                  (keypress)="validateDecimalNumber($event)"
+                />
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Acc. No. 22 (% EDLI Admin Charges)</label>
+              <div class="form-group">
+                <input
+                  class="form-control"
+                  formControlName="ac22_percent"
+                  (keypress)="validateDecimalNumber($event)"
+                />
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Pension Fund Limit</label>
+              <div class="form-group">
+                <input
+                  class="form-control"
+                  formControlName="pension_limit"
+                  (keypress)="validateDecimalNumber($event)"
+                />
+              </div>
+            </div>
+
+            <div class="col">
+              <label>PF RoundOff</label>
+              <div class="form-group">
+                <ng-select
+                  id="year"
+                  [items]="pfRoundoff"
+                  bindLabel="name"
+                  bindValue="value"
+                  formControlName="pf_roundoff"
+                  placeholder="--Select Year--"
+                  class="w-100"
+                ></ng-select>
+              </div>
+            </div>
+
+            <div class="col">
+              <label>PF Applicable</label>
+              <div class="form-group">
+                <input type="checkbox" formControlName="pf_applicable" />
+              </div>
+            </div>
+
+            <div class="col">
+              <label>VOL PF</label>
+              <div class="form-group">
+                <input type="checkbox" formControlName="volpf_applicable" />
+              </div>
+            </div>
+
+            <!--pf based on-->
+            <div class="col">
+              <label>PF Based On</label>
+              <div class="form-group">
+                <ng-select
+                  id="pf_basedon"
+                  [items]="pf_basedon"
+                  bindLabel="name"
+                  bindValue="value"
+                  formControlName="pf_basedon"
+                  placeholder="--Select --"
+                  class="w-100"
+                ></ng-select>
+              </div>
+            </div>
+
+            <!--esi based on-->
+            <div class="col">
+              <label>Lwf Based On</label>
+              <div class="form-group">
+                <ng-select
+                  id="lwf_basedon"
+                  [items]="lwf_basedon"
+                  bindLabel="name"
+                  bindValue="value"
+                  formControlName="lwf_basedon"
+                  placeholder="--Select --"
+                  class="w-100"
+                ></ng-select>
+              </div>
+            </div>
+          </div>
+
+          <!-- new page break coloum wise -->
+          <div class="row">
+            <div class="col-sm-12 col-md-12 col-lg-6 col-xxl-6">
+              <div class="rounded-1">
+                <p class="text-primary fw-bold ms-4 p-1">ESI Details</p>
+              </div>
+
+              <div
+                class="card shadow-sm border-end border-primary border-2 p-2 rounded-1"
+              >
+                <div class="row row-cols-1 row-cols-md-2 gy-0 gx-4">
+                  <div class="col">
+                    <label>Company ESI Number</label>
+                    <div class="form-group">
+                      <input class="form-control" formControlName="esino" />
+                    </div>
+                  </div>
+
+                  <div class="col">
+                    <label>ESI Local Office</label>
+                    <div class="form-group">
+                      <input
+                        class="form-control"
+                        formControlName="esilocal_office"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="col">
+                    <label>Employee (%)</label>
+                    <div class="form-group">
+                      <input
+                        class="form-control"
+                        formControlName="esi_percent"
+                        (keypress)="validateDecimalNumber($event)"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="col">
+                    <label>Employer (%)</label>
+                    <div class="form-group">
+                      <input
+                        class="form-control"
+                        formControlName="esi_emr_percent"
+                        (keypress)="validateDecimalNumber($event)"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="col">
+                    <label>ESI Share Cut Off</label>
+                    <div class="form-group">
+                      <input
+                        class="form-control"
+                        formControlName="esimax_limit"
+                        (keypress)="validateDecimalNumber($event)"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="col">
+                    <label>ESI RoundOff</label>
+                    <div class="form-group">
+                      <ng-select
+                        id="ESIRoundOff"
+                        [items]="eSIRoundOff"
+                        bindLabel="name"
+                        bindValue="value"
+                        formControlName="esi_roundoff"
+                        placeholder="--Select Year--"
+                        class="w-100"
+                      ></ng-select>
+                    </div>
+                  </div>
+
+                  <div class="col">
+                    <label>ESI Applicable</label>
+                    <div class="form-group">
+                      <input
+                        type="checkbox"
+                        id="ESIApplicable"
+                        formControlName="esi_applicable"
+                        class="form-check-input"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-sm-12 col-md-12 col-lg-6 col-xxl-6">
+              <!-- Top Most Senior Employee -->
+              <div class="rounded-1">
+                <p class="text-primary fw-bold ms-4 p-1">Other Details</p>
+              </div>
+              <div
+                class="card shadow-sm border-end border-primary border-2 p-2 rounded-1"
+              >
+                <div class="row row-cols-1 row-cols-md-2 gy-0 gx-4">
+                  <div class="col">
+                    <label>Employee</label>
+                    <div class="form-group">
+                      <ng-select
+                        id="EmployeeList"
+                        [items]="EmployeeList"
+                        bindLabel="name"
+                        bindValue="value"
+                        formControlName="fk_empid"
+                        placeholder="--Select Year--"
+                        class="w-100"
+                      ></ng-select>
+                    </div>
+                  </div>
+
+                  <div class="col">
+                    <label for="MaxEmpcode">Max Empcode</label>
+                    <div class="form-group">
+                      <input
+                        type="text"
+                        id="MaxEmpcode"
+                        class="form-control"
+                        formControlName="maxEmpcode"
+                        (keypress)="validateNumber($event)"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="col">
+                    <label for="PrefixCode">Prefix Code</label>
+                    <div class="form-group">
+                      <input
+                        type="text"
+                        id="PrefixCode"
+                        class="form-control"
+                        formControlName="prefixEmpcode"
+                      />
+                    </div>
+                  </div>
+
+                  <!-- <div class="col">
+                            <label for="ReverseSalary">Reverse Salary</label>
+                            <div class="form-group">
+                                <input type="text" id="ReverseSalary" class="form-control"
+                                    formControlName="ReverseSalary" (keypress)="validateNumber($event)">
+                            </div>
+                        </div> -->
+
+                  <div class="col">
+                    <label for="IsAutoEmpcode">Is Auto Empcode:</label>
+                    <div class="form-group">
+                      <input
+                        type="checkbox"
+                        id="IsAutoEmpcode"
+                        formControlName="isAutoEmpcode"
+                        class="form-check-input"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="col">
+                    <label for="clientwiseEmpprefix">ClientWise Empcode</label>
+                    <div class="form-group">
+                      <input
+                        type="checkbox"
+                        id="clientwiseEmpprefix"
+                        formControlName="clientwiseEmpprefix"
+                        class="form-check-input"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-12 col-md-12 col-lg-6 col-xxl-6">
+              <!-- PT Details -->
+              <div class="rounded-1">
+                <p class="text-primary fw-bold ms-4 p-1">PT Details</p>
+              </div>
+              <div
+                class="card shadow-sm border-end border-primary border-2 p-2 rounded-1"
+              >
+                <div class="row row-cols-1 row-cols-md-2 gy-0 gx-4">
+                  <div class="col">
+                    <label>PT Certificate Number</label>
+                    <div class="form-group">
+                      <input
+                        class="form-control"
+                        formControlName="pt_certno"
+                        maxlength="20"
+                      />
+                    </div>
+                  </div>
+                  <div class="col">
+                    <label> P.T.O.Circle Number</label>
+                    <div class="form-group">
+                      <input
+                        class="form-control"
+                        formControlName="pto_circleno"
+                        maxlength="1"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="col">
+                    <label class="">PT Applicable</label>
+                    <div class="form-group">
+                      <input
+                        type="checkbox"
+                        class="form-control"
+                        formControlName="pt_applicable"
+                        class="form-check-input"
+                      />
+                    </div>
+                  </div>
+
+                  <!-- <div class="col">
+                    <label class=""> Contractor Applicable</label>
+                    <div class="form-group">
+                      <input
+                        type="checkbox"
+                        class="form-control"
+                        formControlName="Contractor_Applicable"
+                        class="form-check-input"
+                      />
+                    </div>
+                  </div> -->
+                </div>
+              </div>
+            </div>
+
+            <div class="col-sm-12 col-md-12 col-lg-6 col-xxl-6">
+              <!-- Other Details  -->
+              <div class="rounded-1">
+                <p class="text-primary fw-bold ms-4 p-1">Bonus Details</p>
+              </div>
+              <div
+                class="card shadow-sm border-end border-primary border-2 p-2 rounded-1"
+              >
+                <div class="row row-cols-1 row-cols-md-2 gy-0 gx-4">
+                  <div class="col">
+                    <label for="BonusPercent">Bonus Percent:</label>
+
+                    <div class="form-group">
+                      <input
+                        type="text"
+                        id="bonuspercent"
+                        class="form-control"
+                        formControlName="bonuspercent"
+                        (keypress)="validateDecimalNumber($event)"
+                        maxlength="8"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="col">
+                    <label for="BonusMaxLimit">Bonus Max Limit</label>
+                    <div class="form-group">
+                      <input
+                        type="text"
+                        id="bonusmaxlimit"
+                        class="form-control"
+                        formControlName="bonusmaxlimit"
+                        (keypress)="validateDecimalNumber($event)"
+                        maxlength="18"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="col">
+                    <label for="tds_applicable">TDS Applicable:</label>
+
+                    <div class="form-group">
+                      <input
+                        type="checkbox"
+                        id="tds_applicable"
+                        formControlName="tds_applicable"
+                        class="form-check-input"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="col">
+                    <label for="GratuityApplicable">Gratuity Applicable:</label>
+
+                    <div class="form-group">
+                      <input
+                        type="checkbox"
+                        id="gratuity_applicable"
+                        formControlName="gratuity_applicable"
+                        class="form-check-input"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-12 col-md-12 col-lg-6 col-xxl-6">
+              <!-- All Head Details -->
+              <div class="rounded-1">
+                <p class="text-primary fw-bold ms-4 p-1">Incentive Details</p>
+              </div>
+              <div
+                class="card shadow-sm border-end border-primary border-2 p-2 rounded-1"
+              >
+                <div class="row row-cols-1 row-cols-md-2 gy-0 gx-4">
+                  <div class="col">
+                    <label>Basic Head</label>
+
+                    <div class="form-group">
+                      <ng-select
+                        id="fk_Basicheadid"
+                        [items]="HeadList"
+                        bindLabel="name"
+                        bindValue="value"
+                        formControlName="fk_Basicheadid"
+                        placeholder="--Select Basic Head --"
+                        class="w-100"
+                      ></ng-select>
+                      <span
+                        *ngIf="
+                          showError &&
+                          CompanyParameterForm.controls['fk_Basicheadid']
+                            .invalid
+                        "
+                        class="text-danger mt-1"
+                        style="font-size: 12px"
+                      >
+                        Please enter Basic Head.
+                      </span>
+                    </div>
+                  </div>
+
+                  <div class="col">
+                    <label>Incentive Head</label>
+
+                    <div class="form-group">
+                      <ng-select
+                        id="fk_Incentiveheadid"
+                        [items]="HeadList"
+                        bindLabel="name"
+                        bindValue="value"
+                        formControlName="fk_Incentiveheadid"
+                        placeholder="--Select Incentive Head --"
+                        class="w-100"
+                      ></ng-select>
+                      <span
+                        *ngIf="
+                          showError &&
+                          CompanyParameterForm.controls['fk_Incentiveheadid']
+                            .invalid
+                        "
+                        class="text-danger mt-1"
+                        style="font-size: 12px"
+                      >
+                        Please enter Incentive Head.
+                      </span>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <label>Bonus Head</label>
+
+                    <div class="form-group">
+                      <ng-select
+                        id="fk_Bonusheadid"
+                        [items]="HeadList"
+                        bindLabel="name"
+                        bindValue="value"
+                        formControlName="fk_Bonusheadid"
+                        placeholder="--Select Bonus Head--"
+                        class="w-100"
+                      ></ng-select>
+                      <span
+                        *ngIf="
+                          showError &&
+                          CompanyParameterForm.controls['fk_Bonusheadid']
+                            .invalid
+                        "
+                        class="text-danger mt-1"
+                        style="font-size: 12px"
+                      >
+                        Please enter Bonushead.
+                      </span>
+                    </div>
+                  </div>
+
+                  <div class="col">
+                    <label>OtherRateHead</label>
+
+                    <div class="form-group">
+                      <ng-select
+                        [items]="HeadList"
+                        bindLabel="name"
+                        bindValue="value"
+                        [multiple]="true"
+                        [closeOnSelect]="false"
+                        [searchable]="true"
+                        placeholder="--Select  OtherRateHead --"
+                        class="w-100 small"
+                        formControlName="fk_OtherRateHeadId"
+                      >
+                      </ng-select>
+                      <span
+                        *ngIf="
+                          showError &&
+                          CompanyParameterForm.controls['fk_OtherRateHeadId']
+                            .invalid
+                        "
+                        class="text-danger mt-1"
+                        style="font-size: 12px"
+                      >
+                        Please select OtherRateHead.
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-sm-12 col-md-12 col-lg-6 col-xxl-6">
+              <!-- All Head Details -->
+              <div class="rounded-1">
+                <p class="text-primary fw-bold ms-4 p-1">OT Details</p>
+              </div>
+              <div
+                class="card shadow-sm border-end border-primary border-2 p-2 rounded-1"
+              >
+                <div class="row row-cols-1 row-cols-md-2 gy-0 gx-4">
+                  <div class="col">
+                    <label>OT Head</label>
+
+                    <div class="form-group">
+                      <ng-select
+                        id="fk_OTheadid"
+                        [items]="HeadList"
+                        bindLabel="name"
+                        bindValue="value"
+                        formControlName="fk_OTheadid"
+                        placeholder="--Select OT Head--"
+                        class="w-100"
+                      ></ng-select>
+                      <span
+                        *ngIf="
+                          showError &&
+                          CompanyParameterForm.controls['fk_OTheadid'].invalid
+                        "
+                        class="text-danger mt-1"
+                        style="font-size: 12px"
+                      >
+                        Please enter OT Head.
+                      </span>
+                    </div>
+                  </div>
+
+                  <div class="col">
+                    <label>Multiple OT</label>
+                    <div class="form-group">
+                      <input
+                        class="form-control"
+                        formControlName="multipleOT"
+                        (keypress)="validateDecimalNumber($event)"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="col">
+                    <label>OTGrossHead</label>
+
+                    <div class="form-group">
+                      <ng-select
+                        [items]="HeadList"
+                        bindLabel="name"
+                        bindValue="value"
+                        [multiple]="true"
+                        [closeOnSelect]="false"
+                        [searchable]="true"
+                        placeholder="--Select OT Gross Head--"
+                        class="w-100 small"
+                        formControlName="fk_OTGrossHeadId"
+                      >
+                      </ng-select>
+                      <span
+                        *ngIf="
+                          showError &&
+                          CompanyParameterForm.controls['fk_OTGrossHeadId']
+                            .invalid
+                        "
+                        class="text-danger mt-1"
+                        style="font-size: 12px"
+                      >
+                        Please select OTGrossHead.
+                      </span>
+                    </div>
+                  </div>
+
+                  <!--added by pp 28 sep-->
+                  <div class="col">
+                    <label>OT Divide Days Type</label>
+                    <div class="form-group">
+                      <ng-select
+                        id="OTDivideDaysType"
+                        [items]="OTDivideDaysType"
+                        bindLabel="name"
+                        bindValue="value"
+                        formControlName="OTDivideDaysType"
+                        placeholder="--Select --"
+                        class="w-100"
+                      ></ng-select>
+                    </div>
+                  </div>
+
+                  <div class="col">
+                    <label for="OTDivideDays">OT Divide Days</label>
+
+                    <div class="form-group">
+                      <input
+                        type="number"
+                        id="OTDivideDays"
+                        class="form-control"
+                        formControlName="OTDivideDays"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="col">
+                    <label for="OTpf_gross_part">PF Gross Part</label>
+                    <div class="form-group">
+                      <input
+                        type="checkbox"
+                        id="OTpf_gross_part"
+                        formControlName="OTpf_gross_part"
+                        class="form-check-input"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="col">
+                    <label for="OTesi_gross_part">ESI Gross Part</label>
+                    <div class="form-group">
+                      <input
+                        type="checkbox"
+                        id="OTesi_gross_part"
+                        formControlName="OTesi_gross_part"
+                        class="form-check-input"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Onboarding Configuration -->
+            <div class="page-seperator bg-primary rounded-1">
+              <p class="text-white ms-4 p-1">Onboarding Configuration</p>
+            </div>
+
+            <div class="row row-cols-1 row-cols-md-4 gy-0 gx-4 mt-2">
+              <!-- HR Email -->
+
+              <!-- PAN Configuration -->
+              <div class="col">
+                <label class="fw-bold">PAN Card</label>
+                <div class="form-group">
+                  <div class="form-check">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      id="pan_visible"
+                      formControlName="pan_visible"
+                    />
+                    <label class="form-check-label" for="pan_visible"
+                      >Applicable</label
+                    >
+                  </div>
+                  <div class="form-check">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      id="pan_mandatory"
+                      formControlName="pan_mandatory"
+                    />
+                    <label class="form-check-label" for="pan_mandatory"
+                      >Mandatory</label
+                    >
+                  </div>
+                  <div class="form-check">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      id="pan_verification"
+                      formControlName="pan_verification"
+                    />
+                    <label class="form-check-label" for="pan_verification"
+                      >Verification Required</label
+                    >
+                  </div>
+                  <div class="form-check">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      id="pan_ocr"
+                      formControlName="pan_ocr"
+                      [disabled]="
+                        !CompanyParameterForm.get('pan_verification')?.value
+                      "
+                    />
+                    <label class="form-check-label" for="pan_ocr">OCR</label>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Aadhaar Configuration -->
+              <div class="col">
+                <label class="fw-bold">Aadhaar Card</label>
+                <div class="form-group">
+                  <div class="form-check">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      id="aadhaar_visible"
+                      formControlName="aadhaar_visible"
+                    />
+                    <label class="form-check-label" for="aadhaar_visible"
+                      >Applicable</label
+                    >
+                  </div>
+                  <div class="form-check">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      id="aadhaar_mandatory"
+                      formControlName="aadhaar_mandatory"
+                    />
+                    <label class="form-check-label" for="aadhaar_mandatory"
+                      >Mandatory</label
+                    >
+                  </div>
+                  <div class="form-check">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      id="aadhaar_verification"
+                      formControlName="aadhaar_verification"
+                    />
+                    <label class="form-check-label" for="aadhaar_verification"
+                      >Verification Required</label
+                    >
+                  </div>
+                  <div class="form-check">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      id="aadhaar_ocr"
+                      formControlName="aadhaar_ocr"
+                      [disabled]="
+                        !CompanyParameterForm.get('aadhaar_verification')?.value
+                      "
+                    />
+                    <label class="form-check-label" for="aadhaar_ocr"
+                      >OCR</label
+                    >
+                  </div>
+                </div>
+              </div>
+
+              <!-- Basic Info Configuration -->
+              <div class="col">
+                <label class="fw-bold">Basic Information</label>
+                <div class="form-group">
+                  <div class="form-check">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      id="basicinfo_visible"
+                      formControlName="basicinfo_visible"
+                    />
+                    <label class="form-check-label" for="basicinfo_visible"
+                      >Applicable</label
+                    >
+                  </div>
+                  <div class="form-check">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      id="basicinfo_mandatory"
+                      formControlName="basicinfo_mandatory"
+                    />
+                    <label class="form-check-label" for="basicinfo_mandatory"
+                      >Mandatory</label
+                    >
+                  </div>
+                </div>
+              </div>
+
+              <!-- Qualification Configuration -->
+              <div class="col">
+                <label class="fw-bold">Qualification</label>
+                <div class="form-group">
+                  <div class="form-check">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      id="qualification_visible"
+                      formControlName="qualification_visible"
+                    />
+                    <label class="form-check-label" for="qualification_visible"
+                      >Applicable</label
+                    >
+                  </div>
+                  <div class="form-check">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      id="qualification_mandatory"
+                      formControlName="qualification_mandatory"
+                    />
+                    <label
+                      class="form-check-label"
+                      for="qualification_mandatory"
+                      >Mandatory</label
+                    >
+                  </div>
+                </div>
+              </div>
+
+              <!-- Experience Configuration -->
+              <div class="col">
+                <label class="fw-bold">Experience</label>
+                <div class="form-group">
+                  <div class="form-check">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      id="experience_visible"
+                      formControlName="experience_visible"
+                    />
+                    <label class="form-check-label" for="experience_visible"
+                      >Applicable</label
+                    >
+                  </div>
+                  <div class="form-check">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      id="experience_mandatory"
+                      formControlName="experience_mandatory"
+                    />
+                    <label class="form-check-label" for="experience_mandatory"
+                      >Mandatory</label
+                    >
+                  </div>
+                </div>
+              </div>
+
+              <!-- Family Configuration -->
+              <div class="col">
+                <label class="fw-bold">Family Details</label>
+                <div class="form-group">
+                  <div class="form-check">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      id="family_visible"
+                      formControlName="family_visible"
+                    />
+                    <label class="form-check-label" for="family_visible"
+                      >Applicable</label
+                    >
+                  </div>
+                  <div class="form-check">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      id="family_mandatory"
+                      formControlName="family_mandatory"
+                    />
+                    <label class="form-check-label" for="family_mandatory"
+                      >Mandatory</label
+                    >
+                  </div>
+                </div>
+              </div>
+
+              <!-- Voter Configuration -->
+              <div class="col">
+                <label class="fw-bold">Voter ID</label>
+                <div class="form-group">
+                  <div class="form-check">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      id="voter_visible"
+                      formControlName="voter_visible"
+                    />
+                    <label class="form-check-label" for="voter_visible"
+                      >Applicable</label
+                    >
+                  </div>
+                  <div class="form-check">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      id="voter_mandatory"
+                      formControlName="voter_mandatory"
+                    />
+                    <label class="form-check-label" for="voter_mandatory"
+                      >Mandatory</label
+                    >
+                  </div>
+                  <div class="form-check">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      id="voter_verification"
+                      formControlName="voter_verification"
+                    />
+                    <label class="form-check-label" for="voter_verification"
+                      >Verification Required</label
+                    >
+                  </div>
+                  <div class="form-check">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      id="voter_ocr"
+                      formControlName="voter_ocr"
+                      [disabled]="
+                        !CompanyParameterForm.get('voter_verification')?.value
+                      "
+                    />
+                    <label class="form-check-label" for="voter_ocr">OCR</label>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Bank Account Configuration -->
+              <div class="col">
+                <label class="fw-bold">Bank Account</label>
+                <div class="form-group">
+                  <div class="form-check">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      id="bankaccount_visible"
+                      formControlName="bankaccount_visible"
+                    />
+                    <label class="form-check-label" for="bankaccount_visible"
+                      >Applicable</label
+                    >
+                  </div>
+                  <div class="form-check">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      id="bankaccount_mandatory"
+                      formControlName="bankaccount_mandatory"
+                    />
+                    <label class="form-check-label" for="bankaccount_mandatory"
+                      >Mandatory</label
+                    >
+                  </div>
+                  <div class="form-check">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      id="bankaccount_verification"
+                      formControlName="bankaccount_verification"
+                    />
+                    <label
+                      class="form-check-label"
+                      for="bankaccount_verification"
+                      >Verification Required</label
+                    >
+                  </div>
+                </div>
+              </div>
+
+              <!-- Driving Licence Configuration -->
+              <div class="col">
+                <label class="fw-bold">Driving Licence</label>
+                <div class="form-group">
+                  <div class="form-check">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      id="driving_licence_visible"
+                      formControlName="driving_licence_visible"
+                    />
+                    <label
+                      class="form-check-label"
+                      for="driving_licence_visible"
+                      >Applicable</label
+                    >
+                  </div>
+                  <div class="form-check">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      id="driving_licence_mandatory"
+                      formControlName="driving_licence_mandatory"
+                    />
+                    <label
+                      class="form-check-label"
+                      for="driving_licence_mandatory"
+                      >Mandatory</label
+                    >
+                  </div>
+                </div>
+              </div>
+
+              <!-- Vehicle Insurance Configuration -->
+              <div class="col">
+                <label class="fw-bold">Vehicle Insurance</label>
+                <div class="form-group">
+                  <div class="form-check">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      id="vehicle_insurance_visible"
+                      formControlName="vehicle_insurance_visible"
+                    />
+                    <label
+                      class="form-check-label"
+                      for="vehicle_insurance_visible"
+                      >Applicable</label
+                    >
+                  </div>
+                  <div class="form-check">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      id="vehicle_insurance_mandatory"
+                      formControlName="vehicle_insurance_mandatory"
+                    />
+                    <label
+                      class="form-check-label"
+                      for="vehicle_insurance_mandatory"
+                      >Mandatory</label
+                    >
+                  </div>
+                </div>
+              </div>
+
+              <!-- Vehicle RC Configuration -->
+              <div class="col">
+                <label class="fw-bold">Vehicle RC</label>
+                <div class="form-group">
+                  <div class="form-check">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      id="vehicle_rc_visible"
+                      formControlName="vehicle_rc_visible"
+                    />
+                    <label class="form-check-label" for="vehicle_rc_visible"
+                      >Applicable</label
+                    >
+                  </div>
+                  <div class="form-check">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      id="vehicle_rc_mandatory"
+                      formControlName="vehicle_rc_mandatory"
+                    />
+                    <label class="form-check-label" for="vehicle_rc_mandatory"
+                      >Mandatory</label
+                    >
+                  </div>
+                </div>
+              </div>
+
+              <!-- Vendor GST Configuration -->
+              <div class="col">
+                <label class="fw-bold">Vendor GST</label>
+                <div class="form-group">
+                  <div class="form-check">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      id="vendor_gst_visible"
+                      formControlName="vendor_gst_visible"
+                    />
+                    <label class="form-check-label" for="vendor_gst_visible"
+                      >Applicable</label
+                    >
+                  </div>
+                  <div class="form-check">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      id="vendor_gst_mandatory"
+                      formControlName="vendor_gst_mandatory"
+                    />
+                    <label class="form-check-label" for="vendor_gst_mandatory"
+                      >Mandatory</label
+                    >
+                  </div>
+                </div>
+              </div>
+
+              <!-- Signature Configuration -->
+              <div class="col">
+                <label class="fw-bold">Signature Image</label>
+                <div class="form-group">
+                  <div class="form-check">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      id="signature_visible"
+                      formControlName="signature_visible"
+                    />
+                    <label class="form-check-label" for="signature_visible"
+                      >Applicable</label
+                    >
+                  </div>
+                  <div class="form-check">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      id="signature_mandatory"
+                      formControlName="signature_mandatory"
+                    />
+                    <label class="form-check-label" for="signature_mandatory"
+                      >Mandatory</label
+                    >
+                  </div>
+                </div>
+              </div>
+
+              <!-- Photograph Configuration -->
+              <div class="col">
+                <label class="fw-bold">Recent Photograph</label>
+                <div class="form-group">
+                  <div class="form-check">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      id="photograph_visible"
+                      formControlName="photograph_visible"
+                    />
+                    <label class="form-check-label" for="photograph_visible"
+                      >Applicable</label
+                    >
+                  </div>
+                  <div class="form-check">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      id="photograph_mandatory"
+                      formControlName="photograph_mandatory"
+                    />
+                    <label class="form-check-label" for="photograph_mandatory"
+                      >Mandatory</label
+                    >
+                  </div>
+
+                  <div class="form-check mt-2">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      id="photograph_livecapture"
+                      formControlName="photograph_livecapture"
+                    />
+                    <label class="form-check-label" for="photograph_livecapture"
+                      >Live Capture</label
+                    >
+                  </div>
+                </div>
+              </div>
+
+              <!-- E-Shram Configuration -->
+              <div class="col">
+                <label class="fw-bold">E-Shram Card Details</label>
+                <div class="form-group">
+                  <div class="form-check">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      id="eshram_visible"
+                      formControlName="eshram_visible"
+                    />
+                    <label class="form-check-label" for="eshram_visible"
+                      >Applicable</label
+                    >
+                  </div>
+                  <div class="form-check">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      id="eshram_mandatory"
+                      formControlName="eshram_mandatory"
+                    />
+                    <label class="form-check-label" for="eshram_mandatory"
+                      >Mandatory</label
+                    >
+                  </div>
+                  <div class="form-check">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      id="eshram_verification"
+                      formControlName="eshram_verification"
+                    />
+                    <label class="form-check-label" for="eshram_verification"
+                      >Verification Required</label
+                    >
+                  </div>
+                </div>
+              </div>
+
+              <!-- Ayushman Card Configuration -->
+              <div class="col">
+                <label class="fw-bold">Ayushman Card</label>
+                <div class="form-group">
+                  <div class="form-check">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      id="ayushman_visible"
+                      formControlName="ayushman_visible"
+                    />
+                    <label class="form-check-label" for="ayushman_visible"
+                      >Applicable</label
+                    >
+                  </div>
+                  <div class="form-check">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      id="ayushman_mandatory"
+                      formControlName="ayushman_mandatory"
+                    />
+                    <label class="form-check-label" for="ayushman_mandatory"
+                      >Mandatory</label
+                    >
+                  </div>
+                  <div class="form-check">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      id="ayushman_verification"
+                      formControlName="ayushman_verification"
+                    />
+                    <label class="form-check-label" for="ayushman_verification"
+                      >Verification Required</label
+                    >
+                  </div>
+                </div>
+              </div>
+
+               <!-- Life Insurance Configuration -->
+              <div class="col">
+                <label class="fw-bold">Life Insurance</label>
+                <div class="form-group">
+                  <div class="form-check">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      id="lifeinsurance_visible"
+                      formControlName="lifeinsurance_visible"
+                    />
+                    <label class="form-check-label" for="lifeinsurance_visible"
+                      >Applicable</label
+                    >
+                  </div>
+                  <div class="form-check">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      id="lifeinsurance_mandatory"
+                      formControlName="lifeinsurance_mandatory"
+                    />
+                    <label class="form-check-label" for="lifeinsurance_mandatory"
+                      >Mandatory</label
+                    >
+                  </div>
+                  <div class="form-check">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      id="lifeinsurance_verification"
+                      formControlName="lifeinsurance_verification"
+                    />
+                    <label class="form-check-label" for="lifeinsurance_verification"
+                      >Verification Required</label
+                    >
+                  </div>
+                </div>
+              </div>
+
+
+              <div class="col-md-4">
+                <label>HR Email for Onboarding</label>
+                <div class="form-group">
+                  <input
+                    type="email"
+                    class="form-control"
+                    formControlName="onboarding_hr_email"
+                    placeholder="hr@company.com"
+                  />
+                </div>
+              </div>
+
+              <!-- Company Stamp Upload -->
+              <div class="col-md-4">
+                <label class="fw-bold">Company Stamp</label>
+                <div class="form-group">
+                  <input
+                    type="file"
+                    class="form-control"
+                    accept="image/*"
+                    (change)="onStampFileSelected($event)"
+                  />
+                  <div *ngIf="stampPreviewUrl" class="mt-2">
+                    <small class="text-muted">Preview:</small><br />
+                    <img
+                      [src]="stampPreviewUrl"
+                      alt="Company Stamp"
+                      style="max-height: 60px; max-width: 150px"
+                      class="border p-1 rounded"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- END OF ONBOARDING CONFIGURATION SECTION -->
+
+            <div class="row">
+              <div class="modal-footer">
+                <button
+                  type="submit"
+                  class="btn btn-primary mx-1"
+                  (click)="submitForm()"
+                >
+                  {{ Isedit ? "Update" : "Save" }}
+                </button>
+                <button type="reset" class="btn btn-outline-dark mx-1">
+                  Reset
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

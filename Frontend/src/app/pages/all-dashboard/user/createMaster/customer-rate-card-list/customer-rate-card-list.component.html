@@ -1,0 +1,77 @@
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header bg-primary">
+        <div class="row w-100">
+
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-between">
+            <h4>List of Customer Rate Cards</h4>
+          </div>
+
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-center">
+            <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText"
+              (ngModelChange)="onSearchTextChanged()" />
+          </div>
+
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-md-end">
+            <button class="btn btnheader mx-1" (click)="exportToExcel()">
+              <i class="fa fa-file-excel"></i> Export
+            </button>
+            <button class="btn btnheader mx-1" routerLink="/dash/user/userdashboard/customerRateCard">
+              Add
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="card-body">
+        <div class="table-responsive table-invoice">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Sr.No</th>
+                <th>Customer</th>
+                <th>Location</th>
+                <th>Category</th>
+                <th>Service Type</th>
+                <th>Work Duration</th>
+                <th>Entry Date</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of filteredMaster
+                | paginate : { itemsPerPage: pageSize, currentPage: page, totalItems: totalItems }; 
+                let i = index">
+
+                <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+                <td>{{ item.CustomerName }}</td>
+                <td>{{ item.LocationName }}</td>
+                <td>{{ item.CategoryName }}</td>
+                <td>{{ item.ServiceTypeName }}</td>
+                <td>{{ item.WorkDuration }}</td>
+                <td>{{ item.EntryDate | date:'dd-MM-yyyy' }}</td>
+                <td>
+                  <button class="btn" (click)="edit(item.RateCardId)">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                  </button>
+                  <button class="btn" (click)="deleteRecord(item.RateCardId)">
+                    <i class="fa fa-trash"></i>
+                  </button>
+                </td>
+              </tr>
+              <tr *ngIf="filteredMaster.length === 0">
+                <td colspan="9" class="text-center text-muted">No data available</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <pagination-controls (pageChange)="onPageChange($event)" [responsive]="true">
+          </pagination-controls>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

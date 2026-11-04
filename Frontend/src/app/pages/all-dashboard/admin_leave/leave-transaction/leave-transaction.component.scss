@@ -1,0 +1,40 @@
+.card-header{
+    background-color: #3080e8;
+  
+  
+  }
+  .ngx-pagination .current {
+  padding: .1875rem .625rem;
+  background:  #3080e8 !important;
+  color: #fefefe;
+  cursor: default;
+  }
+
+
+  .nav-link{
+    font-size: 13px;
+    color: #3080e8 !important;
+    padding: 0px;
+    background-color: transparent;
+    box-shadow: none !important;
+    border-bottom: 2px solid #3080e8;
+    border-radius: 2px;
+    font-weight: 500 !important;
+    // border-left: 2px solid #fefefe ;
+
+  }
+
+  
+  .nav-link:hover{
+    font-size: 13px;
+    font-weight: 600 !important;
+    color: #2b2e41 !important;
+    border-bottom: 3px solid #2b2e41;
+    // border-left: 2px solid #e20d0d; 
+    box-shadow: none !important;
+  }
+
+
+
+
+  

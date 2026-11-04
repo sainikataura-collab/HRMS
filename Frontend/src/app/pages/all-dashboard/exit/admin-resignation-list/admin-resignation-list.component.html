@@ -1,0 +1,369 @@
+<!-- Top Header -->
+
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card border-0 mb-3">
+      <div class="card-header py-2 bg-primary">
+        <div class="row w-100 gy-2 align-items-center">
+          <div class="col-12 col-md-6 d-flex align-items-center">
+            <h4 class="text-white mb-0">All Resignations</h4>
+          </div>
+          <div class="col-12 col-md-6 d-flex align-items-center justify-content-md-end">
+            <button class="btn btn-sm btnheader mx-1" (click)="exportToExcel()">
+              <i class="fas fa-file-excel text-success me-1"></i> Download
+            </button>
+          </div>
+        </div>
+      </div>
+
+
+
+      <!-- card body items -->
+      <div class="card-body">
+        <div class="row row-cols-1 row-cols-md-4 row-cols-lg-6 g-2">
+          <!-- Total Resignations -->
+          <div class="col">
+            <div class="stat-card blue h-100">
+              <div class="stat-icon blue">
+                <i class="fa-solid fa-users"></i>
+              </div>
+              <div class="stat-content">
+                <span class="stat-title">Total&nbsp;Resignations</span>
+                <span class="stat-value blue">{{dashboard.totalResignations}}</span>
+                <!-- <span class="stat-subtitle">This Month</span> -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Approved -->
+          <div class="col">
+            <div class="stat-card green h-100">
+              <div class="stat-icon green">
+                <i class="fa-solid fa-circle-check"></i>
+              </div>
+              <div class="stat-content">
+                <span class="stat-title">Approved</span>
+                <span class="stat-value green">{{dashboard.approved}}</span>
+                <!-- <span class="stat-subtitle">This Month</span> -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Pending -->
+          <div class="col">
+            <div class="stat-card orange h-100">
+              <div class="stat-icon orange">
+                <i class="fa-solid fa-hourglass-half"></i>
+              </div>
+              <div class="stat-content">
+                <span class="stat-title">Pending</span>
+                <span class="stat-value orange">{{dashboard.pending}}</span>
+                <!-- <span class="stat-subtitle">This Month</span> -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Retained -->
+          <div class="col">
+            <div class="stat-card purple h-100">
+              <div class="stat-icon purple">
+                <i class="fa-solid fa-user"></i>
+              </div>
+              <div class="stat-content">
+                <span class="stat-title">Retained</span>
+                <span class="stat-value purple">{{dashboard.retained}}</span>
+                <!-- <span class="stat-subtitle">This Month</span> -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Rejected -->
+          <div class="col">
+            <div class="stat-card red h-100">
+              <div class="stat-icon red">
+                <i class="fa-solid fa-circle-xmark"></i>
+              </div>
+              <div class="stat-content">
+                <span class="stat-title">Rejected</span>
+                <span class="stat-value red">{{dashboard.rejected}}</span>
+                <!-- <span class="stat-subtitle">This Month</span> -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Withdraw -->
+          <div class="col">
+            <div class="stat-card teal h-100">
+              <div class="stat-icon teal">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+              </div>
+              <div class="stat-content">
+                <span class="stat-title">Withdraw</span>
+                <span class="stat-value teal">{{dashboard.withdraw}}</span>
+                <!-- <span class="stat-subtitle">This Month</span> -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="row   bg-primary d-flex align-items-center justify-content-between mt-3 rounded w-100">
+          <div class="col-auto align-content-center">
+            <p class="text-white  pt-1 ">List of Employee(s)</p>
+          </div>
+          <div class="col-auto">
+            <input type="text" class="form-control form-control-sm w-100" placeholder="Search..."
+              [(ngModel)]="searchText" (ngModelChange)="onSearch()" style="max-width: 450px;" />
+
+          </div>
+        </div>
+
+
+
+
+      </div>
+      <!-- Stats Row (Moved above header) -->
+
+
+
+
+
+
+      <div class="card-body">
+        <div class="row">
+          <div class="col-12 col-md-6 col-xl-4 mb-3" *ngFor="
+      let item of resignationList
+        | paginate : {
+            itemsPerPage: pageSize,
+            currentPage: pageIndex,
+            totalItems: totalCount
+          };
+      let i = index
+    ">
+            <div class="card res-card h-100">
+
+              <!-- Top Row: Badge & Dropdown -->
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <div class="res-badge">#{{ ((pageIndex - 1) * pageSize) + i + 1 | number:'2.0' }}</div>
+
+                <div class="dropdown">
+                  <button class="btn res-btn-outline btn-danger d-flex align-items-center gap-1" type="button"
+                    data-bs-toggle="dropdown">
+                    <i class="fa-regular fa-file-lines"></i> Letters <i class="fa-solid fa-chevron-down"
+                      style="font-size: 0.6rem; margin-left: 2px;"></i>
+                  </button>
+                  <ul class="dropdown-menu dropdown-menu-end">
+                    <li>
+                      <button class="dropdown-item" (click)="previewPdf(item.pkSepRequestId)">
+                        <i class="fa-solid fa-file-pdf text-danger me-2"></i>Resignation Letter
+                      </button>
+                    </li>
+                    <li>
+                      <button class="dropdown-item" (click)="previewRelievingLetter(item.pkSepRequestId)">
+                        <i class="fa-solid fa-file-lines text-success me-2"></i>Relieving Letter
+                      </button>
+                    </li>
+                    <li>
+                      <button class="dropdown-item" (click)="previewExperienceLetter(item.pkSepRequestId)">
+                        <i class="fa-solid fa-award text-primary me-2"></i>Experience Letter
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- User Info Row -->
+              <div class="d-flex align-items-center justify-content-between mb-0">
+                <div class="d-flex align-items-center gap-2">
+                  <div class="res-avatar">
+                    <i class="fa-solid fa-user"></i>
+                  </div>
+                  <div>
+                    <div class="res-name-text mb-0">{{ item.empname }}</div>
+
+                    <span class="res-code-text mb-0">{{ item.empcode }}
+                      <i class="fa-regular fa-building"></i> {{ item.department }} Department
+                    </span>
+
+                    <!-- <span class="res-dept-text d-flex align-items-center gap-1">
+            </span> -->
+
+                  </div>
+                </div>
+                <div class="align-self-start mt-1">
+                  <!-- Dynamic Status Pill -->
+                  <div class="res-status-pill" [ngClass]="{
+              'pill-pending': item.status==1,
+              'pill-retain': item.status==2,
+              'pill-default': item.status==3,
+              'pill-success': item.status==4,
+              'pill-danger': item.status==5
+            }">
+                    <ng-container [ngSwitch]="item.status">
+                      <span *ngSwitchCase="1">Pending</span>
+                      <span *ngSwitchCase="2">Retain</span>
+                      <span *ngSwitchCase="3">Withdraw</span>
+                      <span *ngSwitchCase="4">Accepted</span>
+                      <span *ngSwitchCase="5">Rejected</span>
+                    </ng-container>
+                  </div>
+                </div>
+              </div>
+
+              <div class="res-divider-hz"></div>
+
+              <!-- Dates Row -->
+              <div class="d-flex justify-content-center align-items-center mb-0">
+                <!-- Resigned On -->
+                <div class="d-flex align-items-center gap-2"
+                  style="flex: 1; justify-content: flex-end; padding-right: 14px;">
+                  <i class="fa-regular fa-calendar mb-3" style="font-size: 1rem; color: #475569;"></i>
+                  <div class="d-flex flex-column">
+                    <span class="res-date-label">Resigned On</span>
+                    <span class="res-date-val">{{ item.resignationDate | date:'dd MMM yyyy' }}</span>
+                  </div>
+                </div>
+
+                <div class="res-divider-vt"></div>
+
+                <!-- Expected LWD -->
+                <div class="d-flex align-items-center gap-2"
+                  style="flex: 1; justify-content: flex-start; padding-left: 14px;">
+                  <i class="fa-regular fa-calendar-check mb-3" style="font-size: 1rem; color: #475569;"></i>
+                  <div class="d-flex flex-column">
+                    <span class="res-date-label">Expected LWD</span>
+                    <span class="res-date-val">{{ item.expectedLWD | date:'dd MMM yyyy' }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="res-divider-hz"></div>
+
+              <!-- Info Box 1 (Notice, Served, Exit Interview) -->
+              <div class="res-info-box d-flex justify-content-between align-items-center">
+                <!-- Notice -->
+                <div class="d-flex flex-column align-items-center flex-fill gap-1">
+                  <div class="d-flex align-items-center">
+                    <i class="fa-regular fa-clock" style="color: #2563eb; font-size: 0.75rem;"></i>
+                    <span class="res-info-label">Notice</span>
+                  </div>
+                  <div class="res-info-val">{{ item.noticePeriod }} Days</div>
+                </div>
+                <!-- Served -->
+                <div class="d-flex flex-column align-items-center flex-fill gap-1">
+                  <div class="d-flex align-items-center">
+                    <i class="fa-regular fa-circle-check" style="color: #2563eb; font-size: 0.75rem;"></i>
+                    <span class="res-info-label">Served</span>
+                  </div>
+                  <div class="res-status-pill" [ngClass]="item.isNoticePeriodServed ? 'pill-success' : 'pill-danger'">
+                    {{ item.isNoticePeriodServed ? 'Yes' : 'No' }}
+                  </div>
+                </div>
+                <!-- Exit Interview -->
+                <div class="d-flex flex-column align-items-center flex-fill gap-1">
+                  <div class="d-flex align-items-center">
+                    <i class="fa-solid fa-user-tie" style="color: #2563eb; font-size: 0.75rem;"></i>
+                    <span class="res-info-label">Exit Interview</span>
+                  </div>
+                  <div class="res-status-pill"
+                    [ngClass]="(item.exitInterviewStatus === 'Completed' || item.exitInterviewStatus === 'Submitted') ? 'pill-success' : 'pill-pending'">
+                    {{ item.exitInterviewStatus || 'Pending' }}
+                  </div>
+                </div>
+              </div>
+
+              <!-- Info Box 2 (Due Clearance, No Due) -->
+              <div class="res-info-box d-flex justify-content-around align-items-center mb-0">
+                <!-- Due Clearance -->
+                <div class="d-flex flex-column align-items-center gap-1">
+                  <div class="d-flex align-items-center">
+                    <i class="fa-regular fa-file-lines" style="color: #2563eb; font-size: 0.75rem;"></i>
+                    <span class="res-info-label">Due Clearance</span>
+                  </div>
+                  <div class="res-status-pill"
+                    [ngClass]="(item.dueClearanceStatus === 'Completed' || item.dueClearanceStatus === 'Approved') ? 'pill-success' : ((item.dueClearanceStatus === 'In Progress' || item.dueClearanceStatus === 'Submitted') ? 'pill-retain' : 'pill-pending')">
+                    {{ item.dueClearanceStatus || 'Pending' }}
+                  </div>
+                </div>
+                <!-- No Due Declaration -->
+                <div class="d-flex flex-column align-items-center gap-1">
+                  <div class="d-flex align-items-center">
+                    <i class="fa-solid fa-shield-halved" style="color: #2563eb; font-size: 0.75rem;"></i>
+                    <span class="res-info-label">No Due Declaration</span>
+                  </div>
+                  <div class="res-status-pill"
+                    [ngClass]="(item.noDueDeclarationStatus === 'Approved' || item.noDueDeclarationStatus === 'Reviewed') ? 'pill-success' : (item.noDueDeclarationStatus === 'Submitted' ? 'pill-retain' : 'pill-pending')">
+                    {{ item.noDueDeclarationStatus || 'Pending' }}
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+
+          <!-- Empty state -->
+          <div class="col-12" *ngIf="resignationList.length===0">
+            <div class="no-result-card rounded-3">
+              <div class="icon-box-search">
+                <i class="fa-regular fa-folder-open"></i>
+              </div>
+              <h5>No records found</h5>
+              <p>Try adjusting your <span>search term</span></p>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-start mt-3">
+            <pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>
+          </div>
+        </div>
+      </div>
+
+
+      <!--  -->
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+<!-- ========================================= -->
+<!-- PDF Preview Modal -->
+<!-- ========================================= -->
+
+<div class="modal fade" id="resignationPreviewModal" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered pt-5 mt-4">
+    <div class="modal-content">
+
+      <!-- Header -->
+      <div class="modal-header d-flex align-items-center justify-content-between flex-wrap flex-lg-nowrap pt-2 pb-1">
+        <p class="fw-semibold fs-6 d-flex mb-0">
+          <span>{{ previewTitle }}</span>
+        </p>
+
+        <p class="mb-0 d-flex align-items-center">
+          <button class="btn btn-primary me-3" (click)="downloadCurrentPdf()">
+            <i class="fa-solid fa-download me-2"></i>
+            Download
+          </button>
+
+          <button type="button" class="btn-close align-content-end me-3 pt-0" data-bs-dismiss="modal"></button>
+        </p>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body p-0">
+        <iframe *ngIf="pdfUrl" [src]="pdfUrl" class="pdf-frame"></iframe>
+      </div>
+
+      <!-- Footer -->
+      <div class="modal-footer justify-content-center"></div>
+
+    </div>
+  </div>
+</div>

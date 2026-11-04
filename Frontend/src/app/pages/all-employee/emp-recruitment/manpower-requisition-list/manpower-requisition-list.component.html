@@ -1,0 +1,349 @@
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <!-- Heading -->
+      <div class="card-header bg-primary">
+        <div class="row w-100">
+          <!-- Title -->
+          <div class="col-sm-12 col-md-6 col-lg-4 d-flex align-items-center justify-content-start">
+            <h4 class="text-white">List of Job Requisitions</h4>
+          </div>
+          <!-- Search -->
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-center">
+            <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText" />
+          </div>
+          <!-- Buttons -->
+          <div class="col-sm-12 col-md-6 col-lg-4 d-flex align-items-center justify-content-end ms-auto gap-2">
+            <button class="btn btn-light"
+              routerLink="/dash/emp-recruitment/emp-recruitmentdashboard/ManpowerRequisition">
+              Add
+            </button>
+            <button class="btn btn-light" (click)="downloadExcel()">
+              Download
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Body -->
+      <div class="card-body">
+        <div class="table-responsive table-invoice">
+          <table id="exportTable" class="table table-bordered">
+            <thead>
+              <tr>
+                <th>S. No.</th>
+                <th>MRF Code</th>
+                <th>Dated</th>
+                <th>Job Opening For</th>
+                <th>Location</th>
+                <th>Department</th>
+                <th>Designation</th>
+                <th>No. of Post</th>
+                <th>Experience From</th>
+                <th>Experience To</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                *ngFor="let data of filteredData() | paginate: { itemsPerPage: pageSize, currentPage: pageIndex, totalItems: totalItems }; let i = index">
+                <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+                <td>{{ data.mrfcode }}</td>
+                <td>{{ data.dated | date: 'dd/MM/yyyy' }}</td>
+                <td>{{ data.jobTitle }}</td>
+                <td>{{ data.location }}</td>
+                <td>{{ data.department }}</td>
+                <td>{{ data.designation }}</td>
+                <td>{{ data.no_Of_Post }}</td>
+                <td>{{ data.experience_From }}</td>
+                <td>{{ data.experience_To }}</td>
+                <td>{{ data.status }}</td>
+                <td>
+                  <button class="btn" (click)="edit(data.pk_ReqId)" [disabled]="data.status !== 'Submitted'">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                  </button>
+
+                 
+                  <button class="btn" (click)="generatePDFFromId(data.pk_ReqId)">
+                    <i class="fa-solid fa-download"></i>
+                  </button>
+
+                   <button class="btn" (click)="delete(data.pk_ReqId)" [disabled]="data.status !== 'Submitted'">
+                    <i class="fa fa-trash"></i>
+                  </button>
+
+
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Pagination -->
+          <pagination-controls (pageChange)="onPageChange($event)" [responsive]="true">
+          </pagination-controls>
+
+          <!-- No Data -->
+          <ng-template #noData>
+            <tr>
+              <td colspan="13" class="text-center">No data available</td>
+            </tr>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+<!--  -->
+
+
+
+<!-- pdf download d-none -->
+<div class="row d-none" >
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="payslip ">
+      <div id="pdf-content">
+        <div class="px-0  border border-dark" *ngIf="selectedItemForPDF">
+          <!-- <div class="row row-cols-1 row-cols-md-1 g-0 border-bottom border-dark ">
+                        <p class="fw-semibold text-primary text-center pt-2">Requisition Approval</p>
+                    </div> -->
+          <!-- card header -->
+          <div class="row row-cols-1 row-cols-md-3 g-0 pb-0 border-dark border-bottom">
+            <!-- Logo Section -->
+            <div class="col d-flex align-items-start  justify-content-start ps-4">
+
+              <img src="assets/Image/pdf-logo.png" alt="Logo" height="30" width="50" style="object-fit: contain; "
+                class="align-content-center mt-3">
+
+            </div>
+
+            <div class="col">
+              <div class="comapny">
+                <p class="fw-semibold text-center small text-center lh-sm text-dark pt-lg-2">
+                  Empower Logics</p>
+                <p class="text-center small s-small text-center lh-sm text-dark">Empower logics data </p>
+              </div>
+            </div>
+
+            <!-- Right Side Info -->
+            <div class="col d-flex align-items-center justify-content-end">
+              <div class="pe-lg-2 text-center">
+                <p class="text-dark small lh-sm pt-lg-2"><span class="fw-semibold">Month : </span> <span
+                    class="text-primary">{{ today | date: 'dd MMM yyyy' }}</span>
+                </p>
+
+              </div>
+            </div>
+          </div>
+          <!--  -->
+          <div class="row row-cols-1 row-cols-md-2 g-0 border-bottom border-dark  ">
+            <div class="col">
+              <p class="small fw-semibold text-dark pt-2 ps-3 text-primary">PENDING JOB REQUISITION</p>
+
+            </div>
+            <!-- <div class="col">
+                            <p class="small text-dark pt-2 text-end pe-3">{{ today | date: 'dd MMM yyyy' }}</p>
+                        </div> -->
+          </div>
+
+          <div class="row row-cols-1 row-cols-md-2 g-0 pb-0 border-bottom border-dark  ">
+            <div class="col d-flex align-items-center justify-content-center">
+              <p class="small text-center pt-1"><span class="fw-semibold samll">Employee Name : </span>
+                <span class="small">
+                {{ selectedItemForPDF.empname}}
+                </span>
+              </p>
+            </div>
+            <div class="col d-flex align-items-center justify-content-center">
+              <p class="text-center small pt-1"><span class="fw-semibold small">Employee Code : </span>
+                <span class="small">
+                 {{ selectedItemForPDF.empcode}}
+                </span>
+              </p>
+            </div>
+
+          </div>
+
+
+
+          <div class="row row-cols-1 row-cols-md-2  g-0 pb-0 border-bottom border-dark ">
+
+            <div class="col">
+              <table style="width: 90%; font-size: 12px; border-collapse: collapse; margin: auto;">
+                <tr>
+                  <td style="padding: 4px; font-weight: bold; text-align: start;">MRF Code</td>
+                  <td style="padding: 4px; text-align: start;">:</td>
+                  <td style="padding: 4px; text-align: start;">
+                   {{selectedItemForPDF.mrfcode}}
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 4px; font-weight: bold; text-align: start;">Dated</td>
+                  <td style="padding: 4px; text-align: start;">:</td>
+                  <td style="padding: 4px; text-align: start;">
+                  {{selectedItemForPDF.dated}}
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 4px; font-weight: bold; text-align: start;">Job Opening For</td>
+                  <td style="padding: 4px; text-align: start;">:</td>
+                  <td style="padding: 4px; text-align: start;">
+                   {{selectedItemForPDF.jobtitle}}
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 4px; font-weight: bold; text-align: start;"> Location</td>
+                  <td style="padding: 4px; text-align: start;">:</td>
+                  <td style="padding: 4px; text-align: start;">
+                  {{selectedItemForPDF.location}}
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 4px; font-weight: bold; text-align: start;"> Department</td>
+                  <td style="padding: 4px; text-align: start;">:</td>
+                  <td style="padding: 4px; text-align: start;">
+                    {{selectedItemForPDF.department}}
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 4px; font-weight: bold; text-align: start;"> Justification Of Position</td>
+                  <td style="padding: 4px; text-align: start;">:</td>
+                  <td style="padding: 4px; text-align: start;">
+                   {{selectedItemForPDF.justification_of_Position}}
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 4px; font-weight: bold; text-align: start;"> Roles Responsibilities</td>
+                  <td style="padding: 4px; text-align: start;">:</td>
+                  <td style="padding: 4px; text-align: start;">
+                    {{selectedItemForPDF.roles_Responsibilities}}
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 4px; font-weight: bold; text-align: start;"> Technical Skills</td>
+                  <td style="padding: 4px; text-align: start;">:</td>
+                  <td style="padding: 4px; text-align: start;">
+                    {{selectedItemForPDF.technical_Skills}}
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 4px; font-weight: bold; text-align: start;"> Behavioral Skills</td>
+                  <td style="padding: 4px; text-align: start;">:</td>
+                  <td style="padding: 4px; text-align: start;">
+                    {{selectedItemForPDF.behavioral_Skills}}
+                  </td>
+                </tr>
+
+              </table>
+            </div>
+            <div class="col">
+              <table style="width: 90%; font-size: 12px; border-collapse: collapse; margin: auto;">
+                <tr>
+                  <td style="padding: 4px; font-weight: bold; text-align: start;">
+                    Designation
+                  </td>
+                  <td style="padding: 4px; text-align: start;">:</td>
+                  <td style="padding: 4px; text-align: start;">
+                    {{selectedItemForPDF.designation}}
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 4px; font-weight: bold; text-align: start;">
+                    No. of Position
+                  </td>
+                  <td style="padding: 4px; text-align: start;">:</td>
+                  <td style="padding: 4px; text-align: start;">
+                    {{selectedItemForPDF.no_of_post}}
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 4px; font-weight: bold; text-align: start;">
+                    Status
+                  </td>
+                  <td style="padding: 4px; text-align: start;">:</td>
+                  <td class="lh-sm" style="padding: 4px; text-align: start;">
+                    {{selectedItemForPDF.statuss}}
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 4px; font-weight: bold; text-align: start;">
+                    CTC_From
+                  </td>
+                  <td style="padding: 4px; text-align: start;">:</td>
+                  <td class="lh-sm" style="padding: 4px; text-align: start;">
+                    {{selectedItemForPDF.ctC_From}}
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 4px; font-weight: bold; text-align: start;">
+                    CTC_To
+                  </td>
+                  <td style="padding: 4px; text-align: start;">:</td>
+                  <td class="lh-sm" style="padding: 4px; text-align: start;">
+                  {{selectedItemForPDF.ctC_To}}
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 4px; font-weight: bold; text-align: start;">
+                    Reason Of Requirement
+                  </td>
+                  <td style="padding: 4px; text-align: start;">:</td>
+                  <td class="lh-sm" style="padding: 4px; text-align: start;">
+                   {{selectedItemForPDF.reason_of_Requirement}}
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 4px; font-weight: bold; text-align: start;">
+                    Reason Of Replacement
+                  </td>
+                  <td style="padding: 4px; text-align: start;">:</td>
+                  <td class="lh-sm" style="padding: 4px; text-align: start;">
+                    {{selectedItemForPDF.reason_of_Replacement}}
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 4px; font-weight: bold; text-align: start;">
+                    additional Qualities
+                  </td>
+                  <td style="padding: 4px; text-align: start;">:</td>
+                  <td class="lh-sm" style="padding: 4px; text-align: start;">
+                    {{selectedItemForPDF.additional_Qualities}}
+                  </td>
+                </tr>
+
+
+              </table>
+            </div>
+
+
+          </div>
+
+
+
+
+ 
+
+
+
+
+
+
+        </div>
+
+        <div class="row pt-2">
+          <div class="col-12">
+            <p class="text-end small"> <span> Generate date : </span> <span>{{ today | date: 'dd MMM yyyy, hh:mm a'
+                }}</span></p>
+          </div>
+        </div>
+
+      </div>
+
+
+
+    </div>
+  </div>
+</div>

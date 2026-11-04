@@ -1,0 +1,210 @@
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card small">
+
+      <!-- Button Only Visible On Screen -->
+      <div class="card-header bg-primary text-white no-print">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-6">
+            <h4>Employee Appraisal Details</h4>
+          </div>
+          <div class="col-sm-12 col-md-6 text-end">
+            <button class="btn btnheader" routerLink="/dash/performance/performancedashboard/AppraisalList">
+              Go To Appraisal List
+            </button>
+            <button class="btn btnheader ms-2" (click)="downloadPDF()">
+              Download PDF
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Content to Export -->
+      <div id="appraisalPdfContent" class="card-body px-0 m-0 border border-dark ">
+
+        <!-- Hidden PDF Header (visible only in PDF) -->
+        <div class=" d-none pdf-header mb-3 mx-0 px-0 w-100  " id="pdfHeader">
+          <!-- header using pdf -->
+
+          <div class="row row-cols-1 row-cols-md-3 g-0 pb-0 border-dark border-bottom">
+            <!-- Logo Section -->
+            <div class="col d-flex align-items-start  justify-content-start ps-4">
+
+              <img src="assets/Image/Logo/logo.png" alt="Logo" height="30" width="50" style="object-fit: contain; "
+                class="align-content-center mt-3">
+
+
+
+            </div>
+
+            <div class="col">
+              <div class="comapny">
+                <p class="fw-bold text-center small text-center lh-sm text-dark pt-lg-2">
+                  Empower Logics</p>
+                <p class="text-center small s-small text-center lh-sm text-dark">Employee Appraisal Reoprt</p>
+              </div>
+            </div>
+            <!-- Right Side Info -->
+            <div class="col d-flex align-items-center justify-content-end">
+              <div class="pe-lg-2 text-center">
+                <p class="text-dark small lh-sm pt-lg-2">Month: {{ currentDate | date: 'MMM, y' }}
+                </p>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- Appraisal Fields -->
+
+
+        <!-- content using pdf -->
+        <div class="row row-cols-1 row-cols-md-2 g-1 pt-1">
+
+          <div class="col">
+            <table style="width: 100%; font-size: 12px; border-collapse: collapse;">
+              <tr>
+                <td style="padding: 4px; font-weight: bold; text-align: start;">Employee
+                  Name</td>
+                <td style="padding: 4px; text-align: start;">:</td>
+                <td style="padding: 4px; text-align: start;">{{ appraisalData.EmployeeName }}</td>
+              </tr>
+              <tr>
+                <td style="padding: 4px; font-weight: bold; text-align: start;">Appraisal Year</td>
+                <td style="padding: 4px; text-align: start;">:</td>
+                <td style="padding: 4px; text-align: start;">{{ appraisalData.AppraisalYear }}</td>
+              </tr>
+              <tr>
+                <td style="padding: 4px; font-weight: bold; text-align: start;">Final KRA Score</td>
+                <td style="padding: 4px; text-align: start;">:</td>
+                <td style="padding: 4px; text-align: start;">{{ appraisalData.kraScore }}
+                </td>
+              </tr>
+              <tr>
+                <td style="padding: 4px; font-weight: bold; text-align: start;">Employee Comment</td>
+                <td style="padding: 4px; text-align: start;">:</td>
+                <td style="padding: 4px; text-align: start;">{{ appraisalData.employeeComments }}</td>
+              </tr>
+
+
+
+
+            </table>
+          </div>
+
+
+
+
+          <div class="col">
+            <table style="width: 100%; font-size: 12px; border-collapse: collapse;">
+              <tr>
+                <td style="padding: 4px; font-weight: bold; text-align: start;">Behavioral Score
+                </td>
+                <td style="padding: 4px; text-align: start;">:</td>
+                <td style="padding: 4px; text-align: start;">{{ appraisalData.behavioralScore }}</td>
+              </tr>
+              <tr>
+                <td style="padding: 4px; font-weight: bold; text-align: start;">Final Weighted Score</td>
+                <td style="padding: 4px; text-align: start;">:</td>
+                <td style="padding: 4px; text-align: start;">{{ appraisalData.FinalWeightedScore }}</td>
+              </tr>
+              <tr>
+                <td style="padding: 4px; font-weight: bold; text-align: start;">Manager Comment</td>
+                <td style="padding: 4px; text-align: start;">:</td>
+                <td style="padding: 4px; text-align: start;">{{ appraisalData.managerComments }}</td>
+              </tr>
+
+
+
+            </table>
+          </div>
+
+
+
+        </div>
+
+
+
+        <!-- table list data using pdf -->
+
+
+        <div class="row">
+
+
+          <div class="col-sm-12 col-md-12 col-lg-12">
+            <div class="row">
+              <div class="col-12">
+                <p class="text-primary fw-bold ps-2">KRA Details</p>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="table table-bordered">
+                <thead class="table-light">
+                  <tr>
+
+                    <th>Description</th>
+                    <th>Target</th>
+                    <th>Achievement</th>
+                    <th>Weight</th>
+                    <th>Rating</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  <tr *ngFor="let kra of kraList">
+                    <!-- <td [innerHTML]="getSanitizedHtml(kra.Description)" ></td>
+                    <td [innerHTML]="getSanitizedHtml(kra.Target)"></td> -->
+                    <td class="custom-content" [innerHTML]="kra.Description | safeHtml"></td>
+                    <td class="custom-content2" [innerHTML]="kra.Target | safeHtml"></td>
+
+                    <td>{{ kra.Achievement }}</td>
+                    <td>{{ kra.weight }}</td>
+                    <td>{{ kra.rating }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            
+          </div>
+
+
+          <div class="col-sm-12 col-md-12 col-lg-12">
+            <div class="row">
+              <div class="col-12">
+                <p class="text-primary fw-bold ps-2">Behavioral Attributes</p>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="table table-bordered text-start">
+                <thead class="table-light">
+                  <tr>
+                    <th>Name</th>
+                    <th>Rating</th>
+                    <th>Comment</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let beh of behavioralList" class="text-start" style="text-align: start;">
+                    <td>{{ beh.Name }}</td>
+                    <td>{{ beh.Rating }}</td>
+                    <td>{{ beh.Comment }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+
+        </div>
+
+
+        <!--  -->
+
+      </div>
+    </div>
+  </div>
+</div>

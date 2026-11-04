@@ -1,0 +1,273 @@
+<div class="row mt-2" >
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+            <!-- Heading -->
+            <div class="card-header bg-blue">
+                <div class="row w-100">
+                    <div class="col-sm-12 col-md-12 col-lg-12">
+                        <h4 class="">Employee Wise Salary Increment</h4>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-md-6 col-lg-6 d-flex align-items-center justify-content-end ms-auto gap-2">
+                    <button class="btn btn-light">
+                        <i class=""></i> Goto List
+                    </button>
+                </div>
+            </div>
+
+            <!-- form Start -->
+            <div class="card-body mt-1 p-0 p-lg-4">
+                <form [formGroup]="departmentForm">
+
+                    <!--search common form  -->
+<div class="row">
+
+    <app-common-search ></app-common-search>
+</div>
+
+<!--  -->
+
+                    <div class="row mt-2"> 
+                        <div class="col-md-4">
+                            <label>Location</label>
+                            <ng-select [items]="Location" bindLabel="name" bindValue="value" [multiple]="true"
+                                [(ngModel)]="selectedLocations" [closeOnSelect]="false"
+                                placeholder="--Select Locations--" class="w-100">
+
+                                <!-- Custom Checkbox for Select All -->
+                                <ng-template ng-option-tmp let-item="item" let-index="index">
+                                    <div *ngIf="index === 0">
+                                        <input type="checkbox" (change)="toggleSelectAll($event)"
+                                            [checked]="isAllSelected()" />
+                                        <strong>Select All</strong>
+                                    </div>
+                                    <div *ngIf="index !== 0">
+                                        <input type="checkbox" [checked]="selectedLocations.includes(item.value)"
+                                            (change)="toggleLocation(item.value)" />
+                                        {{ item.name }}
+                                    </div>
+                                </ng-template>
+
+                            </ng-select>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="LeaveNatureType" class="">Status</label>
+                            <ng-select id="LeaveNatureType" [items]="Status" bindLabel="name" bindValue="value"
+                                formControlName="Status" placeholder="--Select Category--" class="w-100"></ng-select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="LeaveNatureType" class="">Employee Code</label>
+                            <ng-select id="LeaveNatureType" [items]="EmployeeCode" bindLabel="name" bindValue="value"
+                                formControlName="EmployeeCode" placeholder="--Select Category--"
+                                class="w-100"></ng-select>
+                        </div>
+                    </div>
+
+                    <div class="row mt-2">
+                        <div class="col-md-4">
+                            <label for="inputEmail3">Employee Name</label>
+                            <input type="text" class="form-control">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="inputEmail3">Department</label>
+                            <input type="text" class="form-control">
+                        </div>
+                        <div class="col-md-4">
+                            <label>New Department</label>
+                            <ng-select [items]="NewDepartment" bindLabel="name" bindValue="value" [multiple]="true"
+                                [(ngModel)]="selectedDepartment" [closeOnSelect]="false"
+                                placeholder="--Select NewDepartment--" class="w-100">
+
+                                <!-- Custom Checkbox for Select All -->
+                                <ng-template ng-option-tmp let-item="item" let-index="index">
+                                    <div *ngIf="index === 0">
+                                        <input type="checkbox" (change)="toggleNewDepartmentAll($event)"
+                                            [checked]="isAllSelectedDepartment()" />
+                                        <strong>Select All</strong>
+                                    </div>
+                                    <div *ngIf="index !== 0">
+                                        <input type="checkbox" [checked]="selectedDepartment.includes(item.value)"
+                                            (change)="toggleNewDepartment(item.value)" />
+                                        {{ item.name }}
+                                    </div>
+                                </ng-template>
+
+                            </ng-select>
+                        </div>
+                    </div>
+
+                    <div class="row mt-2">
+                        <div class="col-md-4">
+                            <label for="inputEmail3">Designation</label>
+                            <input type="text" class="form-control">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="LeaveNatureType" class="">New Designation</label>
+                            <ng-select id="LeaveNatureType" [items]="NewDesignation" bindLabel="name" bindValue="value"
+                                formControlName="LeaveNatureType" placeholder="--Select Category--"
+                                class="w-100"></ng-select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="inputEmail3">Posting City</label>
+                            <input type="text" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="row mt-2">
+                        <div class="col-md-4">
+                            <label for="LeaveNatureType" class="">New Posting City</label>
+                            <ng-select id="LeaveNatureType" [items]="NewPostingCity" bindLabel="name" bindValue="value"
+                                formControlName="NewPostingCity" placeholder="--Select Category--"
+                                class="w-100"></ng-select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="inputEmail3">Function</label>
+                            <input type="text" class="form-control">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="LeaveNatureType" class="">New Function</label>
+                            <ng-select id="LeaveNatureType" [items]="NewFunction" bindLabel="name" bindValue="value"
+                                formControlName="NewFunction" placeholder="--Select Category--"
+                                class="w-100"></ng-select>
+                        </div>
+                    </div>
+
+                    <div class="row mt-2">
+                        <div class="col-md-4">
+                            <label for="inputEmail3">Nature</label>
+                            <input type="text" class="form-control">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="LeaveNatureType" class="">New Nature</label>
+                            <ng-select id="LeaveNatureType" [items]="NewNature" bindLabel="name" bindValue="value"
+                                formControlName="NewNature" placeholder="--Select Category--" class="w-100"></ng-select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="inputEmail3">Bank Name</label>
+                            <input type="text" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="row mt-2">
+                        <div class="col-md-4">
+                            <label for="LeaveNatureType" class="">New Bank Name</label>
+                            <ng-select id="LeaveNatureType" [items]="NewBankName" bindLabel="name" bindValue="value"
+                                formControlName="NewBankName" placeholder="--Select Category--"
+                                class="w-100"></ng-select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="inputEmail3">Account No.</label>
+                            <input type="text" class="form-control">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="inputEmail3">New Account No.</label>
+                            <input type="text" class="form-control">
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-md-4">
+                            <label for="inputEmail3">Training Plan</label>
+                            <input type="text" class="form-control">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="inputEmail3">Training Period</label>
+                            <input type="text" class="form-control">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="inputEmail3">Accommodation</label>
+                            <input type="text" class="form-control">
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-md-4">
+                            <label for="LeaveNatureType" class="">New Accommodation</label>
+                            <ng-select id="LeaveNatureType" [items]="NewAccommodation" bindLabel="name"
+                                bindValue="value" formControlName="NewAccommodation" placeholder="--Select Category--"
+                                class="w-100"></ng-select>
+                        </div>
+                        <div class="col-md-4 form-floating">
+                            <label for="">Comment</label>
+                            <textarea class="form-control" id="floatingTextarea"></textarea>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="LeaveNatureType" class="">Change Salary</label>
+                            <ng-select id="LeaveNatureType" [items]="ChangeSalary" bindLabel="name" bindValue="value"
+                                formControlName="ChangeSalary" placeholder="--Select Category--"
+                                class="w-100"></ng-select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="card-header bg-blue">
+                <div class="row w-100">
+                    <div class="col-sm-12 col-md-12 col-lg-12">
+                        <h4 class="">Calculate Heads</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body mt-4">
+                <form [formGroup]="departmentForm">
+                    <div class="row mt-2">
+                        <div class="col-md-4">
+                            <label for="inputEmail3">Location</label>
+                            <input type="text" class="form-control">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="LeaveNatureType" class="">New Location</label>
+                            <ng-select id="LeaveNatureType" [items]="NewLocation" bindLabel="name" bindValue="value"
+                                formControlName="NewLocation" placeholder="--Select Category--"
+                                class="w-100"></ng-select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="inputEmail3">Grade</label>
+                            <input type="text" class="form-control">
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-md-4">
+                            <label for="LeaveNatureType" class="">New Grade</label>
+                            <ng-select id="LeaveNatureType" [items]="NewGrade" bindLabel="name" bindValue="value"
+                                formControlName="NewGrade" placeholder="--Select Category--" class="w-100"></ng-select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="inputEmail3">Based On</label>
+                            <input type="text" class="form-control">
+                        </div>
+                        <div class="col-md-4">
+                                <div class="col-md-6 d-flex align-items-center justify-content-start">
+                                    <label for="inputEmail3">Based On</label>
+                                    <div class="form-check form-check-inline pt-2 ">
+                                        <input class="form-check-input ms-2" type="radio" name="inlineRadioOptions"
+                                            id="inlineRadio1" value="option1">
+                                        <label class="form-check-label" for="inlineRadio1">CTC </label>
+                                    </div>
+                                    <div class="form-check form-check-inline pt-2">
+                                        <input class="form-check-input" type="radio" name="inlineRadioOptions"
+                                            id="inlineRadio2" value="option2">
+                                        <label class="form-check-label" for="inlineRadio2">Basic</label>
+                                    </div>
+                                </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        </div>
+    </div>
+</div>

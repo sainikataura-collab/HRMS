@@ -1,0 +1,59 @@
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-primary">
+                <div class="row w-100">
+                  <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-between">
+                    <h4>{{Isedit? 'Update Sub Department Master':' Sub Department Master'}}</h4>
+                  </div>
+                  <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+                    <button class="btn btnheader" routerLink="/dash/user/userdashboard/Sub-Department_list">
+                     Back
+                    </button>
+                  </div>
+    
+                </div>
+            </div>
+
+            <div class="card-body mt-4">
+                <form [formGroup]="SubDeptMstForm">
+                    
+                    <div class="row" class="row row-cols-1 row-cols-md-3 g-4">
+
+                        <div class="col">
+                            <label  >Department<span style="color: red;">*</span></label>
+                            <ng-select [items]="department" bindLabel="name" bindValue="value" formControlName="fk_deptid"  placeholder="-select code-"></ng-select>
+
+                            <!-- Validation message below input field -->
+                            <span *ngIf="showError && SubDeptMstForm.controls['fk_deptid'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                                Select  Department.
+                            </span> 
+                            
+                        </div>
+                       <div class="col">
+                        <label >Sub Department<span class="text-danger fw-bold">*</span></label>
+                         <input  type="text" class="form-control" formControlName="description"/>
+                        <span *ngIf="showError && SubDeptMstForm.controls['description'].invalid" class="text-danger mt-1" style="font-size: 12px;">please enter Subject</span>
+                      </div>
+
+                      <div class="col">
+                        <label for="isactive" >Active:</label>
+                        <div class="form-group">
+                            <input type="checkbox" id="isactive" formControlName="active" class="form-check-input" />
+
+                        </div>
+                    </div>
+                    </div>
+
+                    <!-- Footer buttons -->
+                    <div class="modal-footer">
+                        <button type="submit"  class="btn btn-primary mx-1"(click)="Onsubmit()">{{ Isedit ? 'Update' : 'Save'}}</button>
+                        <button type="button" class="btn btn-outline-dark mx-1">Reset</button>
+                    </div>
+                </form>
+
+            </div>
+       </div>
+    </div>
+</div>       
+

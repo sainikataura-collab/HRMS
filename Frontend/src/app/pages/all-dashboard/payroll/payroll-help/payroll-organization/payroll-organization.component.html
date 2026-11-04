@@ -1,0 +1,237 @@
+<!-- Payroll Tabs Section -->
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+
+      <!-- main header  -->
+
+      <div class="card-header bg-primary py-lg-1 mt-0">
+        <div class="row w-100 align-items-center">
+
+          <!-- Title Section -->
+          <div class="col-12 col-md-3">
+            <h4>Team Structure</h4>
+          </div>
+
+          <!-- Search Section -->
+          <div class="col-12 col-md-7 mt-2 mt-md-0">
+            <app-common-search (filtersChanged)="handleFilters($event)"></app-common-search>
+          </div>
+
+
+        </div>
+      </div>
+
+      <!-- main header close -->
+
+
+
+
+      <!-- Salary Disbursement Tab -->
+
+      <div class="card-body">
+        <form [formGroup]="organizationForm">
+          <!--  -->
+
+
+          <div class="row mt-2 px-2">
+            <div class="col-md-4">
+              <label for="SelectEmployeeType" class="">Employee</label>
+              <ng-select [items]="EmployeeList" id="SelectEmployeeType" bindLabel="name"
+                formControlName="SelectEmployeeType" placeholder="--Select Employee--" class="w-100"
+                (change)="onEmployeeChange($event)"
+                 [searchable]="true"
+                (search)="onEmployeeSearch($event)" [loading]="loadingEmployees" loadingText="Searching employees...">
+              </ng-select>
+            </div>
+          </div>
+          <!--  -->
+
+
+          <div class="row" *ngIf="selectedEmployeeData">
+            <p class="text-center fs-6 fw-bold mb-4 text-dark">Team Tree</p>
+            <div class="child-group mt-3 subordinate-scroll">
+              <div class="child-branch" *ngFor="let phase of salaryDisbursement; let i = index">
+
+                <!-- Top Person -->
+                <div class="org-box glass-card smart-box text-center position-relative px-2 pt-4 pb-2">
+                  <div class="org-img-wrapper-sm">
+                    <img [src]="phase.image" [alt]="phase.title + ' image'" class="org-img-sm">
+                  </div>
+
+                  <div *ngIf="head.length === 0"> <span class="small p-2" style="font-size: 12px; font-weight: 600;">No
+                      Head Data Found!</span></div>
+                  <div class="fw-semibold mt-2 small-text lh-lg p-2 d-flex flex-column" *ngFor="let headItem of head">
+                    <span class="xsmall text-dark fw-semibold">{{headItem.empname}}</span>
+                    <span class="xsmall-text text-primary">{{ headItem.department }}</span>
+                  </div>
+                </div>
+
+                <!-- Connector Line -->
+                <div class="vertical-line mx-auto"></div>
+
+                <!-- Managers Block -->
+                <!-- Manager -->
+                <div class="d-flex flex-column align-items-center">
+                  <div *ngFor="let mgr of phase.manager.managers"
+                    class="org-box glass-card smart-box text-center position-relative px-2 pt-4 pb-2 mt-3">
+                    <div class="org-img-wrapper-sm">
+                      <img [src]="mgr.image" [alt]="mgr.name + ' image'" class="org-img-sm">
+                    </div>
+
+                    <div *ngIf="manager.length === 0"> <span class="small p-2"
+                        style="font-size: 12px; font-weight: 600;">No Head Data Found!</span></div>
+                    <div class="fw-semibold text-dark mt-2 small-text lh-lg p-2 d-flex flex-column"
+                      *ngFor="let managerItem of manager">
+                      <span class="xsmall text-dark">{{ managerItem.empname }}</span>
+                      <span class="xsmall-text text-primary fw-semibold">{{ managerItem.department }}</span>
+                    </div>
+                  </div>
+                </div>
+                <!-- Connector Line -->
+                <div class="vertical-line mx-auto"></div>
+
+
+                <!-- Subordinates -->
+                <!-- <div class="child-group mt-3 subordinate-scroll" [attr.data-title]="phase.title"
+                  [ngClass]="{ 'expanded': isExpanded[phase.title] }">
+                
+                  <ng-container *ngFor="let emp of getVisibleSubordinates(phase, i)">
+                    <div class="org-box glass-card smart-box p-0">
+                     
+                      <p class="lh-base m-0 px-2">
+                        <span class="xsmall-text text-dark fw-semibold"><i [class]="emp.icon || 'fas fa-user'"
+                            class="me-1 text-primary"></i>{{emp.empname  }}</span><br>
+                        <span class="xsmall-text text-primary">{{ emp.department }}</span>
+                      </p>
+                    </div>
+                  </ng-container>
+
+               
+                  <div *ngIf="phase.manager.subordinates.length > 6 && !isExpanded['phase-' + i]"
+                    class="org-box glass-card smart-box more-box border-success text-success py-3"
+                    (click)="expandSubordinates('phase-' + i)">
+                    +{{ phase.manager.subordinates.length - 6 }} More
+                  </div>
+
+            
+                  <div *ngIf="phase.manager.subordinates.length > 6 && isExpanded['phase-' + i]"
+                    class="org-box glass-card smart-box less-box border-danger text-danger py-3"
+                    (click)="collapseSubordinates('phase-' + i)">
+                    Show Less
+                  </div>
+
+                </div> -->
+
+                <!-- Subordinates -->
+                <!-- <div class="child-group mt-3 subordinate-scroll" [attr.data-title]="'phase-' + i"
+[ngClass]="{ 'expanded': isExpanded['phase-' + i] }">
+
+
+<ng-container *ngFor="let emp of getVisibleSubordinates(phase, i, team)">
+  <div class="org-box glass-card smart-box p-0">
+    <p class="lh-base m-0 px-2">
+      <span class="xsmall-text text-dark fw-semibold">
+        <i [class]="emp.icon || 'fas fa-user'" class="me-1 text-primary"></i>{{ emp.empname }}
+      </span><br>
+      <span class="xsmall-text text-primary">{{ emp.department }}</span>
+    </p>
+  </div>
+</ng-container>
+
+
+<div *ngIf="(team.length > 6 || phase.manager.subordinates.length > 6) && !isExpanded['phase-' + i]"
+  class="org-box glass-card smart-box more-box border-success text-success py-3"
+  (click)="expandSubordinates('phase-' + i)">
+  +{{ (team.length > 0 ? team.length : phase.manager.subordinates.length) - 6 }} More
+</div>
+
+
+<div *ngIf="(team.length > 6 || phase.manager.subordinates.length > 6) && isExpanded['phase-' + i]"
+  class="org-box glass-card smart-box less-box border-danger text-danger py-3"
+  (click)="collapseSubordinates('phase-' + i)">
+  Show Less
+</div>
+
+</div> -->
+
+                <!-- Subordinates -->
+                <div *ngIf="team.length === 0" class="text-center mt-2 small text-muted"
+                  style="font-size: 12px; font-weight: 600;">
+                  No Subordinates Found!
+                </div>
+                <div *ngIf="team.length > 0" class="child-group mt-3 subordinate-scroll"
+                  [attr.data-title]="'phase-' + i" [ngClass]="{ 'expanded': isExpanded['phase-' + i] }">
+
+                  <ng-container *ngFor="let emp of getVisibleSubordinates(phase, i, team)">
+                    <div class="org-box glass-card smart-box p-0">
+                      <p class="lh-base m-0 px-2">
+                        <span class="xsmall-text text-dark fw-semibold">
+                          <i [class]="emp.icon || 'fas fa-user'" class="me-1 text-primary"></i>{{ emp.empname }}
+                        </span><br>
+                        <span class="xsmall-text text-primary">{{ emp.department }}</span>
+                      </p>
+                    </div>
+                  </ng-container>
+
+                  <div *ngIf="team.length > 6 && !isExpanded['phase-' + i]"
+                    class="org-box glass-card smart-box more-box border-success text-success py-3"
+                    (click)="expandSubordinates('phase-' + i)">
+                    +{{ team.length - 6 }} More
+                  </div>
+
+                  <div *ngIf="team.length > 6 && isExpanded['phase-' + i]"
+                    class="org-box glass-card smart-box less-box border-danger text-danger py-3"
+                    (click)="collapseSubordinates('phase-' + i)">
+                    Show Less
+                  </div>
+
+                </div>
+
+                <!-- <div *ngIf="team.length > 0" class="child-group mt-3 subordinate-scroll"
+  [attr.data-title]="'phase-' + i"
+  [ngClass]="{ 'expanded': isExpanded['phase-' + i] }">
+
+
+  <ng-container *ngFor="let emp of getVisibleSubordinates(i)">
+    <div class="org-box glass-card smart-box p-0">
+      <p class="lh-base m-0 px-2">
+        <span class="xsmall-text text-dark fw-semibold">
+          <i [class]="emp.icon || 'fas fa-user'" class="me-1 text-primary"></i>{{ emp.empname }}
+        </span><br>
+        <span class="xsmall-text text-primary">{{ emp.department }}</span>
+      </p>
+    </div>
+  </ng-container>
+
+  
+  <div *ngIf="team.length > 6 && !isExpanded['phase-' + i]"
+    class="org-box glass-card smart-box more-box border-success text-success py-3"
+    (click)="expandSubordinates('phase-' + i)">
+    +{{ team.length - 6 }} More
+  </div>
+
+  
+  <div *ngIf="team.length > 6 && isExpanded['phase-' + i]"
+    class="org-box glass-card smart-box less-box border-danger text-danger py-3"
+    (click)="collapseSubordinates('phase-' + i)">
+    Show Less
+  </div>
+
+</div> -->
+
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+
+
+
+
+
+
+
+    </div>
+  </div>
+</div>

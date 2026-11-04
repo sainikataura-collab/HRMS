@@ -1,0 +1,120 @@
+<div class="row mx-0">
+  <div class="col-12 px-0 ">
+    <div class="card">
+
+      <!-- Header -->
+      <div class="card-header bg-primary text-white">
+        <div class="row w-100">
+          <div class="col-md-4 d-flex align-items-center">
+            <h4 class="m-0">CTC Detail List</h4>
+          </div>
+          <div class="col-md-4 d-flex justify-content-center align-items-center">
+            <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText" />
+          </div>
+          <div class="col-md-4 d-flex justify-content-end align-items-center">
+            <!-- <button class="btn btn-light" (click)="exportToExcel()">Download</button> -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Body -->
+      <div class="card-body px-2">
+
+
+
+<!--  -->
+
+
+<div class="row d-lg-none">
+  <div class="col-11 col-md-10 mx-auto px-2">
+
+    <div
+      *ngIf="ctcGross && ctcGross.length > 0"
+      class="border border-warning bg-warning-subtle rounded-2 px-2 py-1"
+    >
+
+      <!-- Title -->
+      <div class="d-flex align-items-center text-success fw-semibold small mb-1">
+        <i class="fa-solid fa-indian-rupee-sign me-1 ps-1"></i>
+        Total CTC
+      </div>
+
+      <!-- Amounts -->
+      <div class="row g-1 text-center">
+
+        <!-- Monthly -->
+        <div class="col-6">
+          <div class="border rounded-1 bg-white px-1 py-1">
+            <div class="d-flex align-items-center justify-content-center small text-primary fw-semibold">
+              <i class="fa-solid fa-calendar-day me-1"></i>
+              Monthly
+            </div>
+            <div class="fw-bold text-dark small">
+               ₹ {{ (ctcGross[0].total_Month ?? 0) | number:'1.2-2' }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Yearly -->
+        <div class="col-6">
+          <div class="border rounded-1 bg-white px-1 py-1">
+            <div class="d-flex align-items-center justify-content-center small text-warning fw-semibold">
+              <i class="fa-solid fa-calendar me-1"></i>
+              Yearly
+            </div>
+            <div class="fw-bold text-dark small">
+              ₹ {{ (ctcGross[0].total_Year ?? 0) | number:'1.2-2' }}
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+
+<!--  -->
+
+
+        <div class="">
+          <table class="table table-bordered table-hover" id="exportTable">
+
+            <thead class="table-light">
+              <tr>
+                <th>Description</th>
+                <th>Amount (Monthly)</th>
+                <th>Amount (Yearly)</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr *ngFor="let item of filteredData(); let i = index">
+                <td data-label="description">{{ item.shortdesc }}</td>
+                <td data-label="monthly-amount">{{ (item.amount ?? 0) | number: '1.2-2' }}</td>
+                <td data-label="yearly-amount">{{ (item.amount_yearly ?? 0) | number: '1.2-2' }}</td>
+              </tr>
+            </tbody>
+
+      
+
+<tfoot *ngIf="ctcGross && ctcGross.length > 0">
+  <tr class="table-info fw-bold d-none d-lg-table-row">
+    <td>Total CTC</td>
+    <td>{{ (ctcGross[0].total_Month ?? 0) | number: '1.2-2' }}</td>
+    <td>{{ (ctcGross[0].total_Year ?? 0) | number: '1.2-2' }}</td>
+  </tr>
+</tfoot>
+
+
+
+
+
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

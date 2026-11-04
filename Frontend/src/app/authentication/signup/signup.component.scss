@@ -1,0 +1,158 @@
+
+
+  
+  #term {
+    height: 1.2em;
+    width: 1.2em;
+    vertical-align: middle;
+   
+  }
+
+  #termsModal{
+    font-size: 13px !important;
+  }
+
+  
+  .captcha-display {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin: 10px 0px;
+    text-align: center;
+    
+    padding: 5px;
+ 
+    border-radius: 3px;
+    display: inline;
+    background-color:  #f16a24;
+    color:#2b2e41;
+    border: 1px solid #2b2e41;
+    letter-spacing: 1px;
+    
+
+  
+  }
+  .modal-header
+ {
+  background-color:  #fad5c2;
+  color: rgb(0, 0, 0);
+ }
+  
+  .text-danger {
+    font-size: 0.9rem;
+    margin-top: 5px;
+  }
+
+  .refreshicon{
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin: 10px 0;
+  border: none;
+    margin-left: 10px;
+    background-color: whitesmoke ;
+    color:#fff;
+    border-radius: 5px;
+    background: linear-gradient( to right, #2b2e41,#2b2e41);
+   
+  }
+  .modal{
+    background:linear-gradient(to right, #ebedf0,#f3e3db)
+    
+  }
+  .modal-logo {
+    display: flex;
+    justify-content: flex-start; /* Aligns content to the right */
+    padding: 10px; /* Optional: Adds some padding around the image */
+  }
+  /* Add this CSS */
+.modal-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+// .modal-logo {
+//   margin-right: 10px;
+// }
+
+/* For mobile view */
+@media (max-width: 768px) {
+  .modal-header {
+    flex-direction: column; /* Stack the elements vertically */
+    text-align: center;
+   
+  }
+
+  @media (max-width: 768px) {
+    .modal-logo { 
+      height: 35px;
+      padding-top: 0%;
+      
+    }
+    @media (max-width: 768px){
+    .modal{
+      background-color:white;
+    }
+  }
+
+  }
+  .modal-logo {
+    margin-bottom: 10px;
+  }
+}
+
+
+
+
+
+@media only screen and (max-width: 500px) {
+  .register-form-section img{
+
+padding-bottom:15%;
+
+   }
+ }
+
+
+
+
+ .register-form-section h2{
+  color: #3080e8 !important;
+}
+
+.register-form-section p{
+  color: #2b2e41;
+}
+.register-form-section .register-button{
+border:1px solid  #2b2e41 !important;
+}
+
+
+.register-form-section button:hover{
+  color: white !important;
+  background-color: #2b2e41 !important;
+  /* border: none; */
+ 
+}
+
+.google-icon{
+background: linear-gradient(#f30101, 
+#ffd000,  #0420f7, #07f51b); 
+-webkit-text-fill-color: transparent; 
+ -webkit-background-clip: text;
+ color:red !important; 
+}
+
+
+
+.signup-section{
+  position: fixed;
+}
+
+@media only screen and (max-width:800px) {
+  .signup-section{
+    position: sticky;
+  }
+}
+
+

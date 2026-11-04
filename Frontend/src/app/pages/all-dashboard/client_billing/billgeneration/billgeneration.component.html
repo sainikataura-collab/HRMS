@@ -1,0 +1,494 @@
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+            <div class="card-header bg-primary py-lg-1 mt-0">
+                <div class="row w-100 align-items-center">
+
+                    <!-- Title Section -->
+                    <div class="col-12 col-md-3">
+                        <h4> Bill Generation </h4>
+                    </div>
+                    <!-- Search Section -->
+                    <div class="col-12 col-md-7 mt-2 mt-md-0">
+                        <app-common-search (filtersChanged)="handleFilters($event)"></app-common-search>
+                    </div>
+
+                </div>
+                <div class="col-12 col-md-2 mt-2 mt-md-0 d-flex justify-content-end">
+                    <button class="btn btnheader"
+                        routerLink="/dash/client_billing/client_billing_dashboard/billgeneration_list">
+                        Back
+                    </button>
+                </div>
+            </div>
+            <div class="card-body mt-4">
+                <form [formGroup]="ExportExcel" (ngSubmit)="OnVeiw()">
+                    <div class="row row-cols-1 row-cols-md-4">
+                        <div class="col">
+                            <label>Month<span class="text-danger font-bold">*</span></label>
+                            <div class="form-group">
+                                <ng-select id="fk_monthId" [items]="months" bindLabel="name" bindValue="value"
+                                    formControlName="fk_monthId" class="w-100"
+                                    placeholder="--Select Month --"></ng-select>
+                                <span *ngIf="showError && ExportExcel.controls['fk_monthId'].invalid"
+                                    class="text-danger mt-1" style="font-size: 12px;">
+                                    Please enter Month.
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <label>Year <span class="text-danger font-bold">*</span></label>
+                            <div class="form-group">
+                                <ng-select id="fk_yearId" [items]="years" bindLabel="name" bindValue="value"
+                                    formControlName="fk_yearId" placeholder="--Select Year --"
+                                    class="w-100"></ng-select>
+                                <span *ngIf="showError && ExportExcel.controls['fk_yearId'].invalid"
+                                    class="text-danger mt-1" style="font-size: 12px;">
+                                    Please enter Year.
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col" *ngIf="isContractApplicable">
+                            <label>Contractor Name <span class="text-danger font-bold">*</span></label>
+
+                            <div class="form-group">
+                                <ng-select id="year
+                  " [items]="CostCenter" bindLabel="name" bindValue="value" formControlName="fk_costcentreid"
+                                    placeholder="--Select --" class="w-100"></ng-select>
+                                <span *ngIf="showError && ExportExcel.controls['fk_costcentreid'].invalid"
+                                    class="text-danger mt-1" style="font-size: 12px;">
+                                    Please Select.
+                                </span>
+
+                            </div>
+                        </div>
+                        <div class="col">
+                            <label>State</label>
+                            <div class="form-group">
+                                <ng-select id="fk_stateidId" [items]="State" bindLabel="name" bindValue="value"
+                                    formControlName="fk_stateId" placeholder="--Select  --" class="w-100"></ng-select>
+                                <!-- <span *ngIf="showError && manualpunchForm.controls['year'].invalid" class="text-danger mt-1"
+                            style="font-size: 12px;">
+                            Please enter Year.
+                          </span> -->
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="row row-cols-1 row-cols-md-12">
+                        <div class="col d-flex align-items-center justify-content-end">
+                            <button type="submit" class="btn btn-primary mx-1">View</button>
+                            <button type="reset" class="btn btn-outline-dark mx-1" (click)="restfrom()">Reset</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <!-- List of Employee -->
+            <div *ngIf="showEmployeeList && EmployeeList.length > 0">
+                <div class="row row-cols-1 row-cols-md-2 p-2">
+                    <div class="col">
+                        <p class="text-dark m-0 d ps-3 text-primary">
+                            List of Employee <span class="ms-1 text-dark" style="font-size: 0.9em;">(Total Employee: {{
+                                totalCount }})</span>
+                        </p>
+                    </div>
+
+
+                    <div class="col d-flex align-items-center justify-content-end">
+                        <!-- <button class="btn btn-primary mx-1" (click)="onPDFClick()" 
+    *ngIf="ExportExcel.get('ExportType')?.value === 1 || ExportExcel.get('ExportType')?.value === 11">
+    <i class="fa fa-download me-2"></i> Export PDF
+</button> -->
+
+                        <!-- <button type="submit" class="btn btn-primary mx-1" (click)="downloadExcel()">Export</button> -->
+                        <button class="btn btn-primary mx-1" (click)="onExportClick()" [disabled]="isExporting">
+
+                            <!-- <i class="fa fa-download me-2"></i> Export Excel -->
+                            <i *ngIf="!isExporting" class="fa fa-download me-2"></i>
+                            <i *ngIf="isExporting" class="fa fa-spinner fa-spin me-2"></i>
+                            {{ isExporting ? 'Wait...' : 'Export Excel' }}
+
+                        </button>
+                        <!-- <button class="btn btn-primary mx-1" (click)="saveData()" [disabled]="isSaving">
+                            <i *ngIf="!isSaving" class="fa fa-save me-2"></i>
+                            <i *ngIf="isSaving" class="fa fa-spinner fa-spin me-2"></i>
+                            {{ isSaving ? 'Wait...' : 'Save' }}
+                        </button> -->
+                        <input type="text" class="form-control w-50" placeholder="Search employee..."
+                            placeholder="Search..." [(ngModel)]="searchText" />
+                    </div>
+
+                </div>
+
+
+                <div class="table-responsive table-invoice" [ngClass]="{ 'scroll-active': EmployeeList.length > 10 }">
+                    <table class="table table-bordered " id="exportTable">
+                        <thead classs="">
+                            <tr>
+                                <th>S No</th>
+                                <th *ngFor="let col of tableHeaders">{{ col }}</th>
+                                <th>Insurance</th>
+                                <th>Bonus</th>
+                                 <th>TA/DA</th>
+                               
+                            </tr>
+                            <tr>
+                                <th [attr.colspan]="tableHeaders.length"></th>
+                               
+                                <th>INCENTIVE</th>
+                                <th>Gratuity</th>
+                                 <th>TOTAL CTC</th>
+                                <th>Remarks</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <ng-container
+                                *ngFor="let item of filteredData() | paginate: { itemsPerPage: pageSize, currentPage: pageIndex, totalItems: totalCount }; let i = index">
+                                <tr [ngClass]="{'table-warning': i % 2 !== 0}">
+                                    <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+                                    <td *ngFor="let col of tableHeaders" [innerHTML]="item[col]"></td>
+                                    <td><input type="number" class="form-control form-control-sm" style="width: 80px;"
+                                            [(ngModel)]="item.Insurance" (ngModelChange)="calculateSummary()"></td>
+                                    <td><input type="number" class="form-control form-control-sm" style="width: 80px;"
+                                            [(ngModel)]="item.Bonus" (ngModelChange)="calculateSummary()"></td>
+                                             <td><input type="number" class="form-control form-control-sm" style="width: 80px;"
+                                            [(ngModel)]="item.TADA" (ngModelChange)="calculateSummary()"></td>
+                                    
+                                </tr>
+                                <tr [ngClass]="{'table-warning': i % 2 !== 0}">
+                                    <td [attr.colspan]="tableHeaders.length"></td>
+                                   
+                                    <td><input type="number" class="form-control form-control-sm" style="width: 80px;"
+                                            [(ngModel)]="item.Incentive" (ngModelChange)="calculateSummary()"></td>
+                                    <td><input type="number" class="form-control form-control-sm" style="width: 80px;"
+                                            [(ngModel)]="item.Gratuity" (ngModelChange)="calculateSummary()"></td>
+                                            <td><input type="number" class="form-control form-control-sm" style="width: 80px;"
+                                            [(ngModel)]="item.CTC_Including_Bonus" readonly></td>
+                                    <td><input type="text" class="form-control form-control-sm" style="width: 120px;"
+                                            [(ngModel)]="item.Remarks" (ngModelChange)="calculateSummary()"></td>
+                                </tr>
+                            </ng-container>
+                            <tr class="fw-bold bg-light">
+                                <td [colSpan]="4">TOTAL</td>
+                                <ng-container *ngFor="let col of tableHeaders; let idx = index">
+                                    <td *ngIf="idx >= 3">{{ getTotal(col) }}</td>
+                                </ng-container>
+                                <td>{{ getTotalInput('Insurance') }}</td>
+                                <td>{{ getTotalInput('Bonus') }}</td>
+                                <td>{{ getTotalInput('TADA') }}</td>
+                               
+                            </tr>
+                            <tr class="fw-bold bg-light">
+                                <td [attr.colspan]="tableHeaders.length"></td>
+                                
+                                <td>{{ getTotalInput('Incentive') }}</td>
+                                <td>{{ getTotalInput('Gratuity') }}</td>
+                                 <td>{{ getTotalInput('CTC_Including_Bonus') }}</td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+
+                <div class="d-flex justify-content-end mt-3">
+                    <pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>
+                </div>
+
+
+
+                <div class="row mt-3 mb-4" *ngIf="showEmployeeList && EmployeeList.length > 0">
+                    <div class="col-md-4">
+                        <table class="table table-bordered table-sm text-end mb-0" style="background-color: #fff;">
+                            <tbody>
+                                <tr>
+                                    <td class="text-start text-dark">Summary CTC</td>
+                                    <td>{{ summaryCTC | number:'1.2-2' }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-start text-dark">Bonus</td>
+                                    <td>{{ summaryBonus | number:'1.2-2' }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-start text-dark">TA/DA</td>
+                                    <td>{{ summaryTADA | number:'1.2-2' }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-start text-dark">Incentive</td>
+                                    <td>{{ summaryIncentive | number:'1.2-2' }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-start text-dark">Gratuity</td>
+                                    <td>{{ summaryGratuity | number:'1.2-2' }}</td>
+                                </tr>
+                                <tr class="bg-light">
+                                    <td class="text-start fw-bold">TOTAL</td>
+                                    <td class="fw-bold">{{ summaryTotal | number:'1.2-2' }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="col-md-4">
+                        <table class="table table-bordered table-sm text-end mb-0" style="background-color: #fff;">
+                            <tbody>
+                                <tr>
+                                    <td class="text-start text-dark">Agency Charges &#64;{{ agencyChargePercent }}%</td>
+                                    <td>{{ summaryAgencyCharges | number:'1.2-2' }}</td>
+                                </tr>
+                                <tr class="bg-light">
+                                    <td class="text-start fw-bold">Sub Total</td>
+                                    <td class="fw-bold">{{ summarySubTotal | number:'1.2-2' }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-start text-dark align-middle">Recovery</td>
+                                    <td style="width: 40%;">
+                                        <input type="number" class="form-control form-control-sm text-end"
+                                            [(ngModel)]="summaryRecovery" (ngModelChange)="calculateSummary()">
+                                    </td>
+                                </tr>
+                                <tr class="bg-light">
+                                    <td class="text-start fw-bold">Total</td>
+                                    <td class="fw-bold">{{ summaryFinalTotal | number:'1.2-2' }}</td>
+                                </tr>
+                                <tr *ngIf="igstPercent > 0">
+                                    <td class="text-start text-dark">IGST &#64;{{ igstPercent }}%</td>
+                                    <td>{{ summaryIGST | number:'1.2-2' }}</td>
+                                </tr>
+                                <tr *ngIf="cgstPercent > 0">
+                                    <td class="text-start text-dark">CGST &#64;{{ cgstPercent }}%</td>
+                                    <td>{{ summaryCGST | number:'1.2-2' }}</td>
+                                </tr>
+                                <tr *ngIf="sgstPercent > 0">
+                                    <td class="text-start text-dark">SGST &#64;{{ sgstPercent }}%</td>
+                                    <td>{{ summarySGST | number:'1.2-2' }}</td>
+                                </tr>
+                                <tr class="table-active">
+                                    <td class="text-start fw-bold text-dark">G. TOTAL</td>
+                                    <td class="fw-bold text-dark">{{ summaryGrandTotal | number:'1.2-2' }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="col-md-4 d-flex align-items-center justify-content-center">
+                        <div class="d-flex gap-2">
+                            <!-- <button type="button" class="btn btn-primary px-4"  [disabled]="isSaving">
+            <i *ngIf="!isSaving" class="fa fa-save me-2"></i>
+            <i *ngIf="isSaving" class="fa fa-spinner fa-spin me-2"></i>
+            {{ isSaving ? 'Saving...' : 'Save' }}
+        </button> -->
+
+                            <button class="btn btn-primary mx-1" (click)="saveData()" [disabled]="isSaving">
+                                <i *ngIf="!isSaving" class="fa fa-save me-2"></i>
+                                <i *ngIf="isSaving" class="fa fa-spinner fa-spin me-2"></i>
+                                {{ isSaving ? 'Wait...' : 'Save' }}
+                            </button>
+                            <button type="button" class="btn btn-outline-dark px-4" data-bs-toggle="modal"
+                                data-bs-target="#previewModal" (click)="loadPreviewData()">
+                                <i class="fa fa-eye me-2"></i>Preview
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Preview Modal -->
+    <div class="modal fade" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable pt-1"
+            style="max-width: 100%; margin-left: 16%; margin-right: 16%;">
+            <div class="modal-content my-5 pb-5">
+                <div class="modal-header bg-light py-2">
+                    <p class="modal-title text-dark mb-0 fw-bold" id="previewModalLabel">
+                        Bill Generation Preview
+                        <span class="text-dark fw-normal ms-2" style="font-size: 0.8rem;" *ngIf="!isPreviewLoading">
+                            ({{ previewEmployeeList.length }} Employees)
+                        </span>
+                    </p>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div *ngIf="isPreviewLoading" class="text-center py-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2 text-muted">Fetching all employees, please wait...</p>
+                    </div>
+
+                    <!-- Invoice Header Section -->
+                    <div *ngIf="!isPreviewLoading" class="invoice-header-container mb-4" style="background-color: #fcfbf7; color: #333; font-family: Arial, sans-serif; border: 1px solid #e0e0e0; padding: 20px 30px;">
+                        <!-- Top Section -->
+                        <div class="row pb-3">
+                            <div class="col-md-7">
+                                <div style="color: #1b3b36; font-weight: 700; font-family: 'Georgia', serif; font-size: 28px; margin-bottom: 6px;">{{ invoiceDetails?.CompanyName || '###' }}</div>
+                                <div style="color: #315c54; font-weight: 700; font-size: 11px; letter-spacing: 1.5px; margin-bottom: 20px;">WORKFORCE DEPLOYMENT &amp; PAYROLL BILLING</div>
+                                <div style="font-size: 13px; color: #666; margin-bottom: 3px;">{{ invoiceDetails?.CompanyAddress || '###' }}</div>
+                                <div style="font-size: 13px; color: #666; margin-bottom: 3px;">GSTIN: {{ invoiceDetails?.CompanyGST || 'N/A' }} | PAN: {{ invoiceDetails?.CompanyPAN || 'N/A' }}</div>
+                            </div>
+                            <div class="col-md-5 text-end">
+                                <div style="color: #315c54; font-weight: 700; font-size: 16px; letter-spacing: 2px; margin-bottom: 20px;">BILLING INVOICE</div>
+                                <table class="table table-borderless table-sm float-end mb-0" style="width: auto; color: #666; font-size: 11px; font-family: 'Courier New', Courier, monospace;">
+                                    <tbody>
+                                        <tr>
+                                            <td class="text-end py-0 pe-3 text-muted">INVOICE NO.</td>
+                                            <td class="text-end py-0 text-dark fw-bold">{{ invoiceDetails?.InvoiceNo || 'N/A' }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-end py-0 pe-3 text-muted">INVOICE DATE</td>
+                                            <td class="text-end py-0 text-dark fw-bold">{{ invoiceDetails?.InvoiceDate | date:'##' }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-end py-0 pe-3 text-muted">BILLING PERIOD</td>
+                                            <td class="text-end py-0 text-dark fw-bold">{{ invoiceDetails?.BillingPeriod || 'N/A' }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-end py-0 pe-3 text-muted">DUE DATE</td>
+                                            <td class="text-end py-0 text-dark fw-bold">{{ invoiceDetails?.DueDate | date:'##' }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <!-- Bottom Section -->
+                        <div class="row pt-4" style="background-color: #eaf1ed; border-top: 2px solid #1b3b36; margin: 0 -30px -20px -30px; padding: 20px 30px;">
+                            <div class="col-md-4">
+                                <div style="color: #315c54; font-weight: 700; font-size: 11px; letter-spacing: 1.2px; margin-bottom: 10px;">BILLED TO</div>
+                                <div style="color: #222; font-weight: bold; font-size: 15px; margin-bottom: 8px;">{{ invoiceDetails?.ClientName || '###' }}</div>
+                                <div style="font-size: 13px; color: #555; margin-bottom: 4px;">{{ invoiceDetails?.ClientAddress || '##' }}</div>
+                                <div style="font-size: 13px; color: #555; margin-bottom: 4px;">GSTIN: {{ invoiceDetails?.ClientGST || 'N/A' }}</div>
+                                <div style="font-size: 13px; color: #555; margin-bottom: 0;">Attn: Accounts Payable</div>
+                            </div>
+                            <div class="col-md-4">
+                                <div style="color: #315c54; font-weight: 700; font-size: 11px; letter-spacing: 1.2px; margin-bottom: 10px;">SERVICE LOCATION</div>
+                                <div style="color: #222; font-weight: bold; font-size: 15px; margin-bottom: 8px;">{{ invoiceDetails?.Clientlocation || '###' }}</div>
+                                <!-- <div style="font-size: 13px; color: #555; margin-bottom: 0;">{{ invoiceDetails?.Clientlocation || '###' }}</div> -->
+                            </div>
+                            <div class="col-md-4">
+                                <div style="color: #315c54; font-weight: 700; font-size: 11px; letter-spacing: 1.2px; margin-bottom: 10px;">PAYMENT TERMS</div>
+                                <div style="font-size: 13px; color: #555; margin-bottom: 4px;">{{ invoiceDetails?.paymentterm || '###' }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive table-invoice" *ngIf="!isPreviewLoading" style="max-height: 400px; overflow-y: auto;">
+                        <table class="table table-bordered table-striped table-hover mb-0">
+                            <thead class="table-light sticky-top" style="z-index: 1;">
+                                <tr>
+                                    <th>S No</th>
+                                    <th *ngFor="let col of tableHeaders">{{ col }}</th>
+                                    <th>Insurance</th>
+                                    <th>Bonus</th>
+                                   
+                                    <th>TA/DA</th>
+                                    <th>INCENTIVE</th>
+                                    <th>Gratuity</th>
+                                    <th>TOTAL CTC</th>
+                                    <th>Remarks</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let item of previewEmployeeList; let i = index" [ngClass]="{'table-warning': i % 2 !== 0}">
+                                    <td>{{ i + 1 }}</td>
+                                    <td *ngFor="let col of tableHeaders" [innerHTML]="item[col]"></td>
+                                    <td>{{ item.Insurance | number:'1.2-2' }}</td>
+                                    <td>{{ item.Bonus | number:'1.2-2' }}</td>
+                             
+                                    <td>{{ item.TADA | number:'1.2-2' }}</td>
+                                    <td>{{ item.Incentive | number:'1.2-2' }}</td>
+                                    <td>{{ item.Gratuity | number:'1.2-2' }}</td>
+                                    <td>{{ item.CTC_Including_Bonus | number:'1.2-2' }}</td>
+                                    <td>{{ item.Remarks }}</td>
+                                </tr>
+                                <tr *ngIf="previewEmployeeList.length === 0">
+                                    <td colspan="100%" class="text-center text-muted">No employees found.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Summary Tables inside Modal -->
+                    <div class="row mt-4 mb-2 mx-1" *ngIf="!isPreviewLoading && previewEmployeeList.length > 0">
+                        <div class="col-md-6">
+                            <table class="table table-bordered table-sm text-end mb-0" style="background-color: #fff;">
+                                <tbody>
+                                    <tr>
+                                        <td class="text-start text-dark">Summary CTC</td>
+                                        <td>{{ summaryCTC | number:'1.2-2' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-start text-dark">Bonus</td>
+                                        <td>{{ summaryBonus | number:'1.2-2' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-start text-dark">TA/DA</td>
+                                        <td>{{ summaryTADA | number:'1.2-2' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-start text-dark">Incentive</td>
+                                        <td>{{ summaryIncentive | number:'1.2-2' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-start text-dark">Gratuity</td>
+                                        <td>{{ summaryGratuity | number:'1.2-2' }}</td>
+                                    </tr>
+                                    <tr class="bg-light">
+                                        <td class="text-start fw-bold">TOTAL</td>
+                                        <td class="fw-bold">{{ summaryTotal | number:'1.2-2' }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="col-md-6">
+                            <table class="table table-bordered table-sm text-end mb-0" style="background-color: #fff;">
+                                <tbody>
+                                    <tr>
+                                        <td class="text-start text-dark">Agency Charges &#64;{{ agencyChargePercent }}%
+                                        </td>
+                                        <td>{{ summaryAgencyCharges | number:'1.2-2' }}</td>
+                                    </tr>
+                                    <tr class="bg-light">
+                                        <td class="text-start fw-bold">Sub Total</td>
+                                        <td class="fw-bold">{{ summarySubTotal | number:'1.2-2' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-start text-dark align-middle">Recovery</td>
+                                        <td class="fw-bold">{{ summaryRecovery | number:'1.2-2' }}</td>
+                                    </tr>
+                                    <tr class="bg-light">
+                                        <td class="text-start fw-bold">Total</td>
+                                        <td class="fw-bold">{{ summaryFinalTotal | number:'1.2-2' }}</td>
+                                    </tr>
+                                    <tr *ngIf="igstPercent > 0">
+                                        <td class="text-start text-dark">IGST &#64;{{ igstPercent }}%</td>
+                                        <td>{{ summaryIGST | number:'1.2-2' }}</td>
+                                    </tr>
+                                    <tr *ngIf="cgstPercent > 0">
+                                        <td class="text-start text-dark">CGST &#64;{{ cgstPercent }}%</td>
+                                        <td>{{ summaryCGST | number:'1.2-2' }}</td>
+                                    </tr>
+                                    <tr *ngIf="sgstPercent > 0">
+                                        <td class="text-start text-dark">SGST &#64;{{ sgstPercent }}%</td>
+                                        <td>{{ summarySGST | number:'1.2-2' }}</td>
+                                    </tr>
+                                    <tr class="table-active">
+                                        <td class="text-start fw-bold text-dark">G. TOTAL</td>
+                                        <td class="fw-bold text-dark">{{ summaryGrandTotal | number:'1.2-2' }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>

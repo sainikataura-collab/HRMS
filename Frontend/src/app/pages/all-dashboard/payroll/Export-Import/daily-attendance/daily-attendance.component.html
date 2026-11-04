@@ -1,0 +1,320 @@
+<div class="row">
+  <div class="col-sm-12 col-lg-12 col-md-12">
+
+    <div class="card">
+
+      <!-- Header -->
+
+      <div class="card-header bg-primary py-lg-1">
+
+        <div class="row w-100 align-items-center">
+
+          <!-- Title -->
+
+          <div class="col-12 col-md-3">
+
+            <h4>Daily Attendance</h4>
+
+          </div>
+
+          <!-- Search -->
+
+          <div class="col-12 col-md-7 mt-2 mt-md-0">
+
+            <app-common-search (filtersChanged)="handleFilters($event)">
+            </app-common-search>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Card Body -->
+
+      <div class="card-body my-2 px-3">
+
+        <form [formGroup]="attendanceForm">
+
+          <div class="row row-cols-1 row-cols-md-4 row-cols-lg-4 g-2">
+
+            <!-- Month -->
+
+            <div class="col">
+
+              <label class="form-label">
+                Month
+                <span class="text-danger">*</span>
+              </label>
+
+              <ng-select [items]="months" bindLabel="name" bindValue="value" formControlName="FkMonthId"
+                (change)="onMonthOrYearChange()" placeholder="--Select Month--">
+              </ng-select>
+
+            </div>
+
+            <!-- Year -->
+
+            <div class="col">
+
+              <label class="form-label">
+                Year
+                <span class="text-danger">*</span>
+              </label>
+
+              <ng-select [items]="years" bindLabel="name" bindValue="value" formControlName="FkYearId"
+                (change)="onMonthOrYearChange()" placeholder="--Select Year--">
+              </ng-select>
+
+            </div>
+
+            <!-- Employee -->
+
+            <div class="col">
+
+              <label class="form-label">
+                Employee
+                <span class="text-danger">*</span>
+              </label>
+
+              <ng-select [items]="employees" bindLabel="name" bindValue="value" formControlName="employee"
+                [searchable]="true" (search)="onEmployeeSearch($event)" (change)="onEmployeeSelect()"
+                [loading]="loadingEmployees" loadingText="Searching employees..." placeholder="--Select Employee--">
+              </ng-select>
+
+            </div>
+
+          </div>
+
+          <!-- Attendance Card -->
+
+          <div class="row mt-4" *ngIf="showAttendance">
+
+            <div class="col-12">
+
+              <div class="card shadow-none px-2">
+
+                <div class="card-header bg-primary text-white py-2">
+
+                  <h4 class="mb-0">
+
+                    Daywise Attendance
+
+                  </h4>
+
+                </div>
+
+                <div class="card-body px-1">
+
+            
+
+                  <!-- ======================= -->
+                  <!-- Attendance First Half -->
+                  <!-- ======================= -->
+
+                  <div class="table-responsive">
+
+                    <table class="table table-bordered text-center align-middle mb-0">
+
+                      <thead class="table-light">
+
+                        <tr>
+
+                          <!-- <th style="width:140px">
+
+                            Day
+
+                          </th> -->
+
+                          <th *ngFor="let day of firstHalfDays">
+
+                            A{{day}}
+
+                          </th>
+
+                        </tr>
+
+                      </thead>
+
+                      <tbody>
+
+                        <tr>
+
+                          <!-- <th class="fw-bold">
+
+                            Attendance
+
+                          </th> -->
+
+                          <td *ngFor="let day of firstHalfDays" class="px-1">
+
+                            <input type="text" maxlength="3" class="form-control form-control-sm text-center border-dark-subtle"
+                              [formControlName]="'A'+day">
+
+                          </td>
+
+                        </tr>
+
+                      </tbody>
+
+                    </table>
+
+                  </div>
+
+                  <!-- ======================= -->
+                  <!-- Attendance Second Half -->
+                  <!-- ======================= -->
+
+
+                  <div class="table-responsive" *ngIf="secondHalfDays.length">
+
+                    <table class="table table-bordered text-center align-middle">
+
+                      <thead class="table-light">
+
+                        <tr>
+
+                          <!-- <th style="width:140px">
+
+                            Day
+
+                          </th> -->
+
+                          <th *ngFor="let day of secondHalfDays">
+
+                            A{{day}}
+
+                          </th>
+
+                        </tr>
+
+                      </thead>
+
+                      <tbody>
+
+                        <tr>
+
+                          <!-- <th class="fw-bold">
+
+                            Attendance
+
+                          </th> -->
+
+                          <td *ngFor="let day of secondHalfDays" class="px-1">
+
+                            <input type="text" maxlength="3" class="form-control form-control-sm text-center border-dark-subtle"
+                              [formControlName]="'A'+day">
+
+                          </td> 
+
+                        </tr>
+
+                      </tbody>
+
+                    </table>
+
+                  </div>
+
+                  <!-- Attendance Legend -->
+
+                  <!-- <div class="row mt-3">
+
+                    <div class="col-12">
+
+                      <small class="text-muted">
+
+                        <strong>Attendance Codes :</strong>
+
+                        P = Present,
+
+                        A = Absent,
+
+                        L = Leave,
+
+                        H = Holiday,
+
+                        WO = Week Off,
+
+                        HD = Half Day
+
+                      </small>
+
+                    </div>
+
+                  </div> -->
+
+                  <!-- ======================= -->
+                  <!-- Action Buttons -->
+                  <!-- ======================= -->
+
+                  <!-- <div class="row mt-4">
+
+                    <div class="col-12 text-end">
+
+                      <button type="button" class="btn btn-primary me-2 " (click)="saveAttendance()">
+
+                        <i class="fa fa-save me-1"></i>
+
+                        Save Attendance
+
+                      </button>
+
+                      <button type="button" class="btn btn-outline-secondary " (click)="clearAttendance()">
+
+                        <i class="fa fa-eraser me-1"></i>
+
+                        Reset
+
+                      </button>
+
+        
+
+
+                    </div>
+
+                  </div> -->
+
+
+<!--  -->
+   <!-- Footer buttons -->
+                 <div class="modal-footer">
+                   <button type="button" class="btn btn-primary me-2 " (click)="saveAttendance()">
+
+                        <!-- <i class="fa fa-save me-1"></i> -->
+
+                        Save 
+
+                      </button>
+
+                      <button type="button" class="btn btn-outline-secondary " (click)="clearAttendance()">
+
+                        <!-- <i class="fa fa-eraser me-1"></i> -->
+
+                        Reset
+
+                      </button>
+
+                </div>
+
+
+<!--  -->
+
+
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </form>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

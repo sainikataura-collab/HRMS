@@ -1,0 +1,10 @@
+.table:not(.table-sm):not(.table-md):not(.dataTable) th,
+.table:not(.table-sm):not(.table-md):not(.dataTable) td {
+    padding: 0 10px;
+    height: 40px;
+    vertical-align: middle !important;
+    white-space: nowrap;
+    overflow: hidden;      
+    text-overflow: ellipsis; 
+}
+

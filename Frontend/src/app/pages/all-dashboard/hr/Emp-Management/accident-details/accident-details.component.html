@@ -1,0 +1,161 @@
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+      <div class="card">
+        <!--  -->
+    
+  
+        <div class="card-header bg-blue py-lg-1 mt-0">
+          <div class="col-sm-12 col-md-12 col-lg-3 col-12">
+        
+              <div class="row w-100">
+                  <div class="col-sm-12 col-md-12 col-lg-12 ">
+                    <h4> {{Isedit? 'Update Employee Accident Detailsr' : 'Employee Accident Details '}}</h4>
+                  </div>
+              </div>
+          </div>
+        
+          <div class="col-sm-12 col-md-12 col-lg-7 col-12">
+              <div class="row w-100">
+                  <div class="col-sm-12 col-md-12 col-lg-12">
+                      <app-common-search (filtersChanged)="handleFilters($event)"></app-common-search>
+                  </div>
+                 
+              </div>
+          </div>
+  
+  
+          <div class="col-sm-12 col-md-12 col-lg-2 col-12">
+              <div class="col-sm-12 col-md-12 col-lg-12  d-flex align-items-center justify-content-md-end">
+                <button class="btn btnheader" routerLink="/dash/hr/hrdashboard/AccidentDetail_list">
+                     Back
+                  </button>
+              </div>
+              </div>
+        
+        </div>
+  
+        <div class="card-body mt-4">
+          <form [formGroup]="Accidentform">
+            <div class="row">
+              <div class="col-md-4">
+                <label>Employee Code<span style="color: red;">*</span></label>
+               <div class="form-group">
+                  <ng-select id="year" [items]="EmployeeList" bindLabel="name" bindValue="value" formControlName="fk_empid"
+                    placeholder="--Select --" class="w-100"></ng-select>
+                  <div *ngIf="submitted   && Accidentform.get('fk_empid')?.invalid" class="text-danger mt-1" style="font-size: 12px;">
+                    Please choose Employee code
+                  </div>
+                </div>
+               
+            </div>
+            <div class="col-md-4">
+                <label>Description<span style="color: red;">*</span></label>
+                <div class="form-group">
+                    <input type="text" class="form-control" formControlName="description">
+                    <div *ngIf="submitted   && Accidentform.get('description')?.invalid" class="text-danger mt-1" style="font-size: 12px;">
+                        Please enter description.
+                      </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <label>Location</label>
+                <div class="form-group">
+                    <input type="text" class="form-control" formControlName="location">
+                   
+                </div>
+            </div>
+            <div class="col-md-4">
+                <label>Accident Date <span style="color: red;">*</span></label>
+                <div class="form-group">
+                    <input type="date" class="form-control" formControlName="accidentdate">
+                    <div *ngIf="submitted   && Accidentform.get('accidentdate')?.invalid" class="text-danger mt-1" style="font-size: 12px;">
+                        Please enter date.
+                      </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <label>Claim Date </label>
+                <div class="form-group">
+                    <input type="date" class="form-control" formControlName="claimdate">
+                    
+                </div>
+            </div>
+            <div class="col-md-4">
+                <label>Received Date</label>
+                <div class="form-group">
+                    <input type="date" class="form-control" formControlName="receivedate">
+                    
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <label>Expence Amount</label>
+                <div class="form-group">
+                    <input type="text" class="form-control" formControlName="expenceamt" (keypress)="validateNumber($event)">
+                    
+                </div>
+            </div>
+            <div class="col-md-4">
+                <label>Claim Amount</label>
+                <div class="form-group">
+                    <input type="text" class="form-control" formControlName="claimamt" (keypress)="validateNumber($event)">
+                    
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <label>Received Amount</label>
+                <div class="form-group">
+                    <input type="text" class="form-control" formControlName="receivedamt" (keypress)="validateNumber($event)">
+                    
+                </div>
+            </div>
+            <div class="col-md-4">
+                <label>Remarks</label>
+                <div class="form-group">
+                    <!-- <input type="text" class="form-control" formControlName="receivedamt">
+                     -->
+                    <textarea type="text" class="form-control" formControlName="remarks"></textarea>
+                </div>
+            </div>
+          
+
+            <div class="col-md-4">
+                <label>File</label>
+                <div class="form-group d-flex align-items-center">
+                    <input type="file" class="form-control me-2" (change)="onFileSelected($event)">
+                    <a *ngIf="ImageUrl && !fileToUpload" [href]="ImageUrl" target="_blank" class="btn btn-primary">
+                        View
+                      </a>
+                    
+                    
+                </div>
+            </div>
+       
+
+
+
+
+
+
+
+  
+  
+            </div>
+  
+  
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-primary mx-1" (click)="submitForm()">{{Isedit? 'Update' : 'Save'}}</button>
+              <button type="reset" class="btn btn-outline-dark mx-1">Reset</button>
+              
+         </div>
+          </form>
+        </div>
+  
+  
+      </div>
+    </div>
+  
+  </div>

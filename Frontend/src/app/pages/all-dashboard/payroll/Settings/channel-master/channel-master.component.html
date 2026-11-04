@@ -1,0 +1,209 @@
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+            <!--  -->
+            <div class="card-header bg-primary">
+                <div class="row w-100">
+                    <div
+                        class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-between">
+                        <h4> {{pk_ChannelId? 'Update Channel Master' : 'Add Channel Master' }}</h4>
+                    </div>
+                    <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+                        <button class="btn btnheader" (click)="redirectToPage()">
+                            Back
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!--  -->
+
+            <div class="card-body mt-4">
+                <form [formGroup]="ChannelDetail" class="row row-cols-1 row-cols-md-3 g-4 channel-state-master">
+
+                    <div class="col">
+                        <label>Channel Code<span style="color: red;">*</span></label>
+                        <div class="form-group">
+                            <input type="text" class="form-control" formControlName="channelCode" maxlength="50"
+                                (blur)="checkDuplicate(ChannelDetail.get('channelCode')?.value)">
+                            <span *ngIf="showError && ChannelDetail.controls['channelCode'].invalid"
+                                class="text-danger mt-1" style="font-size: 12px;">
+                                Please enter Channel Code.
+                            </span>
+                            <div *ngIf="ChannelDetail.get('channelCode')?.errors?.['duplicate']" class="text-danger"
+                                style="font-size:10px;">
+                                {{ ChannelDetail.get('channelCode')?.errors?.['duplicate'] }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        <label>Channel Name<span style="color: red;">*</span></label>
+                        <div class="form-group">
+                            <input type="text" class="form-control" formControlName="channelName" maxlength="100" (blur)="checkDuplicateChannelName(ChannelDetail.get('channelName')?.value)">
+                            <!-- <span
+                                *ngIf="showError && ChannelDetail.controls['channelName'].invalid && !ChannelDetail.get('channelName')?.errors?.['duplicate'] && !ChannelDetail.get('channelName')?.errors?.['minlength']"
+                                class="text-danger mt-1" style="font-size: 12px;">
+                                Please enter Channel Name.
+                            </span> -->
+                             <span
+                                    *ngIf="showError && ChannelDetail.controls['channelName'].invalid && !ChannelDetail.get('channelName')?.errors?.['duplicate'] && !ChannelDetail.get('channelName')?.errors?.['minlength']"
+                                    class="text-danger mt-1" style="font-size: 12px;">
+                                    Please enter Channels Name.
+                                </span>
+                            <span *ngIf="showError && ChannelDetail.get('channelName')?.errors?.['minlength']"
+                                class="text-danger mt-1" style="font-size: 12px;">
+                                Channel Name must be at least 3 characters long.
+                            </span>
+                       <div *ngIf="ChannelDetail.get('channelName')?.errors?.['duplicate']" class="text-danger"
+                                style="font-size:10px;">
+                                {{ ChannelDetail.get('channelName')?.errors?.['duplicate'] }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col">
+                         <label>Company Name<span style="color: red;">*</span></label>
+                            <div class="form-group">
+                                <input type="text" class="form-control" formControlName="companyName" maxlength="100" (blur)="checkDuplicateChannelCompanyName(ChannelDetail.get('companyName')?.value)">
+                                <span
+                                    *ngIf="showError && ChannelDetail.controls['companyName'].invalid && !ChannelDetail.get('companyName')?.errors?.['duplicate'] && !ChannelDetail.get('companyName')?.errors?.['minlength']"
+                                    class="text-danger mt-1" style="font-size: 12px;">
+                                    Please enter Company Name.
+                                </span>
+                                <div *ngIf="ChannelDetail.get('companyName')?.errors?.['duplicate']" class="text-danger"
+                                style="font-size:10px;">
+                                {{ ChannelDetail.get('companyName')?.errors?.['duplicate'] }}
+                            </div>
+                            </div>
+                    </div>
+
+                  
+                    
+                    
+                    <div class="col">
+                        <label>UserId<span style="color: red;">*</span></label>
+                        <div class="form-group">
+                            <input type="text" class="form-control" formControlName="userId" maxlength="100">
+                             <span
+                                    *ngIf="showError && ChannelDetail.controls['userId'].invalid && !ChannelDetail.get('userId')?.errors?.['duplicate'] && !ChannelDetail.get('userId')?.errors?.['minlength']"
+                                    class="text-danger mt-1" style="font-size: 12px;">
+                                    Please enter UserId.
+                                </span>
+                        </div>
+                    </div>
+
+                      <div class="col">
+                        <label>Password<span style="color: red;">*</span></label>
+                        <div class="form-group">
+                            <input type="password" class="form-control" formControlName="password" maxlength="100">
+                              <span
+                                    *ngIf="showError && ChannelDetail.controls['password'].invalid && !ChannelDetail.get('password')?.errors?.['duplicate'] && !ChannelDetail.get('password')?.errors?.['minlength']"
+                                    class="text-danger mt-1" style="font-size: 12px;">
+                                    Please enter Password.
+                                </span>
+                        </div>
+                    </div>
+                      <div class="col">
+                        <label>Location<span style="color: red;">*</span></label>
+                        <div class="form-group">
+                            <input type="text" class="form-control" formControlName="location" maxlength="100">
+                              <span
+                                    *ngIf="showError && ChannelDetail.controls['location'].invalid && !ChannelDetail.get('location')?.errors?.['duplicate'] && !ChannelDetail.get('location')?.errors?.['minlength']"
+                                    class="text-danger mt-1" style="font-size: 12px;">
+                                    Please enter Location.
+                                </span>
+                        </div>
+                    </div>
+                    <!-- State -->
+
+                                   
+                    <div class="col">
+                        <label for="fk_stateid" class="form-label">State :<span class="text-danger">*</span></label>
+                        <ng-select [items]="States" id="fk_stateid" bindLabel="name" bindValue="value" formControlName="fk_stateid"  placeholder="-select code-"></ng-select>
+                        <!-- Validation message below input field -->
+                        <span *ngIf="showError && ChannelDetail.controls['fk_stateid'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                            Please select State .
+                        </span> 
+                    </div>
+                     <!--  -->
+                      <div class="col">
+                        <label>City<span style="color: red;">*</span></label>
+                        <div class="form-group">
+                            <input type="text" class="form-control" formControlName="city" maxlength="100">
+                              <span
+                                    *ngIf="showError && ChannelDetail.controls['city'].invalid && !ChannelDetail.get('city')?.errors?.['duplicate'] && !ChannelDetail.get('city')?.errors?.['minlength']"
+                                    class="text-danger mt-1" style="font-size: 12px;">
+                                    Please enter City.
+                                </span>
+                        </div>
+                    </div>
+                      <div class="col">
+                        <label>OfficeTYpe<span style="color: red;">*</span></label>
+                        <div class="form-group">
+                            <input type="text" class="form-control" formControlName="officeType" maxlength="100">
+                                <span
+                                        *ngIf="showError && ChannelDetail.controls['officeType'].invalid && !ChannelDetail.get('officeType')?.errors?.['duplicate'] && !ChannelDetail.get('officeType')?.errors?.['minlength']"
+                                        class="text-danger mt-1" style="font-size: 12px;">
+                                        Please enter Office Type.
+                                    </span>
+                        </div>
+                    </div>
+                      <div class="col">
+                        <label>Contact Person</label>
+                        <div class="form-group">
+                            <input type="text" class="form-control" formControlName="contactPerson" maxlength="100">
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        <label>Contact Number</label>
+                        <div class="form-group">
+                            <input type="text" class="form-control" formControlName="contactNo" maxlength="20"
+                                (keypress)="validateNumber($event)">
+                            <span *ngIf="showError && ChannelDetail.get('contactNo')?.errors?.['pattern']"
+                                class="text-danger mt-1" style="font-size: 12px;">
+                                Please enter a valid contact number.
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        <label>Email ID</label>
+                        <div class="form-group">
+                            <input type="email" class="form-control" formControlName="emailId" maxlength="100">
+                            <span *ngIf="showError && ChannelDetail.get('emailId')?.errors?.['email']"
+                                class="text-danger mt-1" style="font-size: 12px;">
+                                Please enter a valid email address.
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        <label>Address</label>
+                        <div class="form-group">
+                            <textarea class="form-control" formControlName="address" maxlength="255"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        <label for="isActive">Is Active:</label>
+                        <div class="form-group">
+                            <input class="form-check-input" type="checkbox" formControlName="isActive">
+                        </div>
+                    </div>
+
+                </form>
+
+                <!-- Footer buttons -->
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary mx-1" (click)="onSubmit()">{{pk_ChannelId? 'Update' :
+                        'Save' }}</button>
+                    <button type="reset" class="btn btn-outline-dark mx-1" (click)="resetForm()">Reset</button>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>

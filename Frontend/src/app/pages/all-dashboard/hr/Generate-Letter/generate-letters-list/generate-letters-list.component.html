@@ -1,0 +1,88 @@
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <!--  -->
+      <div class="card-header bg-primary">
+          <div class="row w-100">
+            <!-- Title Section -->
+            <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-between">
+              <h4 class="text-white">List of Letters</h4>
+            </div>
+         
+            <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-center">
+              <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText"/>
+            </div>
+            <!-- Back Button -->
+            <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-end">
+              <button class="btn btnheader" routerLink="/dash/hr/hrdashboard/Generate_letters">
+                  Add
+              </button>
+            <!-- <button class="btn btn-light mx-1" (click)="exportToExcel()">
+              Download
+            </button> -->
+            </div>
+          </div>
+        </div>
+
+      <!--  -->
+      <div class="card-body">
+        <div class="table-responsive table-invoice">
+          <table Id="exportTable"  class="table">
+          
+              <thead>
+                  <tr>
+                    <th>SrNo.</th>
+                    <th>Name</th>
+                    <th>Format</th>
+                    <th>Refno</th>
+                     <th>Dated</th>
+                     <th>Description</th>
+                     <th>IsPublished</th>
+                     <th>Status</th>
+                     <th>Date</th>
+                     <th>Remark</th>
+                     <th>Action</th>
+                  </tr>
+            </thead>
+           
+            <tbody>
+              <tr *ngFor="let item of filteredData()  |paginate: { itemsPerPage: pageSize, currentPage: pageIndex ,totalItems:totalItems};let i = index">
+                <td>{{(pageIndex-1)* pageSize+i+1}}</td>
+                <td>{{ item.name }}</td>
+                <td>{{ item.formattype}}</td>
+                 <td>{{ item.refno}}</td>
+                  <td>{{ item.dated}}</td>
+                   <td>{{ item.description}}</td>
+                     <td>
+                  <!-- Show "Yes" if published -->
+                  <span *ngIf="item.StatusId">Yes</span>
+
+                  <!-- Show publish button if not published -->
+                  <button *ngIf="!item.StatusId" class="btn btn-sm btn-outline-success"
+                    (click)="publishLetter(item.pk_trnid)" title="Click to Publish">
+                    <i class="fa-solid fa-circle-check"></i> Publish
+                  </button>
+                </td>
+                <td>{{ item.Status}}</td>
+               <td>{{ item.ActionDate | date:'dd MMM yyyy hh:mm a' }}</td>
+               <td>{{ item.remark}}</td>
+                <td>
+                  <button class="btn btn-sm btn-outline"> <i class="fa-solid fa-download" (click)="downloadLetter(item.pk_trnid)"></i></button>
+                <button class="btn btn-sm btn-outline" (click)="delete(item.pk_trnid)">   <i class="fa fa-trash"></i></button></td>
+              </tr>
+            
+            </tbody>
+          
+          </table>
+
+          <!-- Pagination controls -->
+          <pagination-controls
+          (pageChange)="onPageChange($event)"
+            totalItems="totalItems"
+            itemsPerPage="pageSize">
+          </pagination-controls>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

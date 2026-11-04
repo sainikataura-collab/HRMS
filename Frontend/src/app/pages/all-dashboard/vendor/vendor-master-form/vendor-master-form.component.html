@@ -1,0 +1,696 @@
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card">
+
+      <!-- Header (Matching user-master) -->
+      <div class="card-header bg-primary py-lg-2 mt-0">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-6 col-9">
+            <h4 class="text-white text-md-start">{{ isEditMode ? 'Edit Vendor Details' : 'Add New Vendor' }}</h4>
+          </div>
+          <div class="col-sm-12 col-md-6 col-3 d-flex align-items-center justify-content-md-end">
+            <button class="btn btnheader" type="button" (click)="goBack()">
+              Back
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Body (Matching user-master) -->
+      <div class="card-body p-0 px-3">
+
+        <!-- 3 Tab Navigation Buttons -->
+        <div class="d-flex align-items-center gap-2 mb-2 pt-1 pb-2 border-bottom flex-wrap">
+          <button type="button" class="btn btn-sm" [ngClass]="activeTab === 1 ? 'btn-primary' : 'btn-outline-primary'" (click)="switchTab(1)">
+            Vendor Details
+          </button>
+          <button type="button" class="btn btn-sm" [ngClass]="activeTab === 2 ? 'btn-primary' : 'btn-outline-primary'" (click)="switchTab(2)">
+            Current Active Rate Card
+          </button>
+          <button type="button" class="btn btn-sm" [ngClass]="activeTab === 3 ? 'btn-primary' : 'btn-outline-primary'" (click)="switchTab(3)">
+            All Rate Cards List
+          </button>
+        </div>
+
+        <form [formGroup]="vendorForm">
+
+          <!-- TAB 1: VENDOR DETAILS -->
+          <div *ngIf="activeTab === 1">
+
+            <!-- Section 1: Basic Details Heading -->
+            <div class="form-section-banner">
+              <span class="form-section-title">
+                <i class="fa-solid fa-user"></i> Basic Details
+              </span>
+            </div>
+
+            <!-- Basic Details Fields Grid -->
+            <div class="row">
+              <ng-container *ngFor="let field of basicDetailsFields">
+                <div [class]="field.width" *ngIf="field.key !== 'AgentName' || vendorForm.get('AgentCode')?.value">
+                  <label>{{ field.label }}<span class="text-danger" *ngIf="field.required">*</span></label>
+                  <div class="form-group">
+                    <ng-container [ngSwitch]="field.type">
+                      <!-- Agent Code Autocomplete with ng-select -->
+                      <ng-select #agentNgSelect *ngSwitchCase="'agent-select'" [items]="agentVendorList$ | async" bindLabel="displayText"
+                        bindValue="code" appendTo="body" [typeahead]="agentCodeInput$" [loading]="isAgentLoading"
+                        [clearable]="true" [searchable]="true" [minTermLength]="1"
+                        typeToSearchText="Type to search agent code or name..." notFoundText="No matching agent found"
+                        formControlName="AgentCode" placeholder="Type to search agent..." class="w-100"
+                        (search)="onAgentSearch($event)"
+                        (clear)="onAgentClear()"
+                        (change)="onAgentSelectChange($event)"
+                        [ngClass]="{'is-invalid': (submitted || vendorForm.get('AgentCode')?.touched) && vendorForm.get('AgentCode')?.invalid}">
+                        <ng-template ng-option-tmp let-item="item">
+                          <span class="badge bg-primary me-2 font-monospace">{{ item?.code }}</span>
+                          <span class="text-dark small fw-semibold">{{ item?.name }}</span>
+                        </ng-template>
+                        <ng-template ng-label-tmp let-item="item">
+                          <span class="fw-semibold" *ngIf="item?.code">{{ item.code }} <span class="text-muted fw-normal"
+                              *ngIf="item.name">({{ item.name }})</span></span>
+                        </ng-template>
+                      </ng-select>
+
+                      <!-- Text Input -->
+                      <input *ngSwitchCase="'text'" type="text" class="form-control" [formControlName]="field.key"
+                        [placeholder]="field.placeholder || ''" [maxlength]="field.maxLength || 524288"
+                        [readonly]="field.readonly || false" [class.bg-light]="field.readonly"
+                        [style.textTransform]="field.uppercase ? 'uppercase' : 'none'"
+                        (input)="onTextInput($event, field)" (keypress)="field.numbersOnly ? onlyNumbers($event) : null"
+                        (blur)="onFieldBlur(field)"
+                        [ngClass]="{'is-invalid': (submitted || vendorForm.get(field.key)?.touched) && vendorForm.get(field.key)?.invalid}" />
+
+                      <!-- Date Input -->
+                      <input *ngSwitchCase="'date'" type="date" class="form-control" [formControlName]="field.key"
+                        [ngClass]="{'is-invalid': submitted && vendorForm.get(field.key)?.invalid}" />
+
+                      <!-- Select Dropdown (ng-select) -->
+                      <ng-select *ngSwitchCase="'select'" [items]="field.options" bindLabel="name" bindValue="value"
+                        [formControlName]="field.key" [placeholder]="'-- Select ' + field.label + ' --'"
+                        (change)="field.onChange ? field.onChange($event) : null"
+                        [ngClass]="{'is-invalid': submitted && vendorForm.get(field.key)?.invalid}" class="w-100">
+                      </ng-select>
+                    </ng-container>
+
+                    <div class="invalid-feedback" style="display: block;"
+                      *ngIf="(submitted || vendorForm.get(field.key)?.touched) && vendorForm.get(field.key)?.invalid">
+                      <ng-container *ngIf="vendorForm.get(field.key)?.hasError('required')">
+                        {{ field.label }} is required.
+                      </ng-container>
+                      <ng-container *ngIf="vendorForm.get(field.key)?.hasError('pattern')">
+                        Please enter a valid {{ field.label }}.
+                      </ng-container>
+                      <ng-container *ngIf="vendorForm.get(field.key)?.hasError('email')">
+                        Please enter a valid email address.
+                      </ng-container>
+                      <ng-container *ngIf="vendorForm.get(field.key)?.hasError('duplicate')">
+                        {{ vendorForm.get(field.key)?.errors?.['duplicate'] }}
+                      </ng-container>
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+            </div>
+
+            <!-- Section 2: Address Details Heading -->
+            <div class="form-section-banner">
+              <span class="form-section-title">
+                <i class="fa-solid fa-location-dot"></i> Address Details
+              </span>
+            </div>
+
+            <div class="row gx-3">
+              <!-- Left Column: Current Address -->
+              <div class="col-sm-12 col-md-6 col-lg-6 border-end pe-md-3">
+                <label class="fw-semibold text-dark mb-1">Current Address</label>
+                <div class="form-group mb-1">
+                  <textarea class="form-control" rows="2" formControlName="Vendor_Address"
+                    placeholder="Enter current address"
+                    [ngClass]="{'is-invalid': (submitted || vendorForm.get('Vendor_Address')?.touched) && vendorForm.get('Vendor_Address')?.invalid}"></textarea>
+                </div>
+
+                <div class="row">
+                  <div class="col-sm-12 col-md-6 mb-1">
+                    <label>State <span class="text-danger">*</span></label>
+                    <div class="form-group">
+                      <ng-select [items]="states" bindLabel="name" bindValue="value" formControlName="Vendor_FKStateId"
+                        placeholder="-- Select State --" (change)="onStateChange($event)"
+                        [ngClass]="{'is-invalid': (submitted || vendorForm.get('Vendor_FKStateId')?.touched) && vendorForm.get('Vendor_FKStateId')?.invalid}"
+                        class="w-100">
+                      </ng-select>
+                      <div class="invalid-feedback" style="display: block;"
+                        *ngIf="(submitted || vendorForm.get('Vendor_FKStateId')?.touched) && vendorForm.get('Vendor_FKStateId')?.invalid">
+                        State is required.
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-sm-12 col-md-6 mb-1">
+                    <label>City</label>
+                    <div class="form-group">
+                      <ng-select [items]="cities" bindLabel="name" bindValue="value" formControlName="Vendor_FKCityId"
+                        placeholder="-- Select City --" (change)="onCityChange($event)"
+                        [ngClass]="{'is-invalid': (submitted || vendorForm.get('Vendor_FKCityId')?.touched) && vendorForm.get('Vendor_FKCityId')?.invalid}"
+                        class="w-100">
+                      </ng-select>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-sm-12 col-md-6 mb-1">
+                    <label>Pincode</label>
+                    <div class="form-group">
+                      <input type="text" class="form-control" id="CurrentPinCode" formControlName="CurrentPinCode"
+                        maxlength="6" (keypress)="onlyNumbers($event)"
+                        [ngClass]="{'is-invalid': (submitted || vendorForm.get('CurrentPinCode')?.touched) && vendorForm.get('CurrentPinCode')?.invalid}" />
+                      <div class="invalid-feedback" style="display: block;"
+                        *ngIf="(submitted || vendorForm.get('CurrentPinCode')?.touched) && vendorForm.get('CurrentPinCode')?.invalid">
+                        <ng-container *ngIf="vendorForm.get('CurrentPinCode')?.hasError('pattern')">
+                          Please enter a valid 6-digit pincode.
+                        </ng-container>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Right Column: Permanent Address -->
+              <div class="col-sm-12 col-md-6 col-lg-6 ps-md-3">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <label class="fw-semibold text-dark mb-0">Permanent Address (As Per Aadhaar)</label>
+                  <div class="form-check mb-0">
+                    <input type="checkbox" class="form-check-input" id="sameAsCurrentAddress"
+                      formControlName="sameAsCurrentAddress" (change)="onSameAddressToggle($event)" />
+                    <label class="form-check-label text-primary ms-1" for="sameAsCurrentAddress"
+                      style="cursor: pointer; font-size: 11.5px;">
+                      Same as current address
+                    </label>
+                  </div>
+                </div>
+
+                <div class="form-group mb-1">
+                  <textarea class="form-control" rows="2" formControlName="Vendor_PermanentAddress"
+                    placeholder="Enter permanent address" [readonly]="vendorForm.get('sameAsCurrentAddress')?.value"
+                    [ngClass]="{'is-invalid': (submitted || vendorForm.get('Vendor_PermanentAddress')?.touched) && vendorForm.get('Vendor_PermanentAddress')?.invalid}"></textarea>
+                </div>
+
+                <div class="row">
+                  <div class="col-sm-12 col-md-6 mb-1">
+                    <label>State</label>
+                    <div class="form-group">
+                      <ng-select [items]="states" bindLabel="name" bindValue="value"
+                        formControlName="Vendor_FKPermStateId" placeholder="-- Select State --"
+                        [readonly]="vendorForm.get('sameAsCurrentAddress')?.value" (change)="onPermStateChange($event)"
+                        [ngClass]="{'is-invalid': (submitted || vendorForm.get('Vendor_FKPermStateId')?.touched) && vendorForm.get('Vendor_FKPermStateId')?.invalid}"
+                        class="w-100">
+                      </ng-select>
+                    </div>
+                  </div>
+
+                  <div class="col-sm-12 col-md-6 mb-1">
+                    <label>City</label>
+                    <div class="form-group">
+                      <ng-select [items]="permCities" bindLabel="name" bindValue="value"
+                        formControlName="Vendor_FKPermCityId" placeholder="-- Select City --"
+                        [readonly]="vendorForm.get('sameAsCurrentAddress')?.value" (change)="onPermCityChange($event)"
+                        [ngClass]="{'is-invalid': (submitted || vendorForm.get('Vendor_FKPermCityId')?.touched) && vendorForm.get('Vendor_FKPermCityId')?.invalid}"
+                        class="w-100">
+                      </ng-select>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-sm-12 col-md-6 mb-1">
+                    <label>Pincode</label>
+                    <div class="form-group">
+                      <input type="text" class="form-control" id="PermanentPinCode" formControlName="PermanentPinCode"
+                        maxlength="6" [readonly]="vendorForm.get('sameAsCurrentAddress')?.value"
+                        (keypress)="onlyNumbers($event)"
+                        [ngClass]="{'is-invalid': (submitted || vendorForm.get('PermanentPinCode')?.touched) && vendorForm.get('PermanentPinCode')?.invalid}" />
+                      <div class="invalid-feedback" style="display: block;"
+                        *ngIf="(submitted || vendorForm.get('PermanentPinCode')?.touched) && vendorForm.get('PermanentPinCode')?.invalid">
+                        <ng-container *ngIf="vendorForm.get('PermanentPinCode')?.hasError('pattern')">
+                          Please enter a valid 6-digit pincode.
+                        </ng-container>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Section 3: Bank & Identity Details Heading -->
+            <div class="form-section-banner">
+              <span class="form-section-title">
+                <i class="fa-solid fa-building-columns"></i> Bank & Identity Details
+              </span>
+            </div>
+
+            <!-- Bank & Identity Details Fields -->
+            <div class="row">
+              <ng-container *ngFor="let field of bankAndIdentityFields">
+                <div [class]="field.width">
+                  <label>{{ field.label }}<span class="text-danger" *ngIf="field.required">*</span></label>
+                  <div class="form-group">
+                    <ng-container [ngSwitch]="field.type">
+                      <!-- Text Input -->
+                      <input *ngSwitchCase="'text'" type="text" class="form-control" [formControlName]="field.key"
+                        [placeholder]="field.placeholder || ''" [maxlength]="field.maxLength || 524288"
+                        [style.textTransform]="field.uppercase ? 'uppercase' : 'none'"
+                        (input)="onTextInput($event, field)" (keypress)="field.numbersOnly ? onlyNumbers($event) : null"
+                        (blur)="field.dbFieldName ? checkDuplicate(field.key, field.dbFieldName) : null"
+                        [ngClass]="{'is-invalid': (submitted || vendorForm.get(field.key)?.touched) && vendorForm.get(field.key)?.invalid}" />
+
+                      <!-- Select Dropdown (ng-select) -->
+                      <ng-select *ngSwitchCase="'select'" [items]="field.options" bindLabel="name" bindValue="value"
+                        [formControlName]="field.key" [placeholder]="'-- Select ' + field.label + ' --'"
+                        (change)="field.onChange ? field.onChange($event) : null"
+                        [ngClass]="{'is-invalid': (submitted || vendorForm.get(field.key)?.touched) && vendorForm.get(field.key)?.invalid}"
+                        class="w-100">
+                      </ng-select>
+                    </ng-container>
+
+                    <div class="invalid-feedback" style="display: block;"
+                      *ngIf="(submitted || vendorForm.get(field.key)?.touched) && vendorForm.get(field.key)?.invalid">
+                      <ng-container *ngIf="vendorForm.get(field.key)?.hasError('required')">
+                        {{ field.label }} is required.
+                      </ng-container>
+                      <ng-container *ngIf="vendorForm.get(field.key)?.hasError('pattern')">
+                        Please enter a valid {{ field.label }}.
+                      </ng-container>
+                      <ng-container *ngIf="vendorForm.get(field.key)?.hasError('duplicate')">
+                        {{ vendorForm.get(field.key)?.errors?.['duplicate'] }}
+                      </ng-container>
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+
+              <!-- Ayushman Card Checkbox -->
+              <div class="col-sm-12 col-md-4 col-lg-4 mb-1 align-content-center">
+                <div class="form-group mt-2">
+                  <input type="checkbox" class="form-check-input" id="AyushmanCard" formControlName="AyushmanCard"
+                    (change)="onAyushmanCardToggle($event)" />
+                  <label class="form-check-label ms-2" for="AyushmanCard">
+                    Ayushman Card
+                  </label>
+                </div>
+              </div>
+
+              <!-- Ayushman Card No. Input (shown only when checked) -->
+              <div class="col-sm-12 col-md-4 col-lg-4 mb-1" *ngIf="vendorForm.get('AyushmanCard')?.value">
+                <label>Ayushman Card No. <span class="text-danger">*</span></label>
+                <div class="form-group">
+                  <input type="text" class="form-control" formControlName="AyushmanCardNo"
+                    placeholder="Enter Ayushman card number" maxlength="30"
+                    (blur)="checkDuplicate('AyushmanCardNo', 'VendorAyushmanCardNo')"
+                    [ngClass]="{'is-invalid': (submitted || vendorForm.get('AyushmanCardNo')?.touched) && vendorForm.get('AyushmanCardNo')?.invalid}" />
+                  <div class="invalid-feedback" style="display: block;"
+                    *ngIf="(submitted || vendorForm.get('AyushmanCardNo')?.touched) && vendorForm.get('AyushmanCardNo')?.invalid">
+                    <ng-container *ngIf="vendorForm.get('AyushmanCardNo')?.hasError('required')">Ayushman Card No. is
+                      required.</ng-container>
+                    <ng-container *ngIf="vendorForm.get('AyushmanCardNo')?.hasError('duplicate')">{{
+                      vendorForm.get('AyushmanCardNo')?.errors?.['duplicate'] }}</ng-container>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Section 4: Tax Details Heading -->
+            <div class="form-section-banner">
+              <span class="form-section-title">
+                <i class="fa-solid fa-receipt"></i> Tax Details
+              </span>
+            </div>
+
+            <!-- Tax Details Fields -->
+            <div class="row align-items-center">
+              <!-- GST Applicable Checkbox -->
+              <div class="col-sm-12 col-md-3 col-lg-3 mb-1 align-content-center">
+                <div class="form-group mt-2">
+                  <input type="checkbox" class="form-check-input" id="isGSTApplicable"
+                    formControlName="Vendor_IsGSTApplicable" (change)="onGSTToggle($event)" />
+                  <label class="form-check-label ms-2" for="isGSTApplicable">
+                    GST Applicable
+                  </label>
+                </div>
+              </div>
+
+              <!-- GST Rate Input (shown only when GST Applicable is checked) -->
+              <div class="col-sm-12 col-md-3 col-lg-3 mb-1" *ngIf="vendorForm.get('Vendor_IsGSTApplicable')?.value">
+                <label>GST Rate (%) <span class="text-danger">*</span></label>
+                <div class="form-group">
+                  <div class="input-group">
+                    <input type="number" class="form-control" formControlName="Vendor_GSTRate" placeholder="e.g. 18"
+                      step="0.01" min="0" max="100"
+                      [ngClass]="{'is-invalid': (submitted || vendorForm.get('Vendor_GSTRate')?.touched) && vendorForm.get('Vendor_GSTRate')?.invalid}" />
+                    <span class="input-group-text">%</span>
+                  </div>
+                  <div class="invalid-feedback" style="display: block;"
+                    *ngIf="(submitted || vendorForm.get('Vendor_GSTRate')?.touched) && vendorForm.get('Vendor_GSTRate')?.invalid">
+                    GST Rate is required.
+                  </div>
+                </div>
+              </div>
+
+              <!-- TDS Percentage (%) -->
+              <div class="col-sm-12 col-md-3 col-lg-3 mb-1">
+                <label>TDS Percentage (%) <span class="text-danger">*</span></label>
+                <div class="form-group">
+                  <div class="input-group">
+                    <input type="number" class="form-control" formControlName="Vendor_TaxTDSRate" placeholder="e.g. 2"
+                      step="0.01" min="0" max="100"
+                      [ngClass]="{'is-invalid': (submitted || vendorForm.get('Vendor_TaxTDSRate')?.touched) && vendorForm.get('Vendor_TaxTDSRate')?.invalid}" />
+                    <span class="input-group-text">%</span>
+                  </div>
+                  <div class="invalid-feedback" style="display: block;"
+                    *ngIf="(submitted || vendorForm.get('Vendor_TaxTDSRate')?.touched) && vendorForm.get('Vendor_TaxTDSRate')?.invalid">
+                    <ng-container *ngIf="vendorForm.get('Vendor_TaxTDSRate')?.hasError('required')">
+                      TDS Percentage is required.
+                    </ng-container>
+                    <ng-container
+                      *ngIf="vendorForm.get('Vendor_TaxTDSRate')?.hasError('min') || vendorForm.get('Vendor_TaxTDSRate')?.hasError('max')">
+                      Please enter a valid percentage (0 - 100).
+                    </ng-container>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Section 5: Linked FHR ID Heading -->
+            <div class="form-section-banner">
+              <span class="form-section-title">
+                <i class="fa-solid fa-link"></i> Linked FHR ID Mapping
+              </span>
+            </div>
+
+            <!-- Linked FHR ID Fields -->
+            <div class="row">
+              <div class="col-sm-12 col-md-4 col-lg-4 mb-1">
+                <label>Client</label>
+                <div class="form-group">
+                  <ng-select [items]="clients" bindLabel="name" bindValue="value"
+                    formControlName="Vendor_FKLinkedClientId" placeholder="-- Select Client --"
+                    (change)="onLinkedClientChange($event)" [multiple]="true" class="w-100">
+                  </ng-select>
+                </div>
+              </div>
+
+              <div class="col-sm-12 col-md-4 col-lg-4 mb-1">
+                <label>Model</label>
+                <div class="form-group">
+                  <ng-select [items]="linkedModels" bindLabel="displayName" bindValue="value"
+                    formControlName="Vendor_FKLinkedModelId" placeholder="-- Select Model --"
+                    (change)="onLinkedModelChange($event)" [multiple]="true" class="w-100">
+                  </ng-select>
+                </div>
+              </div>
+
+              <div class="col-sm-12 col-md-4 col-lg-4 mb-1">
+                <label>FHR ID</label>
+                <div class="form-group">
+                  <ng-select [items]="uniqueLinkedFHRIds" bindLabel="name" bindValue="value"
+                    formControlName="Vendor_FKLinkedFHRId" placeholder="-- Select FHR ID --"
+                    (change)="onFHRIDChange($event)" [multiple]="true" class="w-100">
+                  </ng-select>
+                </div>
+              </div>
+
+              <!-- Selected FHR ID Details Table -->
+              <div class="col-12 mb-3 mt-2" *ngIf="selectedFHRDetailsList.length > 0">
+                <div class="table-responsive">
+                  <table class="table table-bordered table-striped table-hover table-sm mb-0">
+                    <thead class="table-light">
+                      <tr>
+                        <th>FHR ID</th>
+                        <th>Location</th>
+                        <th>Effective Date</th>
+                        <th>Configured Rates & Values</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let item of selectedFHRDetailsList">
+                        <td class="align-middle fw-bold">{{ item.name }}</td>
+                        <td class="align-middle">{{ item.location }}</td>
+                        <td class="align-middle">{{ item.effectiveFrom | date:'dd-MM-yyyy' }}</td>
+                        <td class="align-middle">
+                          <div class="d-flex flex-wrap gap-2">
+                            <div *ngIf="item.vehicleTypeName"
+                              class="d-flex align-items-center rounded px-2 py-1 bg-dark text-white shadow-sm"
+                              style="border: 1px solid #495057;">
+                              <i class="fa-solid fa-truck me-2"></i><span class="fw-bold small">{{ item.vehicleTypeName }}</span>
+                            </div>
+                            <ng-container *ngFor="let rate of item.rates">
+                              <div *ngIf="rate.isFixed" class="d-flex align-items-center rounded px-2 py-1"
+                                style="background-color: #d1e7dd; border: 1px solid #badbcc;">
+                                <span class="fw-bold me-2">{{ rate.label }}</span>
+                                <span class="badge bg-success me-2 rounded-pill px-3">{{ rate.type }}</span>
+                                <span class="fw-bold"><ng-container *ngIf="rate.type !== 'Base Rate'">₹ </ng-container>{{ rate.value }}</span>
+                              </div>
+                              <div *ngIf="rate.isSlab" class="rounded px-2 py-1"
+                                style="background-color: #cff4fc; border: 1px solid #b6effb; display:inline-flex; flex-direction:column; gap:3px; align-items:flex-start;">
+                                <div style="display:inline-flex; align-items:center; gap:5px;">
+                                  <span class="fw-bold me-2">{{ rate.label }}</span>
+                                  <span class="badge bg-primary me-2 rounded-pill px-3">{{ rate.type }}</span>
+                                </div>
+                                <div *ngFor="let slab of (rate.slabs || parseSlabExpr(rate.value))"
+                                  style="display:flex; align-items:center; gap:5px; font-size:10px; padding-left:2px;">
+                                  <span style="color:#0d6efd; font-weight:600; background:#e8f0fe; border-radius:4px; padding:1px 5px;">{{ slab.range }}%</span>
+                                  <span style="color:#aaa;">&#8594;</span>
+                                  <span class="fw-bold text-primary">&#8377; {{ slab.rate }}</span>
+                                </div>
+                              </div>
+                              <div *ngIf="rate.type === 'Percentage'"
+                                class="d-flex align-items-center rounded px-2 py-1"
+                                style="background-color: #fff3cd; border: 1px solid #ffecb5;">
+                                <span class="fw-bold me-2">{{ rate.label }}</span>
+                                <span class="badge bg-warning text-dark me-2 rounded-pill px-3">{{ rate.type }}</span>
+                                <span class="fw-bold text-dark">{{ rate.value }} %</span>
+                              </div>
+                              <div *ngIf="rate.type === 'Base Rate'" class="d-flex align-items-center rounded px-2 py-1"
+                                style="background-color: #e2d9f3; border: 1px solid #d1c4e9;">
+                                <span class="fw-bold me-2">{{ rate.label }}</span>
+                                <span class="badge me-2 rounded-pill px-3"
+                                  style="background-color: #673ab7; color: white;">{{ rate.type }}</span>
+                                <span class="fw-bold" style="color: #673ab7;">{{ rate.value }}</span>
+                              </div>
+                              <div
+                                *ngIf="!rate.isFixed && !rate.isSlab && rate.type !== 'Percentage' && rate.type !== 'Base Rate'"
+                                class="d-flex align-items-center rounded px-2 py-1"
+                                style="background-color: #e2e3e5; border: 1px solid #d3d6d8;">
+                                <span class="fw-bold me-2">{{ rate.label }}</span>
+                                <span class="badge bg-secondary me-2 rounded-pill px-3">{{ rate.type }}</span>
+                                <span class="fw-bold text-dark">{{ rate.value }}</span>
+                              </div>
+                            </ng-container>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- Action Buttons for Tab 1 (Matching User Master) -->
+            <div class="row mt-3">
+              <div class="col d-flex align-items-end justify-content-end pb-3">
+                <button type="button" class="btn btn-primary mx-1" (click)="saveVendorBasicDetails()">
+                  {{ isEditMode ? 'Update' : 'Save' }}
+                </button>
+              </div>
+            </div>
+          </div> <!-- END OF TAB 1 -->
+
+          <!-- TAB 2: CURRENT ACTIVE RATE CARD -->
+          <div *ngIf="activeTab === 2">
+            <div class="d-flex align-items-center justify-content-between mb-3 mt-2">
+              <h5 class="mb-0 text-primary fw-bold" style="font-size: 14px;">Current Active Rate Card</h5>
+              <button type="button" class="btn btnheader" (click)="exportActiveRateCardsToExcel()">
+                Download
+              </button>
+            </div>
+
+            <!-- Read-Only Configured Rate Cards Table -->
+            <div class="card mb-4 border"
+              *ngIf="historicActiveFHRDetailsList.length > 0">
+              <div class="card-body p-0">
+                <div class="table-responsive">
+                  <table class="table table-hover table-bordered align-middle mb-0 small">
+                    <thead class="table-light text-uppercase fw-semibold" style="font-size: 11px;">
+                      <tr>
+                        <th style="width: 40px;" class="text-center">S.No</th>
+                        <th>Client</th>
+                        <th>Model</th>
+                        <th class="text-center">FHR ID</th>
+                        <th class="text-center">Location</th>
+                        <th class="text-center">Effective From</th>
+                        <th class="text-center">Status</th>
+                        <th>Configured Rates & Values</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let item of historicActiveFHRDetailsList; let i = index">
+                        <td class="fw-bold text-center">{{ i + 1 }}</td>
+                        <td class="text-start">
+                          <span class="fw-semibold text-primary">{{ item.clientName || getLinkedClientName() }}</span>
+                        </td>
+                        <td class="text-center">
+                          <span class="badge bg-info text-dark font-size-11">{{ item.modelName || getLinkedModelName() }}</span>
+                        </td>
+                        <td class="text-center fw-bold">{{ item.name }}</td>
+                        <td class="text-center">{{ item.location }}</td>
+                        <td class="text-center font-size-11 fw-bold">{{ item.effectiveFrom | date:'dd-MM-yyyy' }}</td>
+                        <td class="text-center">
+                          <span class="badge rounded-pill px-2" [ngClass]="item.isActive ? 'bg-success' : 'bg-danger'">
+                            {{ item.isActive ? 'Active' : 'Inactive' }}
+                          </span>
+                        </td>
+                        <td class="text-start py-2">
+                          <div class="d-flex flex-wrap gap-2">
+                            <div *ngIf="item.vehicleTypeName"
+                              class="d-flex align-items-center rounded px-2 py-1 bg-dark text-white shadow-sm"
+                              style="border: 1px solid #495057;">
+                              <i class="fa-solid fa-truck me-2"></i><span class="fw-bold small">{{ item.vehicleTypeName }}</span>
+                            </div>
+                            <ng-container *ngFor="let rate of item.rates">
+                              <div class="bg-white rounded border" style="border-color:#dee2e6 !important; padding:4px 8px; display:inline-flex; flex-direction:column; gap:3px; align-items:flex-start;">
+                                <div class="d-flex align-items-center gap-2">
+                                  <span class="fw-bold text-dark font-size-11">{{ rate.label }}</span>
+                                  <span class="badge rounded-pill px-3" [ngClass]="rate.isFixed ? 'bg-success' : 'bg-primary'">{{ rate.type }}</span>
+                                  <ng-container *ngIf="!rate.isSlab">
+                                    <span class="fw-bold font-size-11" [ngClass]="rate.isFixed ? 'text-success' : 'text-primary'">
+                                      <ng-container *ngIf="rate.isFixed && rate.type !== 'Base Rate'">₹ </ng-container>{{ rate.value }}
+                                    </span>
+                                  </ng-container>
+                                </div>
+                                <ng-container *ngIf="rate.isSlab && (rate.slabs?.length || rate.value)">
+                                  <div *ngFor="let slab of (rate.slabs || parseSlabExpr(rate.value))"
+                                    style="display:flex; align-items:center; gap:5px; font-size:10px; padding-left:2px;">
+                                    <span style="color:#555; font-weight:600; background:#e8f0fe; border-radius:4px; padding:1px 5px;">{{ slab.range }}%</span>
+                                    <span style="color:#aaa;">&#8594;</span>
+                                    <span class="text-primary fw-bold">₹ {{ slab.rate }}</span>
+                                  </div>
+                                </ng-container>
+                              </div>
+                            </ng-container>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <!-- Empty State for Tab 2 -->
+            <div class="card mb-4 border border-secondary-subtle bg-light"
+              *ngIf="historicActiveFHRDetailsList.length === 0">
+              <div class="card-body text-center py-5">
+                <i class="fa-solid fa-inbox text-muted mb-3" style="font-size: 2rem;"></i>
+                <p class="text-muted mb-0 small">No saved Rate Cards found. Please update the Vendor Details to save rate cards.</p>
+              </div>
+            </div>
+          </div> <!-- END OF TAB 2 -->
+
+          <!-- TAB 3: ALL RATE CARDS LIST -->
+          <div *ngIf="activeTab === 3">
+            <div class="d-flex align-items-center justify-content-between mb-3 mt-2">
+              <h5 class="mb-0 text-primary fw-bold" style="font-size: 14px;">All Rate Cards List</h5>
+              <button type="button" class="btn btnheader" (click)="exportRateCardHistoryToExcel()">
+                Download
+              </button>
+            </div>
+
+            <!-- Read-Only Configured Rate Cards Table for History -->
+            <div class="card mb-4 border" *ngIf="historicAllFHRDetailsList.length > 0">
+              <div class="card-body p-0">
+                <div class="table-responsive">
+                  <table class="table table-hover table-bordered align-middle mb-0 small">
+                    <thead class="table-light text-uppercase fw-semibold" style="font-size: 11px;">
+                      <tr>
+                        <th style="width: 40px;" class="text-center">S.No</th>
+                        <th>Client</th>
+                        <th>Model</th>
+                        <th class="text-center">FHR ID</th>
+                        <th class="text-center">Location</th>
+                        <th class="text-center">Effective From</th>
+                        <th class="text-center">Status</th>
+                        <th>Configured Rates & Values</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr
+                        *ngFor="let item of historicAllFHRDetailsList | paginate: { id: 'history_pagination', itemsPerPage: pageSizeTab3, currentPage: pageIndexTab3, totalItems: totalCountTab3 }; let i = index">
+                        <td class="fw-bold text-center">{{ (pageIndexTab3 - 1) * pageSizeTab3 + i + 1 }}</td>
+                        <td class="text-start">
+                          <span class="fw-semibold text-primary">{{ item.clientName || getLinkedClientName() }}</span>
+                        </td>
+                        <td class="text-center">
+                          <span class="badge bg-info text-dark font-size-11">{{ item.modelName || getLinkedModelName() }}</span>
+                        </td>
+                        <td class="text-center fw-bold">{{ item.name }}</td>
+                        <td class="text-center">{{ item.location }}</td>
+                        <td class="text-center font-size-11 fw-bold">{{ item.effectiveFrom | date:'dd-MM-yyyy' }}</td>
+                        <td class="text-center">
+                          <span class="badge rounded-pill px-2" [ngClass]="item.isActive ? 'bg-success' : 'bg-danger'">
+                            {{ item.isActive ? 'Active' : 'Inactive' }}
+                          </span>
+                        </td>
+                        <td class="text-start py-2">
+                          <div class="d-flex flex-wrap gap-2">
+                            <div *ngIf="item.vehicleTypeName"
+                              class="d-flex align-items-center rounded px-2 py-1 bg-dark text-white shadow-sm"
+                              style="border: 1px solid #495057;">
+                              <i class="fa-solid fa-truck me-2"></i><span class="fw-bold small">{{ item.vehicleTypeName }}</span>
+                            </div>
+                            <ng-container *ngFor="let rate of item.rates">
+                              <div class="bg-white rounded border" style="border-color:#dee2e6 !important; padding:4px 8px; display:inline-flex; flex-direction:column; gap:3px; align-items:flex-start;">
+                                <div class="d-flex align-items-center gap-2">
+                                  <span class="fw-bold text-dark font-size-11">{{ rate.label }}</span>
+                                  <span class="badge rounded-pill px-3" [ngClass]="rate.isFixed ? 'bg-success' : 'bg-primary'">{{ rate.type }}</span>
+                                  <ng-container *ngIf="!rate.isSlab">
+                                    <span class="fw-bold font-size-11" [ngClass]="rate.isFixed ? 'text-success' : 'text-primary'">
+                                      <ng-container *ngIf="rate.isFixed && rate.type !== 'Base Rate'">₹ </ng-container>{{ rate.value }}
+                                    </span>
+                                  </ng-container>
+                                </div>
+                                <ng-container *ngIf="rate.isSlab && (rate.slabs?.length || rate.value)">
+                                  <div *ngFor="let slab of (rate.slabs || parseSlabExpr(rate.value))"
+                                    style="display:flex; align-items:center; gap:5px; font-size:10px; padding-left:2px;">
+                                    <span style="color:#555; font-weight:600; background:#e8f0fe; border-radius:4px; padding:1px 5px;">{{ slab.range }}%</span>
+                                    <span style="color:#aaa;">&#8594;</span>
+                                    <span class="text-primary fw-bold">₹ {{ slab.rate }}</span>
+                                  </div>
+                                </ng-container>
+                              </div>
+                            </ng-container>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <div class="d-flex mt-3 mb-2 px-3" *ngIf="totalCountTab3 > 0">
+                    <pagination-controls id="history_pagination"
+                      (pageChange)="onPageChangeTab3($event)"></pagination-controls>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Empty State for Tab 3 -->
+            <div class="card mb-4 border border-secondary-subtle bg-light"
+              *ngIf="historicAllFHRDetailsList.length === 0">
+              <div class="card-body text-center py-5">
+                <i class="fa-solid fa-inbox text-muted mb-3" style="font-size: 2rem;"></i>
+                <p class="text-muted mb-0 small">No saved historical rate cards found.</p>
+              </div>
+            </div>
+          </div> <!-- END OF TAB 3 -->
+
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>

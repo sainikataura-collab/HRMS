@@ -1,0 +1,424 @@
+/* Shared DARCL Fact Box Styles */
+.btn-float-fact {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  z-index: 1050;
+  transition: transform 0.2s ease-in-out;
+}
+
+.btn-float-fact:hover {
+  transform: scale(1.1);
+}
+
+.btn-close-factbox {
+  background: transparent;
+  border: none;
+  opacity: 0.85;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+
+  &:hover {
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.2);
+  }
+}
+
+// :host {
+//   display: block;
+//   height: 100%;
+// }
+
+// .card {
+//   display: flex;
+//   flex-direction: column;
+//   height: 100%;
+//   overflow: hidden;
+
+//   .card-header {
+//     flex-shrink: 0;
+//   }
+
+//   .card-body {
+//     flex: 1 1 auto;
+//     min-height: 0;
+//     overflow: hidden;
+//     display: flex;
+//     flex-direction: column;
+//   }
+
+//   .card-footer {
+//     flex-shrink: 0;
+//   }
+// }
+
+// .file-history-list {
+//   flex: 1 1 0px;
+//   min-height: 0;
+//   overflow-y: auto;
+//   scrollbar-width: thin;
+// }
+.file-history-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.file-history-list::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+.fact-metric-badge {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.2;
+  border: 1px solid transparent;
+  min-width: 34px;
+  flex: 1;
+  text-align: center;
+}
+
+.btn-factbox-download {
+  width: 26px;
+  height: 26px;
+  min-width: 26px;
+  padding: 0 !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  border: 1px solid #3080e8;
+  color: #3080e8;
+  background-color: transparent;
+  font-size: 11px;
+  line-height: 1;
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    background-color: #3080e8;
+    color: #ffffff;
+    box-shadow: 0 2px 6px rgba(48, 128, 232, 0.35);
+  }
+
+  i {
+    font-size: 11px;
+    line-height: 1;
+  }
+}
+
+.fact-metric-total {
+  background-color: #e0f2fe;
+  color: #0369a1;
+  border-color: #bae6fd;
+}
+
+.fact-metric-success {
+  background-color: #dcfce7;
+  color: #15803d;
+  border-color: #bbf7d0;
+}
+
+.fact-metric-failed {
+  background-color: #fee2e2;
+  color: #b91c1c;
+  border-color: #fecaca;
+}
+
+.factbox-card-warning {
+  background-color: #fffbeb !important;
+  border-color: #fde68a !important;
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    background-color: #fef3c7 !important;
+    border-color: #fcd34d !important;
+    box-shadow: 0 2px 6px rgba(217, 119, 6, 0.12) !important;
+  }
+}
+
+.factbox-card-success {
+  background-color: #f0fdf4 !important;
+  border-color: #bbf7d0 !important;
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    background-color: #dcfce7 !important;
+    border-color: #86efac !important;
+    box-shadow: 0 2px 6px rgba(22, 163, 74, 0.12) !important;
+  }
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.fact-file-name {
+  font-size: 0.63rem !important;
+  font-weight: 500 !important;
+  line-height: 1.25 !important;
+  letter-spacing: 0.1px;
+}
+
+.fact-upload-details {
+  font-size: 0.65rem !important;
+  line-height: 1.2;
+
+  i {
+    font-size: 9px;
+  }
+}
+
+.text-decoration-underline-hover:hover {
+  text-decoration: underline !important;
+}
+
+.text-primary-hover:hover {
+  color: #0d6efd !important;
+  cursor: pointer;
+}
+
+
+
+.factbox-pagination {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: nowrap;
+  gap: 4px;
+  margin: 0 auto;
+  padding: 4px 0;
+  font-size: 13px;
+  max-width: 100%;
+
+  .factbox-page-item {
+    display: inline-flex;
+    align-items: center;
+
+    &.disabled {
+      opacity: 0.35;
+      pointer-events: none;
+    }
+  }
+
+  .btn-pagination {
+    background: transparent;
+    border: 1px solid transparent;
+    color: #0d6efd;
+    min-width: 28px;
+    height: 28px;
+    padding: 2px 6px;
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: 6px;
+    cursor: pointer;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease-in-out;
+    white-space: nowrap;
+
+    &:hover:not(:disabled) {
+      background-color: #e9ecef;
+      color: #0a58ca;
+    }
+
+    &:disabled {
+      color: #6c757d;
+      cursor: not-allowed;
+    }
+
+    &.active {
+      background-color: #0d6efd;
+      border-color: #0d6efd;
+      color: #ffffff !important;
+      font-weight: 600;
+      cursor: default;
+      box-shadow: 0 1px 4px rgba(13, 110, 253, 0.35);
+    }
+  }
+
+  .btn-nav {
+    font-size: 15px;
+    font-weight: bold;
+    min-width: 28px;
+    height: 28px;
+  }
+
+  .factbox-ellipsis {
+    padding: 0 3px;
+    color: #6c757d;
+    font-weight: bold;
+    user-select: none;
+    font-size: 13px;
+    line-height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.ngx-pagination {
+  margin-bottom: 0;
+  padding: 6px 0;
+  font-size: 13px;
+
+  .current {
+    padding: 0.1875rem 0.625rem;
+    background: #3080e8 !important;
+    color: #fefefe;
+    border-radius: 4px;
+    cursor: default;
+  }
+}
+
+/* Fact Box Excel Preview Pop-up Modal */
+.factbox-preview-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(4px);
+  z-index: 10050;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  animation: factboxFadeIn 0.2s ease-in-out;
+}
+
+.factbox-preview-modal {
+  background: #ffffff;
+  border-radius: 8px;
+  width: 95vw;
+  max-width: 1200px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+  animation: factboxSlideDown 0.2s ease-in-out;
+}
+
+.factbox-sheet-bar {
+  background-color: #f8fafc !important;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.factbox-sheet-tab {
+  background-color: #f1f5f9 !important;
+  color: #334155 !important;
+  border: 1px solid #cbd5e1 !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  border-radius: 4px;
+  padding: 0.25rem 0.75rem !important;
+  transition: all 0.15s ease-in-out;
+
+  &:hover {
+    background-color: #e2e8f0 !important;
+    color: #0f172a !important;
+    border-color: #94a3b8 !important;
+  }
+
+  &.active {
+    background-color: #3080e8 !important;
+    color: #ffffff !important;
+    border-color: #3080e8 !important;
+    font-weight: 600 !important;
+    box-shadow: 0 2px 4px rgba(48, 128, 232, 0.3);
+  }
+}
+
+.factbox-preview-body {
+  overflow-y: auto;
+  overflow-x: auto;
+  max-height: calc(90vh - 120px);
+  background-color: #ffffff;
+  scrollbar-width: thin;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+  }
+}
+
+.factbox-preview-table {
+  font-size: 12px;
+  white-space: nowrap;
+  margin-bottom: 0;
+  border-collapse: collapse;
+
+  th.sticky-th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background-color: #ebf3fc !important;
+    color: #1e293b !important;
+    font-weight: 600;
+    font-size: 12px;
+    border-bottom: 2px solid #cbd5e1;
+    padding: 0.5rem 0.75rem;
+  }
+
+  td {
+    padding: 0.45rem 0.75rem;
+    font-size: 12px;
+    color: #334155;
+    vertical-align: middle;
+    border-color: #e2e8f0;
+  }
+
+  tbody tr:nth-of-type(even) {
+    background-color: #f8fafc;
+  }
+
+  tbody tr:hover {
+    background-color: #f0f7ff !important;
+  }
+}
+
+@keyframes factboxFadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes factboxSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-15px) scale(0.99);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}

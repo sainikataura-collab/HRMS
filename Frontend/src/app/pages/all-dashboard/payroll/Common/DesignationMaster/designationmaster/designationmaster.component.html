@@ -1,0 +1,122 @@
+
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+      <div class="card">
+   
+    <!-- header -->
+    <div class="card-header bg-primary">
+      <div class="row w-100">
+        <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-between">
+          <h4>{{Isedit? 'Edit Designation':'Designation Master'}}</h4>
+
+        </div>
+        <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+          <button class="btn btnheader" routerLink="/dash/user/userdashboard/DesignationForm_list">
+            Back
+          </button>
+        </div>
+      </div>
+
+
+    </div>
+
+    <!-- Designation Form -->
+
+    <div class="card-body mt-4">
+      <form [formGroup]="designationForm" (ngSubmit)="submitForm()">
+        <div  class="row row-cols-1 row-cols-md-3 g-4">
+                       
+
+          <div class="col">
+            <label for="designation">Designation:<span style="color: red;">*</span></label>
+            
+            <input 
+                id="designation" 
+                type="text" 
+                class="form-control" 
+                formControlName="designation" 
+                
+                (blur)="checkDesignationAvailability(designationForm.get('designation')?.value)">
+        
+            <span *ngIf="showError && designationForm.controls['designation'].invalid && !designationForm.get('designation')?.errors?.['duplicate']" 
+                  class="text-danger mt-1" style="font-size: 12px;">
+              Please enter designation.
+            </span>
+
+            <!-- Show validation error message from API only if it exists -->
+            <div *ngIf="designationForm.get('designation')?.errors?.['duplicate']" 
+                class="text-danger" style="font-size:10px;">
+                {{ designationForm.get('designation')?.errors?.['duplicate'] }}
+            </div>
+        </div>
+
+          <div class="col">
+            <label for="level">Level:</label>
+            <ng-select [items]="levelOptions"  id="level" bindLabel="name"  bindValue="value" formControlName="fk_levelid"placeholder="-select level-"></ng-select>
+            <!-- <span *ngIf="showError && designationForm.controls['fk_levelid'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+              Please select level
+          </span> -->
+          </div>
+
+          <div class="col">
+            <label for="seniorityLevel">Seniority Level:</label>
+            <div class="form-group">
+              <input id="seniorityLevel" type="number" class="form-control" formControlName="seniorityLevel">
+              <!-- <span *ngIf="showError && designationForm.controls['seniorityLevel'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                Please enter Senioritylevel
+            </span> -->
+            </div>     
+          </div>
+          <div class="col">
+            <label for="qualification">Qualification:</label>
+            <div class="form-group">
+              <input id="qualification" type="text" class="form-control" formControlName="qualification">
+            </div> 
+             <!-- <span *ngIf="showError && designationForm.controls['qualification'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                Please enter Qualification
+            </span>        -->
+          </div>
+
+          <div class="col">
+            <label for="remark">Remarks:</label>
+            <div class="form-group">
+              <input id="remark" type="text" class="form-control" formControlName="remarks">
+            </div>
+            <!-- <span *ngIf="showError && designationForm.controls['remarks'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                Please enter Remarks
+            </span>       -->
+          </div>
+
+          <div class="col">
+            <label for="isActive">Active:</label>
+            <div class="form-group">
+              <input type="checkbox" formControlName="isActive">
+            </div>      
+          </div>
+
+
+       </div>
+
+      
+        <!-- Footer buttons -->
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary mx-1">{{ Isedit ? 'Update' : 'Save' }}</button>
+          <button type="reset" class="btn btn-outline-dark mx-1">Reset</button>
+        </div>
+      </form>
+      
+    </div>
+
+
+   
+   
+
+
+   
+      
+</div>
+
+
+  
+
+

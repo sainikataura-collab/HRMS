@@ -1,0 +1,122 @@
+<div class="card">
+    <!-- Card Header -->
+    <div class="card-header bg-primary">
+      <h4 class="m-0">Employee Search</h4>
+    </div>
+  
+    <!-- Card Body -->
+    <div class="card-body">
+
+
+      <form [formGroup]="seniorityForm" (ngSubmit)="onSubmit()">
+        <!-- Employee Search Section -->
+
+        <div class="row">
+          <app-common-search ></app-common-search>
+        </div>
+
+        <!-- <div class="row">
+          <div class="col">
+              <label for="code">Code:</label>
+              <input id="code" type="text" class="form-control" formControlName="code">
+            
+          </div>
+          <div class="col">
+              <label for="name">Name:</label>
+              <input id="name" type="text" class="form-control" formControlName="name">
+            
+          </div>
+          <div class="col">
+              <label for="status">Status:</label>
+              <ng-select id="status" [items]="status" bindLabel="name" bindValue="value" formControlName="status" class="w-100"></ng-select>
+         </div>
+        
+
+        
+          <div class="col">
+              <label for="location">Location:</label>
+              <ng-select id="location" [items]="locations" bindLabel="name" bindValue="value" formControlName="location" class="w-100" placeholder=" Please Select Location"></ng-select>
+          </div>
+          
+          <div class="col">
+              <label for="department">Department:</label>
+              <ng-select id="department" [items]="department" bindLabel="name" bindValue="value" formControlName="department" class="w-100"></ng-select>
+           
+          </div>
+     
+         
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-outline-dark mx-1" (click)="searchEmployee()" >Search</button>
+                    <button type="submit" class="btn btn-primary mx-1">Clear</button>
+                </div>
+      </div>           -->
+      
+      
+      </form>
+      
+       <!-- Employee Leave Assignment Section -->
+       <div class="page-seperator bg-primary mt-3 rounded-1">
+        <p class="text-white ms-4 p-1">seniority level details</p>
+      </div>
+      
+
+      <form [formGroup]="seniorityForm" (ngSubmit)="onSubmit()">
+        <!-- Seniority Level -->
+        <div class="row">
+          <div class="col">
+            <label for="employeeCode">Employee Code<span class="text-danger">*</span></label>
+            <ng-select id="employeeCode" [items]="employees" bindLabel="name" bindValue="value" formControlName="employeeCode" class="w-100"></ng-select>
+
+            <!-- <ng-select id="employeeCode" [items]="filteredEmployees" bindLabel="name" bindValue="value" formControlName="employeeCode" class="w-100"></ng-select> -->
+          </div>
+  
+          <div class="col">
+            <label for="seniorEmployeeCode">Senior Employee Code</label>
+            <ng-select id="seniorEmployeeCode" [items]="Senior" bindLabel="name" bindValue="value" formControlName="seniorEmployeeCode" class="w-100" placeholder="select emp"></ng-select>
+          </div>
+       
+          <div class="col">
+            <label for="orderNo">Order No</label>
+            <input id="orderNo" type="text" class="form-control" formControlName="orderNo">
+          </div>
+  
+         
+          <div class="modal-footer">
+            <button class="btn btn-outline-dark bg-light" (click)="addSeniorityLevel()">Add</button>
+        </div>
+        </div>
+  
+        <!-- Table -->
+        <div class="row">
+
+          <div class="table-responsive table-invoice">
+            <table class="table table-bordered" id="table1">
+              <thead>
+                <tr>
+                  <th>Sr.No</th>
+                  <th>Code</th>
+                  <th>Name</th>
+                  <th>Order No</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let level of seniorityLevels; let i = index">
+                  <td>{{ i + 1 }}</td>
+                  <td>{{ level.seniorEmployeeCode }}</td>
+                  <td>{{ level.seniorEmployeeCode }}</td>
+                  <td>{{ level.orderNo }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn btn-primary" (click)="saveSeniorityLevels()">Save</button>
+      </div>
+  
+      </form>
+    </div>
+  </div>
+  

@@ -1,0 +1,207 @@
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+         <!--  -->
+         <!-- <div class="card-header bg-blue py-lg-2 mt-0">
+            <div class="col-sm-12 col-md-12 col-lg-3 col-12">
+          
+                <div class="row w-100">
+                    <div class="col-sm-12 col-md-12 col-lg-12 ">
+                      <h4 class="text-white">Perquisite Assignment</h4>
+                    </div>
+                </div>
+          
+            </div>
+          
+            <div class="col-sm-12 col-md-12 col-lg-7 col-12">
+                <div class="row w-100">
+                    <div class="col-sm-12 col-md-12 col-lg-12">
+                        <app-common-search (filtersChanged)="handleFilters($event)"></app-common-search>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-12 col-md-12 col-lg-7 col-12">
+                <div class="row w-100">
+                    <div class="col-sm-12 col-md-12 col-lg-12 col-xxl-6 d-flex align-items-center justify-content-md-end">
+                        <button class="btn btnheader" routerLink="/dash/payroll/payrolldashboard/assignPerquisiteList"> Back
+                        </button>
+                    </div>
+                </div>
+            </div>
+            </div>
+     -->
+     <div class="card-header bg-blue py-lg-2 mt-0">
+        <div class="row w-100 align-items-center">
+    
+            <!-- Title Section -->
+            <div class="col-12 col-md-3">
+                <h4 class="text-white text-center text-md-start"> {{pk_rentId? 'Update Rent Details':'Employee Rent Details'}}</h4>
+            </div>
+    
+            <!-- Search Section -->
+            <div class="col-12 col-md-7 mt-2 mt-md-0">
+                <app-common-search (filtersChanged)="handleFilters($event)"></app-common-search>
+            </div>
+    
+            <!-- Button Section -->
+            <!-- <div class="col-12 col-md-2 mt-2 mt-md-0 d-flex justify-content-center justify-content-md-end">
+                <button class="btn btnheader" routerLink="/dash/payroll/payrolldashboard/MonthlyRentDetail-list">
+                    Back
+                </button>
+            </div> -->
+    
+        </div>
+    </div>
+    
+    <div class="card-body mt-4">
+     <form [formGroup]="RentDetailForm">
+        <div class="row row-cols-1 row-cols-md-3 g-3">
+            <div class="col">
+                <label for="employeeCode">Employee Code<span style="color: red;">*</span></label>
+                <ng-select  [items]="EmployeeList" bindLabel="name" bindValue="value" formControlName="fk_empid" (change)="onEmpCodeChange($event)" [disabled]="Isedit"  [clearable]="false"></ng-select>
+                <span *ngIf="submitted   && RentDetailForm.get('fk_empid')?.invalid" class="text-danger mt-1" style="font-size: 12px;">
+                  Please choose employee.
+                </span>
+              </div>
+              <div class="col">
+                <label for="employeeName">Employee Name</label>
+                <input id="employeeName" type="text" formControlName="empname" class="form-control"  />
+
+              </div>
+              <div class="col">
+                <label for="designation">Designation</label>
+                <input id="designation" type="text" formControlName="designation" class="form-control" />
+
+              </div>
+              <div class="col">
+                <label for="department">Department:</label>
+                <input id="department" type="text" formControlName="dept" class="form-control" />
+
+              </div>
+          <div class="col">
+                <label>Document Status<span style="color: red;">*</span></label>
+                <div class="form-group">
+                    <ng-select id="year" [items]="DocumentStatus" bindLabel="name" bindValue="value"
+                  formControlName="docsub_status" placeholder="--Select --"
+                  class="w-100"></ng-select>
+                    <span *ngIf="submitted   && RentDetailForm.get('docsub_status')?.invalid" class="text-danger mt-1" style="font-size: 12px;">
+                        Please  select  Document Status .
+                      </span> 
+                </div>
+            </div>
+        </div> 
+           <!---table-->  
+          <div class="row mt-2">
+            <div class="col-md-3 col-12">
+              <label>Fill Rent For All Months</label>
+              <input 
+                type="text" 
+                [(ngModel)]="fillAllValue" 
+                [ngModelOptions]="{ standalone: true }"
+                class="form-control" 
+                (keypress)="validateNumber($event)" 
+              />
+            </div>
+            <div class="col-md-3 d-flex align-items-end col-12 pt-2 pt-lg-0 ">
+              <button 
+                class="btn btn-primary" 
+                type="button" 
+                (click)="fillAllRents()">
+                Fill All
+              </button>
+            </div>
+          </div>
+          
+          <!-- Month-wise Rent Table -->
+          <div class="row mt-4">
+            <div class="col-12 table-responsive">
+              <table class="table table-bordered table-striped table-responsive">
+                <thead>
+                  <tr class="table-primary text-center">
+                    <th>S. No.</th>
+                    <th>Month</th>
+                    <th>Year</th>
+                    <th>Rent</th>
+                  </tr>
+                </thead>
+                <!-- <tbody>
+                    <tr *ngFor="let m of months">
+                      <td class="text-center">{{ m.sno }}</td>
+                      <td class="text-center">{{ m.month }}</td>
+                      <td class="text-center">{{ m.year }}</td>
+                      <td>
+                        <input 
+                          type="number" 
+                          [(ngModel)]="m.rent" 
+                          [ngModelOptions]="{ standalone: true }"
+                          class="form-control text-center"
+                          
+                          
+                        />
+                      </td>
+                    </tr>
+                  </tbody> -->
+
+                  <!-- Add formArrayName to your table rows -->
+        <tbody formArrayName="months">
+          <tr *ngFor="let group of monthsControls; let i = index" [formGroupName]="i">
+
+          <td class="text-center">{{ i + 1 }}</td>
+            <td class="text-center">
+              {{ group.get('fk_monthId')?.value }}
+            </td>
+            <td class="text-center">
+              {{ group.get('fk_yearId')?.value }}
+            </td>
+            
+              <!-- <input 
+                type="number"
+                class="form-control text-center"
+                formControlName="rentamount"
+                style="width: 80px;"
+              /> -->
+              <td style="text-align: center; vertical-align: middle;">
+                <input 
+                  type="number"
+                  class="form-control form-control-sm text-center"
+                  formControlName="rentamount"
+                  style="width: 150px; display: inline-block;"
+                />
+              </td>
+              
+          
+          </tr>
+        </tbody>
+
+                  
+              </table>
+            </div>
+          </div>
+          
+            
+         <!-- Buttons -->
+         <div class="modal-footer">
+
+             <button type="submit" class="btn btn-primary mx-1" (click)="submit()">{{pk_rentId? 'Update':'Save'}}</button>
+             <button type="button" class="btn btn-primary mx-1" (click)="delete()">Delete</button>
+           
+             <button class="btn btn-outline-dark mx-1" (click)="resetForm()">Reset</button>
+           
+
+             
+       
+          </div> 
+
+         
+
+        </form>
+
+
+
+
+      </div>
+     
+</div>
+</div>    
+</div>

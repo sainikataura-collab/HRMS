@@ -1,0 +1,1119 @@
+<div class="container-fluid pt-2">
+  <div class="row g-3 align-items-start">
+    
+    <!-- Left Main Column (Standard Entry) -->
+    <div *ngIf="!isSplitMode" [ngClass]="isFactBoxOpen ? 'col-12 col-xl-9 col-lg-8' : 'col-12'">
+      <div class="card shadow-sm border-0 mb-3">
+        
+        <!-- Main Card Header -->
+        <div class="card-header bg-primary text-white d-flex flex-wrap justify-content-between align-items-center gap-2">
+          <div class="d-flex align-items-center gap-2">
+            <h4 class="mb-0  text-white">Vendor Operational Deduction Entry</h4>
+          </div>
+          <div class="d-flex align-items-center gap-2 flex-wrap">
+            <button type="button" class="btn btn-warning btn-sm fw-semibold shadow-sm text-dark" (click)="openSplitMode()" [disabled]="isCycleLocked" title="Divide a shipment penalty among multiple vendors">
+              <i class="fa fa-share-alt me-1"></i> Split Shipment
+            </button>
+            <button type="button" class="btn btn-success btn-sm fw-semibold shadow-sm text-white" (click)="navigateToDeductionUpload()" title="Go to dedicated Deduction Excel Bulk Upload page">
+              <i class="fa fa-file-excel-o me-1"></i> Excel Bulk Upload
+            </button>
+            <button type="button" class="btn btn-info btn-sm fw-semibold shadow-sm text-white" (click)="openShipmentTracker()" title="Check recovery status for any Shipment ID">
+              <i class="fa fa-search me-1"></i> Track Shipment
+            </button>
+            <button type="button" class="btn btn-sm btnheader fw-semibold py-1 px-2" (click)="toggleFactBox()">
+              <i class="fa" [ngClass]="isFactBoxOpen ? 'fa-angle-double-right' : 'fa-angle-double-left'"></i>
+              {{ isFactBoxOpen ? 'Hide Fact Box' : 'Show Fact Box' }}
+            </button>
+          </div>
+        </div>
+
+        <div class="card-body p-3">
+          
+          <!-- Locked Banner if Cycle is Synced -->
+          <div *ngIf="isCycleLocked" class="alert alert-warning d-flex align-items-center mb-3 py-2" role="alert">
+            <i class="fa fa-lock fs-5 me-2 text-warning"></i>
+            <div>
+              <strong>Cycle Finalized & Locked:</strong> Deductions for this FHRID in this date range have already been synchronized to Payment Transactions. New entries or modifications are blocked.
+            </div>
+          </div>
+
+          <!-- FILTERS FORM -->
+          <form [formGroup]="filterForm">
+            
+            <!-- ROW 1: Client, Model, Location, Vendor (4 equal columns) -->
+            <div class="row g-2 align-items-start">
+              <div class="col-12 col-sm-6 col-md-3 col-lg-3">
+                <label class="form-label mb-1 small fw-semibold">Client <span style="color: red;">*</span></label>
+                <ng-select [items]="clientList" bindLabel="name" bindValue="value"
+                  placeholder="Select Client" formControlName="client">
+                </ng-select>
+                <div *ngIf="(formSubmitted || filterForm.get('client')?.touched) && filterForm.get('client')?.hasError('required')"
+                  class="text-danger small mt-1">
+                  Client is required
+                </div>
+              </div>
+
+              <div class="col-12 col-sm-6 col-md-3 col-lg-3">
+                <label class="form-label mb-1 small fw-semibold">Model <span style="color: red;">*</span></label>
+                <ng-select [items]="modelList" bindLabel="name" bindValue="value"
+                  placeholder="Select Model" formControlName="model">
+                </ng-select>
+                <div *ngIf="(formSubmitted || filterForm.get('model')?.touched) && filterForm.get('model')?.hasError('required')"
+                  class="text-danger small mt-1">
+                  Model is required
+                </div>
+              </div>
+
+              <div class="col-12 col-sm-6 col-md-3 col-lg-3">
+                <label class="form-label mb-1 small fw-semibold">Location / Hub <span style="color: red;">*</span></label>
+                <ng-select [items]="locationList" bindLabel="name" bindValue="value"
+                  [loading]="isLocationsLoading"
+                  placeholder="Select Location / Hub" formControlName="location" (change)="onLocationChange($event)">
+                </ng-select>
+                <div *ngIf="formSubmitted && filterForm.get('location')?.hasError('required')"
+                  class="text-danger small mt-1">
+                  Location is required
+                </div>
+              </div>
+
+              <div class="col-12 col-sm-6 col-md-3 col-lg-3">
+                <label class="form-label mb-1 small fw-semibold">Vendor / FHRID <span style="color: red;">*</span></label>
+                <ng-select [items]="filteredVendors" 
+                  bindLabel="displayName" 
+                  [placeholder]="!filterForm.get('location')?.value ? '📍 Select Location first...' : 'Select Vendor...'" 
+                  formControlName="vendor"
+                  [loading]="isVendorsLoading"
+                  (change)="onVendorChange($event)"
+                  (clear)="onVendorClear()">
+                  <ng-template ng-option-tmp let-item="item">
+                    <div class="d-flex flex-column py-1 small">
+                      <span class="fw-semibold text-primary small text-truncate">{{ item.vendorCode }} - {{ item.vendorName }}</span>
+                      <small class="text-dark small">FHRID: <strong>{{ item.fhrid }}</strong> | Hub: {{ item.locationName || 'N/A' }}</small>
+                    </div>
+                  </ng-template>
+                  <ng-template ng-label-tmp let-item="item">
+                    <span class="small text-truncate"><strong>{{ item.vendorCode }}</strong> - {{ item.vendorName }} ({{ item.fhrid }})</span>
+                  </ng-template>
+                </ng-select>
+                <div *ngIf="formSubmitted && filterForm.get('vendor')?.hasError('required')"
+                  class="text-danger small mt-1">
+                  Vendor is required
+                </div>
+              </div>
+            </div>
+
+            <!-- ROW 2: Dates, Vehicle Type (Amazon DSP & EDSP), Route / Block (Amazon DSP) -->
+            <div class="row g-2 align-items-start mt-1">
+              <div class="col-12 col-sm-6 col-md-3 col-lg-3">
+                <label class="form-label mb-1 small fw-semibold">From Date <span style="color: red;">*</span></label>
+                <input type="date" class="form-control form-control-sm" formControlName="fromDate">
+                <div *ngIf="(formSubmitted || filterForm.get('fromDate')?.touched) && filterForm.get('fromDate')?.hasError('required')"
+                  class="text-danger small mt-1">
+                  From Date is required
+                </div>
+              </div>
+
+              <div class="col-12 col-sm-6 col-md-3 col-lg-3">
+                <label class="form-label mb-1 small fw-semibold">To Date <span style="color: red;">*</span></label>
+                <input type="date" class="form-control form-control-sm" formControlName="toDate">
+                <div *ngIf="(formSubmitted || filterForm.get('toDate')?.touched) && filterForm.get('toDate')?.hasError('required')"
+                  class="text-danger small mt-1">
+                  To Date is required
+                </div>
+              </div>
+
+              <!-- Vehicle Type (Amazon DSP & EDSP) -->
+              <div *ngIf="isVehicleTypeRequired" class="col-12 col-sm-6 col-md-3 col-lg-3">
+                <label class="form-label mb-1 small fw-semibold">Vehicle Type <span style="color: red;">*</span></label>
+                <ng-select [items]="vehicleTypeList" bindLabel="name" bindValue="value"
+                  placeholder="Select Vehicle Type" formControlName="vehicleType">
+                </ng-select>
+                <div *ngIf="(formSubmitted || filterForm.get('vehicleType')?.touched) && filterForm.get('vehicleType')?.hasError('required')"
+                  class="text-danger small mt-1">
+                  Vehicle Type is required
+                </div>
+              </div>
+
+              <!-- Route / Block (Amazon DSP) -->
+              <div *ngIf="isRouteRequired" class="col-12 col-sm-6 col-md-3 col-lg-3">
+                <label class="form-label mb-1 small fw-semibold">Route / Block <span style="color: red;">*</span></label>
+                <ng-select [items]="routeBlockList" bindLabel="name" bindValue="value"
+                  placeholder="Select Route / Block" formControlName="route">
+                </ng-select>
+                <div *ngIf="(formSubmitted || filterForm.get('route')?.touched) && filterForm.get('route')?.hasError('required')"
+                  class="text-danger small mt-1">
+                  Route / Block is required
+                </div>
+              </div>
+            </div>
+
+            <!-- Selected Vendor Confirmation Bar (Using p and semibold class instead of strong) -->
+            <div *ngIf="selectedVendor" class="mt-1 mb-2">
+              <div class="d-flex flex-wrap gap-2 align-items-center p-2 px-3 rounded-3 vendor-pill-bar border-0 small">
+                <p class="badge bg-warning-subtle text-dark semibold rounded-pill px-2 px-sm-3 py-1 mb-0 small text-wrap text-break">
+                  FHRID: <span class="semibold">{{ selectedVendor.fhrid }}</span>
+                </p>
+                <p class="badge bg-warning text-dark semibold rounded-pill px-2 px-sm-3 py-1 mb-0 small text-wrap text-break">
+                  Vendor Code: <span class="semibold">{{ selectedVendor.vendorCode }}</span>
+                </p>
+                <p class="badge bg-success text-white semibold rounded-pill px-2 px-sm-3 py-1 mb-0 small text-wrap text-break">
+                  Vendor Name: <span class="semibold">{{ selectedVendor.vendorName }}</span>
+                </p>
+                <p *ngIf="selectedVendor.locationName" class="badge bg-success-subtle text-dark semibold rounded-pill px-2 px-sm-3 py-1 mb-0 small text-wrap text-break">
+                  Hub: <span class="semibold">{{ selectedVendor.locationName }}</span>
+                </p>
+                <p *ngIf="filterForm.get('vehicleType')?.value" class="badge bg-info-subtle text-dark semibold rounded-pill px-2 px-sm-3 py-1 mb-0 small text-wrap text-break">
+                  Vehicle: <span class="semibold">{{ filterForm.get('vehicleType')?.value }}</span>
+                </p>
+                <p *ngIf="filterForm.get('route')?.value" class="badge bg-primary-subtle text-dark semibold rounded-pill px-2 px-sm-3 py-1 mb-0 small text-wrap text-break">
+                  Route: <span class="semibold">{{ filterForm.get('route')?.value }}</span>
+                </p>
+              </div>
+            </div>
+
+          </form>
+
+          <hr class="my-2 text-dark">
+
+          <!-- DEDUCTION GRID SECTION -->
+          <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2 p-2 bg-light rounded-2 border">
+            <div class="d-flex align-items-center gap-2">
+              <h6 class="mb-0 fs-6 text-primary fw-semibold semibold text-nowrap">
+                <i class="fa fa-list-alt me-1"></i>Operational Deductions
+              </h6>
+              <span class="badge bg-success text-white small px-2 py-1 fw-semibold semibold border-0 text-nowrap">
+                Total: {{ totalGridAmount | currency:'INR' }}
+              </span>
+              <span *ngIf="activeEditingEntryId" class="badge bg-warning text-dark semibold border-0" style="font-size: 11px;">
+                <i class="fa fa-pencil me-1"></i>Editing Mode: #{{ activeEditingEntryId }}
+              </span>
+            </div>
+            <div class="d-flex align-items-center gap-2 ms-auto flex-wrap">
+              <!-- Hide Add Row when in edit mode -->
+              <button *ngIf="!activeEditingEntryId" type="button" class="btn btn-outline-primary btn-sm d-flex align-items-center text-nowrap" (click)="addDeductionLine()" [disabled]="isCycleLocked">
+                <i class="fa fa-plus me-1"></i> Add Row
+              </button>
+              <!-- Cancel Edit button when in edit mode -->
+              <button *ngIf="activeEditingEntryId" type="button" class="btn btn-outline-secondary btn-sm text-nowrap" (click)="cancelEdit()">
+                <i class="fa fa-times me-1"></i> Cancel Edit
+              </button>
+              <button *ngIf="!activeEditingEntryId" type="button" class="btn btn-outline-secondary btn-sm text-nowrap" (click)="clearGrid()" [disabled]="isCycleLocked" title="Clear Grid">
+                <i class="fa fa-refresh me-1"></i> Clear Grid
+              </button>
+              <button type="button" class="btn btn-primary btn-sm px-3 fw-semibold text-nowrap shadow-sm" (click)="saveAllEntries()" [disabled]="isCycleLocked || isSaving">
+                <i class="fa fa-spinner fa-spin me-1" *ngIf="isSaving"></i>
+                <i class="fa fa-check me-1" *ngIf="!isSaving"></i> {{ activeEditingEntryId ? 'Update Deduction' : 'Save All Entries' }}
+              </button>
+            </div>
+          </div>
+
+          <form [formGroup]="entryForm">
+            <!-- Table container: height auto, naturally sizing without fixed height or stretch -->
+            <div class="table-responsive custom-table-scroll border rounded">
+              <table class="table table-bordered table-striped table-hover mb-0" style="font-size: 0.85rem;">
+                <thead class="table-light sticky-top" style="top: 0; z-index: 5;">
+                  <tr>
+                    <th style="width: 75px;" class="text-center">#</th>
+                    <th style="width: 250px;">Deduction Type <span style="color: red;">*</span></th>
+                    <th style="width: 200px;">Shipment / Waybill ID <small class="text-dark">(Optional)</small></th>
+                    <th style="width: 160px;" class="text-end">Amount (₹) <span style="color: red;">*</span></th>
+                    <th>Remarks</th>
+                    <th style="width: 60px;" class="text-center">Action</th>
+                  </tr>
+                </thead>
+                <tbody formArrayName="items">
+                  <tr *ngFor="let itemRow of items.controls; let idx = index" [formGroupName]="idx">
+                    <td class="text-center text-dark fw-bold align-middle">
+                      {{ idx + 1 }}
+                      <div *ngIf="itemRow.get('deductionEntryId')?.value > 0">
+                        <span class="badge bg-warning-subtle text-dark border-0 py-0" style="font-size: 8.5px;" title="Editing existing entry">
+                          <i class="fa fa-pencil me-1"></i>#{{ itemRow.get('deductionEntryId')?.value }}
+                        </span>
+                      </div>
+                    </td>
+                    
+                    <!-- Deduction Type -->
+                    <td>
+                      <ng-select [items]="availableDeductionTypes" 
+                        bindLabel="label" 
+                        bindValue="label" 
+                        appendTo="body"
+                        placeholder="Select Deduction Type" 
+                        formControlName="deductionType"
+                        [clearable]="false">
+                      </ng-select>
+                    </td>
+
+                    <!-- Optional Shipment ID -->
+                    <td>
+                      <input type="text" class="form-control form-control-sm" 
+                        placeholder="Optional tracking #" 
+                        formControlName="shipmentId">
+                    </td>
+
+                    <!-- Amount -->
+                    <td>
+                      <input type="number" step="0.01" min="0.01" class="form-control form-control-sm text-end fw-bold" 
+                        placeholder="0.00" 
+                        formControlName="amount"
+                        (keydown)="onAmountKeyDown($event)"
+                        (input)="onAmountInput(idx, $event)"
+                        (paste)="onAmountPaste(idx, $event)"
+                        (blur)="onAmountBlur(idx, $event)">
+                    </td>
+
+                    <!-- Remarks -->
+                    <td>
+                      <input type="text" class="form-control form-control-sm" 
+                        placeholder="Incident notes / remarks" 
+                        formControlName="remarks">
+                    </td>
+
+                    <!-- Action -->
+                    <td class="text-center align-middle">
+                      <button type="button" class="btn-delete-row" 
+                        (click)="removeDeductionLine(idx)" 
+                        title="Remove Line"
+                        [disabled]="isCycleLocked">
+                        <i class="fa fa-trash"></i>
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </form>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Side: Fact Box Sidebar -->
+    <div *ngIf="!isSplitMode && isFactBoxOpen" class="col-12 col-xl-3 col-lg-4">
+      <div class="card shadow-sm border-0 mb-3">
+        
+        <!-- Fact Box Header -->
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center py-2" style="min-height: 44px;">
+          <span class="mb-0 small fw-semibold">
+            <i class="fa fa-calculator me-1"></i>Fact Box (Cycle Ledger)
+          </span>
+          <button type="button" class="btn-close btn-close-white" (click)="toggleFactBox()" aria-label="Close" title="Close Fact Box"></button>
+        </div>
+
+        <div class="card-body p-3 d-flex flex-column flex-grow-1">
+          <!-- Vendor Profile -->
+          <div *ngIf="selectedVendor" class="mb-3 p-2 bg-warning-subtle rounded border-0 text-dark small">
+            <p class="semibold text-dark mb-1">{{ selectedVendor.vendorName || 'Vendor' }}</p>
+            <p class="text-dark mb-1">Code: <span class="semibold text-dark">{{ selectedVendor.vendorCode || 'N/A' }}</span></p>
+            <p class="text-dark mb-1">FHRID: <span class="semibold text-dark">{{ selectedVendor.fhrid }}</span></p>
+            <p *ngIf="selectedVendor.locationName" class="text-dark mb-1">Hub: <span class="semibold text-dark">{{ selectedVendor.locationName }}</span></p>
+            <p *ngIf="filterForm.get('vehicleType')?.value" class="text-dark mb-1">
+              Vehicle: <span class="semibold text-dark">{{ filterForm.get('vehicleType')?.value }}</span>
+            </p>
+            <p *ngIf="filterForm.get('route')?.value" class="text-dark mb-0">
+              Route: <span class="semibold text-dark">{{ filterForm.get('route')?.value }}</span>
+            </p>
+          </div>
+
+          <!-- Cumulative Metrics Cards with Background Colors -->
+          <div class="row g-2 mb-3">
+            <div class="col-4">
+              <div class="p-2 border-0 rounded-3 bg-primary-subtle text-center h-100">
+                <small class="text-primary fw-semibold d-block text-uppercase" style="font-size: 9.5px; letter-spacing: 0.5px;">
+                  <i class="fa fa-list-ol me-1"></i>ENTRIES
+                </small>
+                <span class="fs-5 fw-bold text-primary">{{ factBoxSummary.totalEntriesCount }}</span>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="p-2 border-0 rounded-3 bg-danger-subtle text-center h-100">
+                <small class="text-danger fw-semibold d-block text-uppercase" style="font-size: 9.5px; letter-spacing: 0.5px;">
+                  <i class="fa fa-minus-circle me-1"></i>PENALTIES
+                </small>
+                <span class="fs-5 fw-bold text-danger">{{ totalPenaltiesAmount | currency:'INR':'symbol':'1.0-0' }}</span>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="p-2 border-0 rounded-3 bg-success-subtle text-center h-100">
+                <small class="text-success fw-semibold d-block text-uppercase" style="font-size: 9.5px; letter-spacing: 0.5px;">
+                  <i class="fa fa-plus-circle me-1"></i>ARREARS
+                </small>
+                <span class="fs-5 fw-bold text-success">+{{ totalArrearsAmount | currency:'INR':'symbol':'1.0-0' }}</span>
+              </div>
+            </div>
+            <div *ngIf="factBoxSummary.priorCycleDeficit > 0" class="col-12">
+              <div class="p-2 border-0 rounded-3 bg-danger-subtle text-center">
+                <small class="text-danger fw-semibold semibold d-block" style="font-size: 10px; letter-spacing: 0.5px;">
+                  <i class="fa fa-exclamation-triangle me-1"></i>PRIOR UNRECOVERED DEFICIT
+                </small>
+                <span class="fs-6 fw-bold text-danger">-{{ factBoxSummary.priorCycleDeficit | currency:'INR':'symbol':'1.2-2' }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Deduction Type Summary Breakdown (Category-wise Totals) -->
+          <div *ngIf="deductionTypeBreakdown && deductionTypeBreakdown.length > 0" class="mb-3">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <span class="small fw-bold text-dark text-uppercase" style="font-size: 10.5px; letter-spacing: 0.3px;">
+                <i class="fa fa-pie-chart text-primary me-1"></i>Deduction Breakdown
+              </span>
+              <span class="badge bg-light text-dark fw-semibold" style="font-size: 10px;">{{ deductionTypeBreakdown.length }} Types</span>
+            </div>
+            <div class="d-flex flex-column gap-1">
+              <div *ngFor="let cat of deductionTypeBreakdown" 
+                class="d-flex justify-content-between align-items-center p-2 rounded-2 border-0 small"
+                [ngClass]="cat.bgClass">
+                <div class="d-flex align-items-center gap-2 text-dark text-truncate pe-1">
+                  <i [class]="cat.icon" class="text-dark opacity-75"></i>
+                  <span class="fw-semibold text-dark text-truncate">{{ cat.type }}</span>
+                  <span *ngIf="cat.isArrear" class="badge bg-success text-white fw-normal border-0" style="font-size: 9px;">+Credit</span>
+                  <span class="badge bg-white text-dark fw-normal border-0" style="font-size: 10px;">{{ cat.count }}</span>
+                </div>
+                <span class="fw-bold text-nowrap" [class.text-success]="cat.isArrear" [class.text-dark]="!cat.isArrear">
+                  {{ cat.isArrear ? '+' : '' }}{{ cat.total | currency:'INR':'symbol':'1.2-2' }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent Entries in this Cycle -->
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <h6 class="fs-6 fw-semibold semibold text-dark mb-0 d-flex align-items-center">
+              <i class="fa fa-history text-dark me-1"></i>Cycle Log Lines
+            </h6>
+            <span *ngIf="factBoxSummary.recentEntries?.length > 0" class="badge bg-warning text-dark fw-semibold semibold border-0">
+              {{ factBoxSummary.recentEntries.length }}
+            </span>
+          </div>
+
+          <div *ngIf="isLoadingFactBox" class="text-center py-3 text-dark small">
+            <i class="fa fa-spinner fa-spin me-1"></i> Loading ledger...
+          </div>
+
+          <div *ngIf="!isLoadingFactBox && (!factBoxSummary.recentEntries || factBoxSummary.recentEntries.length === 0)" 
+            class="text-dark small text-center py-4 bg-light rounded border-0 flex-grow-1 d-flex flex-column justify-content-center align-items-center">
+            <i class="fa fa-info-circle fs-4 mb-2 text-dark"></i>
+            <div class="fw-semibold semibold text-dark">
+              {{ selectedVendor ? 'No deductions logged yet for this selection.' : 'Select a vendor to view cycle ledger.' }}
+            </div>
+          </div>
+
+          <!-- Scrollable Log Entries with Gap on Right -->
+          <div *ngIf="!isLoadingFactBox && factBoxSummary.recentEntries?.length > 0" class="fact-box-entries flex-grow-1 pe-2" style="max-height: 280px; overflow-y: auto;">
+            <div *ngFor="let item of factBoxSummary.recentEntries" 
+              class="p-2 mb-2 rounded-2 border-0 small entry-card me-1 transition-all"
+              [ngClass]="activeEditingEntryId === getEntryId(item) ? 'bg-primary-subtle border border-primary shadow-sm' : 'bg-light'">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="fw-semibold text-dark d-flex align-items-center text-truncate pe-2">
+                  <i [class]="getDeductionIcon(item.deductionType || item.DeductionType)" class="text-primary me-1 opacity-75"></i>
+                  {{ item.deductionType || item.DeductionType }}
+                  <span *ngIf="activeEditingEntryId === getEntryId(item)" class="badge bg-primary text-white border-0 ms-1 py-0" style="font-size: 8.5px;">
+                    Editing
+                  </span>
+                  <span *ngIf="item.vehicle_Type || item.Vehicle_Type || item.vehicleType" class="badge bg-info-subtle text-dark border-0 ms-1 py-0" style="font-size: 8px;">
+                    {{ item.vehicle_Type || item.Vehicle_Type || item.vehicleType }}
+                  </span>
+                  <span *ngIf="item.route || item.Route" class="badge bg-primary-subtle text-dark border-0 ms-1 py-0" style="font-size: 8px;">
+                    Route {{ item.route || item.Route }}
+                  </span>
+                </span>
+                <span class="badge bg-white text-dark fw-bold border-0 shadow-xs text-nowrap" style="font-size: 0.82rem;">
+                  {{ (item.amount ?? item.Amount) | currency:'INR':'symbol':'1.2-2' }}
+                </span>
+              </div>
+              <div class="d-flex justify-content-between align-items-center text-dark" style="font-size: 11px; opacity: 0.85;">
+                <span class="text-nowrap">
+                  <i class="fa fa-calendar-o me-1 text-dark"></i>
+                  {{ (item.entryDate || item.EntryDate) | date:'dd MMM yyyy HH:mm' }}
+                </span>
+                <span *ngIf="item.shipmentID || item.ShipmentID" class="text-truncate ms-2">
+                  <i class="fa fa-barcode me-1 text-dark"></i>
+                  Ref: <span class="semibold text-dark">{{ item.shipmentID || item.ShipmentID }}</span>
+                </span>
+              </div>
+              <div class="d-flex justify-content-between align-items-center mt-1" style="font-size: 11px;">
+                <span class="text-dark text-truncate pe-1">
+                  <i class="fa fa-user-circle-o text-dark me-1"></i>By: <span class="semibold text-dark">{{ item.createdBy || item.CreatedBy || item.entryBy || item.EntryBy || 'System' }}</span>
+                </span>
+                <div class="d-flex align-items-center gap-1 ms-auto">
+                  <span *ngIf="item.isSynced || item.IsSynced" class="badge bg-success-subtle text-success border-0 py-0" style="font-size: 9.5px;">
+                    <i class="fa fa-check-circle me-1"></i>Synced
+                  </span>
+                  <!-- Edit button: ONLY enabled for logged-in user who created this entry -->
+                  <button *ngIf="canEditEntry(item)" type="button" 
+                    class="btn btn-sm py-0 px-2 semibold" 
+                    [ngClass]="activeEditingEntryId === getEntryId(item) ? 'btn-primary' : 'btn-outline-primary'"
+                    style="font-size: 10px;"
+                    [disabled]="activeEditingEntryId === getEntryId(item)"
+                    (click)="editCycleEntry(item)" 
+                    [title]="activeEditingEntryId === getEntryId(item) ? 'Currently editing this entry' : 'Edit this entry in grid'">
+                    <i class="fa fa-pencil me-1"></i>{{ activeEditingEntryId === getEntryId(item) ? 'Editing...' : 'Edit' }}
+                  </button>
+                  <!-- Delete button with icon: ONLY enabled for logged-in user who created this entry -->
+                  <button *ngIf="canEditEntry(item)" type="button" 
+                    class="btn btn-outline-danger btn-sm py-0 px-2" 
+                    style="font-size: 10px;"
+                    (click)="deleteCycleEntry(item)" 
+                    title="Delete this deduction entry">
+                    <i class="fa fa-trash"></i>
+                  </button>
+                  <span *ngIf="!canEditEntry(item)" 
+                    class="badge bg-light text-dark fw-normal border-0 py-0" 
+                    style="font-size: 9.5px;"
+                    title="Created by another user - Read only">
+                    <i class="fa fa-lock me-1"></i>View Only
+                  </span>
+                </div>
+              </div>
+              <div *ngIf="item.remarks || item.Remarks" class="text-dark fst-italic text-truncate mt-1" style="font-size: 11px; opacity: 0.9;">
+                <i class="fa fa-commenting-o me-1 text-dark"></i>
+                "{{ item.remarks || item.Remarks }}"
+              </div>
+            </div>
+          </div>
+
+          <!-- Download Excel Button -->
+          <button *ngIf="factBoxSummary.recentEntries?.length > 0" 
+            type="button" 
+            class="btn btn-outline-primary btn-sm w-100 mt-2 d-flex align-items-center justify-content-center" 
+            (click)="downloadFactBoxExcel()">
+            <i class="fa fa-file-excel-o me-1 text-success"></i> Export Cycle Excel
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SPLIT SHIPMENT DEDUCTION ENTRY (FULL-WIDTH IN-PAGE VIEW) -->
+    <div *ngIf="isSplitMode" class="col-12">
+      <div class="card shadow-sm border-0 mb-3">
+        
+        <!-- Main Card Header (Matching HRBOOK page standards) -->
+        <div class="card-header bg-primary text-white d-flex flex-wrap justify-content-between align-items-center gap-2 py-2">
+          <div class="d-flex align-items-center gap-2">
+            <h4 class="mb-0 fs-5 text-white">
+              <i class="fa fa-share-alt me-2 text-warning"></i>Split Shipment Operational Deduction Entry
+            </h4>
+          </div>
+          <div class="d-flex align-items-center gap-2 flex-wrap">
+            <button type="button" class="btn btn-sm btnheader fw-semibold py-1 px-3" (click)="closeSplitMode()">
+              <i class="fa fa-arrow-left me-1"></i> Back to Standard Entry
+            </button>
+          </div>
+        </div>
+
+        <div class="card-body p-3">
+          
+          <!-- Context Banner / Active Selection Badges -->
+          <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 p-2 px-3 rounded-2 bg-light border mb-3">
+            <div class="d-flex flex-wrap align-items-center gap-2">
+              <span class="badge bg-primary text-white py-1 px-2 shadow-xs fw-semibold">
+                Client: <strong class="text-white">{{ getClientName() }}</strong>
+              </span>
+              <span class="badge bg-info-subtle text-info-emphasis border border-info py-1 px-2 fw-semibold">
+                Model: <strong class="text-dark">{{ cleanDropdownName(getModelName()) }}</strong>
+              </span>
+              <span class="badge bg-light text-dark border py-1 px-2 fw-semibold">
+                Cycle: <strong class="text-primary">{{ filterForm.get('fromDate')?.value | date:'dd-MMM-yyyy' }} to {{ filterForm.get('toDate')?.value | date:'dd-MMM-yyyy' }}</strong>
+              </span>
+              <span *ngIf="filterForm.get('vehicleType')?.value" class="badge bg-light text-dark border py-1 px-2 fw-semibold">
+                Vehicle: <strong class="text-dark">{{ cleanDropdownName(filterForm.get('vehicleType')?.value) }}</strong>
+              </span>
+              <span *ngIf="filterForm.get('route')?.value" class="badge bg-light text-dark border py-1 px-2 fw-semibold">
+                Route: <strong class="text-dark">{{ cleanDropdownName(filterForm.get('route')?.value) }}</strong>
+              </span>
+            </div>
+            <div>
+              <span class="text-dark small fw-semibold">
+                <i class="fa fa-info-circle text-primary me-1"></i>Distributes shared transit penalty across participating vendors
+              </span>
+            </div>
+          </div>
+
+          <form [formGroup]="splitShipmentForm">
+
+            <!-- SECTION 1: INCIDENT & SHIPMENT DETAILS -->
+            <div class="form-section-banner">
+              <span class="form-section-title">
+                <i class="fa fa-file-text-o"></i> 1. Incident & Shipment Parameters
+              </span>
+            </div>
+
+            <div class="row g-3 align-items-start mb-2">
+              
+              <!-- Shipment / Waybill ID -->
+              <div class="col-12 col-sm-6 col-md-3">
+                <label class="form-label mb-1 small fw-semibold">Shipment / Waybill ID <span style="color: red;">*</span></label>
+                <input type="text" class="form-control form-control-sm fw-bold text-uppercase" placeholder="e.g. S1234 or WB98765" formControlName="shipmentId">
+                <div class="error-space">
+                  <span *ngIf="(splitShipmentForm.get('shipmentId')?.touched || splitFormSubmitted) && splitShipmentForm.get('shipmentId')?.invalid" class="text-danger small">
+                    Shipment ID is required
+                  </span>
+                </div>
+              </div>
+
+              <!-- Deduction Type -->
+              <div class="col-12 col-sm-6 col-md-3">
+                <label class="form-label mb-1 small fw-semibold">Deduction Type <span style="color: red;">*</span></label>
+                <select class="form-select form-select-sm" formControlName="deductionType">
+                  <option *ngFor="let t of availableDeductionTypes" [value]="t.label">{{ t.label }}</option>
+                </select>
+                <div class="error-space"></div>
+              </div>
+
+              <!-- Total Shipment Penalty Amount -->
+              <div class="col-12 col-sm-6 col-md-3">
+                <label class="form-label mb-1 small fw-semibold">Total Shipment Amount (₹) <span style="color: red;">*</span></label>
+                <input type="number" step="0.01" min="1" class="form-control form-control-sm fw-bold text-primary" placeholder="0.00" formControlName="totalAmount">
+                <div class="error-space">
+                  <span *ngIf="(splitShipmentForm.get('totalAmount')?.touched || splitFormSubmitted) && splitShipmentForm.get('totalAmount')?.invalid" class="text-danger small">
+                    Total Amount (minimum ₹1.00) is required
+                  </span>
+                </div>
+              </div>
+
+              <!-- Location / Hub Filter -->
+              <div class="col-12 col-sm-6 col-md-3">
+                <label class="form-label mb-1 small fw-semibold d-flex justify-content-between align-items-center">
+                  <span><i class="fa fa-map-marker text-primary me-1"></i>Location / Hub</span>
+                  <span *ngIf="splitSelectedLocation" class="badge bg-primary text-white py-0 px-1" style="font-size: 10px;">Filtered</span>
+                </label>
+                <ng-select [items]="splitLocationList"
+                  bindLabel="name"
+                  bindValue="value"
+                  appendTo="body"
+                  placeholder="All Locations / Hubs"
+                  [(ngModel)]="splitSelectedLocation"
+                  [ngModelOptions]="{standalone: true}"
+                  [clearable]="false"
+                  (change)="onSplitLocationChange($event)">
+                  <ng-template ng-option-tmp let-item="item">
+                    <div class="d-flex align-items-center justify-content-between py-1">
+                      <span class="small" [ngClass]="item.value ? 'fw-semibold text-dark' : 'text-dark fst-italic'">{{ item.name }}</span>
+                      <i *ngIf="item.value" class="fa fa-building-o text-dark small ms-2"></i>
+                    </div>
+                  </ng-template>
+                </ng-select>
+                <div class="error-space">
+                  <small class="text-dark" style="font-size: 11px;">Filters vendor list below by hub</small>
+                </div>
+              </div>
+            </div>
+
+            <!-- Row 2: Split Mode and Remarks -->
+            <div class="row g-3 align-items-start mb-3">
+              <div class="col-12 col-md-4">
+                <label class="form-label mb-1 small fw-semibold">Distribution Mode</label>
+                <div class="btn-group btn-group-sm w-100" role="group">
+                  <input type="radio" class="btn-check" id="splitModeEqual" value="EQUAL" formControlName="splitMode">
+                  <label class="btn btn-outline-primary fw-semibold" for="splitModeEqual">
+                    <i class="fa fa-balance-scale me-1"></i> Equal Split
+                  </label>
+                  <input type="radio" class="btn-check" id="splitModeCustom" value="CUSTOM" formControlName="splitMode">
+                  <label class="btn btn-outline-primary fw-semibold" for="splitModeCustom">
+                    <i class="fa fa-sliders me-1"></i> Custom Amount
+                  </label>
+                </div>
+              </div>
+
+              <div class="col-12 col-md-8">
+                <label class="form-label mb-1 small fw-semibold">Incident Notes / Remarks (Optional)</label>
+                <input type="text" class="form-control form-control-sm" placeholder="e.g. Lost in transit at hub sorting or shared transit loss" formControlName="remarks">
+              </div>
+            </div>
+
+            <!-- SECTION 2: VENDOR SELECTION & HUB FILTERING -->
+            <div class="form-section-banner">
+              <span class="form-section-title">
+                <i class="fa fa-users"></i> 2. Vendor Selection ({{ availableHubVendors.length }} available in {{ getSelectedLocationName() }})
+              </span>
+            </div>
+
+            <div class="card border mb-3 shadow-xs">
+              <div class="card-header bg-white py-2 d-flex flex-wrap justify-content-between align-items-center gap-2">
+                <div class="d-flex align-items-center gap-2">
+                  <span class="small fw-semibold text-dark">
+                    Click vendors below to select, or quick-paste list:
+                  </span>
+                  <span class="badge bg-light text-dark border rounded-pill px-2 py-1 d-inline-flex align-items-center gap-1.5 shadow-2xs">
+                    <span class="badge rounded-pill bg-primary text-white px-2 py-0.5 fw-bold" style="font-size: 11px;">
+                      {{ availableHubVendors.length }}
+                    </span>
+                    <span class="fw-semibold text-dark" style="font-size: 11.5px;">
+                      Vendors Found
+                    </span>
+                  </span>
+                  <span *ngIf="selectedSplitVendors.length > 0" class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1 d-inline-flex align-items-center gap-1 shadow-2xs">
+                    <i class="fa fa-check-circle"></i>
+                    <span class="fw-bold">{{ selectedSplitVendors.length }}</span> Selected
+                  </span>
+                </div>
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                  <button type="button" class="btn btn-sm" [ngClass]="isPasteBoxOpen ? 'btn-warning text-dark shadow-xs fw-semibold' : 'btn-outline-warning text-dark fw-semibold'" (click)="togglePasteBox()">
+                    <i class="fa fa-clipboard me-1"></i> {{ isPasteBoxOpen ? 'Hide Quick-Paste' : '📋 Quick-Paste Codes / FHRIDs' }}
+                  </button>
+                  <button type="button" class="btn btn-sm btn-dark fw-semibold" (click)="selectAllHubVendors()" [disabled]="availableHubVendors.length === 0">
+                    Select All ({{ availableHubVendors.length }})
+                  </button>
+                  <button type="button" class="btn btn-sm btn-outline-danger fw-semibold" (click)="clearAllSplitVendors()" [disabled]="selectedSplitVendors.length === 0">
+                    Clear Selection
+                  </button>
+                </div>
+              </div>
+
+              <!-- Quick Paste Box (Collapsible) -->
+              <div *ngIf="isPasteBoxOpen" class="p-3 quick-paste-card rounded-2 m-2 border shadow-xs">
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2 pb-2 border-bottom border-warning-subtle">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="badge bg-warning text-dark p-2 rounded-2 shadow-xs">
+                      <i class="fa fa-clipboard fs-6"></i>
+                    </span>
+                    <div>
+                      <div class="d-flex align-items-center gap-2">
+                        <h6 class="mb-0 fw-bold text-dark fs-6">Quick-Paste Vendor Codes or FHRIDs</h6>
+                        <span class="badge bg-warning-subtle text-dark border border-warning-subtle fw-semibold px-2 py-0.5" style="font-size: 10px;">⚡ Bulk Match</span>
+                      </div>
+                      <small class="text-dark fw-semibold" style="font-size: 11.5px;">Paste a list from Excel, WhatsApp, or notes to match and select vendors in one click</small>
+                    </div>
+                  </div>
+                  <button type="button" class="btn btn-sm btn-danger text-white rounded-circle p-0 d-flex align-items-center justify-content-center shadow-xs border-0" style="width: 26px; height: 26px;" (click)="togglePasteBox()" title="Close Quick-Paste">
+                    <i class="fa fa-times" style="font-size: 11px;"></i>
+                  </button>
+                </div>
+
+                <div class="mb-2">
+                  <label class="form-label small fw-bold text-dark mb-1">
+                    Paste Vendor Codes or FHRIDs <span class="text-dark fw-normal">(separated by commas, spaces, or line breaks):</span>
+                  </label>
+                  <textarea class="form-control font-monospace" rows="3" 
+                    style="font-size: 0.88rem; background-color: #ffffff; color: #1e293b; border: 1.5px solid #fde68a;"
+                    [(ngModel)]="pastedVendorText" [ngModelOptions]="{standalone: true}" 
+                    placeholder="Paste here, e.g.:&#10;V4034, 207703704&#10;V4035, 205656958&#10;V4032">
+                  </textarea>
+                </div>
+
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 pt-1">
+                  <div class="d-flex align-items-center gap-1 text-dark small" style="font-size: 12px;">
+                    <i class="fa fa-info-circle text-warning fs-6 me-1"></i>
+                    <span>Supports both <strong class="text-dark">Vendor Codes</strong> (e.g., <code class="fw-bold px-2 py-0.5 rounded bg-white text-dark border border-warning-subtle font-monospace shadow-2xs">V4034</code>) and <strong class="text-dark">FHRIDs</strong> (e.g., <code class="fw-bold px-2 py-0.5 rounded bg-white text-dark border border-warning-subtle font-monospace shadow-2xs">207703704</code>).</span>
+                  </div>
+                  <div class="d-flex align-items-center gap-2">
+                    <button type="button" class="btn btn-outline-secondary btn-sm px-3 rounded-2 fw-semibold" (click)="togglePasteBox()">
+                      Cancel
+                    </button>
+                    <button type="button" class="btn btn-warning text-dark btn-sm px-4 fw-bold shadow-xs rounded-2" (click)="applyPastedVendors()">
+                      <i class="fa fa-check me-1"></i> Match & Add Vendors
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card-body p-2">
+                <!-- Search input -->
+                <div class="mb-2">
+                  <input type="text" class="form-control form-control-sm" placeholder="🔍 Search vendor by Code, FHRID, Name, or Hub..." [(ngModel)]="hubVendorSearch" [ngModelOptions]="{standalone: true}" (ngModelChange)="filterHubVendors()">
+                </div>
+
+                <!-- Vendor Chips / Selection Cloud -->
+                <div class="d-flex flex-wrap gap-1 p-2 border rounded bg-white" style="max-height: 140px; overflow-y: auto;">
+                  <button *ngFor="let v of filteredHubVendors" type="button" class="vendor-chip-btn" 
+                    [class.selected]="isVendorSelected(v)" 
+                    [class.locked]="isVendorSynced(v)" 
+                    (click)="toggleVendorSelection(v)"
+                    [title]="isVendorSynced(v) ? 'Cycle Synced & Locked: Vendor already synchronized to Payment Transactions for this date range' : (isVendorSelected(v) ? 'Click to unselect vendor' : 'Click to select vendor')">
+                    <i class="fa" [ngClass]="isVendorSelected(v) ? 'fa-check-circle' : (isVendorSynced(v) ? 'fa-lock text-danger' : 'fa-circle-o text-dark')"></i>
+                    <span class="chip-code">{{ v.vendorCode }}</span>
+                    <span class="text-dark" style="font-size: 10px;">-</span>
+                    <span class="chip-name">{{ getCleanVendorName(v.vendorName, v.fhrid) }}</span>
+                    <span class="chip-fhrid">({{ getCleanFhrid(v.fhrid, v.vendorName) }})</span>
+                    <span *ngIf="v.locationName" class="chip-hub">
+                      {{ v.locationName }}
+                    </span>
+                    <span *ngIf="isVendorSynced(v)" class="chip-lock ms-1">
+                      <i class="fa fa-lock me-1"></i>Synced
+                    </span>
+                  </button>
+                  <div *ngIf="filteredHubVendors.length === 0" class="text-dark small py-2 px-1">
+                    <i class="fa fa-info-circle me-1"></i>No vendors matching {{ hubVendorSearch ? ('"' + hubVendorSearch + '" in ') : '' }}{{ getSelectedLocationName() }}.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- SECTION 3: ALLOCATION TABLE -->
+            <div class="form-section-banner d-flex justify-content-between align-items-center">
+              <span class="form-section-title">
+                <i class="fa fa-table"></i> 3. Allocation Breakdown ({{ selectedSplitVendors.length }} Selected Vendors)
+              </span>
+              <div class="d-flex align-items-center gap-2">
+                <span *ngIf="hasSyncedVendorSelected" class="badge bg-danger text-white py-1 px-2 border-0 shadow-xs">
+                  <i class="fa fa-lock me-1"></i> {{ syncedVendorCount }} vendor(s) already synced (Locked)
+                </span>
+                <span *ngIf="hasInvalidVendorAmount" class="badge bg-danger text-white py-1 px-2 border-0 shadow-xs">
+                  <i class="fa fa-exclamation-circle me-1"></i> {{ invalidVendorCount }} vendor(s) &lt; ₹1.00
+                </span>
+                <span *ngIf="!hasInvalidVendorAmount && !hasSyncedVendorSelected && isSplitBalanced" class="badge bg-success text-white py-1 px-2 border-0 shadow-xs">
+                  <i class="fa fa-check-circle me-1"></i> Balanced: {{ splitTotalAllocated | currency:'INR' }} / {{ (splitShipmentForm.get('totalAmount')?.value || 0) | currency:'INR' }}
+                </span>
+                <span *ngIf="!hasInvalidVendorAmount && !hasSyncedVendorSelected && !isSplitBalanced" class="badge bg-warning text-dark py-1 px-2 border-0 shadow-xs">
+                  <i class="fa fa-balance-scale me-1"></i> Allocated: {{ splitTotalAllocated | currency:'INR' }} | Remaining: {{ splitRemainingAmount | currency:'INR' }}
+                </span>
+              </div>
+            </div>
+
+            <div class="card border shadow-xs mb-3">
+              <div class="card-body p-0">
+                <div class="table-responsive" style="max-height: 320px; overflow-y: auto;">
+                  <table class="table table-bordered table-compact mb-0 text-nowrap align-middle">
+                    <thead class="sticky-top" style="top: 0; z-index: 2;">
+                      <tr>
+                        <th style="width: 38px;" class="text-center">#</th>
+                        <th style="width: 115px;">Vendor Code</th>
+                        <th style="width: 130px;">FHRID</th>
+                        <th>Vendor Name</th>
+                        <th style="width: 120px;">Hub / Location</th>
+                        <th style="width: 160px;" class="text-end">Split Share (₹) <span class="text-danger">*</span></th>
+                        <th style="width: 50px;" class="text-center">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngIf="selectedSplitVendors.length === 0">
+                        <td colspan="7" class="text-center text-dark py-3">
+                          <i class="fa fa-users text-dark fs-5 d-block mb-1"></i>
+                          No vendors selected yet. Click vendors above or use <strong>"Quick-Paste Codes / FHRIDs"</strong> to add.
+                        </td>
+                      </tr>
+                      <tr *ngFor="let item of selectedSplitVendors; let i = index">
+                        <td class="text-center fw-bold text-dark" style="font-size: 11px;">{{ i + 1 }}</td>
+                        <td>
+                          <span class="badge bg-secondary-subtle text-dark border px-2 py-0 font-monospace fw-bold" style="font-size: 11px;">
+                            {{ item.vendor.vendorCode }}
+                          </span>
+                          <span *ngIf="isVendorSynced(item.vendor)" class="badge bg-danger text-white ms-1 py-0 px-1" style="font-size: 9.5px;" title="Vendor locked for this cycle">
+                            <i class="fa fa-lock"></i>
+                          </span>
+                        </td>
+                        <td>
+                          <span class="fw-bold text-dark font-monospace" style="font-size: 11.5px;">
+                            {{ getCleanFhrid(item.vendor.fhrid, item.vendor.vendorName) }}
+                          </span>
+                        </td>
+                        <td>
+                          <span class="fw-bold text-dark" style="font-size: 12px;">
+                            {{ getCleanVendorName(item.vendor.vendorName, item.vendor.fhrid) }}
+                          </span>
+                        </td>
+                        <td>
+                          <span class="hub-pill">
+                            {{ item.vendor.locationName || item.vendor.locationID || '-' }}
+                          </span>
+                        </td>
+                        <td class="text-end">
+                          <div *ngIf="splitShipmentForm.get('splitMode')?.value === 'CUSTOM'" class="d-flex align-items-center justify-content-end gap-1">
+                            <div class="input-group input-group-sm" style="width: 115px;">
+                              <span class="input-group-text py-0 px-2 bg-light text-dark fw-bold" style="font-size: 11px; height: 26px;">₹</span>
+                              <input type="number" step="0.01" min="1" 
+                                class="form-control form-control-sm text-end fw-bold py-0 px-1" 
+                                style="height: 26px; font-size: 11.5px;"
+                                [ngClass]="(!item.amount || item.amount < 1) ? 'border-danger text-danger bg-danger-subtle' : 'text-dark border-secondary-subtle'"
+                                [value]="item.amount" 
+                                (input)="onCustomVendorAmountChange(item, $event)">
+                            </div>
+                            <span *ngIf="!item.amount || item.amount < 1" class="text-danger small" title="Minimum ₹1.00 allocation required">
+                              <i class="fa fa-exclamation-circle"></i>
+                            </span>
+                          </div>
+                          <span *ngIf="splitShipmentForm.get('splitMode')?.value === 'EQUAL'" class="fw-bold text-success" style="font-size: 12px;">
+                            {{ item.amount | currency:'INR' }}
+                          </span>
+                        </td>
+                        <td class="text-center align-middle">
+                          <button type="button" class="btn-delete-row" (click)="removeSplitVendor(i)" title="Remove vendor from split">
+                            <i class="fa fa-trash"></i>
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                    <tfoot *ngIf="selectedSplitVendors.length > 0">
+                      <tr class="fw-bold">
+                        <td colspan="5" class="text-end text-dark" style="font-size: 12px;">
+                          Total Allocation ({{ selectedSplitVendors.length }} Vendors):
+                        </td>
+                        <td class="text-end">
+                          <span class="fw-bold" style="font-size: 12.5px;" [ngClass]="isSplitBalanced ? 'text-success' : 'text-danger'">
+                            {{ splitTotalAllocated | currency:'INR' }}
+                          </span>
+                          <small class="d-block text-dark" style="font-size: 10.5px;" *ngIf="!isSplitBalanced">
+                            Diff: {{ splitRemainingAmount | currency:'INR' }}
+                          </small>
+                        </td>
+                        <td></td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- FOOTER ACTIONS (MATCHING STANDARD HRBOOK PAGE FOOTERS) -->
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 p-2 bg-light rounded border">
+              <div>
+                <small class="text-dark fw-semibold">
+                  <i class="fa fa-info-circle me-1 text-primary"></i>Each vendor will receive an operational deduction entry stamped with Shipment ID <strong class="text-dark">{{ splitShipmentForm.get('shipmentId')?.value || 'N/A' }}</strong> in this cycle.
+                </small>
+              </div>
+              <div class="d-flex align-items-center gap-2">
+                <button type="button" class="btn btn-outline-secondary btn-sm px-3 fw-semibold" (click)="closeSplitMode()" [disabled]="isSavingSplit">
+                  <i class="fa fa-arrow-left me-1"></i> Cancel & Return
+                </button>
+                <button type="button" class="btn btn-primary btn-sm px-4 fw-bold shadow-sm" (click)="saveSplitShipmentDeductions()" [disabled]="!isSplitBalanced || selectedSplitVendors.length < 2 || isSavingSplit">
+                  <i class="fa fa-spinner fa-spin me-1" *ngIf="isSavingSplit"></i>
+                  <i class="fa fa-check me-1" *ngIf="!isSavingSplit"></i>
+                  {{ isSavingSplit ? 'Saving Split Deductions...' : 'Apply & Save Split (' + selectedSplitVendors.length + ' Vendors)' }}
+                </button>
+              </div>
+            </div>
+
+          </form>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── Delete Deduction Confirmation Modal ── -->
+<div class="modal fade show d-block" tabindex="-1" style="background: rgba(0, 0, 0, 0.55); z-index: 1060;" *ngIf="pendingDeleteEntry" (click)="cancelDeleteModal()">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 440px;" (click)="$event.stopPropagation()">
+    <div class="modal-content border-0 shadow">
+      
+      <!-- Modal Header -->
+      <div class="modal-header bg-danger text-white py-2 px-3 align-items-center">
+        <h6 class="modal-title mb-0 d-flex align-items-center fs-6">
+          <i class="fa fa-trash me-2"></i> Delete Deduction Entry
+        </h6>
+        <button type="button" class="btn-close btn-close-white" aria-label="Close" (click)="cancelDeleteModal()" [disabled]="isDeletingEntry"></button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="modal-body p-3">
+        <p class="text-dark small mb-3">
+          Are you sure you want to delete this operational deduction entry? This will permanently remove the deduction from this cycle ledger.
+        </p>
+
+        <!-- Entry Summary Card -->
+        <div class="bg-light p-3 rounded-2 border small">
+          <div class="d-flex justify-content-between align-items-center mb-1 pb-1 border-bottom">
+            <span class="text-dark">Entry ID:</span>
+            <span class="fw-bold text-dark">#{{ getEntryId(pendingDeleteEntry) }}</span>
+          </div>
+          <div class="d-flex justify-content-between align-items-center mb-1 pb-1 border-bottom">
+            <span class="text-dark">Deduction Type:</span>
+            <span class="fw-semibold text-dark">{{ pendingDeleteEntry.deductionType || pendingDeleteEntry.DeductionType }}</span>
+          </div>
+          <div class="d-flex justify-content-between align-items-center mb-1 pb-1 border-bottom">
+            <span class="text-dark">Amount:</span>
+            <span class="fw-bold text-danger fs-6">{{ (pendingDeleteEntry.amount ?? pendingDeleteEntry.Amount) | currency:'INR':'symbol':'1.2-2' }}</span>
+          </div>
+          <div *ngIf="pendingDeleteEntry.shipmentID || pendingDeleteEntry.ShipmentID" class="d-flex justify-content-between align-items-center mb-1 pb-1 border-bottom">
+            <span class="text-dark">Shipment / Ref:</span>
+            <span class="fw-semibold text-dark">{{ pendingDeleteEntry.shipmentID || pendingDeleteEntry.ShipmentID }}</span>
+          </div>
+          <div *ngIf="pendingDeleteEntry.remarks || pendingDeleteEntry.Remarks" class="d-flex justify-content-between align-items-center">
+            <span class="text-dark">Remarks:</span>
+            <span class="text-dark fst-italic text-truncate" style="max-width: 220px;" [title]="pendingDeleteEntry.remarks || pendingDeleteEntry.Remarks">
+              "{{ pendingDeleteEntry.remarks || pendingDeleteEntry.Remarks }}"
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="modal-footer py-2 px-3 bg-light border-top">
+        <button type="button" class="btn btn-outline-secondary btn-sm px-3" (click)="cancelDeleteModal()" [disabled]="isDeletingEntry">
+          Cancel
+        </button>
+        <button type="button" class="btn btn-danger btn-sm px-3" (click)="confirmDeleteEntry()" [disabled]="isDeletingEntry">
+          <i class="fa fa-spinner fa-spin me-1" *ngIf="isDeletingEntry"></i>
+          <i class="fa fa-trash me-1" *ngIf="!isDeletingEntry"></i>
+          {{ isDeletingEntry ? 'Deleting...' : 'Yes, Delete' }}
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+
+
+<!-- ============================================================= -->
+<!-- 3. SHIPMENT RECOVERY TRACKER MODAL                          -->
+<!-- ============================================================= -->
+<div class="modal fade show d-block" tabindex="-1" style="background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(2px); z-index: 1065;"
+  *ngIf="isShipmentTrackerModalOpen" (click)="$event.target === $event.currentTarget && closeShipmentTracker()">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable" (click)="$event.stopPropagation()">
+    <div class="modal-content border-0 shadow-lg rounded-3 overflow-hidden">
+      
+      <!-- Modal Header -->
+      <div class="modal-header bg-primary text-white py-2.5 px-3 align-items-center">
+        <div class="d-flex align-items-center gap-2">
+          <div class="p-2 bg-white bg-opacity-20 rounded-2 d-flex align-items-center justify-content-center" style="width: 34px; height: 34px;">
+            <i class="fa fa-search fs-6 text-white"></i>
+          </div>
+          <div>
+            <div class="d-flex align-items-center gap-2">
+              <h5 class="modal-title mb-0 fs-6 fw-bold text-white">Shipment Deduction Recovery Tracker</h5>
+              <span class="badge bg-light text-primary border-0 fw-semibold px-2" style="font-size: 10px;">Audit & Payout Trace</span>
+            </div>
+            <small class="text-white-50" style="font-size: 11px;">Track recovery status, carry-forwards, and split distribution for any Shipment ID</small>
+          </div>
+        </div>
+        <button type="button" class="btn-close btn-close-white" aria-label="Close" (click)="closeShipmentTracker()"></button>
+      </div>
+
+      <!-- Search Bar -->
+      <div class="p-3 bg-light border-bottom">
+        <div class="input-group shadow-xs">
+          <span class="input-group-text bg-white border-end-0 text-muted ps-3">
+            <i class="fa fa-barcode fs-5 text-primary"></i>
+          </span>
+          <input type="text" class="form-control border-start-0 py-2 ps-1 font-monospace fw-bold" 
+            style="font-size: 0.92rem;"
+            placeholder="Enter Shipment / Waybill ID to search (e.g. S1234, SH1002)..." 
+            [(ngModel)]="searchedShipmentId" 
+            (keyup.enter)="searchShipmentRecovery()">
+          <button *ngIf="searchedShipmentId" type="button" class="btn btn-outline-secondary border-start-0 border-end-0 bg-white" (click)="searchedShipmentId = ''; shipmentRecoveryData = []" title="Clear search">
+            <i class="fa fa-times text-muted"></i>
+          </button>
+          <button type="button" class="btn btn-primary px-4 fw-semibold d-flex align-items-center gap-2" (click)="searchShipmentRecovery()" [disabled]="isLoadingShipmentRecovery">
+            <i class="fa fa-spinner fa-spin" *ngIf="isLoadingShipmentRecovery"></i>
+            <i class="fa fa-search" *ngIf="!isLoadingShipmentRecovery"></i>
+            <span>{{ isLoadingShipmentRecovery ? 'Tracking...' : 'Track Shipment' }}</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="modal-body p-3">
+        
+        <!-- Loading State -->
+        <div *ngIf="isLoadingShipmentRecovery" class="text-center py-5">
+          <i class="fa fa-spinner fa-spin fa-2x text-primary mb-2"></i>
+          <div class="fw-semibold text-dark small">Searching shipment recovery records across all cycles...</div>
+        </div>
+
+        <!-- Initial State (Before searching or no results yet) -->
+        <div *ngIf="shipmentRecoveryData.length === 0 && !isLoadingShipmentRecovery" class="text-center py-4 px-3">
+          <div class="mb-3">
+            <span class="p-3 bg-primary-subtle text-primary rounded-circle d-inline-flex align-items-center justify-content-center shadow-xs" style="width: 56px; height: 56px;">
+              <i class="fa fa-truck fs-4"></i>
+            </span>
+          </div>
+          <h6 class="fw-bold text-dark mb-1">Search Any Shipment / Waybill ID</h6>
+          <p class="text-muted small mb-0" style="max-width: 500px; margin: 0 auto;">
+            Enter a Shipment ID above to view its operational deduction ledger, including vendor split distribution, settled amounts in payout cycles, and carried-forward deficit balances.
+          </p>
+        </div>
+
+        <!-- Summary KPIs (When Data Available) -->
+        <div *ngIf="shipmentRecoveryData.length > 0 && !isLoadingShipmentRecovery" class="row g-2 mb-3">
+          <div class="col-12 col-md-4">
+            <div class="card p-2 border-0 border-start border-3 border-primary bg-primary-subtle rounded-2 shadow-xs h-100">
+              <span class="small fw-semibold text-dark">Total Deduction Booked</span>
+              <span class="fs-5 fw-bold text-primary">{{ totalShipmentSplitAmount | currency:'INR' }}</span>
+              <small class="text-dark">{{ shipmentRecoveryData.length }} vendor share(s)</small>
+            </div>
+          </div>
+          <div class="col-12 col-md-4">
+            <div class="card p-2 border-0 border-start border-3 border-success bg-success-subtle rounded-2 shadow-xs h-100">
+              <span class="small fw-semibold text-dark">Total Recovered in Payouts</span>
+              <span class="fs-5 fw-bold text-success">{{ totalShipmentRecovered | currency:'INR' }}</span>
+              <small class="text-dark">Settled through payout transactions</small>
+            </div>
+          </div>
+          <div class="col-12 col-md-4">
+            <div class="card p-2 border-0 border-start border-3 border-danger bg-danger-subtle rounded-2 shadow-xs h-100">
+              <span class="small fw-semibold text-dark">Pending Deficit Balance</span>
+              <span class="fs-5 fw-bold text-danger">{{ totalShipmentPending | currency:'INR' }}</span>
+              <small class="text-dark">Carried forward to next cycle</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Details Table (When Data Available) -->
+        <div *ngIf="shipmentRecoveryData.length > 0 && !isLoadingShipmentRecovery" class="card border rounded-2 overflow-hidden shadow-xs">
+          <div class="card-header bg-white py-2 d-flex justify-content-between align-items-center">
+            <h6 class="mb-0 fs-6 text-dark fw-bold">
+              <i class="fa fa-users me-1 text-primary"></i>Vendor Share Breakdown for Shipment #{{ searchedShipmentId }}
+            </h6>
+            <span class="badge bg-light text-dark border">
+              {{ shipmentRecoveryData.length }} Record(s)
+            </span>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-bordered table-hover mb-0 text-nowrap align-middle" style="font-size: 0.83rem;">
+                <thead class="table-light">
+                  <tr>
+                    <th>Vendor Code</th>
+                    <th>FHRID</th>
+                    <th>Vendor Name</th>
+                    <th>Hub Name</th>
+                    <th>Cycle Range</th>
+                    <th class="text-end">Split Share (₹)</th>
+                    <th class="text-end">Recovered (₹)</th>
+                    <th class="text-end">Pending Deficit (₹)</th>
+                    <th class="text-center">Status</th>
+                    <th>Remarks</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let row of shipmentRecoveryData">
+                    <td><code>{{ row.vendorCode }}</code></td>
+                    <td class="fw-semibold">{{ row.fhrid }}</td>
+                    <td>{{ row.vendorName }}</td>
+                    <td>{{ row.hubName }}</td>
+                    <td>{{ row.cycle_FromDate | date:'dd-MM-yy' }} to {{ row.cycle_ToDate | date:'dd-MM-yy' }}</td>
+                    <td class="text-end fw-bold">{{ row.splitAmount | currency:'INR' }}</td>
+                    <td class="text-end text-success fw-bold">{{ row.recoveredAmount | currency:'INR' }}</td>
+                    <td class="text-end text-danger fw-bold">{{ row.pendingDeficit | currency:'INR' }}</td>
+                    <td class="text-center">
+                      <span *ngIf="row.recoveryStatus === 'FULLY_RECOVERED'" class="badge bg-success-subtle text-success border border-success-subtle">
+                        🟢 Fully Recovered
+                      </span>
+                      <span *ngIf="row.recoveryStatus === 'PARTIALLY_RECOVERED'" class="badge bg-warning-subtle text-dark border border-warning-subtle">
+                        🟡 Partially Recovered
+                      </span>
+                      <span *ngIf="row.recoveryStatus === 'DEFICIT_CARRIED_FORWARD'" class="badge bg-danger-subtle text-danger border border-danger-subtle">
+                        🔴 Deficit Carried Forward
+                      </span>
+                      <span *ngIf="row.recoveryStatus === 'PENDING_SYNC'" class="badge bg-secondary-subtle text-dark border">
+                        ⏳ Pending Payout Sync
+                      </span>
+                    </td>
+                    <td><small class="text-dark">{{ row.remarks || '-' }}</small></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="modal-footer py-2 px-3 bg-light border-top d-flex justify-content-between align-items-center">
+        <small class="text-muted" *ngIf="shipmentRecoveryData.length > 0">
+          Showing <strong class="text-dark">{{ shipmentRecoveryData.length }}</strong> vendor share record(s)
+        </small>
+        <span *ngIf="shipmentRecoveryData.length === 0">&nbsp;</span>
+        <button type="button" class="btn btn-secondary btn-sm px-4 fw-semibold" (click)="closeShipmentTracker()">
+          Close
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+

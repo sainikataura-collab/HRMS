@@ -1,0 +1,179 @@
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+
+           
+
+            <div class="card-header bg-blue">
+                <div class="row">
+                    <div class="col-sm-12 col-md-12 col-lg-12">
+                        <h4> {{isEditMode? 'Update Rebate Document' : 'Rebate Document'}}</h4>
+
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-6 col-lg-6 d-flex align-items-center justify-content-end ms-auto gap-2">
+                    <button class="btn btnheader py-0"
+                        routerLink="/dash/reimbursement/reimbursementdashboard/RebateDocumentList">
+                        Back
+                    </button>
+                </div>
+            </div>
+
+            <div class="card-body my-4">
+
+                <form [formGroup]="RebateDocForm">
+                    <!-- Section Details -->
+                    <div class="row w-100">
+                        <div class="col-sm-12 col-md-12 col-lg-12">
+                            <label class=""><strong>Section Details</strong></label>
+                        </div>
+                    </div>
+                    <div class="row row-cols-1 row-cols-md-3 ">
+                        <div class="col">
+                            <label>Section<span class="text-danger font-bold">*</span></label>
+                            <ng-select id="section" [items]="sectionList" bindLabel="Name" bindValue="Value"
+                                formControlName="section" placeholder="--Select Section --" class="w-100"
+                                (change)="onSectionChange($event)">
+                            </ng-select>
+                            <span *ngIf="showError && RebateDocForm.controls['section'].invalid"
+                                class="text-danger mt-1" style="font-size: 12px;">
+                                Please select section.
+                            </span>
+                            <p *ngIf="maxLimit !== null">
+                                Max Limit: <span class="text-danger font-bold">{{ maxLimit }}</span>
+                            </p>
+                        </div>
+                        <div class="col" *ngIf="subsectionList.length>0">
+                            <label>Sub Section<span class="text-danger font-bold">*</span></label>
+                            <ng-select [items]="subsectionList" bindLabel="Name" bindValue="Value"
+                                formControlName="Subsection" placeholder="--Select Sub Section--" class="w-100"
+                                (change)="onSubSectionChange($event)">
+                            </ng-select>
+                            <span *ngIf="showError && RebateDocForm.controls['Subsection'].invalid && subsectionList.length > 0"
+                                class="text-danger mt-1" style="font-size: 12px;">
+                                Please enter Sub Section.
+                            </span>
+
+                            <p *ngIf="subMaxLimit !== null">
+                                Max Limit: <span class="text-danger font-bold">{{ subMaxLimit }}</span>
+                            </p>
+                        </div>
+
+                        <div class="col">
+                            <label>Document Amt <span class="text-danger font-bold">*</span></label>
+                            <div class="form-group">
+                                <input type="text" class="form-control" formControlName="documentAmt">
+                                <span *ngIf="showError && RebateDocForm.controls['documentAmt'].invalid"
+                                    class="text-danger mt-1" style="font-size: 12px;">
+                                    Please enter documentAmt.
+                                </span>
+                                <span *ngIf="showError && RebateDocForm.controls['documentAmt'].hasError('pattern')"
+                                    class="text-danger mt-1" style="font-size: 12px;">
+                                    Please enter a valid number (up to 2 decimal places).
+                                </span>
+                                <p>Declared Amount: <span class="text-danger font-bold">{{Dec_Amt}}</span>
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Status Details -->
+                    <div class="row w-100">
+                        <div class="col-sm-12 col-md-12 col-lg-12">
+                            <label class=""><strong>Status Details</strong></label>
+                        </div>
+                    </div>
+                    <div class="row row-cols-1 row-cols-md-2 ">
+
+                        <div class="col">
+                            <label>Document Status<span class="text-danger font-bold">*</span></label>
+                            <ng-select [items]="documentStatusList" bindLabel="label" bindValue="value"
+                                formControlName="documentStatus" placeholder="--Select Document--" class="w-100">
+                            </ng-select>
+                            <span *ngIf="showError && RebateDocForm.controls['documentStatus'].invalid"
+                                class="text-danger mt-1" style="font-size: 12px;">
+                                Please enter Document Status.
+                            </span>
+                        </div>
+
+
+                        <div class="col">
+                            <label>Remarks</label>
+                            <div class="form-group">
+                                <textarea class="form-control" formControlName="remarks"></textarea>
+                            </div>
+                        </div>
+
+                    </div>
+                    <!-- Bill Detail: -->
+                    <div *ngIf="RebateDocForm.get('documentStatus')?.value === 'S'">
+                        <div class="row w-100">
+                            <div class="col-sm-12 col-md-12 col-lg-12">
+                                <label class=""><strong>Bill Details</strong></label>
+                            </div>
+                        </div>
+                        <div class="row row-cols-1 row-cols-md-2">
+                            <div class="col">
+                                <label>Bill No.<span class="text-danger font-bold">*</span></label>
+                                <div class="form-group">
+                                    <input type="text" class="form-control" formControlName="billNo">
+                                    <span *ngIf="showError && RebateDocForm.controls['billNo'].hasError('required')"
+                                        class="text-danger mt-1" style="font-size: 12px;">
+                                        Please enter Bill No.
+                                    </span>
+                                    <span *ngIf="showError && RebateDocForm.controls['billNo'].hasError('maxlength')"
+                                        class="text-danger mt-1" style="font-size: 12px;">
+                                        Bill No. cannot exceed 50 characters.
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <label>Bill Date</label>
+                                <div class="form-group">
+                                    <input type="date" class="form-control" formControlName="billDate">
+                                    <!-- <div *ngIf="submitted   && AppreciationMasterform.get('incidentDate')?.invalid"
+                                    class="text-danger" style="font-size: 12px;" >
+                                    Date of Appreciation is required!
+                                </div> -->
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="row row-cols-1 row-cols-md-2">
+                            <div class="col" *ngIf="!isEditMode">
+                                <label>Upload File</label>
+                                <div class="form-group d-flex align-items-center">
+                                    <input type="file" class="form-control me-2" (change)="onFileChange($event)"  accept=".pdf" />
+                                 <label class="text-danger">{{filemeassage}}</label>
+
+                                </div>
+                              
+                            </div>
+                            <div class="col" *ngIf="isEditMode">
+                                <label>Upload File</label>
+                                <div class="form-group d-flex align-items-center">
+                                    <input type="file" class="form-control me-2" (change)="onFileChange($event)" />
+                                    <!-- <button  (click)="download(ImageUrl)" target="_blank" class="btn btn-primary"> -->
+                                    <label *ngIf="ImageUrl" (click)="download(ImageUrl)" class="cursor"
+                                        style="cursor: pointer;">
+                                        {{ImageUrl}}
+                                    </label>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col d-flex align-items-center justify-content-end">
+
+                        <button type="submit" class="btn btn-primary mx-1" (click)="onSubmit()">{{ isEditMode ? 'Update'
+                            : 'Save' }}</button>
+                        <button type="submit" class="btn btn-outline-dark mx-1" (click)="resetForm()">Reset</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+
+    </div>
+</div>

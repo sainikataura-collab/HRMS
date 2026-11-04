@@ -1,0 +1,69 @@
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <!-- heading -->
+      <div class="card-header bg-primary">
+        <div class="row w-100">
+          <!-- Title Section -->
+          <div class="col-sm-12 col-md-6 col-lg-4 d-flex align-items-center justify-content-start">
+            <h4 class="text-white">News Paper Details</h4>
+          </div>
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-center">
+            <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText"/>
+          </div>
+          <!-- Buttons -->
+          <div class="col-sm-12 col-md-6 col-lg-4 d-flex align-items-center justify-content-end ms-auto gap-2">
+            <button class="btn btn-light" routerLink="/dash/recruitment/recruitmentdashboard/newsPaper-master">
+              Add
+            </button>
+            <button class="btn btn-light" (click)="exportToExcel()">
+              Download
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table Section -->
+      <div class="mt-4">
+        <table id="exportTable" class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Sr.</th>
+              <th>Newspaper Name</th>
+              <th>Contact Person 1</th>
+              <th>Contact No. 1</th>
+              <th>Contact Person 2</th>
+              <th>Contact No. 2</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of filteredData() | paginate : { itemsPerPage: pageSize, currentPage: pageIndex, totalItems: totalItems }; let i = index">
+              <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+              <td>{{ item.newspaperName }}</td>
+              <td>{{ item.contactperson1 }}</td>
+              <td>{{ item.contactno1 }}</td>
+              <td>{{ item.contactperson2 }}</td>
+              <td>{{ item.contactno2 }}</td>
+              <td>
+                <button class="btn" (click)="editNewsPaperDetail(encryptionService.encryptText(item.pk_newspaperId))">
+                  <i class="fa-solid fa-pen-to-square"></i>
+                </button>
+                <button class="btn" (click)="deleteNewsPaperDetail(item.pk_newspaperId)">
+                  <i class="fa fa-trash"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <pagination-controls (pageChange)="onPageChange($event)">
+        </pagination-controls>
+        <ng-template #noData>
+          <tr>
+            <td colspan="7" class="text-center">No data available</td>
+          </tr>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,87 @@
+<div class="row">
+  <div class="col-12">
+    <div class="card w-100">
+
+      <!-- Blue Header with Title, Search Bar & Upload Button -->
+      <div class="card-header bg-primary py-2">
+        <div class="row w-100 align-items-center">
+          <!-- Title -->
+          <div class="col-sm-12 col-md-4 col-lg-4 d-flex align-items-center">
+            <h4 class="text-white mb-0">
+              <i class="fa fa-file-excel me-2"></i>Uploaded Excel Files List
+            </h4>
+          </div>
+
+          <!-- Search Bar in Header -->
+          <div class="col-sm-12 col-md-4 col-lg-4 d-flex align-items-center justify-content-center my-2 my-md-0">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Search by Client, Model or File..."
+              [formControl]="searchControl" />
+          </div>
+
+          <!-- Upload Button -->
+          <div class="col-sm-12 col-md-4 col-lg-4 d-flex align-items-center justify-content-md-end">
+            <button type="button" class="btn bg-white text-primary shadow-sm" [routerLink]="'/dash/vendor_management/vendor_managementdashboard/vendor_excel_upload'" (click)="navigateToUpload()">
+              <i class="fa fa-upload me-2"></i>Upload New Excel
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card Body with Table -->
+      <div class="card-body">
+        <div class="table-responsive table-invoice">
+          <table id="exportTable" class="table">
+            <thead>
+              <tr>
+                <th style="width: 50px;">Sr.</th>
+                <th>Client Name</th>
+                <th>Model Name</th>
+                <th>Original File Name</th>
+                <th>File Size</th>
+                <th>Uploaded Date</th>
+                <th>Uploaded By</th>
+                <th class="text-center" style="width: 130px;">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let doc of filteredDocsList | paginate : { itemsPerPage: pageSize, currentPage: pageIndex, totalItems: totalCount }; let i = index">
+                <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+                <td class="fw-bold">{{ doc.clientName || 'N/A' }}</td>
+                <td>
+                  <span class="badge rounded-pill bg-info-subtle text-info border border-info px-2 py-1">
+                    {{ doc.modelName || 'N/A' }}
+                  </span>
+                </td>
+                <td>
+                  <i class="fa fa-file-excel text-success me-2"></i>
+                  <span>{{ doc.originalFileName || 'File.xlsx' }}</span>
+                </td>
+                <td>{{ formatFileSize(doc.fileSize) }}</td>
+                <td>{{ doc.createdDate | date: 'dd-MM-yyyy hh:mm a' }}</td>
+                <td>{{ doc.fk_userId || 'System' }}</td>
+                <td class="text-center">
+                  <button type="button" class="btn btn-sm btn-outline-primary" (click)="downloadDoc(doc)" title="Download Excel">
+                    <i class="fa fa-download me-1"></i>Download
+                  </button>
+                </td>
+              </tr>
+
+              <tr *ngIf="filteredDocsList.length === 0">
+                <td colspan="8" class="text-center py-4 text-muted">No uploaded Excel files found.</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="d-flex mt-3" *ngIf="totalCount > 0">
+            <pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>

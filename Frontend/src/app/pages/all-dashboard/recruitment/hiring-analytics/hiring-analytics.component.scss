@@ -1,0 +1,177 @@
+.ats-analytics-page {
+  font-family: "Work Sans", sans-serif !important;
+  background-color: #f6f8fa !important;
+  font-size: 11.5px !important;
+
+  .header-strip {
+    border-color: #e2e8f0 !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+
+    .btn-back {
+      width: 24px;
+      height: 24px;
+      background-color: #f1f5f9;
+      font-size: 11px;
+      transition: all 0.15s;
+      &:hover {
+        background-color: #e2e8f0;
+      }
+    }
+  }
+
+  .badge-chip {
+    font-size: 9.5px;
+    font-weight: 600;
+    padding: 1px 6px;
+    border-radius: 3px;
+  }
+
+  // Primary Corporate Action Button
+  .btn-primary-action {
+    font-size: 11px !important;
+    background-color: #3080e8 !important;
+    color: #ffffff !important;
+    border: 1px solid #3080e8 !important;
+    border-radius: 4px !important;
+    box-shadow: 0 2px 6px #acb5f6 !important;
+    transition: background-color 0.15s;
+    &:hover {
+      background-color: #2b2b41 !important;
+      border-color: #2b2b41 !important;
+      color: #ffffff !important;
+    }
+  }
+
+  // 4 Top KPI Cards
+  .kpi-card {
+    border-color: #e2e8f0 !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+    transition: transform 0.15s, box-shadow 0.15s;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+      border-color: #0051d5 !important;
+    }
+
+    .kpi-icon-box {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+    }
+
+    .kpi-label {
+      font-size: 9.5px;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: #64748b;
+      letter-spacing: 0.3px;
+    }
+
+    .kpi-value {
+      font-size: 18px;
+      font-weight: 700;
+      line-height: 1;
+    }
+  }
+
+  // Bento Card Containers
+  .bento-card {
+    border-color: #e2e8f0 !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  }
+
+  .legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  // Interactive Bar Chart
+  .chart-container {
+    .grid-lines-overlay {
+      .grid-line {
+        width: 100%;
+        border-top: 1px dashed #e2e8f0;
+      }
+    }
+
+    .trend-column {
+      .bar-track {
+        position: relative;
+
+        .bar-fill {
+          width: 32px;
+          background-color: #b4c5ff;
+          border-radius: 4px 4px 0 0;
+          transition: all 0.25s ease;
+          cursor: pointer;
+
+          .bar-tooltip {
+            position: absolute;
+            top: -24px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #0f172a;
+            color: #ffffff;
+            font-size: 8.5px;
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 4px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.15s ease;
+          }
+
+          &:hover {
+            background-color: #0051d5 !important;
+            transform: scaleY(1.02);
+
+            .bar-tooltip {
+              opacity: 1;
+            }
+          }
+        }
+      }
+
+      .month-label {
+        font-size: 9.5px;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: #64748b;
+        letter-spacing: 0.3px;
+      }
+    }
+  }
+
+  .custom-scrollbar {
+    &::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    &::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+      &:hover {
+        background: #94a3b8;
+      }
+    }
+  }
+
+  .form-select {
+    background-color: #ffffff !important;
+    color: #1e293b !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 4px !important;
+    font-size: 11px !important;
+  }
+}

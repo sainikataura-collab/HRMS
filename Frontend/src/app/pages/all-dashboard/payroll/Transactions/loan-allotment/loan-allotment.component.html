@@ -1,0 +1,114 @@
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+            <!-- main header  -->
+
+            <div class="card-header bg-primary py-lg-1 mt-0">
+                <div class="col-sm-12 col-md-12 col-lg-3 col-12">
+
+                    <div class="row w-100">
+                        <div class="col-sm-12 col-md-12 col-lg-12 ">
+                            <h4>Loan Allotment</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-12 col-lg-7 col-12">
+                    <div class="row w-100">
+                        <div class="col-sm-12 col-md-12 col-lg-12">
+                            <app-common-search (filtersChanged)="handleFilters($event)" ></app-common-search>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-12 col-lg-2 col-12">
+                    <div class="row w-100">
+                        <div
+                            class="col-sm-12 col-md-12 col-lg-12 d-flex align-items-center justify-content-end ms-auto gap-2">
+                            <button class="btn btnheader" routerLink="/dash/payroll/payrolldashboard/loanAllotment_list">
+                                Back
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="card-body mt-4">
+                <form [formGroup]="loanAllForm" (ngSubmit)="onSubmit()">
+                    <div class="row row-cols-1 row-cols-md-3">
+                        <div class="col">
+                            <label>Employee Code</label>
+                            <ng-select [items]="EmployeeList" id="fk_empid" bindLabel="name" bindValue="value"
+                                formControlName="fk_empid" placeholder="--Select Employee--" class="w-100">
+                            </ng-select>
+                        </div>
+                        <div class="col">
+                            <label>Order Number</label>
+                            <div class="form-group">
+                                <input type="text" class="form-control" formControlName="orderno">
+                            </div>
+                        </div>
+
+                        <div class="col">
+                            <label>Apply Dated <span class="text-danger font-bold">*</span></label>
+                            <div class="form-group">
+                                <input type="date" class="form-control" formControlName="dated">
+                                <span *ngIf="showError && loanAllForm.controls['dated'].invalid"
+                                    class="text-danger mt-1" style="font-size: 12px;">
+                                    Please enter Date.
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="col">
+                            <label>Requisition Amount<span class="text-danger font-bold">*</span></label>
+                            <div class="form-group">
+                                <input type="text" class="form-control" formControlName="requisitionAmt">
+                                <span *ngIf="showError && loanAllForm.controls['requisitionAmt'].invalid"
+                                    class="text-danger mt-1" style="font-size: 12px;">
+                                    Please enter RequisitionAmount.
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="col">
+                            <label>Approve Dated <span class="text-danger font-bold">*</span></label>
+                            <div class="form-group">
+                                <input type="date" class="form-control" formControlName="allotdated">
+                                <span *ngIf="showError && loanAllForm.controls['allotdated'].invalid"
+                                    class="text-danger mt-1" style="font-size: 12px;">
+                                    Please enter Approve Dated.
+                                     </span>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <label>Allot Amount <span class="text-danger font-bold">*</span></label>
+                            <div class="form-group">
+                                <input type="text" class="form-control" formControlName="allotAmt">
+                                <span *ngIf="showError && loanAllForm.controls['allotAmt'].invalid"
+                                    class="text-danger mt-1" style="font-size: 12px;">
+                                    Please enter Allot Amount.
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <label>Remarks</label>
+                            <div class="form-group">
+                                <textarea class="form-control" formControlName="remarks"></textarea>
+                            </div>
+                        </div>
+                        <div class="col"></div>
+                        <div class="col model-footer d-flex align-items-center justify-content-end">
+                            <button type="submit" class="btn btn-primary btn-sm mx-1 px-2">
+                                {{ isEditMode ? 'Update' : 'Save' }}
+                            </button>
+                            <button type="button" class="btn btn-outline-dark btn-sm mx-1 px-2" (click)="resetForm()">
+                                Reset
+                            </button>
+                           
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

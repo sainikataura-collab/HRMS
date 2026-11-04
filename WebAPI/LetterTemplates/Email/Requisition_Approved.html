@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Requisition Approved - Hiring Open</title>
+  <style>
+    body { font-family: 'Work Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f6f8fa; margin: 0; padding: 24px; color: #222; }
+    .card { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 8px; border: 1px solid #e1e4e8; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+    .header { background: #28a745; color: #ffffff; padding: 20px 24px; }
+    .header h2 { margin: 0; font-size: 18px; font-weight: 600; }
+    .header p { margin: 4px 0 0 0; font-size: 12px; opacity: 0.9; }
+    .content { padding: 24px; font-size: 13px; line-height: 1.6; }
+    .badge { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; background: #d4edda; color: #155724; }
+    .table-details { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 12px; }
+    .table-details td { padding: 8px 12px; border-bottom: 1px solid #edf2f7; }
+    .table-details td.label { font-weight: 600; color: #4a5568; width: 35%; background: #f8fafc; }
+    .btn { display: inline-block; background-color: #3080e8; color: #ffffff !important; padding: 10px 22px; text-decoration: none; border-radius: 6px; font-size: 13px; font-weight: 600; margin-top: 16px; text-align: center; }
+    .btn:hover { background-color: #2b2b41; }
+    .footer { background: #f8fafc; padding: 14px 24px; font-size: 11px; color: #718096; border-top: 1px solid #e1e4e8; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="header">
+      <h2>CJ DARCL Logistics — Recruitment Workflow</h2>
+      <p>Requisition Approved — Hiring is Now OPEN</p>
+    </div>
+    <div class="content">
+      <p>Dear <b>Site HR / Requisition Raiser</b>,</p>
+      <p>Great news! Your manpower requisition has been <b>fully approved</b> through all 3 approval levels (L1, L2, and L3 HOD).</p>
+      
+      <div style="margin: 12px 0;">
+        <span class="badge">HIRING OPEN &bull; ACTIVE REQUISITION</span>
+      </div>
+
+      <table class="table-details">
+        <tr>
+          <td class="label">MRF Code</td>
+          <td><b>{{MRF_CODE}}</b></td>
+        </tr>
+        <tr>
+          <td class="label">Job Title / Role</td>
+          <td><b>{{JOB_TITLE}}</b></td>
+        </tr>
+        <tr>
+          <td class="label">Department</td>
+          <td>{{DEPARTMENT}}</td>
+        </tr>
+        <tr>
+          <td class="label">Operating Location</td>
+          <td>{{LOCATION}}</td>
+        </tr>
+        <tr>
+          <td class="label">Open Positions</td>
+          <td>{{OPENINGS}}</td>
+        </tr>
+        <tr>
+          <td class="label">Final Approval By (L3)</td>
+          <td><b>{{APPROVER_NAME}}</b></td>
+        </tr>
+        <tr>
+          <td class="label">Approval Remarks</td>
+          <td><em>{{REMARKS}}</em></td>
+        </tr>
+        <tr>
+          <td class="label">Opening Date</td>
+          <td>{{ACTION_DATE}}</td>
+        </tr>
+      </table>
+
+      <p>Candidate applications and vendor submissions are now unlocked for this requisition in the Candidate Pipeline.</p>
+
+      <div style="text-align: center; margin: 24px 0;">
+        <a href="{{PORTAL_URL}}" class="btn">View Candidate Pipeline</a>
+      </div>
+    </div>
+    <div class="footer">
+      CJ DARCL Logistics Ltd. &bull; Enterprise HRMS Portal &bull; Automated Workflow Notification
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,342 @@
+<section>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+          <!-- Header -->
+          <div class="card-header bg-primary py-lg-1 mt-0">
+            <div class="row w-100 align-items-center">
+              <div class="col-12">
+                <h4 class="text-white mb-0">
+                  {{
+                    isEdit
+                      ? "Edit Qualification Details"
+                      : "Qualification Details"
+                  }}
+                </h4>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card Body -->
+          <div class="card-body">
+            <form [formGroup]="CandidateQualificationForm">
+              <div class="g-4 row row-cols-1 row-cols-md-3">
+                <!-- Qualification -->
+                <div class="col">
+                  <label for="qualification"
+                    >Qualification<span class="text-danger font-bold"
+                      >*</span
+                    ></label
+                  >
+                  <input
+                    id="qualification"
+                    type="text"
+                    class="form-control"
+                    formControlName="qualification"
+                    placeholder="Enter qualification"
+                  />
+                  <span
+                    *ngIf="
+                      showError &&
+                      CandidateQualificationForm.controls['qualification']
+                        .invalid
+                    "
+                    class="text-danger mt-1"
+                    style="font-size: 12px"
+                  >
+                    Please enter Qualification
+                  </span>
+                </div>
+
+                <!-- Subject -->
+                <div class="col">
+                  <label for="subject"
+                    >Subject<span class="text-danger font-bold">*</span></label
+                  >
+                  <input
+                    id="subject"
+                    type="text"
+                    class="form-control"
+                    formControlName="subject"
+                    placeholder="Enter subject"
+                  />
+                  <span
+                    *ngIf="
+                      showError &&
+                      CandidateQualificationForm.controls['subject'].invalid
+                    "
+                    class="text-danger mt-1"
+                    style="font-size: 12px"
+                  >
+                    Please enter Subject
+                  </span>
+                </div>
+
+                <!-- Institute -->
+                <div class="col">
+                  <label for="institute"
+                    >Institute<span class="text-danger font-bold"
+                      >*</span
+                    ></label
+                  >
+                  <input
+                    id="institute"
+                    type="text"
+                    class="form-control"
+                    formControlName="institute"
+                    placeholder="Enter institute name"
+                  />
+                  <span
+                    *ngIf="
+                      showError &&
+                      CandidateQualificationForm.controls['institute'].invalid
+                    "
+                    class="text-danger mt-1"
+                    style="font-size: 12px"
+                  >
+                    Please enter Institute
+                  </span>
+                </div>
+
+                <!-- Passing Year -->
+                <div class="col">
+                  <label for="passyear"
+                    >Passing Year<span class="text-danger font-bold"
+                      >*</span
+                    ></label
+                  >
+                  <input
+                    id="passyear"
+                    type="number"
+                    class="form-control"
+                    formControlName="passyear"
+                    placeholder="Enter passing year"
+                  />
+                  <span
+                    *ngIf="
+                      showError &&
+                      CandidateQualificationForm.controls['passyear'].invalid
+                    "
+                    class="text-danger mt-1"
+                    style="font-size: 12px"
+                  >
+                    Please enter Passing Year
+                  </span>
+                </div>
+
+                <!-- Marks -->
+                <div class="col">
+                  <label for="marks"
+                    >Marks/Percentage<span class="text-danger font-bold"
+                      >*</span
+                    ></label
+                  >
+                  <input
+                    id="marks"
+                    type="number"
+                    step="0.01"
+                    class="form-control"
+                    formControlName="marks"
+                    placeholder="Enter marks/percentage"
+                  />
+                  <span
+                    *ngIf="
+                      showError &&
+                      CandidateQualificationForm.controls['marks'].invalid
+                    "
+                    class="text-danger mt-1"
+                    style="font-size: 12px"
+                  >
+                    Please enter Marks
+                  </span>
+                </div>
+
+                <!-- Division -->
+                <div class="col">
+                  <label for="division"
+                    >Division/Grade<span class="text-danger font-bold"
+                      >*</span
+                    ></label
+                  >
+                  <input
+                    id="division"
+                    type="text"
+                    class="form-control"
+                    formControlName="division"
+                    placeholder="Enter division/grade"
+                  />
+                  <span
+                    *ngIf="
+                      showError &&
+                      CandidateQualificationForm.controls['division'].invalid
+                    "
+                    class="text-danger mt-1"
+                    style="font-size: 12px"
+                  >
+                    Please enter Division
+                  </span>
+                </div>
+
+                <!-- File Upload -->
+                <div class="col">
+                  <label for="file">Upload Certificate</label>
+                  <input
+                    type="file"
+                    class="form-control"
+                    id="file"
+                    (change)="onFileSelect($event)"
+                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                  />
+
+                  <div *ngIf="isEdit && existingFileName" class="mt-2">
+                    <label class="text-muted small">Uploaded File:</label><br />
+                    <a
+                      [href]="getFileUrl(existingFileName)"
+                      target="_blank"
+                      class="text-primary"
+                    >
+                      <i class="fa fa-file"></i> View Certificate
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Form Actions -->
+              <div class="modal-footer px-0">
+                <button
+                  type="button"
+                  class="btn btn-primary mx-1"
+                  (click)="submitForm()"
+                >
+                  <i class="fa fa-save"></i> {{ isEdit ? "Update" : "Save" }}
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-outline-dark mx-1"
+                  (click)="resetForm()"
+                >
+                  <i class="fa fa-refresh"></i> Reset
+                </button>
+              </div>
+
+              <!-- Qualification List Section -->
+
+              <div class="mb-3">
+                <p class="text-primary fs-6 fw-semibold">
+                  <i class="fa fa-graduation-cap"></i>
+                  Qualifications List
+                </p>
+              </div>
+
+              <!-- Table -->
+              <div class="row">
+                <div class="col-12">
+                  <div
+                    class="table-responsive border-top border-2 border-primary"
+                  >
+                    <table class="table table-bordered table-hover">
+                      <thead class="table-light">
+                        <tr>
+                          <th style="width: 50px">Sr.No</th>
+                          <th>Qualification</th>
+                          <th>Subject</th>
+                          <th>Institute</th>
+                          <th>Passing Year</th>
+                          <th>Marks</th>
+                          <th>Division</th>
+                          <th style="width: 100px">Certificate</th>
+                          <th style="width: 120px">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr
+                          *ngFor="
+                            let qual of qualificationList
+                              | paginate
+                                : {
+                                    itemsPerPage: pageSize,
+                                    currentPage: pageIndex,
+                                    totalItems: totalItems
+                                  };
+                            let i = index
+                          "
+                        >
+                          <td class="text-center">
+                            {{ (pageIndex - 1) * pageSize + i + 1 }}
+                          </td>
+                          <td>{{ qual.qualification }}</td>
+                          <td>{{ qual.subject || "-" }}</td>
+                          <td>{{ qual.institute }}</td>
+                          <td>{{ qual.passyear }}</td>
+                          <td>{{ qual.marks }}%</td>
+                          <td>{{ qual.division }}</td>
+                          <td class="text-center">
+                            <a
+                              *ngIf="qual.documentupload"
+                              [href]="getFileUrl(qual.documentupload)"
+                              target="_blank"
+                              class="btn btn-sm btn-info text-white"
+                              title="View Document"
+                            >
+                              <i class="fa fa-file-pdf"></i>
+                            </a>
+                            <span
+                              *ngIf="!qual.documentupload"
+                              class="text-muted small"
+                              >-</span
+                            >
+                          </td>
+                          <td class="text-center">
+                            <button
+                              class="btn btn-sm btn-primary me-1"
+                              (click)="isUpdate(qual.pk_cqualid)"
+                              title="Edit"
+                            >
+                              <i class="fa fa-pen-to-square"></i>
+                            </button>
+                            <button
+                              class="btn btn-sm btn-danger"
+                              (click)="
+                                deleteCandidateQualificationDetails(
+                                  qual.pk_cqualid
+                                )
+                              "
+                              title="Delete"
+                            >
+                              <i class="fa fa-trash"></i>
+                            </button>
+                          </td>
+                        </tr>
+                        <tr *ngIf="qualificationList.length === 0">
+                          <td colspan="9" class="text-center text-muted py-4">
+                            <i class="fa fa-info-circle"></i> No qualification
+                            records found. Please add your educational
+                            qualifications above.
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <!-- Pagination -->
+                  <div
+                    class="d-flex justify-content-center mt-3"
+                    *ngIf="totalItems > pageSize"
+                  >
+                    <pagination-controls
+                      (pageChange)="onPageChange($event)"
+                      previousLabel="Previous"
+                      nextLabel="Next"
+                    >
+                    </pagination-controls>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

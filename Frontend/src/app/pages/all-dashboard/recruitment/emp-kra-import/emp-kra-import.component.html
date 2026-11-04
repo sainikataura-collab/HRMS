@@ -1,0 +1,99 @@
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card mt-lg-1">
+
+      <!-- card header  -->
+      <div class="card-header bg-blue">
+        <h4 class="mb-0 text-white">Import Employee Wise Draft KRA</h4>
+        <div class="text-primary d-flex align-items-center justify-content-end px-3 ms-auto">
+          <button class="btn btnheader me-1" routerLink="/dash/recruitment/recruitmentdashboard/Empwise-KRA-List">
+            Back
+          </button>
+          <button class="btn btnheader ms-1" (click)="exportTemplate()">
+            <i class="fa fa-download me-2"></i> Export Blank Excel
+          </button>
+        </div>
+      </div>
+
+
+
+      <!---Import Data by Excel -->
+
+      <div [formGroup]="ImportEmpKraForm">
+        <div class="row p-4">
+          <div class="col-sm-12 col-md-4 col-lg-4">
+            <label class="form-label">Select File</label>
+            <input type="file" class="form-control" accept=".xlsx" (change)="onFileChange($event)" />
+
+            <div *ngIf="
+                ImportEmpKraForm.get('file')?.hasError('required') &&
+                ImportEmpKraForm.get('file')?.touched
+              " class="text-danger" style="font-size: 12px">
+              File is required.
+            </div>
+
+            <!-- Validation message for invalid file type -->
+            <div *ngIf="
+                ImportEmpKraForm.get('file')?.hasError('pattern') &&
+                ImportEmpKraForm.get('file')?.touched
+              " class="text-danger" style="font-size: 12px">
+              Please upload a valid file (only .xlsx files allowed).
+            </div>
+          </div>
+
+          <div class="col-sm-12 col-md-8 col-lg-8 my-3 my-md-0 my-lg-0 d-flex align-items-end justify-content-end">
+            <button type="button" class="btn btn-primary me-2" (click)="onSubmit()">
+              Import
+            </button>
+
+            <button type="reset" (click)="onReset()" class="btn btn-outline-dark me-2">
+              Reset
+            </button>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="p-4" *ngIf="allRecords.length">
+  <hr>
+  <h6>All Records</h6>
+  <div class="card-body">
+    <div class="table-responsive table-invoice">
+      <table id="exportTable" class="table table-responsive rounded-2">
+        <thead class="table-light">
+          <tr>
+            <th>SrNo</th>
+            <th>Empcode</th>
+
+            <th>KRA</th>
+            <th>KPA</th>
+            <th>KPI</th>
+            <th>TargetValue</th>
+            <th>Weightage</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of allRecords" >
+
+            <td>{{ item.sr_num}}</td>
+            <td>{{ item.empcode }}</td>
+            <td>{{ item.KRA }}</td>
+            <td>{{ item.KPA }}</td>
+            <td>{{ item.KPI }}</td>
+            <td>{{ item.TargetValue }}</td>
+            <td>{{ item.Weightage }}</td>
+            <td [ngClass]="{'text-success': item.StatusWord === 'Valid', 'text-danger': item.StatusWord === 'Invalid'}">
+              {{ item.Status }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+
+    </div>
+  </div>
+</div>

@@ -1,0 +1,86 @@
+
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+
+        <div class="card-header bg-blue ">
+            <div class="row w-100 ">
+          <div class="col-sm-12 col-md-6 col-lg-6 ">                    
+            <h4>Employee Details</h4>   
+          </div>
+        </div>
+        </div>
+        <div class="card-body mt-4">
+            <form [formGroup]="EmployeeForm">
+                <div class="row">
+
+                    <app-common-search ></app-common-search>
+                </div>
+                <div class="row row-cols-1 row-cols-md-3">
+        <div class="col">
+            <label>Select Employee</label>
+       
+            <div class="form-group">
+              <ng-select id="year" [items]="selects" bindLabel="name" bindValue="value"
+              formControlName="employee" placeholder="--Select --"
+              class="w-100"></ng-select>
+              <span *ngIf="showError &&EmployeeForm.controls['employee'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                Please enter Select Employee.
+              </span>
+            </div>  
+        </div>
+
+        <div class="col">
+            <label>Location</label>
+            <div class="form-group">
+                <input type="text"class="form-control"formControlName="location">
+            </div>
+        </div>
+        <div class="col">
+            <label>Department</label>
+            <div class="form-group">
+                <input type="text"class="form-control"formControlName="department" >
+            </div>
+        </div>
+ 
+        <div class="col">
+            <label>Grade</label>
+            <div class="form-group">
+                <input type="text"class="form-control"formControlName="grade">
+            </div>
+        </div>
+        <div class="col">
+            <label>City</label>
+            <div class="form-group">
+                <input type="text"class="form-control"formControlName="city" >
+            </div>
+        </div>
+        <div class="col">
+            <label>Joining Date</label>
+            <div class="form-group">
+                <input type="text"class="form-control"formControlName="joingDate" >
+            </div>
+        </div>
+        <div class="col">
+            <label>Leaving Date</label>
+            <div class="form-group">
+                <input type="text"class="form-control"formControlName="leavingDate" >
+            </div>
+        </div>
+      </div>
+      
+          
+           
+           <div class="modal-footer"> 
+            
+            <button type="submit" class="btn btn-outline-dark mx-1"(click)="resetForm()">Reset</button>
+             <button type="submit" class="btn btn-primary mx-1"(click)="OnVeiw()">Preveiw</button>
+
+          </div>
+        </form>
+    </div>
+      
+  </div>
+</div>    
+
+</div>

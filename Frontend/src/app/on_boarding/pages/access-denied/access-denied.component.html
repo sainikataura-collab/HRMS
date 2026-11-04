@@ -1,0 +1,75 @@
+<!-- <div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="card border-danger">
+        <div class="card-header bg-danger text-white">
+          <h4 class="mb-0">
+            <i class="fa fa-exclamation-triangle"></i> Access Denied
+          </h4>
+        </div>
+        <div class="card-body text-center py-5">
+          <i class="fa fa-lock fa-4x text-danger mb-4"></i>
+          <h5 class="text-danger mb-3">Invalid or Expired Link</h5>
+          <p class="text-muted mb-4">
+            The link you're trying to access is either invalid, expired, or has been tampered with.
+          </p>
+          <div class="alert alert-warning">
+            <strong>What to do next:</strong>
+            <ul class="text-start mt-3 mb-0">
+              <li>Check if you used the correct link sent to your email</li>
+              <li>Make sure you copied the entire URL</li>
+              <li>Contact HR department for a new onboarding link</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> -->
+
+
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="card border-danger">
+        <div class="card-header bg-danger text-white">
+          <h4 class="mb-0">
+            <i class="fa fa-exclamation-triangle"></i> Access Denied
+          </h4>
+        </div>
+        <div class="card-body text-center py-5">
+          <i class="fa fa-lock fa-4x text-danger mb-4"></i>
+          
+          <!-- ✅ Dynamic message based on reason -->
+          <ng-container [ngSwitch]="reason">
+            <!-- Form Hidden -->
+            <ng-container *ngSwitchCase="'form-hidden'">
+              <h5 class="text-danger mb-3">Form Not Available</h5>
+              <p class="text-muted mb-4">
+                This form is not part of your onboarding process.
+              </p>
+               <p class="fw-bold">Please use the original link shared with you via email to access your available forms.</p>
+            </ng-container>
+
+            <!-- Invalid Key (Default) -->
+            <ng-container *ngSwitchDefault>
+              <h5 class="text-danger mb-3">Invalid or Expired Link</h5>
+              <p class="text-muted mb-4">
+                The link you're trying to access is either invalid, expired, or has been tampered with.
+              </p>
+              <div class="alert alert-warning">
+                <strong>What to do next:</strong>
+                <ul class="text-start mt-3 mb-0">
+                  <li>Check if you used the correct link sent to your email</li>
+                  <li>Make sure you copied the entire URL</li>
+                  <li>Contact HR department for a new onboarding link</li>
+                </ul>
+              </div>
+            </ng-container>
+          </ng-container>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

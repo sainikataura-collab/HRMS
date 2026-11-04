@@ -1,0 +1,59 @@
+<div class="row">
+    <div class="col-12">
+        <div class="card w-100">
+           
+      <div class="card-header py-1 bg-primary">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-between">
+            <h4>My Clearance Status</h4>
+          </div>
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-center">
+            <input type="text" class="form-control" placeholder="Search Department..." [(ngModel)]="searchText" />
+          </div>
+
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-md-end">
+             <button class="btn btnheader mx-1" (click)="exportToExcel()" >Download</button>
+          </div>
+        </div>
+      </div>
+            <div class="card-body">
+                  <div class="table-responsive table-invoice">
+                    <table id="exportTable" class="table">
+                        <thead>
+                          <tr>
+                            <th>Sr.</th>
+                            <th>Department</th>
+                            <th>Clearance Status</th>
+                            <th>Cleared By</th>
+                            <th>Cleared Date</th>
+                            <th>Remarks</th>
+                          </tr>
+                        </thead>
+                       <tbody>
+  <tr *ngFor="let item of filteredData() 
+              | paginate: { itemsPerPage: pageSize, currentPage: pageIndex, totalItems: totalCount }; let i = index">
+    <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+    <td>{{ item.department }}</td>
+    <td>
+      <span class="badge" 
+            [ngClass]="{'bg-warning': item.status === 'Pending', 'bg-success': item.status === 'Cleared'}">
+        {{ item.status }}
+      </span>
+    </td>
+    <td>{{ item.clearedBy || 'N/A' }}</td>
+    <td>{{ item.clearedDate ? (item.clearedDate | date:'dd-MMM-yyyy') : 'N/A' }}</td>
+    <td>{{ item.remarks || 'N/A' }}</td>
+  </tr>
+</tbody>
+
+                      </table>
+
+                          <pagination-controls (pageChange)="onPageChange($event)" >
+                    </pagination-controls>
+                  </div>
+                  <p *ngIf="clearanceList.length === 0">No records found.</p>
+
+            </div>
+        </div>
+    </div>
+</div>

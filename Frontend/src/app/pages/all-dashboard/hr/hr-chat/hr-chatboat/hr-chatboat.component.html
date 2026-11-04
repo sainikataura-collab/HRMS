@@ -1,0 +1,434 @@
+<div class="container-fluid p-0 chatbot-wrapper">
+  <div class="row g-0 h-100">
+    <!-- Sidebar -->
+    <div class="col-12 col-md-4 col-lg-3 border-end bg-white d-flex flex-column sidebar-container"
+      [class.d-none]="isMobileView && selectedEmployee">
+       <!-- Tabs -->
+      <div class="tabs-section border-bottom">
+
+        <ul class="nav nav-pills p-2 gap-1 flex-nowrap overflow-auto" id="contactTabs" role="tablist">
+
+          <li class="nav-item flex-shrink-0">
+            <button class="nav-link active rounded small px-2 py-1" data-bs-toggle="pill" data-bs-target="#chat-list">
+              💬 Chats
+            </button>
+          </li>
+
+
+          <li class="nav-item flex-shrink-0">
+            <button class="nav-link rounded small px-2 py-1" data-bs-toggle="pill" data-bs-target="#today-list">
+              🎂 Today Birthday
+            </button>
+          </li>
+          <li class="nav-item flex-shrink-0">
+            <button class="nav-link small rounded px-2 py-1" data-bs-toggle="pill" data-bs-target="#upcoming-list">
+              📅 Upcoming Birthday
+            </button>
+          </li>
+          <li class="nav-item flex-shrink-0">
+            <button class="nav-link small rounded px-2 py-1" data-bs-toggle="pill" data-bs-target="#anniversary-list">
+              💍 Anniversary
+            </button>
+          </li>
+          <li class="nav-item flex-shrink-0">
+            <button class="nav-link small rounded px-2 py-1" data-bs-toggle="pill" data-bs-target="#events-list">
+              🎉 Events
+            </button>
+          </li>
+
+        </ul>
+      </div>
+      <!-- Search -->
+      <div class="p-3 border-bottom search-section">
+        <div class="position-relative">
+          <input type="text" class="form-control form-control-sm rounded-pill ps-5" placeholder="Search employees..."
+            [(ngModel)]="searchQuery" (input)="filterEmployees()">
+          <i class="fa-solid fa-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+          
+        </div>
+      </div>
+
+     
+
+      <!-- Contact List -->
+      <!-- Replace the Contact List section in your HTML -->
+
+      <!-- Contact List -->
+      <div class="tab-content flex-grow-1 overflow-auto contact-list pb-4 pb-lg-5" style="height: 300px;">
+
+        <!-- ✅ ALL CHATS TAB - This should be ACTIVE by default -->
+        <div class="tab-pane fade show active" id="chat-list">
+          <div *ngFor="let emp of filteredSenderList" class="contact-item"
+            [class.active]="selectedEmployee?.pk_empid === emp.pk_empid && selectedEmployee?.EmpRole === emp.EmpRole"
+            (click)="selectEmployee(emp)">
+            <div class="position-relative">
+              <img [src]="emp.img" class="rounded-circle contact-avatar" alt="">
+            </div>
+            <div class="contact-info">
+              <div class="fw-semibold text-dark">{{ emp.name }}</div>
+              <div class="text-muted small text-truncate">
+                {{ emp.dept }}
+                <span class="badge bg-primary-subtle text-primary ms-1">💬 Chat</span>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="filteredSenderList.length === 0" class="text-center py-4 text-muted">
+            <i class="fa-solid fa-comments mb-2 fs-1"></i>
+            <p class="small">No conversations yet</p>
+          </div>
+        </div>
+
+        <!-- Today's Birthdays -->
+        <div class="tab-pane fade" id="today-list">
+          <div *ngFor="let emp of filteredTodayBirthdays" class="contact-item"
+            [class.active]="selectedEmployee?.pk_empid === emp.pk_empid" (click)="selectEmployee(emp)">
+            <div class="position-relative">
+              <img [src]="emp.img" class="rounded-circle contact-avatar" alt="">
+            </div>
+            <div class="contact-info">
+              <div class="fw-semibold text-dark">{{ emp.name }}</div>
+              <div class="text-muted small text-truncate">
+                {{ emp.dept }}
+                <span class="badge bg-danger-subtle text-danger ms-1">🎂 {{ emp.date }}</span>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="filteredTodayBirthdays.length === 0" class="text-center py-4 text-muted">
+            <i class="fa-solid fa-cake-candles mb-2 fs-1"></i>
+            <p class="small">No birthdays today</p>
+          </div>
+        </div>
+
+        <!-- Upcoming Birthdays -->
+        <div class="tab-pane fade" id="upcoming-list">
+          <div *ngFor="let emp of filteredUpcomingBirthdays" class="contact-item"
+            [class.active]="selectedEmployee?.pk_empid === emp.pk_empid" (click)="selectEmployee(emp)">
+            <img [src]="emp.img" class="rounded-circle contact-avatar" alt="">
+            <div class="contact-info">
+              <div class="fw-semibold text-dark">{{ emp.name }}</div>
+              <div class="text-muted small text-truncate">
+                {{ emp.dept }}
+                <span class="badge bg-info-subtle text-info ms-1">📅 {{ emp.date }}</span>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="filteredUpcomingBirthdays.length === 0" class="text-center py-4 text-muted">
+            <i class="fa-solid fa-calendar-days mb-2 fs-1"></i>
+            <p class="small">No upcoming birthdays</p>
+          </div>
+        </div>
+
+        <!-- Anniversaries -->
+        <div class="tab-pane fade" id="anniversary-list">
+          <div *ngFor="let emp of filteredAnniversaries" class="contact-item"
+            [class.active]="selectedEmployee?.pk_empid === emp.pk_empid" (click)="selectEmployee(emp)">
+            <img [src]="emp.img" class="rounded-circle contact-avatar" alt="">
+            <div class="contact-info">
+              <div class="fw-semibold text-dark">{{ emp.name }}</div>
+              <div class="text-muted small text-truncate">
+                {{ emp.dept }}
+                <span class="badge bg-success-subtle text-success ms-1">💍 {{ emp.date }}</span>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="filteredAnniversaries.length === 0" class="text-center py-4 text-muted">
+            <i class="fa-solid fa-award mb-2 fs-1"></i>
+            <p class="small">No anniversaries</p>
+          </div>
+        </div>
+
+        <!-- Events -->
+        <div class="tab-pane fade" id="events-list">
+          <div *ngFor="let event of filteredEvents" class="contact-item"
+            [class.active]="selectedEmployee?.pk_empid === event.pk_empid" (click)="selectEmployee(event)">
+            <img [src]="event.img" class="rounded-circle contact-avatar" alt="">
+            <div class="contact-info">
+              <div class="fw-semibold text-dark">{{ event.name }}</div>
+              <div class="text-muted small text-truncate">
+                {{ event.date }}
+                <span class="badge bg-warning-subtle text-warning ms-1">🎉 Event</span>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="filteredEvents.length === 0" class="text-center py-4 text-muted">
+            <i class="fa-solid fa-calendar-star mb-2 fs-1"></i>
+            <p class="small">No upcoming events</p>
+          </div>
+        </div>
+
+      </div>
+
+
+    </div>
+
+    <!-- Chat Area -->
+    <div class="col-12 col-md-8 col-lg-9 d-flex flex-column chat-area"
+      [class.d-none]="isMobileView && !selectedEmployee">
+      <!-- Chat Header -->
+      <div class="chat-header">
+        <div class="d-flex align-items-center justify-content-between w-100">
+          <div class="d-flex align-items-center">
+            <!-- Back button for mobile -->
+            <button class="btn btn-light btn-sm rounded-circle me-2 d-md-none" (click)="backToContacts()">
+              <i class="fa-solid fa-arrow-left"></i>
+            </button>
+
+            <img [src]="selectedEmployee?.img" class="rounded-circle me-2 chat-header-avatar" alt="">
+
+            <div>
+              <div class="fw-semibold text-dark small"> <span>{{ selectedEmployee?.name }}</span> </div>
+              <small class="text-success" *ngIf="!isTyping" style="font-size: 10px;">
+                <!-- <i class="fa-solid fa-circle me-1" style="font-size: 6px;"></i>Online -->
+
+              </small>
+
+              <small class="text-muted" *ngIf="isTyping" style="font-size: 10px;">
+                <span class="typing-dots">typing</span>
+                <span class="dot-animation">.</span>
+                <span class="dot-animation" style="animation-delay: 0.2s">.</span>
+                <span class="dot-animation" style="animation-delay: 0.4s">.</span>
+              </small>
+            </div>
+          </div>
+
+
+        </div>
+      </div>
+
+
+      <!-- Messages Area -->
+      <div #messagesContainer class="messages-container" [class.quick-actions-open]="showQuickActions"
+        (click)="showHeaderMenu = false">
+        <div *ngFor="let msg of messages; let i = index" class="message-wrapper" [@messageAnimation]>
+
+          <!-- System Message -->
+          <div *ngIf="msg.sender === 'system'" class="system-message">
+            <span class="system-badge">{{ msg.text }}</span>
+          </div>
+
+          <!-- Sent Message (You) -->
+          <div *ngIf="msg.sender === 'you'" class="message-sent">
+            <div class="message-bubble sent-bubble" [class.template-bubble]="msg.type === 'template'">
+
+              <!-- ✅ FIXED: Show image if exists (for templates) -->
+              <div *ngIf="msg.imageUrl && msg.type === 'image'" class="image-message mb-2">
+                <img [src]="msg.imageUrl" class="img-fluid rounded" style="max-width: 300px; border-radius: 12px;"
+                  alt="">
+              </div>
+
+              <!-- File Message -->
+              <div *ngIf="msg.type === 'file'" class="file-message">
+                <i class="fa-solid fa-file-pdf text-danger"></i>
+                <div class="ms-2">
+                  <div class="fw-semibold small">birthday_card.pdf</div>
+                  <small style="opacity: 0.7;">125 KB</small>
+                </div>
+              </div>
+
+              <!-- Voice Message -->
+              <div *ngIf="msg.type === 'voice'" class="voice-message">
+                <button class="btn btn-sm btn-light rounded-circle p-1 me-2">
+                  <i class="fa-solid fa-play small"></i>
+                </button>
+                <div class="voice-wave"></div>
+                <small class="ms-2">0:15</small>
+              </div>
+
+              <!-- ✅ FIXED: Show text (even if image exists) -->
+              <div *ngIf="msg.text && msg.type !== 'file' && msg.type !== 'voice'" [innerHTML]="formatText(msg.text)"
+                [class.mt-2]="msg.imageUrl">
+              </div>
+
+              <!-- <div class="message-time">{{ msg.time }}</div> -->
+
+              <!-- ✅ Time + Read Receipt (Blue Ticks) -->
+              <div class="message-time d-flex align-items-center gap-1">
+                <span>{{ msg.time }}</span>
+                <!-- ✅ Show blue ticks if read, gray if not -->
+                <span *ngIf="msg.chatId" class="read-receipt">
+                  <i class="fa-solid fa-check-double" [class.text-primary]="msg.isRead" [class.text-muted]="!msg.isRead"
+                    style="font-size: 12px;">
+                  </i>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Received Message (Employee) -->
+          <div *ngIf="msg.sender === 'employee'" class="message-received">
+            <div class="message-bubble received-bubble">
+
+              <!-- ✅ Show image if employee sends image -->
+              <div *ngIf="msg.imageUrl && msg.type === 'image'" class="image-message mb-2">
+                <img [src]="msg.imageUrl" class="img-fluid rounded" style="max-width: 300px; border-radius: 12px;"
+                  alt="">
+              </div>
+
+              <!-- ✅ Show text -->
+              <div *ngIf="msg.text" [innerHTML]="formatText(msg.text)"></div>
+
+              <div class="message-time">{{ msg.time }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Typing Indicator
+  <div *ngIf="isTyping" class="message-received" [@typingAnimation]>
+    <div class="message-bubble received-bubble typing-bubble">
+      <div class="typing-indicator">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+  </div> -->
+        <!-- ✅ Typing Indicator with Label -->
+        <div *ngIf="isTyping" class="typing-wrapper" [@typingAnimation]>
+          <!-- <div class="typing-label">typing...</div> -->
+          <div class="message-received">
+            <div class="message-bubble received-bubble typing-bubble">
+              <div class="typing-indicator">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!--newly added -->
+
+      <!-- Quick Actions Panel -->
+      <div *ngIf="showQuickActions" class="quick-actions-panel" [@slideUp]>
+        <div class="quick-actions-grid">
+          <button class="quick-action-btn" (click)="openTemplateModal('birthday')">
+            <i class="fa-solid fa-cake-candles text-primary"></i>
+            <span>Birthday</span>
+          </button>
+          <button class="quick-action-btn" (click)="openTemplateModal('anniversary')">
+            <i class="fa-solid fa-award text-success"></i>
+            <span>Anniversary</span>
+          </button>
+          <button class="quick-action-btn" (click)="openTemplateModal('event')">
+            <i class="fa-solid fa-champagne-glasses text-warning"></i>
+            <span>Event</span>
+          </button>
+          <!-- <button class="quick-action-btn" (click)="attachFile()">
+            <i class="fa-solid fa-paperclip text-info"></i>
+            <span>File</span>
+          </button> -->
+          <!-- <button class="quick-action-btn" (click)="openTemplateModal('gif')">
+  <i class="fa-solid fa-file-image text-danger"></i>
+  <span>GIF</span>
+</button> -->
+          <button class="quick-action-btn" (click)="openTemplateModal('gif')">
+            <img src="assets/Image/Gif/cat.gif" alt="" height="35px" width="45px">
+
+            <span>GIF</span>
+          </button>
+
+
+
+          <!-- <button class="quick-action-btn" (click)="sendVoiceMessage()">
+            <i class="fa-solid fa-microphone text-secondary"></i>
+            <span>Voice</span>
+          </button> -->
+        </div>
+
+        <div class="quick-replies">
+          <button class="quick-reply-chip" (click)="sendQuickReply('Happy Birthday! 🎉')">
+            Happy Birthday! 🎉
+          </button>
+          <button class="quick-reply-chip" (click)="sendQuickReply('Congratulations! 🎊')">
+            Congratulations! 🎊
+          </button>
+          <button class="quick-reply-chip" (click)="sendQuickReply('Best wishes! ✨')">
+            Best wishes! ✨
+          </button>
+        </div>
+      </div>
+
+      <!-- Message Input -->
+      <div class="message-input-container">
+        <div class="d-flex align-items-center gap-2">
+          <button class="btn-icon" (click)="toggleQuickActions()">
+            <i class="fa-solid" [class.fa-plus]="!showQuickActions" [class.fa-times]="showQuickActions"></i>
+          </button>
+
+          <div class="flex-grow-1 position-relative">
+            <input type="text" class="form-control message-input" placeholder="Type a message..."
+              [(ngModel)]="newMessage" (keyup.enter)="sendMessage()" (input)="onMessageInput()"
+              (focus)="closeAllMenus()">
+            <button class="btn-emoji" (click)="toggleEmojiPicker()">
+              <i class="fa-regular fa-face-smile"></i>
+            </button>
+          </div>
+
+          <button class="btn-send" (click)="sendMessage()" [disabled]="!newMessage.trim()">
+            <i class="fa-solid fa-paper-plane"></i>
+          </button>
+        </div>
+
+        <!-- Emoji Picker -->
+        <div *ngIf="showEmojiPicker" class="emoji-picker" [@slideUp]>
+          <div class="emoji-picker-header">
+            <strong>Emojis</strong>
+            <button class="btn-close-emoji" (click)="showEmojiPicker = false">
+              <i class="fa-solid fa-times"></i>
+            </button>
+          </div>
+          <div class="emoji-grid">
+            <span *ngFor="let emoji of emojis" class="emoji-item" (click)="insertEmoji(emoji)">
+              {{ emoji }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Template Modal -->
+
+<!-- Template Modal -->
+<div class="modal fade my-5 pb-5" style="max-height: 97%;" [class.show]="showTemplateModal"
+  [style.display]="showTemplateModal ? 'block' : 'none'" tabindex="-1" (click)="closeTemplateModal()">
+  <div class="modal-dialog modal-dialog-centered modal-lg" (click)="$event.stopPropagation()">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header border-0 pb-0">
+        <h6 class="modal-title fw-bold fs-6">
+          <i class="fa-solid fa-cake-candles text-primary me-2" *ngIf="selectedTemplateType === 'birthday'"></i>
+          <i class="fa-solid fa-award text-success me-2" *ngIf="selectedTemplateType === 'anniversary'"></i>
+          <i class="fa-solid fa-calendar-star text-warning me-2" *ngIf="selectedTemplateType === 'event'"></i>
+          <i class="fa-solid fa-calendar-star text-warning me-2" *ngIf="selectedTemplateType === 'gif'"></i>
+          {{ selectedTemplateType | titlecase }} Templates
+        </h6>
+        <button type="button" class="btn-close btn-close-sm" (click)="closeTemplateModal()"></button>
+      </div>
+      <div class="modal-body pt-2">
+        <div class="row g-2">
+          <div class="col-12 col-md-6" *ngFor="let template of getTemplates()">
+            <div class="template-card" (click)="sendTemplate(template)">
+
+              <h6 class="fw-bold mb-2 small">{{ template.title }}</h6>
+              <img [src]="template.extraImg" alt="Extra image" class="img-fluid rounded mb-2">
+
+              <p class="text-muted small mb-2" style="font-size: 11px;">{{ template.preview }}</p>
+              <div class="template-preview" [innerHTML]="formatText(template.message)"></div>
+
+              <button class="btn btn-primary btn-sm w-100 mt-2">
+                <i class="fa-solid fa-paper-plane me-1"></i>Send
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade" [class.show]="showTemplateModal" *ngIf="showTemplateModal"
+  (click)="closeTemplateModal()"></div>
+
+
+<!--  -->

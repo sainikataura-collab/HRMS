@@ -2643,6 +2643,7 @@ export class CandidatePipelineComponent implements OnInit, OnDestroy {
   hasOfferLetter(candidate: any): boolean {
     return !!(
       candidate?.offerLetterDocPath ||
+      candidate?.offerPdfPath ||
       candidate?.offerLetterCode ||
       candidate?.stage === 'Offer_Issued' ||
       candidate?.stage === 'Hired'

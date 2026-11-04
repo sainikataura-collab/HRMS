@@ -1,0 +1,289 @@
+<div class="step-indicator" *ngIf="isEmp">
+    <!-- Step 1 -->
+    <div class="step" [ngClass]="{'active-step': currentStep === 1, 'completed-step': currentStep > 1}" (click)="goToEmployeeMst()" style="cursor: pointer;">
+        <div class="step-circle">
+            <a (click)="goToEmployeeMst()">1</a>
+        </div>
+        <div class="step-label small"><span class="small">Employee Master</span></div>
+        <div class="step-line" *ngIf="currentStep > 1 || currentStep === 1"></div>
+    </div>
+    <!-- Step 2 -->
+    <div class="step" [ngClass]="{'active-step': currentStep === 2, 'completed-step': currentStep > 2}" (click)="goToAttendance()" style="cursor: pointer;">
+        <div class="step-circle">
+            <a (click)="goToAttendance()">2</a>
+        </div>
+        <div class="step-label small"><span class="small">Shift & Attandance Details</span></div>
+        <div class="step-line" *ngIf="currentStep > 2 || currentStep === 2"></div>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="step" [ngClass]="{'active-step': currentStep === 3,'completed-step': currentStep > 3}" (click)="goToOtherDetails()" style="cursor: pointer;">
+        <div class="step-circle">
+            <a (click)="goToOtherDetails()">3</a>
+        </div>
+        <div class="step-label small"><span class="small">Compliance Details</span></div>
+        <div class="step-line" *ngIf="currentStep > 3 || currentStep === 3"></div>
+    </div>
+    <!-- Step 4 -->
+    <div class="step" [ngClass]="{'active-step': currentStep === 4, 'completed-step': currentStep > 4}" (click)="goTohead()" style="cursor: pointer;">
+        <div class="step-circle">
+            <a (click)="goTohead()">4</a>
+        </div>
+        <div class="step-label small"><span class="small">Salary Details </span></div>
+        <div class="step-line" *ngIf="currentStep > 4 || currentStep === 4"></div>
+    </div>
+    <!-- Step 5 -->
+    <div class="step" [ngClass]="{'active-step': currentStep === 5, 'completed-step': currentStep > 5}" (click)="goToDemographic()" style="cursor: pointer;">
+        <div class="step-circle">
+            <a (click)="goToDemographic()">5</a>
+        </div>
+        <div class="step-label small"><span class="small">Demographic Details</span></div>
+        <div class="step-line" *ngIf="currentStep > 5 || currentStep === 5"></div>
+    </div>
+    <!-- Step 6 -->
+    <div class="step" [ngClass]="{'active-step': currentStep === 6, 'completed-step': currentStep > 6}" (click)="goToQualification()" style="cursor: pointer;">
+        <div class="step-circle">
+            <a (click)="goToQualification()">6</a>
+        </div>
+        <div class="step-label small"><span class="small">Qualification Details</span></div>
+        <div class="step-line" *ngIf="currentStep > 6 || currentStep === 6"></div>
+    </div>
+    <!-- Step 7 -->
+    <div class="step" [ngClass]="{'active-step': currentStep === 7}" (click)="goToExperience()" style="cursor: pointer;">
+        <div class="step-circle">
+            <a (click)="goToExperience()">7</a>
+        </div>
+        <div class="step-label small"><span class="small">Experience Details</span></div>
+    </div>
+</div>
+
+<!-- Tab Content -->
+<div class="tab-content" *ngIf="isEmp">
+</div>
+
+<div class="row mt-2" *ngIf="isEmp">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card mt-lg-3 border-top border-2 border-primary">
+            <div class="row row-cols-1 row-cols-md-4 g-3 pt-1 px-3">
+                <div class="col">
+                    <p class="small" style="font-size: 12px;"><span>Emp Code : </span> <span style="color:red;">{{ empcode }}</span> </p>
+                </div>
+                <div class="col">
+                    <p class="small " style="font-size: 12px;"><span>Emp Name : </span> <span style="color:red;">{{ empname }}</span> </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-2">
+  <div [ngClass]="isFactBoxOpen ? 'col-sm-12 col-md-8 col-lg-9' : 'col-12'">
+    <div class="card mt-2">
+      <!-- main header  -->
+
+<div class="card-header bg-primary py-lg-2 mt-0">
+  <div class="row w-100 align-items-center">
+
+      <!-- Title Section -->
+      <div [ngClass]="isEmp ? 'col-6' : 'col-12 col-md-3'">
+        <h4>{{Isedit? 'Edit Qualification Details':'Qualification Details'}}</h4> 
+      </div>
+
+      <!-- Search Section -->
+      <div class="col-12 col-md-7 mt-2 mt-md-0" *ngIf="!isEmp">
+        <app-common-search (filtersChanged)="handleFilters($event)"></app-common-search>
+      </div>
+
+      <!-- Button Section -->
+      <div [ngClass]="isEmp ? 'col-6 d-flex justify-content-end gap-2' : 'col-12 col-md-2 mt-2 mt-md-0 d-flex justify-content-center justify-content-md-end gap-2'">
+          <button *ngIf="(fk_empid || QualificationForm.get('fk_empid')?.value) && !isFactBoxOpen" class="btn btn-outline-light btn-sm d-flex align-items-center"
+              (click)="toggleFactBox()" title="Open Audit Log">
+              <i class="fa fa-history me-1"></i> Audit Log
+          </button>
+          <button class="btn btn-light" (click)="onBack()">
+              Back
+          </button>
+      </div>
+
+  </div>
+</div>
+
+<!-- main header close -->
+
+      <!-- Card Body -->
+      <div class="card-body">
+            <!-- <div class="bg-primary rounded-1 mt-3 page-seperator"> -->
+              <!-- <p class="p-1 text-white ms-4">{{Isedit? 'Edit Employee Experience details':'Employee Experience details'}}</p> -->
+            <!-- <p class="p-1 text-white ms-4">Employee Qualification details</p>  -->
+            
+            <!-- </div> -->
+        
+        <form [formGroup]="QualificationForm" >
+          <!-- Seniority Level -->
+          <div class="g-4 row row-cols-1 row-cols-md-3" >
+            <div class="col" *ngIf="!isEmp">
+              <label for="employeeCode">Employee Code<span class="text-danger font-bold">*</span></label>
+              <ng-select id="employeeCode" [items]="employees" bindLabel="name" bindValue="value" formControlName="fk_empid" class="w-100" (change)="onEmployeeSelect($event)" [searchable]="true"
+                                (search)="onEmployeeSearch($event)" [loading]="loadingEmployees" loadingText="Searching employees..."></ng-select>
+            
+              <span *ngIf="showError && QualificationForm.controls['fk_empid'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                Please select Employee Code
+              </span>
+              <!-- <ng-select id="employeeCode" [items]="filteredEmployees" bindLabel="name" bindValue="value" formControlName="employeeCode" class="w-100"></ng-select> -->
+            </div>
+
+            <div class="col">
+              <label for="orderNo">Qualification<span class="text-danger font-bold">*</span></label>
+              <input id="orderNo" type="text" class="form-control" formControlName="qualification">
+              <span *ngIf="showError && QualificationForm.controls['qualification'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                Please enter Qualification
+              </span>
+            </div>
+            <div class="col">
+              <label for="subject">Subject<span class="text-danger font-bold">*</span></label>
+              <input id="subject" type="text" class="form-control" formControlName="subject">
+              <span *ngIf="showError && QualificationForm.controls['subject'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+              please  enter subject 
+              </span>
+            </div>
+
+            <div class="col">
+              <label for="institute">Institute<span class="text-danger font-bold">*</span></label>
+              <input id="institute" type="text" class="form-control" formControlName="institute">
+              <span *ngIf="showError && QualificationForm.controls['institute'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                please  enter subject 
+              </span>
+            </div>
+
+            <div class="col">
+              <label for="orderNo">Passing Year<span class="text-danger font-bold">*</span></label>
+              <input type="text" class="form-control" formControlName="passyear">
+              <span *ngIf="showError && QualificationForm.controls['passyear'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                Please select FromDate
+              </span>
+          </div>
+            <div class="col">
+              <label for="orderNo">Marks<span class="text-danger font-bold">*</span></label>
+              <input type="text" class="form-control" formControlName="marks">
+              <span *ngIf="showError && QualificationForm.controls['marks'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                Please select ToDate
+              </span>
+            </div>
+
+            <div class="col">
+              <label for="division">Division <span class="text-danger font-bold">*</span></label>
+              <input id="division" type="text" class="form-control" formControlName="division">
+              <span *ngIf="showError && QualificationForm.controls['division'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                Please select ToDate
+              </span>
+            </div>
+
+            <div class="col">
+              <label class="ps-2" for="file">Select File</label>
+              <input type="file" class="form-control" id="file" formControlName="documentupload" 
+              (change)="onFileSelect($event)">
+           
+                 <div *ngIf="Isedit && existingFileName" class="mt-2">
+            <label class="text-muted">Uploaded File:</label>
+            <a  (click)="downloadFile(existingFileName)" style="cursor: pointer;">{{ existingFileName }}</a>
+          </div>
+
+            </div>
+            
+          </div>
+
+          <div class="modal-footer">
+            <!-- <button class="btn btn-primary mx-1" type="submit">Save</button> -->
+            <button type="submit" class="btn btn-primary mx-1" (click)="submitForm()">
+              {{ Isedit ? 'Update' : 'Save' }} 
+            </button>
+  
+            
+            <button class="btn btn-outline-dark mx-1" (click)="resetForm()">Reset</button>
+            <!-- <button class="btn btn-outline-dark mx-1">View</button> -->
+        </div>
+  
+  <div *ngIf="qualificationDetailsList.length > 0">
+  
+  <!-- Employee Leave Assignment Section -->
+  <div class="bg-primary rounded-1 mt-3 page-seperator">
+    <p class="p-1 text-white ms-4">List of Employee Qualification Details</p>
+  </div>
+  
+  <!-- Table -->
+  <div class="row">
+  
+    <div class="table-invoice table-responsive">
+      <table class="table table-bordered" id="table1">
+        <thead>
+          <tr>
+            <th>Sr.No</th>
+            <th>Qualification</th>
+            <th>Subject</th>
+            <th>Institute</th>
+            <th>Passing Year</th>
+            <th>Marks</th>
+            <th>Division</th>
+         
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let exp of qualificationDetailsList;  paginate: { itemsPerPage: pageSize, currentPage: pageIndex ,totalItems:totalItems};let i = index">
+          
+  
+            <td>{{ i + 1 }}</td>
+            <td>{{ exp.qualification }}</td>
+            <td>{{ exp.subject }}</td>
+            <td>{{ exp.institute }}</td>
+            <td>{{ exp.passyear }}</td>
+            <td>{{ exp.marks }}</td>
+            <td>{{ exp.division }}</td>
+            
+            <td>
+              <button class="btn btn-outline btn-sm" (click)="isUpdate(exp.pk_empqualid)" ><i class="fa-pen-to-square fa-solid"></i></button>
+  
+              <button class="btn" (click)="deleteExperienceDetails(exp.pk_empqualid)"> <i class="fa-solid fa-trash"></i></button>
+  
+  
+              <!-- <button class="btn"> <i class="fa-solid fa-trash" (click)="deleteExperienceDetails(ex.pk_empqualid)"></i></button> -->
+            </td>
+          </tr>
+  
+        </tbody>
+      </table>
+      <!-- Pagination controls -->
+  
+    </div>
+    
+  </div>
+
+
+
+  </div>
+        
+  
+
+
+        
+
+        </form>
+
+
+
+
+      </div>
+
+
+</div>
+  </div>
+
+  <!-- Right Side: Employee Master Tab-Wise Audit Log Fact Box -->
+  <app-employee-fact-box 
+      [ngClass]="isFactBoxOpen ? 'col-sm-12 col-md-4 col-lg-3' : ''"
+      [documentId]="fk_empid || QualificationForm.get('fk_empid')?.value"
+      [documentName]="'Employee Master - Qualification Details'"
+      [isOpen]="isFactBoxOpen"
+      (onToggle)="toggleFactBox()">
+  </app-employee-fact-box>
+</div>

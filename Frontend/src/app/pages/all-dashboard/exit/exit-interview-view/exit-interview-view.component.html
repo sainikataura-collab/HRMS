@@ -1,0 +1,156 @@
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card">
+
+      <!-- Header -->
+      <div class="card-header bg-blue">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-6 col-lg-6">
+            <h4>Exit Interview — Response View</h4>
+          </div>
+          <div class="col-sm-12 col-md-6 col-lg-6 d-flex align-items-center justify-content-md-end">
+            <button class="btn btnheader" routerLink="/dash/exit/exitdashboard/exit_interview_list">Back</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-body mt-4" *ngIf="interviewData">
+
+        <!-- Employee Info -->
+        <div class="row row-cols-1 row-cols-md-3 mb-4">
+          <div class="col">
+            <label class="fw-bold">Employee Code</label>
+            <p class="text-muted">{{ interviewData.empCode }}</p>
+          </div>
+          <div class="col">
+            <label class="fw-bold">Employee Name</label>
+            <p class="text-muted">{{ interviewData.empName }}</p>
+          </div>
+          <div class="col">
+            <label class="fw-bold">Department</label>
+            <p class="text-muted">{{ interviewData.department }}</p>
+          </div>
+          <div class="col">
+            <label class="fw-bold">Designation</label>
+            <p class="text-muted">{{ interviewData.designation }}</p>
+          </div>
+          <div class="col">
+            <label class="fw-bold">Submission Date</label>
+            <p class="text-muted">{{ interviewData.submittedDate | date:'dd-MMM-yyyy' }}</p>
+          </div>
+        </div>
+
+        <!-- Section 1: Reasons for Leaving -->
+        <div class="bg-primary rounded-1 page-seperator mb-3">
+          <p class="p-1 text-white ms-4 mb-0">Primary Reason(s) for Leaving</p>
+        </div>
+        <div class="mb-4 ps-2">
+          <p class="text-muted">{{ getReasons() }}</p>
+          <p *ngIf="interviewData.r_other && interviewData.r_otherText">
+            <strong>Other (specified):</strong> {{ interviewData.r_otherText }}
+          </p>
+        </div>
+
+        <!-- Section 2: Employee Feedback -->
+        <div class="bg-primary rounded-1 page-seperator mb-3">
+          <p class="p-1 text-white ms-4 mb-0">Employee Feedback</p>
+        </div>
+
+        <div class="row row-cols-1 row-cols-md-2 mb-4">
+
+          <!-- Q1 -->
+          <div class="col mb-3">
+            <label class="fw-bold">1. How satisfied were you with your job role?</label>
+            <p class="mt-1">
+              <span class="badge {{ ratingBadge(interviewData.q1_jobRole) }}">{{ interviewData.q1_jobRole }}</span>
+            </p>
+            <p class="text-muted" *ngIf="interviewData.q1_comments">{{ interviewData.q1_comments }}</p>
+          </div>
+
+          <!-- Q2 -->
+          <div class="col mb-3">
+            <label class="fw-bold">2. How satisfied were you with your Reporting Manager?</label>
+            <p class="mt-1">
+              <span class="badge {{ ratingBadge(interviewData.q2_manager) }}">{{ interviewData.q2_manager }}</span>
+            </p>
+            <p class="text-muted" *ngIf="interviewData.q2_comments">{{ interviewData.q2_comments }}</p>
+          </div>
+
+          <!-- Q3 -->
+          <div class="col mb-3">
+            <label class="fw-bold">3. How satisfied were you with the work environment?</label>
+            <p class="mt-1">
+              <span class="badge {{ ratingBadge(interviewData.q3_workEnv) }}">{{ interviewData.q3_workEnv }}</span>
+            </p>
+            <p class="text-muted" *ngIf="interviewData.q3_comments">{{ interviewData.q3_comments }}</p>
+          </div>
+
+          <!-- Q4 -->
+          <div class="col mb-3">
+            <label class="fw-bold">4. How satisfied were you with salary and benefits?</label>
+            <p class="mt-1">
+              <span class="badge {{ ratingBadge(interviewData.q4_salary) }}">{{ interviewData.q4_salary }}</span>
+            </p>
+            <p class="text-muted" *ngIf="interviewData.q4_comments">{{ interviewData.q4_comments }}</p>
+          </div>
+
+          <!-- Q5 -->
+          <div class="col mb-3">
+            <label class="fw-bold">5. Were company policies clearly communicated?</label>
+            <p class="mt-1">
+              <span class="badge {{ yesnoBadge(interviewData.q5_policies) }}">{{ interviewData.q5_policies }}</span>
+            </p>
+            <p class="text-muted" *ngIf="interviewData.q5_comments">{{ interviewData.q5_comments }}</p>
+          </div>
+
+          <!-- Q6 -->
+          <div class="col mb-3">
+            <label class="fw-bold">6. Did you receive adequate training and support?</label>
+            <p class="mt-1">
+              <span class="badge {{ yesnoBadge(interviewData.q6_training) }}">{{ interviewData.q6_training }}</span>
+            </p>
+            <p class="text-muted" *ngIf="interviewData.q6_comments">{{ interviewData.q6_comments }}</p>
+          </div>
+
+          <!-- Q7 -->
+          <div class="col mb-3">
+            <label class="fw-bold">7. Did you face any issues with team collaboration?</label>
+            <p class="mt-1">
+              <span class="badge {{ yesnoBadge(interviewData.q7_teamIssues) }}">{{ interviewData.q7_teamIssues }}</span>
+            </p>
+            <p class="text-muted" *ngIf="interviewData.q7_teamIssues === 'Yes' && interviewData.q7_comments">
+              {{ interviewData.q7_comments }}
+            </p>
+          </div>
+
+          <!-- Q8 -->
+          <div class="col mb-3">
+            <label class="fw-bold">8. What did you like most about the company?</label>
+            <p class="text-muted mt-1">{{ interviewData.q8_liked || '—' }}</p>
+          </div>
+
+          <!-- Q9 -->
+          <div class="col mb-3">
+            <label class="fw-bold">9. What improvements would you suggest?</label>
+            <p class="text-muted mt-1">{{ interviewData.q9_improvements || '—' }}</p>
+          </div>
+
+          <!-- Q10 -->
+          <div class="col mb-3">
+            <label class="fw-bold">10. Would you recommend this company to others?</label>
+            <p class="mt-1">
+              <span class="badge {{ recommendBadge(interviewData.q10_recommend) }}">{{ interviewData.q10_recommend }}</span>
+            </p>
+            <p class="text-muted" *ngIf="interviewData.q10_reason">{{ interviewData.q10_reason }}</p>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="card-body" *ngIf="!interviewData">
+        <p class="text-muted">No interview data found.</p>
+      </div>
+
+    </div>
+  </div>
+</div>

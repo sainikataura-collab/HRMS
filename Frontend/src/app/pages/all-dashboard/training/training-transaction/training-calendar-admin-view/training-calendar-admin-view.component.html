@@ -1,0 +1,47 @@
+<div class="calendar-container">
+  <div class="calendar-header">
+    <h4>Training Calendar</h4>
+  </div>
+  <div class="calendar-body">
+    <full-calendar [options]="calendarOptions"></full-calendar>
+  </div>
+  </div>
+
+<!-- Modal -->
+<div class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white fs-6">
+        <h5 class="modal-title" id="eventModalLabel">{{ selectedEvent?.title }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      
+
+      <div class="modal-body">
+        <p><strong>empName:</strong> {{ selectedEvent?.employeeNames }}</p>
+        <p><strong>Program:</strong> {{ selectedEvent?.programName }}</p>
+        <p><strong>Sub-Program:</strong> {{ selectedEvent?.subProgramName }}</p>
+        <p><strong>Trainer:</strong> {{ selectedEvent?.trainer }}</p>
+        <p><strong>Location:</strong> {{ selectedEvent?.location }}</p>
+        <p><strong>Date:</strong> {{ selectedEvent?.start | date:'fullDate' }}</p>
+      </div>
+
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- <div *ngIf="selectedEvent" class="event-details mt-3 p-3 border rounded">
+  <h5>{{ selectedEvent.title }}</h5>
+  <p><strong>Program:</strong> {{ selectedEvent.programName }}</p>
+  <p><strong>Sub-Program:</strong> {{ selectedEvent.subProgramName }}</p>
+  <p><strong>Trainer:</strong> {{ selectedEvent.trainer }}</p>
+  <p><strong>Location:</strong> {{ selectedEvent.location }}</p>
+  <p><strong>Date:</strong> {{ selectedEvent.start | date:'fullDate' }}</p>
+</div> -->
+
+

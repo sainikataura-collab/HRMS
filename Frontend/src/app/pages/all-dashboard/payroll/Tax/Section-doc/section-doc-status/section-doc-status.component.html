@@ -1,0 +1,198 @@
+<div class="row">
+    <div class="col-12">
+      <div class="card">
+      
+          <div class="card-header bg-blue py-lg-2 mt-0">
+            <div class="row w-100 align-items-center">
+        
+                <!-- Title Section -->
+                <div class="col-12 col-md-3">
+                    <h4 class="text-white text-center text-md-start">{{Isedit? 'Update Section Doc Status':'Section Document Status'}}</h4>
+                </div>
+        
+                <!-- Search Section -->
+                <div class="col-12 col-md-7 mt-2 mt-md-0">
+                    <app-common-search (filtersChanged)="handleFilters($event)"></app-common-search>
+                </div>
+        
+                <!-- Button Section -->
+                <div class="col-12 col-md-2 mt-2 mt-md-0 d-flex justify-content-center justify-content-md-end">
+                    <button class="btn btnheader" routerLink="/dash/payroll/payrolldashboard/Section-DocStatus_list">
+                        Back
+                    </button>
+                </div>
+        
+            </div>
+        </div>
+        <div class="card-body">
+        <form [formGroup]="SectionDocForm">
+          <div class="row">
+            <div class="col-md-4">
+                <label for="employeeCode">Employee Code<span style="color: red;">*</span></label>
+                <ng-select  [items]="EmployeeList" bindLabel="name" bindValue="value" formControlName="fk_empid" (change)="onEmpCodeChange($event)"></ng-select>
+                <span *ngIf="submitted   && SectionDocForm.get('fk_empid')?.invalid" class="text-danger mt-1" style="font-size: 12px;">
+                  Please choose employee.
+                </span>
+              </div>
+              <div class="col-md-4">
+                <label for="employeeName">Employee Name</label>
+                <input id="employeeName" type="text" formControlName="empname" class="form-control"  />
+
+              </div>
+              <div class="col-md-4">
+                <label for="designation">Designation</label>
+                <input id="designation" type="text" formControlName="designation" class="form-control" />
+
+              </div>
+              <div class="col-md-4">
+                <label for="department">Department:</label>
+                <input id="department" type="text" formControlName="dept" class="form-control" />
+
+              </div>
+           <div class="col-md-4">
+                <label>Section Name<span style="color: red;">*</span></label>
+                <div class="form-group">
+                    <ng-select id="year"  [items]="seclist" bindLabel="name" bindValue="value"
+                  formControlName="fk_secid" placeholder="--Select --"
+                  class="w-100"></ng-select>
+                    <span *ngIf="submitted   && SectionDocForm.get('fk_secid')?.invalid" class="text-danger mt-1" style="font-size: 12px;">
+                        Please select Section name.
+                      </span> 
+                </div>
+            </div> 
+            <div class="col-md-4">
+              <label>Sub  Section Name</label>
+              <div class="form-group">
+                  <ng-select id="year"  [items]="Subseclist" bindLabel="name" bindValue="value"
+                formControlName="fk_subsecid" placeholder="--Select --"
+                class="w-100"></ng-select>
+                  <!-- <span *ngIf="submitted   && SectionDocForm.get('fk_subsecid')?.invalid" class="text-danger mt-1" style="font-size: 12px;">
+                      Please select  Sub Section name.
+                    </span>  -->
+              </div>
+          </div> 
+            <div class="col-md-4">
+                <label>Document Status<span style="color: red;">*</span></label>
+                <div class="form-group">
+                    <ng-select id="year"  [items]="DocumentStatus" bindLabel="name" bindValue="value"
+                  formControlName="docsub_status" placeholder="--Select --"
+                  class="w-100"></ng-select>
+                    <span *ngIf="submitted   && SectionDocForm.get('docsub_status')?.invalid" class="text-danger mt-1" style="font-size: 12px;">
+                        Please select  Document Status .
+                      </span> 
+                </div>
+            </div>
+            <div class="col-md-4">
+                <label>Submit Date<span style="color: red;">*</span></label>
+                <div class="form-group">
+                    <input type="date"class="form-control"formControlName="submitdate" >
+                    <span *ngIf="submitted   && SectionDocForm.get('submitdate')?.invalid" class="text-danger mt-1" style="font-size: 12px;">
+                        Please enter  dated .
+                      </span> 
+                </div> 
+            </div>
+            <div class="col-md-4">
+                <label>Document Amount<span style="color: red;">*</span></label>
+                <div class="form-group">
+                    <input type="text"class="form-control"formControlName="docsub_Amt" (keypress)="validateNumber($event)" maxlength="18">
+                   <span *ngIf="submitted   && SectionDocForm.get('docsub_Amt')?.invalid" class="text-danger mt-1" style="font-size: 12px;">
+                        Please enter  Document Amount .
+                      </span> 
+                </div> 
+            </div>
+            
+            <div class="col-md-4">
+                <label>Bill Number</label>
+                <div class="form-group">
+                    <input type="text"class="form-control"formControlName="billno"  (keypress)="validateNumber($event)" maxlength="18">
+                </div> 
+            </div>
+            <div class="col-md-4">
+              <label>Bill Date</label>
+              <div class="form-group">
+                  <input type="date"class="form-control"formControlName="billdate" >
+                  </div> 
+          </div>
+    
+        
+            <div class="col-md-4">
+                <label>Remarks</label>           
+                <div class="form-group">
+                    <textarea type="text"class="form-control"formControlName="remarks"></textarea>
+                </div>  
+            </div>
+            <!-- <div class="col-md-4">
+              <label>File name</label>
+               <div class="form-group">
+                 <input type="file" class="form-control"formControlName="Ifilename" (change)="onFileSelected($event)" >
+                 
+                  
+              </div> 
+           
+              
+              
+          </div> -->
+           
+          <div class="col-md-4">
+            <label>Upload File</label>
+            <div class="form-group">
+              <!-- Remove formControlName -->
+              <input type="file" class="form-control" (change)="onFileSelected($event)">
+              
+              <!-- Show existing file name in edit mode -->
+              <div *ngIf="Isedit && SectionDocForm.get('Ifilename')?.value" class="mt-2">
+                <label>Uploaded File:</label>
+                <span>{{ SectionDocForm.get('Ifilename')?.value }}</span>
+
+                  <!-- <button 
+                  class="btn btn-sm btn-outline-primary d-flex align-items-center" 
+                 title="Preview Image"
+                 type="button"
+                          data-bs-toggle="modal"
+                          data-bs-target="#imagePreviewModal"
+                          (click)="previewFile()">
+                <i class="fa fa-eye me-1"></i> View
+               </button> -->
+              </div>
+            </div>
+          </div>
+            
+     
+         <!-- Buttons -->
+         <div class="modal-footer">
+
+             <button type="submit" class="btn btn-primary mx-1" (click)="submit()">{{Isedit? 'Update':'Save'}}</button>
+             <button type="reset" class="btn btn-outline-dark mx-1">Reset</button>
+           
+       
+          </div> 
+
+          </div> 
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+
+  <!-- ✅ Image Preview Modal -->
+<div class="modal fade" id="imagePreviewModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Image</h5>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+          &times;
+        </button>
+      </div>
+      <div class="modal-body text-center">
+        <img [src]="previewImageUrl" class="img-fluid" *ngIf="isImageType" />
+        <p *ngIf="!isImageType">
+          Preview not available.
+          <a [href]="downloadUrl" target="_blank">Click here to download the file</a>.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+

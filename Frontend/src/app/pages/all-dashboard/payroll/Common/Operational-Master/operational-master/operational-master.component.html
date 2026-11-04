@@ -1,0 +1,71 @@
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card">
+
+      <!-- Card Header -->
+      <div class="card-header bg-primary">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-6 col-lg-6">
+            <h4 class="">Operational Master</h4>
+          </div>
+          <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+            <button class="btn btnheader" routerLink="/dash/user/userdashboard/operationalMaster_list">Back</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card Body -->
+      <div class="card-body mt-4">
+        <form [formGroup]="operationalForm" class="row row-cols-1 row-cols-md-3 g-4">
+
+          <div class="col">
+            <div class="form-group">
+              <label>Operational Code</label>
+              <input type="text" class="form-control flex-grow-1" formControlName="OperationalCode">
+              <span
+                *ngIf="showError && operationalForm.controls['OperationalCode'].invalid && !operationalForm.get('OperationalCode')?.errors?.['duplicate']"
+                class="text-danger mt-1" style="font-size: 12px;">
+                Please enter operationalCode.
+              </span>
+              <span
+              *ngIf="operationalForm.get('OperationalCode')?.hasError('maxlength')"
+                class="text-danger mt-1" style="font-size: 12px;">
+                Maximum 20 characters allowed.
+              </span>
+              
+            </div>
+          </div>
+          <div class="col">
+            <div class="form-group">
+              <label>Operational Description<span class="text-danger">*</span></label>
+              <input type="text" class="form-control flex-grow-1" formControlName="OperationalDescription">
+              <div *ngIf="operationalForm.get('OperationalDescription')?.errors?.['duplicate']" class="text-danger"
+                style="font-size:10px;">
+                {{ operationalForm.get('OperationalDescription')?.errors?.['duplicate'] }}
+              </div>
+              <span
+              *ngIf="showError && operationalForm.controls['OperationalDescription'].invalid && !operationalForm.get('OperationalDescription')?.errors?.['duplicate']"
+              class="text-danger mt-1" style="font-size: 12px;">
+              Please enter operationalDescription.
+            </span>
+            <span
+            *ngIf="operationalForm.get('OperationalDescription')?.hasError('maxlength')"
+              class="text-danger mt-1" style="font-size: 12px;">
+              Maximum 150 characters allowed.
+            </span>
+            </div>
+          </div>
+        </form>
+
+        <div class="row">
+          <div class="col d-flex align-items-end justify-content-end pt-4 pb-3">
+            <button type="submit" class="btn btn-primary btn-sm mx-1 px-2" (click)="onSubmit()">
+              {{ isEditMode  ? 'Update' : 'Save' }}
+            </button>
+            <button type="button" class="btn btn-outline-dark btn-sm mx-1 px-2" (click)="resetForm()">Reset</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

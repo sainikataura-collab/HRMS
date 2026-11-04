@@ -1,0 +1,18 @@
+.badge {
+  font-weight: 500;
+  padding: 0.4em 0.6em;
+}
+
+.table th {
+  font-weight: 600;
+  color: #495057;
+}
+
+.btn-outline-primary {
+  transition: all 0.2s ease-in-out;
+  
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(13, 110, 253, 0.15);
+  }
+}

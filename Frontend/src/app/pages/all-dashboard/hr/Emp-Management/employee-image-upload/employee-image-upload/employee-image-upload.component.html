@@ -1,0 +1,96 @@
+<div class="row">
+<div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card">
+        <div class="card-header bg-primary py-lg-1 mt-0">
+            <div class="row w-100 align-items-center">
+
+                <!-- Title Section -->
+                <div class="col-12 col-md-3">
+                    <h4>Employee Image Master</h4>
+                </div>
+                <!-- Search Section -->
+                <div class="col-12 col-md-7 mt-2 mt-md-0">
+                    <app-common-search (filtersChanged)="handleFilters($event)"></app-common-search>
+
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-12 col-lg-2 col-12">
+                <div class="col-sm-12 col-md-4 col-lg-12  d-flex align-items-center justify-content-md-center">
+                  <button class="btn btnheader" routerLink="/dash/hr/hrdashboard/Employee_Image_list">
+                       Back
+                    </button>
+           
+                </div>
+                </div>
+        </div>
+        <div class="card-body mt-4">
+            <form [formGroup]="ImageUploadForm" (ngSubmit)="Submit()">
+                <div class="row row-cols-1 row-cols-md-4">
+                    <div class="col">
+                        <label>Employee Code<span class="text-danger font-bold">*</span></label>
+                        <div class="form-group">
+                          <ng-select id="fk_empid" [items]="employees" bindLabel="name" bindValue="value"
+                            formControlName="fk_empid" placeholder="--Select --" class="w-100"></ng-select>
+                          <span *ngIf="showError && ImageUploadForm.controls['fk_empid'].invalid" class="text-danger mt-1"
+                            style="font-size: 12px;">
+                            Please select empCode.
+                          </span>
+                        </div>
+                      </div>
+                    <div class="col">
+                        <label>Image Type<span class="text-danger font-bold">*</span></label>
+                        <div class="form-group">
+                            <ng-select id="imageType" [items]="ImageTypeList" bindLabel="name" bindValue="value"
+                                formControlName="imageType" placeholder="--Select Year --"
+                                class="w-100"></ng-select>
+                            <span *ngIf="showError && ImageUploadForm.controls['imageType'].invalid" class="text-danger mt-1"
+                          style="font-size: 12px;">
+                          Please select imageType.
+                        </span>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label>Dated<span class="text-danger font-bold">*</span></label>
+                        <div class="form-group">
+                            <input type="date"  formControlName="date"  class="form-control">
+                            <span *ngIf="showError && ImageUploadForm.controls['date'].invalid" class="text-danger mt-1"
+                          style="font-size: 12px;">
+                          Choose date.
+                        </span>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label>Description<span class="text-danger font-bold">*</span></label>
+                        <input type="text"  formControlName="description" placeholder="Enter description" class="form-control">
+                        <span *ngIf="showError && ImageUploadForm.controls['description'].invalid" class="text-danger mt-1"
+                        style="font-size: 12px;">
+                        Please enter description.
+                      </span>
+                    </div>
+
+                    <div class="col">
+                        <label>File Name</label>
+                        <input type="file"(change)="onFileSelected($event)"  class="form-control">
+                    </div>
+                </div>
+             <div class="col-md-12 d-flex align-items-center justify-content-end">
+                <button type="submit" class="btn btn-primary mx-1">Submit</button>
+                <button type="reset" class="btn btn-outline-dark mx-1" >Reset</button>
+               
+            </div>
+            </form>
+       
+        </div>
+
+
+
+
+        <!--  -->
+
+        <!-- Button to trigger PDF download -->
+
+
+    </div>
+</div>
+
+</div>

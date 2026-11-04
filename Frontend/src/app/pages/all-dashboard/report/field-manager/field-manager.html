@@ -1,0 +1,47 @@
+<h2>Available Fields Manager</h2>
+<p>Select a report to configure which fields are available for it in the builder.</p>
+
+<div class="controls-container">
+  <!-- Report Selector -->
+  <select [(ngModel)]="selectedReport" (ngModelChange)="onReportSelect()">
+    <option value="">-- Select a Report --</option>
+    <option *ngFor="let name of reportNames" [value]="name">{{ name }}</option>
+  </select>
+  
+  <!-- Table Filter Input -->
+  <input 
+    type="text" 
+    class="filter-input"
+    placeholder="Filter tables..." 
+    (input)="filterTables($event)"
+    [disabled]="!selectedReport">
+
+  <!-- NEW: Column Filter Input -->
+  <input 
+    type="text" 
+    class="filter-input"
+    placeholder="Filter columns..." 
+    (input)="filterColumns($event)"
+    [disabled]="!selectedReport">
+  
+  <!-- Action Buttons -->
+  <button (click)="createNewReport()" class="create-btn">Create New Report</button>
+  <button (click)="saveChanges()" [disabled]="!selectedReport">Save Changes</button>
+</div>
+
+<!-- Loading Indicator -->
+<div *ngIf="isLoading" class="loading-indicator">Loading Schema...</div>
+
+<!-- Schema Display -->
+<div class="schema-container" *ngIf="filteredSchemaData.length > 0 && !isLoading">
+  <div *ngFor="let table of filteredSchemaData" class="table-card">
+    <h3>{{ table.tablename }}</h3>
+    <div *ngFor="let field of table.fields" class="column-row">
+      <input 
+        type="checkbox" 
+        [id]="table.tablename + '-' + field"
+        [(ngModel)]="activeFields[table.tablename][field]">
+      <label [for]="table.tablename + '-' + field">{{ field }}</label>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,111 @@
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+            <div class="card-header bg-blue py-lg-1 mt-0">
+                <div class="col-sm-12 col-md-12 col-lg-3 col-12">
+                    <div class="row w-100">
+                        <div class="col-sm-12 col-md-12 col-lg-12 ">
+                            <h4 class="">Appreciation Master</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-12 col-lg-7 col-12">
+                    <div class="row w-100">
+                        <div class="col-sm-12 col-md-12 col-lg-12">
+                            <app-common-search></app-common-search>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-12 col-lg-2 col-12">
+                    <div class="col-sm-12 col-md-12 col-lg-12  d-flex align-items-center justify-content-md-end">
+                        <button class="btn btnheader" routerLink="/dash/hr/hrdashboard/Appreciation_Mst_list">
+                            Back
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body mt-4">
+                <form [formGroup]="AppreciationMasterform">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label>Appreciation Type</label>
+                            <div class="form-group">
+                                <ng-select id="year" [items]="Type" bindLabel="name" bindValue="value"
+                                    formControlName="type" placeholder="--Select --" class="w-100"></ng-select>
+                                <div *ngIf="submitted   && AppreciationMasterform.get('type')?.invalid"
+                                    class="text-danger" style="font-size: 12px;" >
+                                    Appreciation Type is required!
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label>Employee Name</label>
+                            <div class="form-group">
+                                <ng-select id="year" [items]="EmployeeList" bindLabel="name" bindValue="value"
+                                    formControlName="fk_empid" placeholder="--Select --" class="w-100"></ng-select>
+                                <div *ngIf="submitted   && AppreciationMasterform.get('fk_empid')?.invalid"
+                                    class="text-danger" style="font-size: 12px;" >
+                                    Employee Name is required!
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label>Name of Appreciator</label>
+                            <div class="form-group">
+                                <ng-select id="year" [items]="EmployeeList" bindLabel="name" bindValue="value"
+                                    formControlName="fk_empApreid" placeholder="--Select --" class="w-100"></ng-select>
+                                <div *ngIf="submitted   && AppreciationMasterform.get('fk_empApreid')?.invalid"
+                                    class="text-danger" style="font-size: 12px;" >
+                                    Name of Appreciator is required!
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label>Date of Appreciation</label>
+                            <div class="form-group">
+                                <input type="date" class="form-control" formControlName="incidentDate">
+                                <div *ngIf="submitted   && AppreciationMasterform.get('incidentDate')?.invalid"
+                                    class="text-danger" style="font-size: 12px;" >
+                                    Date of Appreciation is required!
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label>Details of Incident</label>
+                            <div class="form-group">
+                                <input type="text" class="form-control" formControlName="incidentDetails">
+                                <div *ngIf="submitted   && AppreciationMasterform.get('incidentDetails')?.invalid"
+                                    class="text-danger" style="font-size: 12px;" >
+                                    Details of Incident is required!
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label>File Name</label>
+                            <div class="form-group d-flex align-items-center">
+                              <input type="file" (change)="onFileChange($event)" class="form-control me-2" />
+                              <a *ngIf="ImageUrl && !selectedFile" [href]="ImageUrl" target="_blank" class="btn btn-primary">
+                                View
+                              </a>
+                            </div>
+                          </div>
+                          
+                    </div>
+                    <!-- Buttons -->
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary mx-1" (click)="onSubmit()">
+                            {{ isEditMode ? 'Update' : 'Save' }}
+                        </button>
+                        <button type="submit" class="btn btn-outline-dark mx-1" (click)="resetForm()">Reset</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+
+</div>

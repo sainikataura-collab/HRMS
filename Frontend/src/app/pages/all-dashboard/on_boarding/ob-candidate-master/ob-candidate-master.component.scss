@@ -1,0 +1,54 @@
+
+.offcanvas-card{
+    border-top:2px solid #3080e8;
+    border-left:3px solid #3080e8;
+    
+   
+
+}
+
+
+.offcanvas-card:hover{
+     border-top:2px solid #08c989;
+    border-left:3px solid #08c989;
+   
+    transform: scale(1.01);
+
+}
+
+
+.small{
+    font-size:0.75rem;
+}
+
+// 
+
+.animated-border {
+  border: 2px solid #28a745;
+  padding: 2px;
+  animation: pulse-border 2s infinite;
+}
+
+@keyframes pulse-border {
+  0% {
+    box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(40, 167, 69, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(40, 167, 69, 0);
+  }
+}
+
+// Toggel and Modal Sidebaar
+.offcanvas{
+margin-top: 5%;
+}
+
+@media screen and (max-width:768px){
+.offcanvas{
+margin-top: 0%;
+}
+}
+

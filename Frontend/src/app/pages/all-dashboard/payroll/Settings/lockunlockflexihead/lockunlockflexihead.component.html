@@ -1,0 +1,69 @@
+
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+         <!--  -->
+    <div class="card-header bg-blue ">
+        <div class="row w-100 ">
+      <div class="col-sm-12 col-md-6 col-lg-6 ">                    
+        <h4>Lock/Unlock Flexi Salary Head</h4>   
+      </div>
+      <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+        <button class="btn btnheader" routerLink="/dash/payroll/payrolldashboard/lockunlockflexihead-list">Veiw
+          </button>
+      </div>
+  </div>
+  
+      
+      </div>
+      <div class="card-body mt-4">
+        <form [formGroup]="LockunlockflexiheadForm">
+        <div class="row">
+           
+            <div class="col-md-4">
+                <label>Financial Year</label>
+                <div class="form-group">
+                    <select class="form-control"formControlName="FinancialYear">
+                        <option>2012-2013</option>
+                    </select>
+                    <div *ngIf="  submited   && LockunlockflexiheadForm.get('FinancialYear')?.invalid" class="text-danger">
+                        Financial Year is required!
+                        </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <label>Quarter</label>
+                <div class="form-group">
+                    <select class="form-control"formControlName="Quarter">
+                      <option>--</option>
+                        <option>Quarter</option>
+                    </select>
+                    <div *ngIf="  submited   && LockunlockflexiheadForm.get('Quarter')?.invalid" class="text-danger">
+                        Quarter is required!
+                        </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <label>End Date</label>
+                <div class="form-group">
+                    <input type="date"class="form-control"formControlName="EndDate">
+                    <div *ngIf="  submited   && LockunlockflexiheadForm.get('EndDate')?.invalid" class="text-danger">
+                        End Date  is required!
+                        </div>
+                </div>
+            </div>
+        </div>
+        
+           <div class="modal-footer"> 
+            <button type="submit" class="btn btn-outline-dark mx-1"(click)="resetForm()">Reset</button>
+             <button type="submit" class="btn btn-primary mx-1" (click)="submit()">Save</button>
+
+          </div>
+        </form>
+      </div>
+
+      
+  </div>
+</div>    
+
+</div>

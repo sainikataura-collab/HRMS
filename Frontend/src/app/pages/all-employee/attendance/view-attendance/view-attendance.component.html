@@ -1,0 +1,282 @@
+<div class="row m-0">
+  <div class="col-12 px-0 py-0">
+    <div class="card px-0 m-0">
+
+      <!-- Card Header -->
+
+
+      <div class="card-header">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-between">
+            <h4>View Attendance</h4>
+
+            <!-- Card Body -->
+
+<!-- 
+            <div class="dropdown d-flex align-items-center justify-content-center d-md-none">
+              <button class="btn bg-transparent text-white px-0 mt-1" type="button" id="dropdownMenuButton"
+                data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fa-solid fa-bars fs-6"></i>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+
+                <li><a class="dropdown-item">Add</a></li>
+                <li><a class="dropdown-item">PDF</a></li>
+              </ul>
+            </div> -->
+
+
+          </div>
+
+
+
+          <div class="col-12 col-md-3 all-pickup-point-search-header d-flex align-items-center justify-content-md-end">
+            <!-- <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText" /> -->
+          </div>
+
+
+          <div class="col-12 col-md-3 d-flex justify-content-end align-items-center mt-md-0">
+            <div class="d-none d-md-flex">
+              <!-- <button class="btn btnheader mx-2">+ Add</button> -->
+              <!-- <button class="btn btnheader"><i class="fa-solid fa-file-arrow-down"></i>&nbsp;Download</button>-->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-body mt-2 mt-lg-4  mx-0 px-3 ">
+        <form [formGroup]="EmpAttendance" (ngSubmit)="onView()">
+          <div class="row row-cols-2 row-cols-md-5">
+            <div class="col mb-3">
+              <label>Month</label>
+              <ng-select [items]="months" bindLabel="name" bindValue="value" formControlName="FkMonthId"
+                placeholder="--Select--" class="w-100">
+              </ng-select>
+              <span *ngIf="showError && EmpAttendance.controls['FkMonthId'].invalid" class="text-danger mt-1"
+                style="font-size: 12px;">
+                Please enter Month.
+              </span>
+            </div>
+            <div class="col mb-3">
+              <label>Year</label>
+              <ng-select [items]="years" bindLabel="name" bindValue="value" formControlName="FkYearId"
+                placeholder="--Select--" class="w-100">
+              </ng-select>
+              <span *ngIf="showError && EmpAttendance.controls['FkYearId'].invalid" class="text-danger mt-1"
+                style="font-size: 12px;">
+                Please enter Year.
+              </span>
+            </div>
+
+
+
+
+          </div>
+
+
+
+        </form>
+
+
+
+        <!--  -->
+
+
+<!--     
+    <div class="row row-cols-2 row-cols-md-5 g-2 g-md-3">
+  
+  <div class="col">
+    <div class="card border-success rounded-1 shadow-sm border d-flex align-items-center justify-content-center ">
+      <p class="text-center m-0 py-1 small-mobile-text">
+        <span class="text-success fw-bold pe-1"> {{ attendanceData.present }}</span> 
+        <span class="text-success">Present</span>
+      </p>
+    </div>
+  </div>
+
+  <div class="col">
+    <div class="card border-danger rounded-1 shadow-sm border d-flex align-items-center justify-content-center">
+      <p class="text-center m-0 py-1 small-mobile-text">
+        <span class="text-danger fw-bold pe-1"> {{ attendanceData.absent }}</span> 
+        <span class="text-danger">Absent</span>
+      </p>
+    </div>
+  </div>
+
+  <div class="col">
+    <div class="card border-warning rounded-1 shadow-sm border d-flex align-items-center justify-content-center">
+      <p class="text-center m-0 py-1 small-mobile-text">
+        <span class="text-warning fw-bold pe-1"> {{ attendanceData.leave }}</span> 
+        <span class="text-warning">Leave</span>
+      </p>
+    </div>
+  </div>
+
+  <div class="col">
+    <div class="card border-primary rounded-1 shadow-sm border d-flex align-items-center justify-content-center">
+      <p class="text-center m-0 py-1 small-mobile-text">
+        <span class="text-primary fw-bold pe-1"> {{ attendanceData.missedPunch }}</span> 
+        <span class="text-primary">Missed</span>
+      </p>
+    </div>
+  </div>
+
+  <div class="col">
+    <div class="card border-info rounded-1 shadow-sm border d-flex align-items-center justify-content-center">
+      <p class="text-center m-0 py-1 small-mobile-text">
+        <span class="text-info fw-bold pe-1"> {{ attendanceData.lateComing }}</span> 
+        <span class="text-info">Late</span>
+      </p>
+    </div>
+  </div>
+
+  <div class="col">
+    <div class="card border-dark rounded-1 shadow-sm border d-flex align-items-center justify-content-center">
+      <p class="text-center m-0 py-1 small-mobile-text">
+        <span class="text-dark fw-bold pe-1"> {{ attendanceData.weekOff }}</span> 
+        <span class="text-dark">WeekOff</span>
+      </p>
+    </div>
+  </div>
+
+  <div class="col-12">
+    <div class="card border-success rounded-1 shadow-sm border d-flex align-items-center justify-content-center ">
+      <p class="text-center m-0 py-1 small-mobile-text">
+        <span class="text-success fw-semibold pe-1"> {{ attendanceData.holiday }}</span> 
+        <span class="text-success">Holiday</span>
+      </p>
+    </div>
+  </div>
+
+  <div class="col">
+    <div class="card border-danger rounded-1 shadow-sm border d-flex align-items-center justify-content-center">
+      <p class="text-center m-0 py-1 px-0 small-mobile-text">
+        <span class="text-danger fw-semibold pe-0"> {{ attendanceData.totalWorkingHrs || '00:00' }}</span> 
+        <span class="text-danger d-block d-md-inline"> Work Hrs</span>
+      </p>
+    </div>
+  </div>
+
+  <div class="col">
+    <div class="card border-primary rounded-1 shadow-sm border d-flex align-items-center justify-content-center">
+      <p class="text-center m-0 py-1 small-mobile-text">
+        <span class="text-primary fw-semibold pe-1"> {{ attendanceData.totalOTHrs || '00:00' }}</span> 
+        <span class="text-primary d-block d-md-inline"> OT Hrs</span>
+      </p>
+    </div>
+  </div>
+
+</div>  -->
+
+
+<!-- Card in my mobile view  show view attendance -->
+
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12  px-3 py-0 py-lg-3 pt-2">
+    <div class="border  border-1 border-warning rounded-1 bg-warning-subtle row row-cols-2 row-cols-md-4 row-cols-lg-5 pt-2">
+      <div class="col"><p class="lh-sm text-success"><span class="fw-semibold small ps-1"> <i class="fa-solid fa-circle-check me-1"></i> Present :  <span class="text-success fw-bold pe-1"> {{ attendanceData.present }}</span> </span></p>  </div>
+      <div class="col"><p class="lh-sm text-danger"><span class="fw-semibold small ps-1"><i class="fa-solid fa-circle-xmark me-1"></i> Absent :   <span class="text-danger fw-bold pe-1"> {{ attendanceData.absent }}</span>  </span></p>  </div>
+      <div class="col"><p class="lh-sm text-warning"><span class="fw-semibold small ps-1"> <i class="fa-solid fa-plane-slash me-1"></i> Leave :   <span class="text-warning fw-bold pe-1"> {{ attendanceData.leave }}</span> </span></p>  </div>
+      <div class="col"><p class="lh-sm text-primary"><span class="fw-semibold small ps-1">   <i class="fa-solid fa-fingerprint me-1"></i> Missed :   <span class="text-primary fw-bold pe-1"> {{ attendanceData.missedPunch }}</span> </span></p>  </div>
+      <div class="col"><p class="lh-sm text-info"><span class="fw-semibold small ps-1">    <i class="fa-solid fa-clock me-1"></i> Late :    <span class="text-info fw-bold pe-1"> {{ attendanceData.lateComing }}</span>  </span></p>  </div>
+      <div class="col"><p class="lh-sm text-dark"><span class="fw-semibold small ps-1">   <i class="fa-solid fa-bed me-1"></i> Week Off :<span class="text-dark fw-bold pe-1"> {{ attendanceData.weekOff }}</span>   </span></p>  </div>
+      <div class="col"><p class="lh-sm att-work"><span class="fw-semibold small ps-1"> <i class="fa-solid fa-calendar-day me-1"></i> Holiday : <span class=" fw-semibold pe-1"> {{ attendanceData.holiday }}</span>   </span></p>  </div>
+      <div class="col"><p class="lh-sm att-ot "><span class="fw-semibold small ps-1">    <i class="fa-solid fa-hourglass-half me-1"></i> Work Hrs : <span class=" fw-semibold pe-0"> {{ attendanceData.totalWorkingHrs || '00:00' }}</span>   </span></p>  </div>
+      <div class="col"><p class="lh-sm att-weekoff "><span class="fw-semibold small ps-1">  <i class="fa-solid fa-clock-rotate-left me-1"></i> OT Hrs :  <span class=" fw-semibold pe-1"> {{ attendanceData.totalOTHrs || '00:00' }}</span>    </span></p>  </div>
+       
+    </div>
+  </div>
+</div> 
+
+
+
+
+
+
+
+
+<!--  -->
+
+
+
+   
+      </div>
+
+
+
+
+      <!-- Card Body -->
+      <!-- <p class="text-primary mx-4 small fs-6 fw-semibold">List of Attendance</p> -->
+      <div class="card-body px-0  m-2 my-0 py-0">
+        <div class="table-responsive-md">
+          <table id="exportTable" class="table table-bordered">
+            <thead class="table_grid">
+              <tr>
+                <th>Date</th>
+                <th>In Time</th>
+                <th>Out Time</th>
+                <th>Working Hrs</th>
+                <th>OT Hrs</th>
+                <th>Day Status</th>
+                <th>Description</th>
+                <th>Late Coming</th>
+                <th>OT Lapsed</th>
+                <th>Short leave Lapsed</th>
+                <th>Late Coming Lapsed</th>
+              </tr>
+
+            </thead>
+
+            <tbody>
+              <tr *ngFor="let row of filteredAttendanceList">
+                <td data-label="Date">{{ row.dated }}</td>
+                <td data-label="In Time">{{ row.inTime }}</td>
+                <td data-label="Out Time">{{ row.outTime }}</td>
+                <td data-label="Working Hrs">{{ row.workHour }}</td>
+                <td data-label="OT Hrs">{{ row.otHour }}</td>
+                <!-- <td data-label="Day Status" >{{ row.dayStatus=='P' ? 'PRESENT':  row.dayStatus=='WFH' ? 'Work From Home': row.dayStatus }}</td> -->
+                <!-- <td data-label="Day Status" [ngClass]="{'text-white bg-success ': row.dayStatus === 'P', 'text-white bg-info': row.dayStatus === 'WFH', 'text-white bg-warning' : row.dayStatus === 'WO' , 'text-white bg-primary' : row.dayStatus === 'OD' , ' bg-black text-white' : row.dayStatus === 'QOD' , 'att-ot2 text-white': row.dayStatus === 'MP', 'text-dark bg-secondary' : row.dayStatus === 'HLD' , 'text-white att-work-2 ' : row.dayStatus === 'HWFH'}">{{ row.dayStatus=='P' ? 'PRESENT':  row.dayStatus=='WFH' ? 'Work From Home': row.dayStatus }}</td>
+                 -->
+                <td data-label="Day Status" [ngClass]="{'text-light bg-success ': row.dayStatus === 'P', 'text-white bg-danger' : row.dayStatus === 'A', 'text-white bg-info': row.dayStatus === 'WFH', 'text-white bg-warning' : row.dayStatus === 'WO' , 'text-white bg-primary' : row.dayStatus === 'OD' , ' bg-black text-light' : row.dayStatus === 'QOD' , 'att-ot2 text-white': row.dayStatus === 'MP', 'text-dark bg-secondary' : row.dayStatus === 'HLD' , 'text-white att-work-2 ' : row.dayStatus === 'HWFH', 'text-dark EL ' : row.dayStatus === 'EL'}">{{ row.dayStatus}}</td>
+                
+                <td data-label="Description">{{ row.dayDescription }}</td>
+                <td data-label="Late Coming">{{ row.lateComing }}</td>
+                <td data-label="OT Lapsed" [ngClass]="{
+                  'text-success': row.oTlapsed === 'Yes',
+                  'text-danger': row.oTlapsed === 'No'
+                  }">{{ row.oTlapsed }}</td>
+                <td data-label="Short leave Lapsed" [ngClass]="{
+                  'text-success': row.shortleaveLapsed === 'Yes',
+                  'text-danger': row.shortleaveLapsed === 'No'
+                  }">
+                  {{ row.shortleaveLapsed }}</td>
+                <td data-label="Late Coming Lapsed" [ngClass]="{
+                  'text-success': row.latecomingLapsed === 'Yes',
+                  'text-danger': row.latecomingLapsed === 'No'
+                  }">
+                  {{ row.latecomingLapsed }}</td>
+              </tr>
+              <!-- <tr *ngIf="!filteredAttendanceList.length">
+                <td colspan="8" class="text-center">No records found</td>
+              </tr> -->
+              <tr *ngIf="!filteredAttendanceList.length">
+  <td colspan="12" class="text-center py-4">
+    <div class="no-record-wrapper">
+      <i class="fa-regular fa-folder-open no-record-icon"></i>
+      <div class="no-record-text">No records found</div>
+      <small class="text-muted small">Try adjusting filters or date range</small>
+    </div>
+  </td>
+</tr>
+
+            </tbody>
+
+          </table>
+        </div>
+      </div>
+
+
+     
+    </div>
+  </div>
+</div>

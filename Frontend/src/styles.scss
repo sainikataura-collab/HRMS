@@ -1,0 +1,874 @@
+@import 'ngx-toastr/toastr';
+@import "@ng-select/ng-select/themes/default.theme.css";
+
+
+// Safe Area / Notch Fix for Capacitor
+:root {
+  --sat: env(safe-area-inset-top);
+  --sar: env(safe-area-inset-right);
+  --sab: env(safe-area-inset-bottom);
+  --sal: env(safe-area-inset-left);
+}
+
+body.modal-qr-open .main-content,
+.main-content:has(.qr-modal-backdrop) {
+  z-index: 99999999 !important;
+  position: relative !important;
+}
+
+body.modal-qr-open .navbar,
+body.modal-qr-open .navbar-bg,
+body.modal-qr-open .main-navbar,
+body.modal-qr-open .main-sidebar,
+.main-wrapper:has(.qr-modal-backdrop) .navbar,
+.main-wrapper:has(.qr-modal-backdrop) .navbar-bg,
+.main-wrapper:has(.qr-modal-backdrop) .main-navbar,
+.main-wrapper:has(.qr-modal-backdrop) .main-sidebar {
+  z-index: 10 !important;
+}
+
+
+body {
+  padding-top: 0 !important;
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+// Sirf navbar ko safe area do
+.navbar,
+.navbar-bg {
+  padding-top: env(safe-area-inset-top) !important;
+  height: calc(60px + env(safe-area-inset-top)) !important;
+}
+
+
+/* You can add global styles to this file, and also import other style files */
+
+// Add new html scrollbar style
+
+::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px #f1f1f1;
+  border-radius: 20px;
+  background-color: #F1F1F1;
+  overflow-x: auto;
+}
+
+
+
+::-webkit-scrollbar {
+  width: 5px;
+  height: 6px;
+  background-color: #F5F5F5;
+  overflow-x: auto;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+  //   border-radius: 20px;
+  -webkit-box-shadow: inset 0 0 6px #3080e8;
+  background-color: #3080e8;
+  overflow-x: auto;
+}
+
+
+// ----------------------------------
+
+#style-3::-webkit-scrollbar-track {
+  -webkit-box-shadow: #6c757d;
+  background-color: #F5F5F5;
+}
+
+#style-3::-webkit-scrollbar {
+  width: 1px !important;
+  background-color: #df4545;
+}
+
+#style-3::-webkit-scrollbar-thumb {
+  background-color: #6c757d;
+}
+
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: "Work Sans", sans-serif !important;
+  background-color: #f8f9fa;
+}
+
+.main-content {
+  padding-top: 85px !important;
+
+}
+
+.mat-body-large,
+.mat-typography .mat-body-large,
+.mat-typography {
+  font-family: "Work Sans", sans-serif !important;
+  font-style: normal !important;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+ul,
+li,
+a,
+button,
+table,
+tr,
+td,
+th,
+span,
+input,
+label,
+textarea,
+select,
+option,
+::placeholder,
+text {
+  font-family: "Work Sans", sans-serif !important;
+  font-style: normal !important;
+}
+
+// view setails next background color ------
+
+.current {
+  background-color: #3080e8 !important;
+  border-radius: 3px !important;
+}
+
+// view setails table td th height ------
+
+.table:not(.table-sm):not(.table-md):not(.dataTable) th td {
+  padding: 0 10px;
+  height: 40px;
+  vertical-align: middle;
+  // font-size: 13px;
+}
+
+.table:not(.table-sm):not(.table-md):not(.dataTable) td,
+.table:not(.table-sm):not(.table-md):not(.dataTable) th {
+  padding: 0 10px;
+  height: 40px;
+  vertical-align: middle;
+}
+
+// -------------new add 05 dec ---
+.form-group label {
+  font-size: 13px;
+  color: #2b2e41;
+  font-weight: 400;
+}
+
+label {
+  font-size: 13px;
+  color: #2b2e41;
+  font-weight: 400;
+}
+
+table thead th {
+  color: #2b2e41 !important;
+  font-weight: 500;
+  font-size: 12px;
+  text-align: start !important;
+}
+
+table td {
+  color: #2b2e41 !important;
+  font-weight: 500;
+  font-size: 11px;
+  text-align: start !important;
+}
+
+
+
+@media (max-width: 575.98px) {
+  .navbar .nav-link {
+    padding-left: 4px !important;
+    padding-right: 4px !important;
+  }
+}
+
+
+
+.modal-backdrop {
+  position: static;
+  height: auto;
+  width: 100%;
+}
+
+.modal {
+  background-color: rgba(0, 0, 0, 0.4);
+  /* Black background with opacity */
+}
+
+
+.modal-header {
+  border-bottom: 1px solid #3080e8;
+}
+
+.modal-open {
+  overflow: auto !important;
+  padding-right: 0px !important;
+}
+
+
+// card header
+
+@media screen and (max-width:1024px) {
+  .card-header {
+    padding: 4px 0px 0px 20px;
+  }
+}
+
+
+.btnheader {
+  background: white !important;
+  color: #3080e8;
+  border-radius: 10px;
+}
+
+.btnheader:hover {
+  background: #2b2e41 !important;
+  color: white;
+}
+
+.card .card-body p {
+  font-weight: 400;
+  font-size: 13px;
+}
+
+.bg-blue {
+  background-color: #3080e8 !important;
+}
+
+.page-seperator {
+  border: 0px !important;
+  background-color: #3080e8;
+  ;
+
+}
+
+.ng-select .ng-select-container {
+  color: #2b2e41 !important;
+}
+
+span.ng-option-label {
+  font-size: 13px;
+
+}
+
+
+.ng-select div,
+.ng-select input,
+.ng-select span {
+  font-size: 12px;
+  border-radius: .375rem !important;
+}
+
+.ngx-pagination {
+  font-size: 13px;
+}
+
+.ng-select.ng-select-multiple .ng-select-container .ng-value-container {
+  padding-top: 0px !important;
+  border-radius: .375rem !important;
+}
+
+//Off-Canvas
+.offcanvas-backdrop.show {
+  opacity: 0 !important;
+  transition: opacity 0s linear;
+  -webkit-transition: opacity 0s linear;
+}
+
+.offcanvas-backdrop.fade {
+  opacity: 0 !important;
+  transition: opacity 0s linear;
+  -webkit-transition: opacity 0s linear;
+}
+
+// add toaster style
+
+#toast-container>div {
+  background-color: white !important;
+  color: black !important;
+  border-radius: 6px !important;
+  padding: 12px 5px !important;
+  border-left: 5px solid !important;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2) !important;
+  display: flex !important;
+  align-items: center !important;
+  font-size: 13px !important;
+  font-weight: 500;
+
+}
+
+/* 🔹 Success message (Green Text & Border) */
+#toast-container>.toast-success {
+
+  border-left-color: #28a745 !important;
+  color: #28a745 !important;
+}
+
+
+
+/* 🔹 Error message (Red Text & Border) */
+#toast-container>.toast-error {
+  border-left-color: #dc3545 !important;
+  color: #dc3545 !important;
+}
+
+/* 🔹 Info message (Blue Text & Border) */
+#toast-container>.toast-info {
+  border-left-color: #17a2b8 !important;
+  color: #17a2b8 !important;
+}
+
+/* 🔹 Warning message (Yellow Text & Border) */
+#toast-container>.toast-warning {
+  border-left-color: #ffc107 !important;
+  color: #ffc107 !important;
+}
+
+
+/* 🔹 Toastr ke andar ke text elements fix karein */
+#toast-container .toast-message {
+  background: transparent !important;
+  color: inherit !important;
+
+}
+
+/* 🔹 Extra: Agar unwanted background show ho raha ho */
+#toast-container {
+  background: transparent !important;
+ 
+}
+
+@media screen and (max-width:768px) {
+  #toast-container {
+    margin-top: 5rem !important;
+  }
+}
+
+
+
+#toast-container>.toast-success::before {
+  content: "✔";
+  /* Check mark */
+  color: green;
+  font-size: 12px !important;
+  font-weight: 500;
+  /* Makes the icon bold */
+  margin-right: 10px;
+  /* Creates space between icon & text */
+  display: inline-block;
+}
+
+
+#toast-container>.toast-error::before {
+  content: "✖";
+  /* Cross mark */
+  color: red;
+  font-size: 12px;
+  font-weight: 500;
+  /* Makes the icon bold */
+  margin-right: 10px;
+  /* Creates space between icon & text */
+  display: inline-block;
+}
+
+#toast-container>.toast-info::before {
+  content: "ℹ";
+  /* Info symbol */
+  color: blue;
+  font-size: 12px;
+  font-weight: 500;
+  /* Makes the icon bold */
+  margin-right: 10px;
+  /* Creates space between icon & text */
+  display: inline-block;
+}
+
+#toast-container>.toast-warning::before {
+  content: "⚠";
+  /* Warning symbol */
+  color: orange;
+  font-size: 12px;
+  font-weight: 500;
+  /* Makes the icon bold */
+  margin-right: 10px;
+  /* Creates space between icon & text */
+  display: inline-block;
+}
+
+// end toastr style
+
+
+// Form select style
+
+.form-select {
+  font-size: 12px;
+}
+
+// ngx_timepicker
+
+.ngx-timepicker-control__input {
+  font-size: 12px !important;
+
+}
+
+
+.period-control__button {
+  font-size: 12px !important;
+}
+
+.ngx-material-timepicker-toggle {
+  padding: 0px;
+}
+
+.ngx-timepicker-control__arrows {
+  line-height: 1.1 !important;
+  text-align: center !important;
+  padding-top: 3px;
+}
+
+.ngx-timepicker {
+  border: none !important;
+}
+
+
+// 
+
+
+
+
+
+@media (max-width: 768px) {
+  .main-sidebar {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    height: 100%;
+    z-index: 1100;
+    /* higher than header */
+    background-color: #fff;
+    /* or your sidebar color */
+    width: 250px;
+    /* or whatever width you use */
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .navbar,
+  .navbar-bg {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    /* stays below sidebar */
+    height: 60px;
+    margin: 0;
+    border-radius: 0;
+  }
+
+  .main-content {
+    padding-top: 10px !important;
+  }
+}
+
+
+//added code 1july
+html,
+body {
+  background: transparent !important; // 🔥 key
+}
+
+.fc-event-status {
+  text-align: center;
+  margin: 0px !important;
+  width: auto !important;
+
+}
+
+
+//  for serach  in header section add 
+
+.search-wrapper {
+  position: relative;
+  width: 280px;
+}
+
+@media screen and (max-width: 768px) {
+  .search-wrapper {
+    display: none !important;
+  }
+}
+
+/* SEARCH BOX */
+.search-box {
+  position: relative;
+
+  /* FIX: icon highlight on focus */
+  &:focus-within .search-icon {
+    color: #3080e8;
+    transform: translateY(-50%) scale(1.1);
+  }
+}
+
+/* LEFT ICON */
+.search-icon {
+  position: absolute;
+  top: 50%;
+  left: 7px;
+ 
+  transform: translateY(-50%);
+  color: #6c757d;
+  font-size: 13px;
+  pointer-events: none;
+  transition: all 0.3s ease;
+  z-index: 2;
+}
+
+/* INPUT */
+.search-input {
+  padding: 10px 18px 10px 36px;
+  border-radius: 2px !important;
+  border: 1px solid transparent;
+  background: #fff !important;
+  border: 1px solid #3080e8cc !important;
+  // border-left:0px !important;
+  transition: all 0.3s ease;
+  font-size: 13px;
+  min-height: 36px !important;
+  position: relative;
+  z-index: 1;
+
+  &:focus {
+    outline: none;
+    background: #ffffff;
+    border-color: #3080e8;
+  }
+}
+
+
+
+/* RESULT COUNT */
+.result-count {
+  font-size: 12px;
+  padding: 8px 12px;
+  background: #f5f7fb;
+  color: #3080e8;
+  font-weight: 600;
+  border-bottom: 1px solid #eee;
+}
+
+/* DROPDOWN */
+.search-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 103%;
+  background: #fff;
+  border-radius: 2px;
+  overflow: hidden;
+  border: 1px solid #e6ebf1;
+  z-index: 999;
+  animation: dropdownFade 0.25s ease;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+}
+
+/* ANIMATION */
+@keyframes dropdownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* LIST */
+.search-dropdown ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 260px;
+  overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #d0d7e2;
+    border-radius: 10px;
+  }
+}
+
+/* LIST ITEM */
+.search-dropdown li {
+  padding: 8px 14px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #eee;
+
+  i {
+    font-size: 13px;
+    transition: 0.2s;
+  }
+
+  &:hover {
+    background: #3080e8;
+    color: #fff;
+    padding-left: 18px;
+
+    i {
+      transform: scale(1.2);
+      color: #fff !important;
+    }
+  }
+}
+
+/* NO RESULT WRAPPER */
+.no-result-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* NO RESULT CARD */
+.no-result-card {
+  width: 100%;
+  text-align: center;
+  padding: 25px 15px;
+  background: linear-gradient(135deg, #f8fbff, #eef4ff);
+  border: 1px solid #e3ecf7;
+  animation: fadeInUp 0.3s ease;
+
+  h5 {
+    font-size: 15px;
+    font-weight: 600;
+    color: #2f3a4c;
+    margin-top: 10px;
+  }
+
+  p {
+    font-size: 13px;
+    color: #6c7a89;
+    margin: 6px 0;
+
+    span {
+      color: #3080e8;
+      font-weight: 600;
+    }
+  }
+
+  small {
+    font-size: 12px;
+    color: #9aa4b2;
+  }
+}
+
+/* ICON BOX */
+.icon-box-search {
+  width: 65px;
+  height: 65px;
+  margin: 0 auto;
+  border-radius: 50%;
+  background: rgba(48, 128, 232, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: pulse 1.5s infinite;
+
+  i {
+    font-size: 24px;
+    color: #3080e8;
+  }
+}
+
+/* ANIMATIONS */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(48, 128, 232, 0.3);
+  }
+  70% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 10px rgba(48, 128, 232, 0);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.small{
+  font-size: 12px;
+}
+
+
+.company-wrapper {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  
+}
+
+@media screen and (max-width:768px) {
+  .company-wrapper{
+    display: none;
+  }
+  
+}
+
+/* MAIN BAR */
+.company-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  background: transparent;
+  border-radius: 2px;
+  // border-right: 2px solid #a5a9ad79;
+  // border-left: 2px solid #a5a9ad79;
+}
+
+/* ICON */
+.company-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(48, 128, 232, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  i {
+    color: #3080e8;
+    font-size: 13px;
+  }
+}
+
+/* DETAILS */
+.company-details {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+/* TOP LINE */
+.top-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+
+  .company-name {
+    font-weight: 700;
+    color: #2b2e41 !important;
+  }
+
+  .fy {
+    color: #3080e8;
+    font-weight: 500;
+  }
+
+  .divider {
+    color: #ccc;
+  }
+}
+
+/* BOTTOM LINE */
+.bottom-line {
+  font-size: 11px;
+  color: #2b2e41;
+  display: flex;
+  font-weight: 600;
+  align-items: center;
+}
+
+
+.ng-option {
+  white-space: normal !important;
+  word-break: break-word !important;
+  overflow-wrap: break-word !important;
+  line-height: 20px;
+  height: auto !important;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+
+.ng-select .ng-spinner-loader {
+  border-top-color: #003087 !important;
+  border-right-color:  #003087  !important;
+  border-bottom-color:  #003087  !important;
+  border-left-color:  #003087 !important;
+}
+
+.at{
+  filter: blur(0.4px) !important;
+}
+
+.table-responsive{
+  white-space: nowrap;
+}
+
+
+
+.ng-option.ng-option-disabled {
+  color: #2b2e41 !important;
+  font-size: 12px;
+}
+
+
+/* ── Shared Fact Box / Workflow Action Floating Button ── */
+.btn-float-fact,
+.sidebar-fab-light {
+  position: fixed !important;
+  bottom: 40px !important;
+  right: 20px !important;
+  width: 50px !important;
+  height: 50px !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  // box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3) !important;
+  z-index: 1050 !important;
+  transition: transform 0.2s ease-in-out !important;
+  padding: 0 !important;
+  cursor: pointer;
+
+  &:hover {
+    transform: scale(1.1) !important;
+  }
+
+  i {
+    font-size: 18px !important;
+    color: #ffffff !important;
+  }
+}

@@ -1,0 +1,228 @@
+/* ── Summary KPI Chips (Matching Vendor Transaction Sync) ───── */
+.summary-chips-container {
+  display: flex;
+  flex-wrap: nowrap !important;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  white-space: nowrap;
+  scrollbar-width: thin;
+  padding-bottom: 4px;
+}
+
+.summary-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  flex-shrink: 0;
+  border: 1px solid transparent;
+}
+
+.chip-total {
+  background: #e8f0fe;
+  color: #1a56db;
+  border-color: #c3d7fa;
+}
+
+.chip-synced {
+  background: #dcfce7;
+  color: #16a34a;
+  border-color: #bbf7d0;
+}
+
+.chip-pending {
+  background: #fef9c3;
+  color: #b45309;
+  border-color: #fde68a;
+}
+
+.chip-payable {
+  background: #f3e8ff;
+  color: #7e22ce;
+  border-color: #e9d5ff;
+}
+
+.chip-deficit {
+  background: #fee2e2;
+  color: #b91c1c;
+  border-color: #fca5a5;
+}
+
+/* ── Selection Action Bar ───────────────────────────────────────────── */
+.selection-action-bar {
+  position: sticky;
+  top: 10px;
+  z-index: 100;
+  animation: slideDown 0.25s ease-out;
+  border-left: 4px solid #2563eb !important;
+  background-color: #eff6ff !important;
+  padding: 8px 14px;
+  border-radius: 8px;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Status Pills / Tabs ────────────────────────────────────────────── */
+.nav-pills {
+  .nav-link {
+    color: #4b5563;
+    border-radius: 20px;
+    background: #f1f5f9;
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 5px 14px;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: #e2e8f0;
+      color: #111827;
+    }
+
+    &.active {
+      background: #2563eb;
+      color: #ffffff;
+
+      .badge {
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+      }
+    }
+  }
+}
+
+/* ── Settlement Table ────────────────────────────────────────────────── */
+.settlement-table {
+  font-size: 13px;
+
+  th {
+    vertical-align: middle;
+    font-weight: 600;
+    background-color: #f8fafc;
+    color: #334155;
+    padding: 10px 8px;
+  }
+
+  td {
+    vertical-align: middle;
+    padding: 8px 10px;
+  }
+
+  tbody tr {
+    transition: background-color 0.15s ease;
+
+    &:hover {
+      background-color: #f8fafc;
+    }
+  }
+
+  .row-paid {
+    background-color: #fafdfb;
+  }
+}
+
+/* ── Modal styling matching Vendor Transaction Sync ─────────────────── */
+.modal {
+  .small {
+    font-size: 11px;
+    font-weight: 500;
+  }
+}
+
+/* ── Form Controls & Buttons ────────────────────────────────────────── */
+.form-label {
+  font-size: 0.8rem;
+}
+
+.form-control, .form-select {
+  font-size: 0.82rem;
+}
+
+.form-control-sm, .form-select-sm {
+  min-height: 32px;
+  font-size: 0.82rem;
+  padding: 4px 8px;
+}
+
+.btn {
+  font-size: 0.82rem;
+}
+
+.btn-sm {
+  font-size: 0.78rem;
+  padding: 4px 10px;
+}
+
+.btn-emerald {
+  background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+  border: none;
+  color: #ffffff;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: linear-gradient(135deg, #047857 0%, #059669 100%);
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(5, 150, 105, 0.25) !important;
+  }
+}
+
+.badge-synced {
+  background-color: #ecfdf5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
+  font-weight: 600;
+  border-radius: 6px;
+  padding: 2px 6px;
+  font-size: 11px;
+}
+
+.badge-unsynced {
+  background-color: #fffbeb;
+  color: #b45309;
+  border: 1px solid #fde68a;
+  font-weight: 600;
+  border-radius: 6px;
+  padding: 2px 6px;
+  font-size: 11px;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ── Dropdown & ng-select Styling (Matching sync page) ───────────────── */
+::ng-deep {
+  .ng-dropdown-panel {
+    font-size: 0.8rem !important;
+
+    .ng-option {
+      font-size: 0.8rem !important;
+      padding: 6px 10px !important;
+    }
+  }
+
+  .ng-select {
+    font-size: 0.82rem !important;
+
+    .ng-select-container {
+      min-height: 32px !important;
+      font-size: 0.82rem !important;
+    }
+  }
+}

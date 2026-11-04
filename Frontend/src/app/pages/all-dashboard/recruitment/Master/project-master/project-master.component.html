@@ -1,0 +1,82 @@
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+
+            <div class="card-header bg-primary">
+                <div class="row w-100">
+                    <div
+                        class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-between">
+                        <h4 class="">{{Isedit ? 'Update Project Master' : 'Project Master' }}</h4>
+                    </div>
+                    <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+                        <button class="btn btnheader" routerLink="/dash/recruitment/recruitmentdashboard/ProjectMaster_list">Back
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- main header close -->
+
+            <!--  -->
+
+            <div class="card-body mt-4">
+                <form class="row row-cols-1 row-cols-md-3 g-4" [formGroup]="ProjectMaster">
+
+
+
+                    <div class="col">
+                        <label for="" class="">Project Code<span style="color: red;">*</span></label>
+                        <input type="text" class="form-control" formControlName="Projectcode" id="inputPassword">
+                        <span *ngIf="showError &&ProjectMaster.controls['Projectcode'].invalid" class="text-danger mt-1"
+                            style="font-size: 12px;">
+                            Please enter Project code.
+                        </span>
+                    </div>
+
+                    <div class="col">
+                        <label for="Description">Project Name<span style="color: red;">*</span></label>
+                        <input id="Description" type="text" class="form-control" formControlName="Projectname"
+                            (blur)="checkDuplicate(ProjectMaster.get('Projectname')?.value)" />
+                        <span
+                            *ngIf="showError &&ProjectMaster.controls['Projectname'].invalid && !ProjectMaster.get('Projectname')?.errors?.['duplicate']"
+                            class="text-danger mt-1 lh-base" style="font-size: 12px;">
+                            Please enter Project Name.
+                        </span>
+                        <div *ngIf="ProjectMaster.get('Projectname')?.errors?.['duplicate']"
+                            class="text-danger lh-base" style="font-size:10px;">
+                            {{ ProjectMaster.get('Projectname')?.errors?.['duplicate'] }}
+                        </div>
+                    </div>
+
+                    <!-- <div class="col">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="active"
+                                formControlName="active">
+                            <label class="form-check-label" for="active">Active</label>
+                        </div>
+                    </div> -->
+
+                     <div class="col">
+                        <label for="isActive">Is Active:</label>
+                        <div class="form-group">
+                          <input class="form-check-input" type="checkbox" formControlName="active">
+                        </div>      
+                      </div>
+                    
+
+
+
+
+                </form>
+                <!-- Buttons -->
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary mx-1" (click)="onSubmit()">{{ Isedit ? 'Update' :
+                        'Save' }}</button>
+                    <button type="reset" class="btn btn-outline-dark mx-1">Reset</button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

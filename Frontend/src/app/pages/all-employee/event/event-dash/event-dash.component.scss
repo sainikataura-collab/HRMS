@@ -1,0 +1,39 @@
+.small{
+    font-size: 12px;
+}
+
+
+.unread-badge-3 {
+  background: #fff3cd;
+  color: #b8860b;
+  border: 1px solid #ffe197;
+  transition: 0.3s ease;
+}
+
+.unread-badge-3:hover {
+  background: #dbf7e3;
+  border-color: #198754;
+  color: #198754;
+  cursor: pointer;
+}
+
+/* icon color */
+.unread-dot {
+  font-size: 14px;
+  color: #b8860b;
+  transition: 0.3s ease;
+}
+
+/* Hover icon color + animation */
+.unread-badge-3:hover .unread-dot {
+  color: #198754;
+  animation: bounce 0.6s ease;
+}
+
+/* Bounce keyframes */
+@keyframes bounce {
+  0%   { transform: translateY(0); }
+  40%  { transform: translateY(-4px); }
+  60%  { transform: translateY(2px); }
+  100% { transform: translateY(0); }
+}

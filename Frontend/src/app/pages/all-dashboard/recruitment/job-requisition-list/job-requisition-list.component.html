@@ -1,0 +1,627 @@
+<div class="ats-mrf-list-page">
+
+  <!-- ── 1. CORPORATE HEADER STRIP ─────────────────────────────────────────── -->
+  <div class="header-strip d-flex flex-wrap justify-content-between align-items-center mb-2 p-2 px-3 bg-white rounded border border-secondary-subtle">
+    <div class="d-flex align-items-center gap-2">
+      <a routerLink="/dash/recruitment/recruitmentdashboard" class="btn-back rounded d-flex align-items-center justify-content-center text-dark text-decoration-none" title="Back to Recruitment Hub">
+        <i class="bi bi-arrow-left"></i>
+      </a>
+      <div class="d-flex align-items-center gap-2 flex-wrap">
+        <span class="page-title text-dark fw-bold">Manpower Requisitions (MRF) & Job Postings</span>
+        <span class="badge-chip bg-primary text-white shadow-xs">
+          <i class="bi bi-collection-fill me-1"></i> CJ DARCL Requisitions
+        </span>
+        <span class="badge-chip bg-white text-dark border border-secondary fw-bold">
+          <i class="bi bi-check2-circle text-success me-1"></i>Live Synchronized
+        </span>
+      </div>
+    </div>
+
+    <!-- Right Action Button -->
+    <div class="d-flex align-items-center gap-2 mt-1 mt-md-0">
+      <a routerLink="/dash/recruitment/recruitmentdashboard/job-management" class="btn btn-outline-dark btn-sm fw-semibold" style="font-size: 11px; padding: 3px 10px;">
+        <i class="bi bi-kanban me-1 text-primary"></i> Multi-Tier Approval Board
+      </a>
+      <a routerLink="/dash/recruitment/recruitmentdashboard/create-job-wizard" class="btn btn-primary-action fw-semibold shadow-sm">
+        <i class="bi bi-plus-lg me-1"></i> Raise New Requisition
+      </a>
+    </div>
+  </div>
+
+  <!-- ── 2. BENTO KPI METRICS SUMMARY (High Visibility Color-Coded) ─────────── -->
+  <div class="row g-2 mb-2">
+    <!-- Card 1: Total MRFs -->
+    <div class="col-6 col-md-4 col-xl">
+      <div class="bento-kpi-card p-2 rounded border cursor-pointer kpi-indigo" [class.active]="activeStatusFilter === 'All'" (click)="setStatusFilter('All')">
+        <div class="d-flex justify-content-between align-items-center">
+          <span class="kpi-label text-dark fw-bold">Total MRFs</span>
+          <i class="bi bi-collection-fill text-primary" style="font-size: 14px;"></i>
+        </div>
+        <div class="kpi-val text-dark fw-bold">{{ totalCount }}</div>
+        <div class="kpi-sub text-dark fw-semibold">All Recorded</div>
+      </div>
+    </div>
+
+    <!-- Card 2: Active Requisitions -->
+    <div class="col-6 col-md-4 col-xl">
+      <div class="bento-kpi-card p-2 rounded border cursor-pointer kpi-green" [class.active]="activeStatusFilter === 'Active'" (click)="setStatusFilter('Active')">
+        <div class="d-flex justify-content-between align-items-center">
+          <span class="kpi-label text-success-emphasis fw-bold">Active / Live</span>
+          <i class="bi bi-broadcast-pin text-success" style="font-size: 14px;"></i>
+        </div>
+        <div class="kpi-val text-success fw-bold">{{ activeCount }}</div>
+        <div class="kpi-sub text-success fw-semibold">Sourcing Active</div>
+      </div>
+    </div>
+
+    <!-- Card 3: Pending Approvals -->
+    <div class="col-6 col-md-4 col-xl">
+      <div class="bento-kpi-card p-2 rounded border cursor-pointer kpi-amber" [class.active]="activeStatusFilter === 'Pending'" (click)="setStatusFilter('Pending')">
+        <div class="d-flex justify-content-between align-items-center">
+          <span class="kpi-label text-warning-emphasis fw-bold">Pending Review</span>
+          <i class="bi bi-hourglass-split text-warning" style="font-size: 14px;"></i>
+        </div>
+        <div class="kpi-val text-warning-emphasis fw-bold">{{ pendingCount }}</div>
+        <div class="kpi-sub text-warning-emphasis fw-semibold">L1 / L2 / L3 Review</div>
+      </div>
+    </div>
+
+    <!-- Card 4: Rejected / Requires Revision -->
+    <div class="col-6 col-md-4 col-xl">
+      <div class="bento-kpi-card p-2 rounded border cursor-pointer kpi-red" [class.active]="activeStatusFilter === 'Rejected'" (click)="setStatusFilter('Rejected')">
+        <div class="d-flex justify-content-between align-items-center">
+          <span class="kpi-label text-danger fw-bold">Rejected</span>
+          <i class="bi bi-x-circle-fill text-danger" style="font-size: 14px;"></i>
+        </div>
+        <div class="kpi-val text-danger fw-bold">{{ rejectedCount }}</div>
+        <div class="kpi-sub text-danger fw-semibold">Needs HR Revision</div>
+      </div>
+    </div>
+
+    <!-- Card 5: Drafts -->
+    <div class="col-6 col-md-4 col-xl">
+      <div class="bento-kpi-card p-2 rounded border cursor-pointer kpi-slate" [class.active]="activeStatusFilter === 'Draft'" (click)="setStatusFilter('Draft')">
+        <div class="d-flex justify-content-between align-items-center">
+          <span class="kpi-label text-dark fw-bold">Draft MRFs</span>
+          <i class="bi bi-file-earmark-diff-fill text-indigo" style="font-size: 14px;"></i>
+        </div>
+        <div class="kpi-val text-dark fw-bold">{{ draftCount }}</div>
+        <div class="kpi-sub text-secondary fw-semibold">Saved Unsubmitted</div>
+      </div>
+    </div>
+
+    <!-- Card 6: Standby Buffer Utilized -->
+    <div class="col-6 col-md-4 col-xl">
+      <div class="bento-kpi-card p-2 rounded border cursor-pointer kpi-cyan" [class.active]="activeStatusFilter === 'Buffer'" (click)="setStatusFilter('Buffer')">
+        <div class="d-flex justify-content-between align-items-center">
+          <span class="kpi-label text-info-emphasis fw-bold">Buffer Activated</span>
+          <i class="bi bi-shield-exclamation text-info" style="font-size: 14px;"></i>
+        </div>
+        <div class="kpi-val text-info-emphasis fw-bold">{{ bufferUtilizedCount }}</div>
+        <div class="kpi-sub text-info-emphasis fw-semibold">Buffer Heads Used</div>
+      </div>
+    </div>
+
+    <!-- Card 7: Diversity Hiring -->
+    <div class="col-6 col-md-4 col-xl">
+      <div class="bento-kpi-card p-2 rounded border cursor-pointer kpi-purple" [class.active]="activeStatusFilter === 'Diversity'" (click)="setStatusFilter('Diversity')">
+        <div class="d-flex justify-content-between align-items-center">
+          <span class="kpi-label text-purple fw-bold">Diversity Hiring</span>
+          <i class="bi bi-people-fill text-purple" style="font-size: 14px;"></i>
+        </div>
+        <div class="kpi-val text-purple fw-bold">{{ diversityCount }}</div>
+        <div class="kpi-sub text-purple fw-semibold">D&I Mandate</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 3. FILTER & SEARCH TOOLBAR (High-Contrast Controls) ────────────────── -->
+  <div class="filter-strip p-2 px-3 bg-white rounded border border-secondary-subtle mb-2 d-flex flex-wrap justify-content-between align-items-center gap-2">
+    <!-- Search Box -->
+    <div class="d-flex align-items-center gap-2 flex-grow-1" style="max-width: 380px;">
+      <div class="input-group input-group-sm">
+        <span class="input-group-text bg-white text-primary border-secondary-subtle border-end-0">
+          <i class="bi bi-search fw-bold"></i>
+        </span>
+        <input type="text" class="form-control border-start-0 border-secondary-subtle fw-semibold text-dark" [(ngModel)]="searchQuery" (input)="applyFilters()" placeholder="Search by MRF Code, Job Title, Designation, Hub...">
+      </div>
+    </div>
+
+    <!-- Department & Location Dropdowns -->
+    <div class="d-flex align-items-center gap-2 flex-wrap">
+      <div class="d-flex align-items-center gap-1">
+        <span class="text-dark fw-bold" style="font-size: 11px;"><i class="bi bi-building text-primary me-1"></i>Company:</span>
+        <select class="form-select form-select-sm border-secondary-subtle fw-semibold text-dark" [(ngModel)]="selectedCompany" (change)="onCompanyChange()" style="font-size: 11px; width: 140px;">
+          <option value="All">All Companies</option>
+          <option *ngFor="let c of uniqueCompanies" [value]="c">{{ c }}</option>
+        </select>
+      </div>
+
+      <div class="d-flex align-items-center gap-1">
+        <span class="text-dark fw-bold" style="font-size: 11px;">Dept:</span>
+        <select class="form-select form-select-sm border-secondary-subtle fw-semibold text-dark" [(ngModel)]="selectedDepartment" (change)="applyFilters()" style="font-size: 11px; width: 140px;">
+          <option value="All">All Departments</option>
+          <option *ngFor="let d of uniqueDepartments" [value]="d">{{ d }}</option>
+        </select>
+      </div>
+
+      <div class="d-flex align-items-center gap-1">
+        <span class="text-dark fw-bold" style="font-size: 11px;">Hub:</span>
+        <select class="form-select form-select-sm border-secondary-subtle fw-semibold text-dark" [(ngModel)]="selectedLocation" (change)="applyFilters()" style="font-size: 11px; width: 150px;">
+          <option value="All">All Locations</option>
+          <option *ngFor="let l of uniqueLocations" [value]="l">{{ l }}</option>
+        </select>
+      </div>
+
+      <button type="button" class="btn btn-outline-dark btn-sm fw-semibold" (click)="searchQuery = ''; selectedDepartment = 'All'; selectedLocation = 'All'; selectedCompany = activeCompanyId || 'All'; activeStatusFilter = 'All'; onCompanyChange()" title="Reset Filters" style="font-size: 11px;">
+        <i class="bi bi-arrow-clockwise"></i> Reset
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="p-5 text-center bg-white rounded border border-secondary-subtle">
+    <div class="spinner-border text-primary" role="status" style="width: 2rem; height: 2rem;"></div>
+    <div class="mt-2 text-dark fw-bold" style="font-size: 12px;">Loading Requisitions Directory...</div>
+  </div>
+
+  <!-- ── 4. REQUISITIONS TABLE & BENTO DIRECTORY ───────────────────────────── -->
+  <div class="table-responsive bg-white rounded border border-slate-300 shadow-xs" *ngIf="!isLoading">
+    <table class="table table-hover align-middle mb-0" style="font-size: 11.5px;">
+      <thead class="table-light-header">
+        <tr>
+          <th style="width: 110px;" class="ps-3 py-2.5">MRF Code</th>
+          <th style="min-width: 150px;" class="py-2.5">Role & Designation</th>
+          <th style="width: 95px;" class="py-2.5">Company</th>
+          <th style="width: 125px;" class="py-2.5">Department & Hub</th>
+          <th style="width: 85px;" class="text-center py-2.5">Positions</th>
+          <th style="width: 115px;" class="py-2.5">Comp & Exp</th>
+          <th style="width: 100px;" class="text-center py-2.5">Status</th>
+          <th style="width: 115px;" class="py-2.5">Created By</th>
+          <th style="width: 110px;" class="text-end pe-3 py-2.5">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let job of filteredJobs" class="requisition-row">
+          
+          <!-- MRF Code (Immutable Badge with Copy) -->
+          <td class="ps-3 py-2">
+            <div class="d-flex align-items-center gap-1">
+              <span class="mrf-badge font-monospace cursor-pointer" (click)="openJobDetail(job)" title="Click to view full record">
+                {{ job.mrfCode }}
+              </span>
+              <button type="button" class="btn btn-link btn-xs text-primary p-0" (click)="copyMrfCode(job.mrfCode, $event)" title="Copy MRF Code">
+                <i class="bi bi-clipboard" style="font-size: 11px;"></i>
+              </button>
+            </div>
+            <div class="fw-semibold text-slate-700 text-truncate" style="font-size: 10px; color: #334155; max-width: 100px;">
+              {{ job.serviceType || 'Logistics' }}
+            </div>
+          </td>
+
+          <!-- Role & Designation -->
+          <td class="py-2">
+            <div class="fw-bold text-dark cursor-pointer text-truncate" (click)="openJobDetail(job)" [title]="job.jobTitle" style="max-width: 190px; font-size: 11.5px;">
+              {{ job.jobTitle }}
+            </div>
+            <div class="d-flex align-items-center gap-1 flex-wrap mt-0.5">
+              <span class="badge bg-primary-subtle text-primary border border-primary-subtle fw-semibold" style="font-size: 9px; padding: 1px 4px;">
+                {{ job.designation || 'Specialist' }}
+              </span>
+              <span class="badge bg-slate-100 text-slate-800 border border-slate-300 fw-semibold" style="font-size: 9px; color: #1e293b; background-color: #f1f5f9; padding: 1px 4px;">
+                {{ job.skillCategory || 'Skilled' }}
+              </span>
+              <span class="badge bg-purple-subtle text-purple border border-purple-subtle fw-semibold" *ngIf="job.isDiversityHiring" style="font-size: 9px; padding: 1px 4px;">
+                <i class="bi bi-gender-ambiguous"></i> D&I
+              </span>
+            </div>
+          </td>
+
+          <!-- Company Identifier -->
+          <td class="py-2">
+            <span class="badge bg-light text-dark border border-secondary-subtle fw-bold" style="font-size: 10px; padding: 2px 7px;">
+              <i class="bi bi-building text-primary me-1"></i>{{ job.companyId || job.fk_companyId || 'GU-1' }}
+            </span>
+          </td>
+
+          <!-- Department & Hub Location -->
+          <td class="py-2">
+            <div class="fw-bold text-dark text-truncate" style="max-width: 120px;">{{ job.department || 'Operations' }}</div>
+            <div class="fw-semibold d-flex align-items-center gap-1 text-truncate" style="font-size: 10px; color: #334155; max-width: 120px;">
+              <i class="bi bi-geo-alt-fill text-danger flex-shrink-0"></i> {{ job.location || 'Hub' }}
+            </div>
+          </td>
+
+          <!-- Open Positions & Buffer Tag -->
+          <td class="text-center py-2">
+            <span class="badge bg-primary text-white fw-bold px-2 py-0.5" style="font-size: 10.5px;">
+              {{ job.openPositions || 1 }} Heads
+            </span>
+            <div class="mt-0.5">
+              <span class="badge bg-warning-subtle text-warning border border-warning fw-bold" *ngIf="job.isBufferUtilized" style="font-size: 8.5px; padding: 1px 4px;" title="Utilizes Standby Buffer">
+                +{{ job.bufferHeadsUtilized || 1 }} Buf
+              </span>
+              <span class="badge bg-success-subtle text-success border border-success fw-bold" *ngIf="!job.isBufferUtilized" style="font-size: 8.5px; padding: 1px 4px;">
+                Std
+              </span>
+            </div>
+          </td>
+
+          <!-- Compensation / Experience -->
+          <td class="py-2">
+            <div class="fw-bold text-dark text-truncate" *ngIf="job.ctcMin || job.ctcMax" style="font-size: 11px;">
+              ₹{{ job.ctcMin || 0 }}-{{ job.ctcMax || 'Open' }}L
+            </div>
+            <div class="fw-semibold text-slate-800" *ngIf="!job.ctcMin && !job.ctcMax" style="color: #0f172a; font-size: 10.5px;">Std Band</div>
+            <div class="fw-semibold text-truncate" style="font-size: 10px; color: #334155;">
+              {{ (job.experienceMin || 0) + '-' + (job.experienceMax ? job.experienceMax + 'y' : 'Any') }}
+            </div>
+          </td>
+
+          <!-- Status -->
+          <td class="text-center py-2">
+            <span *ngIf="isRejected(job)" class="badge bg-danger text-white fw-bold shadow-xs" style="font-size: 9.5px; padding: 2px 6px;">
+              Rejected ({{ job.rejectedByLevel || 'Stage' }})
+            </span>
+            <span *ngIf="!isRejected(job)" class="badge fw-bold" [ngClass]="{
+              'bg-success text-white': job.status === 'Active',
+              'bg-warning text-dark': job.status?.includes('Pending') || job.workflowStatus?.includes('Pending'),
+              'bg-dark text-white': job.status === 'Draft' || job.isDraft,
+              'bg-secondary text-white': job.status === 'Closed'
+            }" style="font-size: 9.5px; padding: 2px 6px;">
+              {{ job.status || 'Active' }}
+            </span>
+            <div class="fw-semibold mt-0.5 text-truncate" style="font-size: 9px; color: #334155; max-width: 95px;" *ngIf="job.workflowStatus && !isRejected(job)">
+              {{ job.workflowStatus }}
+            </div>
+            <div class="fw-bold mt-0.5 text-danger text-truncate" style="font-size: 8.5px; max-width: 105px;" *ngIf="isRejected(job)" title="Click Edit to correct & resubmit">
+              Needs HR Edit
+            </div>
+          </td>
+
+          <!-- Created / Raised By -->
+          <td class="py-2" style="min-width: 145px;">
+            <div class="text-dark fw-bold text-truncate" style="max-width: 140px; font-size: 11.5px;" [title]="job.submittedBy || 'Site HR'">
+              {{ job.submittedBy || 'Site HR' }}
+            </div>
+            <div class="text-muted" style="font-size: 11px; font-weight: 500; font-family: 'Work Sans', sans-serif;">
+              {{ ((job.createdDate || job.postedDate) | date:'dd-MM-yyyy, hh:mm:ss a') || '-' }}
+            </div>
+          </td>
+
+          <!-- Actions: View Details + Edit MRF (Only on MRF List) -->
+          <td class="text-end pe-3 py-2">
+            <div class="d-flex align-items-center justify-content-end gap-1">
+              <button type="button" class="btn btn-outline-dark btn-sm fw-bold shadow-xs" (click)="openJobDetail(job)" title="View Full Details" style="font-size: 11px; padding: 2px 7px; border-color: #94a3b8; background-color: #ffffff;">
+                <i class="bi bi-eye-fill text-dark"></i>
+              </button>
+              <button *ngIf="canEdit(job)" type="button" class="btn btn-primary btn-sm text-white fw-bold shadow-xs" (click)="navigateToEdit(job)" [title]="isRejected(job) ? 'Edit & Resubmit to ' + (job.rejectedByLevel || 'Workflow') : 'Edit this MRF'" style="font-size: 11px; padding: 2px 9px;">
+                <i class="bi bi-pencil-square me-1"></i> {{ isRejected(job) ? 'Edit' : 'Edit' }}
+              </button>
+              <span *ngIf="!canEdit(job)" class="badge bg-light text-muted border py-1 px-2" style="font-size: 10px;" title="Editing locked after Level 1 approval">
+                <i class="bi bi-lock-fill me-0.5 text-secondary"></i>Locked
+              </span>
+            </div>
+          </td>
+
+        </tr>
+
+        <!-- Empty Results -->
+        <tr *ngIf="filteredJobs.length === 0">
+          <td colspan="9" class="text-center py-5 text-dark">
+            <i class="bi bi-inbox text-primary d-block mb-2" style="font-size: 2.2rem;"></i>
+            <div class="fw-bold text-dark" style="font-size: 13px;">No Manpower Requisitions Found</div>
+            <div class="mt-1 fw-semibold text-slate-700" style="font-size: 11px; color: #334155;">Try adjusting your search criteria or raise a new requisition.</div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ── 5. FULL DETAILS SLIDE-OVER DRAWER ─────────────────────────────────── -->
+  <div class="drawer-backdrop" *ngIf="showDetailDrawer" (click)="closeJobDetail()"></div>
+
+  <div class="details-drawer bg-white shadow-lg" *ngIf="showDetailDrawer && selectedJobForDetail">
+    
+    <!-- Drawer Header (Always Visible at Top) -->
+    <div class="drawer-header p-3 border-bottom d-flex justify-content-between align-items-center bg-white shadow-xs">
+      <div>
+        <div class="d-flex align-items-center gap-1.5 flex-wrap">
+          <span class="badge bg-primary text-white font-monospace fw-bold px-2 py-1" style="font-size: 11.5px;">
+            <i class="bi bi-lock-fill me-1"></i> {{ selectedJobForDetail.mrfCode }}
+          </span>
+          <span class="badge fw-bold px-2 py-1" [ngClass]="selectedJobForDetail.status === 'Active' ? 'bg-success text-white' : 'bg-warning text-dark'" style="font-size: 11px;">
+            {{ selectedJobForDetail.status }}
+          </span>
+        </div>
+        <h5 class="fw-bold text-dark mt-1.5 mb-0" style="font-size: 15px; color: #0f172a;">
+          {{ selectedJobForDetail.jobTitle }}
+        </h5>
+      </div>
+
+      <div class="d-flex align-items-center gap-2">
+        <button type="button" class="btn btn-primary-action btn-sm fw-bold shadow-xs" (click)="navigateToEdit(selectedJobForDetail)">
+          <i class="bi bi-pencil-square me-1"></i> Edit MRF
+        </button>
+        <button type="button" class="btn-close-custom" (click)="closeJobDetail()" aria-label="Close" title="Close Drawer">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Drawer Content Body (Clean White Cards, Ultra-High Contrast Labels) -->
+    <div class="drawer-body p-3">
+      
+      <!-- Rejection Banner (If Rejected at L1, L2, or L3) -->
+      <div *ngIf="isRejected(selectedJobForDetail)" class="alert alert-danger border border-danger-subtle rounded p-2.5 mb-3 shadow-xs">
+        <div class="d-flex align-items-start gap-2">
+          <i class="bi bi-exclamation-octagon-fill text-danger fs-5 mt-0.5"></i>
+          <div class="flex-grow-1" style="font-size: 11.5px;">
+            <div class="fw-bold text-danger" style="font-size: 12px;">
+              Requisition Rejected at {{ selectedJobForDetail.rejectedByLevel || 'Approval Stage' }}
+            </div>
+            <div class="text-dark mt-1" *ngIf="selectedJobForDetail.rejectedByName">
+              <strong>Rejected By:</strong> {{ selectedJobForDetail.rejectedByName }}
+              <span class="text-muted ms-1" *ngIf="selectedJobForDetail.rejectedByDate">on {{ selectedJobForDetail.rejectedByDate | date:'dd-MM-yyyy, hh:mm:ss a' }}</span>
+            </div>
+            <div class="mt-1 p-2 bg-white rounded border border-danger-subtle text-dark" *ngIf="selectedJobForDetail.rejectionRemarks">
+              <strong>Remarks:</strong> {{ selectedJobForDetail.rejectionRemarks }}
+            </div>
+            <div class="text-danger fw-semibold mt-1.5" style="font-size: 11px;">
+              <i class="bi bi-info-circle me-1"></i> Click <strong>Edit this Requisition</strong> below to make required adjustments. Resubmitting will route this MRF directly back to <strong>{{ selectedJobForDetail.rejectedByLevel || 'the rejected level' }}</strong> for re-approval.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 1: Overview & Location Capacity -->
+      <div class="drawer-card p-3 rounded mb-3 bg-white border border-slate-300 shadow-xs">
+        <div class="drawer-card-title fw-bold text-dark mb-2.5 pb-1 border-bottom" style="font-size: 12px; color: #0f172a;">
+          <i class="bi bi-geo-alt-fill text-danger me-1"></i> Location & Capacity Headroom
+        </div>
+        <div class="row g-2.5" style="font-size: 11.5px;">
+          <div class="col-6">
+            <span class="drawer-field-label">Operating Location:</span>
+            <span class="drawer-field-value text-dark fw-bold">{{ selectedJobForDetail.location }}</span>
+          </div>
+          <div class="col-6">
+            <span class="drawer-field-label">Headcount Mandate:</span>
+            <span class="badge bg-primary text-white fw-bold px-2 py-0.5" style="font-size: 11px;">
+              {{ selectedJobForDetail.openPositions || 1 }} Openings
+            </span>
+          </div>
+          <div class="col-6">
+            <span class="drawer-field-label">Buffer Status:</span>
+            <span class="badge fw-bold px-2 py-0.5" [ngClass]="selectedJobForDetail.isBufferUtilized ? 'bg-warning-subtle text-warning border border-warning' : 'bg-success-subtle text-success border border-success'" style="font-size: 10px;">
+              {{ selectedJobForDetail.isBufferUtilized ? 'Utilizing Buffer Pool (' + selectedJobForDetail.bufferHeadsUtilized + ' heads)' : 'Within Standard Ceilings' }}
+            </span>
+          </div>
+          <div class="col-6">
+            <span class="drawer-field-label">Hiring Type:</span>
+            <span class="badge bg-slate-100 text-slate-900 border border-slate-300 fw-bold px-2 py-0.5" style="color: #0f172a; background-color: #f1f5f9; font-size: 10px;">
+              {{ selectedJobForDetail.hiringType || 'New Position' }}
+            </span>
+          </div>
+          <div class="col-12 pt-1 border-top" *ngIf="selectedJobForDetail.replacedEmpName">
+            <span class="drawer-field-label">Replaced Employee:</span>
+            <span class="drawer-field-value text-dark fw-bold">{{ selectedJobForDetail.replacedEmpName }} ({{ selectedJobForDetail.replacementReason || 'Resignation' }})</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: Organization Hierarchy -->
+      <div class="drawer-card p-3 rounded mb-3 bg-white border border-slate-300 shadow-xs">
+        <div class="drawer-card-title fw-bold text-dark mb-2.5 pb-1 border-bottom" style="font-size: 12px; color: #0f172a;">
+          <i class="bi bi-diagram-3-fill text-primary me-1"></i> Organizational Hierarchy
+        </div>
+        <div class="row g-2.5" style="font-size: 11.5px;">
+          <div class="col-6">
+            <span class="drawer-field-label">Department:</span>
+            <span class="drawer-field-value text-dark fw-bold">{{ selectedJobForDetail.department || 'Operations' }}</span>
+          </div>
+          <div class="col-6">
+            <span class="drawer-field-label">Sub-Department:</span>
+            <span class="drawer-field-value text-dark fw-bold">{{ selectedJobForDetail.subDepartment || '—' }}</span>
+          </div>
+          <div class="col-6">
+            <span class="drawer-field-label">Designation:</span>
+            <span class="drawer-field-value text-dark fw-bold">{{ selectedJobForDetail.designation }}</span>
+          </div>
+          <div class="col-6">
+            <span class="drawer-field-label">Service Division:</span>
+            <span class="drawer-field-value text-dark fw-bold">{{ selectedJobForDetail.serviceType }}</span>
+          </div>
+          <div class="col-6" *ngIf="selectedJobForDetail.businessVertical">
+            <span class="drawer-field-label">Business Vertical:</span>
+            <span class="drawer-field-value text-dark fw-bold">{{ selectedJobForDetail.businessVertical }}</span>
+          </div>
+          <div class="col-6" *ngIf="selectedJobForDetail.costCenterName">
+            <span class="drawer-field-label">Cost Center:</span>
+            <span class="drawer-field-value text-dark fw-bold">{{ selectedJobForDetail.costCenterName }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 3: Compensation & Terms -->
+      <div class="drawer-card p-3 rounded mb-3 bg-white border border-slate-300 shadow-xs">
+        <div class="drawer-card-title fw-bold text-dark mb-2.5 pb-1 border-bottom" style="font-size: 12px; color: #0f172a;">
+          <i class="bi bi-cash-stack text-success me-1"></i> Compensation & Engagement
+        </div>
+        <div class="row g-2.5" style="font-size: 11.5px;">
+          <div class="col-6">
+            <span class="drawer-field-label">Annual CTC (LPA):</span>
+            <span class="drawer-field-value text-dark fw-bold" style="font-size: 12px;">
+              {{ (selectedJobForDetail.ctcMin || selectedJobForDetail.ctcMax) ? '₹' + (selectedJobForDetail.ctcMin || 0) + ' - ₹' + (selectedJobForDetail.ctcMax || 'Open') + ' LPA' : 'Standard Budget Band' }}
+            </span>
+          </div>
+          <div class="col-6">
+            <span class="drawer-field-label">Experience:</span>
+            <span class="drawer-field-value text-dark fw-bold">
+              {{ (selectedJobForDetail.experienceMin || 0) + ' - ' + (selectedJobForDetail.experienceMax || 'Open') }} Years
+            </span>
+          </div>
+          <div class="col-6">
+            <span class="drawer-field-label">Workplace Type:</span>
+            <span class="drawer-field-value text-dark fw-bold">{{ selectedJobForDetail.workplaceType || 'On-Site' }}</span>
+          </div>
+          <div class="col-6">
+            <span class="drawer-field-label">Employment Type:</span>
+            <span class="drawer-field-value text-dark fw-bold">{{ selectedJobForDetail.employmentType || 'Full-Time' }}</span>
+          </div>
+          <div class="col-6">
+            <span class="drawer-field-label">Priority:</span>
+            <span class="badge fw-bold" [ngClass]="{
+              'bg-danger text-white': selectedJobForDetail.priority === 'High',
+              'bg-warning text-dark': selectedJobForDetail.priority === 'Medium',
+              'bg-success text-white': selectedJobForDetail.priority === 'Low'
+            }" style="font-size: 10px;">
+              {{ selectedJobForDetail.priority || 'Medium' }}
+            </span>
+          </div>
+          <div class="col-6" *ngIf="selectedJobForDetail.noticePeriodMaxDays">
+            <span class="drawer-field-label">Max Notice Period:</span>
+            <span class="drawer-field-value text-dark fw-bold">{{ selectedJobForDetail.noticePeriodMaxDays }} Days</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 4: Diversity & Inclusion (D&I) Mandate (Always Visible) -->
+      <div class="drawer-card p-3 rounded mb-3 bg-white border shadow-xs" [ngStyle]="{'border-left': selectedJobForDetail.isDiversityHiring ? '4px solid #7c3aed !important' : '4px solid #64748b !important', 'border-color': selectedJobForDetail.isDiversityHiring ? '#d8b4fe' : '#cbd5e1'}">
+        <div class="drawer-card-title fw-bold text-dark mb-2.5 pb-1 border-bottom d-flex justify-content-between align-items-center" style="font-size: 12px; color: #0f172a;">
+          <span>
+            <i class="bi" [ngClass]="selectedJobForDetail.isDiversityHiring ? 'bi-shield-heart-fill text-purple' : 'bi-people-fill text-secondary'" style="font-size: 13px;"></i>
+            Diversity & Inclusion (D&I) Mandate
+          </span>
+          <span *ngIf="selectedJobForDetail.isDiversityHiring" class="badge fw-bold" style="font-size: 10px; background-color: #f3e8ff !important; color: #6d28d9 !important; border: 1px solid #d8b4fe !important;">
+            <i class="bi bi-shield-check me-1"></i> Affirmative Initiative Active
+          </span>
+          <span *ngIf="!selectedJobForDetail.isDiversityHiring" class="badge fw-bold" style="font-size: 10px; background-color: #f1f5f9 !important; color: #0f172a !important; border: 1px solid #cbd5e1 !important;">
+            <i class="bi bi-people-fill me-1" style="color: #475569;"></i> Standard / Open Pool
+          </span>
+        </div>
+
+        <div class="row g-2.5" style="font-size: 11.5px;">
+          <div class="col-6">
+            <span class="drawer-field-label">Is Diversity Hiring?:</span>
+            <span *ngIf="selectedJobForDetail.isDiversityHiring" class="badge fw-bold px-2.5 py-1 d-inline-flex align-items-center gap-1" style="font-size: 11px; background-color: #f3e8ff !important; color: #6d28d9 !important; border: 1px solid #d8b4fe !important;">
+              <i class="bi bi-check-circle-fill" style="color: #7c3aed;"></i> Yes (Diversity Target)
+            </span>
+            <span *ngIf="!selectedJobForDetail.isDiversityHiring" class="badge fw-bold px-2.5 py-1 d-inline-flex align-items-center gap-1" style="font-size: 11px; background-color: #f1f5f9 !important; color: #0f172a !important; border: 1px solid #cbd5e1 !important;">
+              <i class="bi bi-dash-circle" style="color: #64748b;"></i> No (Standard)
+            </span>
+          </div>
+
+          <div class="col-6">
+            <span class="drawer-field-label">Diversity Category / Type:</span>
+            <span class="drawer-field-value text-dark fw-bold">
+              {{ selectedJobForDetail.diversityCategory || (selectedJobForDetail.isDiversityHiring ? 'Affirmative Action Pool' : 'Not Applicable (Open Pool)') }}
+            </span>
+          </div>
+
+          <div class="col-12" *ngIf="selectedJobForDetail.isDiversityHiring">
+            <div class="p-2 rounded bg-purple-subtle border border-purple-subtle text-purple fw-semibold" style="font-size: 11px;">
+              <i class="bi bi-info-circle-fill me-1"></i> Candidate sourcing priority: <strong>{{ selectedJobForDetail.diversityCategory || 'Diversity & Affirmative Mandate' }}</strong>.
+            </div>
+          </div>
+
+          <div class="col-12" *ngIf="!selectedJobForDetail.isDiversityHiring">
+            <div class="p-2 rounded border border-slate-200 text-slate-700 fw-medium" style="font-size: 10.5px; color: #334155; background-color: #f8fafc;">
+              <i class="bi bi-info-circle me-1"></i> Open recruitment pool across all candidate demographics without quota reservations.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 5: Skills & Educational Requirements -->
+      <div class="drawer-card p-3 rounded mb-3 bg-white border border-slate-300 shadow-xs">
+        <div class="drawer-card-title fw-bold text-dark mb-2.5 pb-1 border-bottom" style="font-size: 12px; color: #0f172a;">
+          <i class="bi bi-mortarboard-fill text-indigo me-1"></i> Skills & Educational Criteria
+        </div>
+        <div class="row g-2.5" style="font-size: 11.5px;">
+          <div class="col-6">
+            <span class="drawer-field-label">Education Level:</span>
+            <span class="drawer-field-value text-dark fw-bold">{{ selectedJobForDetail.educationLevel || 'Any / Not Specified' }}</span>
+          </div>
+          <div class="col-6">
+            <span class="drawer-field-label">Target Start Date:</span>
+            <span class="drawer-field-value text-dark fw-bold">{{ (selectedJobForDetail.targetStartDate | date:'mediumDate') || 'Immediate' }}</span>
+          </div>
+          <div class="col-12" *ngIf="selectedJobForDetail.primarySkills">
+            <span class="drawer-field-label">Primary Skills:</span>
+            <div class="d-flex flex-wrap gap-1 mt-1">
+              <span class="badge bg-primary-subtle text-primary border border-primary-subtle fw-semibold" style="font-size: 10px;">
+                {{ selectedJobForDetail.primarySkills }}
+              </span>
+            </div>
+          </div>
+          <div class="col-12" *ngIf="selectedJobForDetail.secondarySkills">
+            <span class="drawer-field-label">Secondary / Ancillary Skills:</span>
+            <span class="drawer-field-value text-dark fw-bold">{{ selectedJobForDetail.secondarySkills }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 6: Job Description & Specifications -->
+      <div class="drawer-card p-3 rounded mb-3 bg-white border border-slate-300 shadow-xs">
+        <div class="drawer-card-title fw-bold text-dark mb-2 pb-1 border-bottom" style="font-size: 12px; color: #0f172a;">
+          <i class="bi bi-file-text-fill text-primary me-1"></i> Job Description & Scope
+        </div>
+        <p class="text-dark mb-2.5 fw-normal" style="font-size: 11.5px; line-height: 1.5; white-space: pre-line; color: #1e293b;">
+          {{ selectedJobForDetail.jobDescription || 'No description provided.' }}
+        </p>
+
+        <div *ngIf="selectedJobForDetail.responsibilities" class="mb-2.5 pt-2 border-top">
+          <div class="fw-bold text-dark mb-1" style="font-size: 11.5px; color: #0f172a;">Key Responsibilities:</div>
+          <p class="text-dark mb-0 fw-normal" style="font-size: 11px; line-height: 1.5; white-space: pre-line; color: #1e293b;">
+            {{ selectedJobForDetail.responsibilities }}
+          </p>
+        </div>
+
+        <div *ngIf="selectedJobForDetail.qualifications" class="mb-1 pt-2 border-top">
+          <div class="fw-bold text-dark mb-1" style="font-size: 11.5px; color: #0f172a;">Qualifications & Criteria:</div>
+          <p class="text-dark mb-0 fw-normal" style="font-size: 11px; line-height: 1.5; white-space: pre-line; color: #1e293b;">
+            {{ selectedJobForDetail.qualifications }}
+          </p>
+        </div>
+      </div>
+
+      <!-- Section 6: Audit Record -->
+      <div class="p-3 border rounded bg-white border-slate-300 shadow-xs" style="font-size: 11px;">
+        <div class="d-flex justify-content-between py-1 border-bottom">
+          <span class="drawer-field-label">Created By</span>
+          <span class="fw-bold text-dark">{{ selectedJobForDetail.submittedBy }}</span>
+        </div>
+        <div class="d-flex justify-content-between py-1 border-bottom">
+          <span class="drawer-field-label">Created Date</span>
+          <span class="fw-bold text-dark">{{ (selectedJobForDetail.createdDate || selectedJobForDetail.postedDate) | date:'dd-MM-yyyy, hh:mm:ss a' }}</span>
+        </div>
+        <div class="d-flex justify-content-between py-1 border-bottom" *ngIf="selectedJobForDetail.updatedBy">
+          <span class="drawer-field-label">Last Updated By</span>
+          <span class="fw-bold text-dark">{{ selectedJobForDetail.updatedBy }}</span>
+        </div>
+        <div class="d-flex justify-content-between py-1" *ngIf="selectedJobForDetail.updatedDate">
+          <span class="drawer-field-label">Last Updated Date</span>
+          <span class="fw-bold text-dark">{{ selectedJobForDetail.updatedDate | date:'dd-MM-yyyy, hh:mm:ss a' }}</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Drawer Footer (Always Visible at Bottom) -->
+    <div class="drawer-footer p-3 border-top bg-white d-flex justify-content-between align-items-center shadow-xs">
+      <button type="button" class="btn btn-outline-dark btn-sm fw-bold px-3" (click)="closeJobDetail()">
+        <i class="bi bi-x-circle me-1"></i> Close
+      </button>
+      <div class="d-flex align-items-center gap-2">
+        <span *ngIf="!canEdit(selectedJobForDetail)" class="badge bg-light text-muted border py-1.5 px-2.5 d-flex align-items-center gap-1" style="font-size: 11px;">
+          <i class="bi bi-lock-fill text-secondary"></i> Locked after Level 1 approval
+        </span>
+        <button *ngIf="canEdit(selectedJobForDetail)" type="button" class="btn btn-primary-action fw-bold shadow-xs px-3" (click)="navigateToEdit(selectedJobForDetail)">
+          <i class="bi bi-pencil-square me-1"></i> {{ isRejected(selectedJobForDetail) ? 'Edit & Resubmit MRF' : 'Edit this Requisition' }}
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+</div>

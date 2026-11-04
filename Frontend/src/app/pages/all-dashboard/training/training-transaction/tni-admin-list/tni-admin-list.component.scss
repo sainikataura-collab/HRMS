@@ -1,0 +1,14 @@
+.table:not(.table-sm):not(.table-md):not(.dataTable) th td {
+
+    vertical-align: middle !important;
+
+}
+
+.table:not(.table-sm):not(.table-md):not(.dataTable) td, .table:not(.table-sm):not(.table-md):not(.dataTable) th {
+  
+    vertical-align: middle !important;
+}
+
+select.form-control:not([size]):not([multiple]) {
+    height: 2.4rem;
+}

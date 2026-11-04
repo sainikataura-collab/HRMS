@@ -1,0 +1,112 @@
+<div class="card shadow-sm border-0 workflow-sidebar-card" *ngIf="isOpen">
+  <!-- Fact Box Header matching Daily Attendance -->
+  <div class="card-header bg-primary text-white py-2 px-3 d-flex align-items-center justify-content-between">
+    <div class="d-flex align-items-center gap-2">
+      <i class="fa fa-info-circle fs-6"></i>
+      <span class="fw-semibold small text-white">{{ hasFactBox ? (factBoxTitle || 'Fact Box') : headerTitle }}</span>
+      <span class="badge bg-white text-primary rounded-pill px-2 py-1 ms-1" style="font-size: 10px;">
+        {{ stepBadge }}
+      </span>
+    </div>
+    <button type="button" class="btn-close btn-close-white" (click)="toggleOpen()" title="Close Fact Box"
+      aria-label="Close" style="filter: brightness(0) invert(1); opacity: 0.85;">
+    </button>
+  </div>
+
+  <div class="card-body p-2 d-flex flex-column gap-1 workflow-sidebar-body" [class.has-split-layout]="hasFactBox">
+
+    <!-- TOP 50%: Fact Box / Custom Statistics (if provided) -->
+    <div *ngIf="hasFactBox" class="fact-box-section-50 border-bottom pb-1">
+      <ng-content select="[factbox]"></ng-content>
+    </div>
+
+    <!-- BOTTOM 50%: Action Steps Navigation -->
+    <div class="navigation-section-50 d-flex flex-column gap-2" [class.flex-grow-1]="hasFactBox">
+
+      <!-- Sub-header when Fact Box is active above -->
+      <div *ngIf="hasFactBox" class="d-flex align-items-center justify-content-between py-1 px-2 bg-light rounded">
+        <span class="fw-semibold text-secondary d-flex align-items-center gap-1" style="font-size: 9.5px;">
+          <i class="bi bi-diagram-3 text-primary"></i> Process Steps
+        </span>
+        <span class="text-muted fw-medium" style="font-size: 8px;">
+          {{ stepConfig.stepNumber }} of {{ totalSteps }}
+        </span>
+      </div>
+
+      <!-- REPORT RETURN MODE (Shown prominently at top when viewing reports) -->
+      <div *ngIf="isReportMode && returnUrl && canShowReturnBack()">
+        <div class="section-label-row text-primary mb-1">
+          <i class="bi bi-arrow-left-circle animated-arrow-left"></i>
+          <span>BACK TO PROCESS</span>
+        </div>
+        <div class="factbox-quick-actions d-flex flex-wrap gap-2">
+          <button type="button" class="btn action-btn action-btn-blue d-inline-flex align-items-center gap-2"
+            (click)="returnBack()" title="Back to {{ returnLabel || 'Process' }}">
+            <i class="bi bi-arrow-left animated-arrow-left flex-shrink-0 fw-bold" style="font-size: 11px;"></i>
+            <span class="btn-text">Back to {{ returnLabel || 'Process' }}</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- PREVIOUS ACTION STEPS -->
+      <div *ngIf="stepConfig.previousSteps && stepConfig.previousSteps.length > 0">
+        <div class="section-label-row text-secondary mb-1">
+          <i [class]="isReportMode ? 'bi bi-grid' : 'bi bi-arrow-left-circle animated-arrow-left'"></i>
+          <span>{{ isReportMode ? 'PROCESS STEPS' : 'PREVIOUS STEP' }}</span>
+        </div>
+        <div class="factbox-quick-actions d-flex flex-wrap gap-2">
+          <button *ngFor="let prev of stepConfig.previousSteps" type="button"
+            class="btn action-btn d-inline-flex align-items-center gap-2" [ngClass]="getItemColorClass(prev)"
+            (click)="navigate(prev.route)" [title]="prev.label">
+            <i *ngIf="!isReportMode" class="bi bi-arrow-left animated-arrow-left flex-shrink-0 fw-bold"
+              style="font-size: 11px;"></i>
+            <i [class]="prev.icon + ' flex-shrink-0'"></i>
+            <span class="btn-text">{{ prev.label }}</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- NEXT STEPS (Forward: Clean Auto-Width Pill Chips with Moving Arrow Animation) -->
+      <div *ngIf="stepConfig.nextSteps && stepConfig.nextSteps.length > 0">
+        <div class="section-label-row text-success mb-1 d-flex align-items-center gap-1">
+          <i class="bi bi-arrow-right-circle text-success animated-arrow-subtle"></i>
+          <span>NEXT STEP</span>
+          <i class="bi bi-arrow-right animated-arrow text-success fw-bold ms-1" style="font-size: 11px;"></i>
+        </div>
+        <div class="factbox-quick-actions d-flex flex-wrap gap-2">
+          <button *ngFor="let next of stepConfig.nextSteps" type="button"
+            class="btn action-btn d-inline-flex align-items-center gap-2" [ngClass]="getItemColorClass(next)"
+            (click)="navigate(next.route)" [title]="next.label">
+            <i [class]="next.icon + ' flex-shrink-0'"></i>
+            <span class="btn-text">{{ next.label }}</span>
+            <i class="bi bi-arrow-right animated-arrow flex-shrink-0 fw-bold" style="font-size: 11px;"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- REPORTS (Clean Auto-Width Pill Chips) -->
+      <div *ngIf="stepConfig.reports && stepConfig.reports.length > 0">
+        <div class="section-label-row text-secondary mb-1">
+          <i class="bi bi-file-earmark-bar-graph"></i>
+          <span>{{ currentStep === 'salary-lock' ? 'FINAL REPORTS' : (isReportMode ? 'OTHER REPORTS' : 'RELATED
+            REPORTS') }}</span>
+        </div>
+        <div class="factbox-quick-actions d-flex flex-wrap gap-2">
+          <button *ngFor="let rep of stepConfig.reports" type="button"
+            class="btn action-btn d-inline-flex align-items-center gap-2" [ngClass]="getItemColorClass(rep)"
+            (click)="openReport(rep.type)" [title]="rep.label">
+            <i [class]="rep.icon + ' flex-shrink-0'"></i>
+            <span class="btn-text">{{ rep.label }}</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Bottom-Right Floating Button to toggle Workflow Sidebar -->
+<button class="btn btn-primary btn-float-fact" type="button" *ngIf="!isOpen" (click)="toggleOpen()"
+  title="Open Process Actions">
+  <i class="fa fa-sitemap"></i>
+</button>

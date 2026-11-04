@@ -1,0 +1,199 @@
+<div class="row position-relative">
+  <!-- Left Side: Main Upload Content -->
+  <div [ngClass]="isFactBoxOpen ? 'col-sm-12 col-md-8 col-lg-9' : 'col-sm-12 col-md-12 col-lg-12'">
+    <div class="card">
+
+      <!-- Header with Export Blank Excel Button -->
+      <div class="card-header bg-primary">
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-2 w-100 align-items-center">
+          <!-- Title Section -->
+          <div class="col">
+            <h4 class="text-white mb-0">Rate Card Excel Upload</h4>
+          </div>
+
+          <!-- Export Blank Template Button -->
+          <div class="col d-flex align-items-center justify-content-end">
+            <button class="btn bg-white text-primary" (click)="downloadTemplate()">
+              <i class="fa fa-download me-2"></i>Export Blank Excel
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card Body with Inline Import Form -->
+      <div class="card-body">
+
+        <form [formGroup]="rateCardForm" (ngSubmit)="uploadRateCard()" class="row g-2 align-items-start mb-4">
+
+          <!-- Select Client -->
+          <div class="col-12 col-sm-12 col-md-6 col-lg-3">
+            <label class="form-label">Select Client <span style="color: red;">*</span></label>
+            <ng-select [items]="clientList" bindLabel="name" bindValue="value" appendTo="body"
+              placeholder="Select Client" formControlName="client">
+            </ng-select>
+            <div class="error-space">
+              <span *ngIf="rateCardForm.get('client')?.hasError('required') && rateCardForm.get('client')?.touched"
+                class="text-danger">
+                Client is required.
+              </span>
+            </div>
+          </div>
+
+          <!-- Select Model -->
+          <div class="col-12 col-sm-12 col-md-6 col-lg-3">
+            <label class="form-label">Select Model <span style="color: red;">*</span></label>
+            <ng-select [items]="modelList" bindLabel="name" bindValue="value" appendTo="body" placeholder="Select Model"
+              formControlName="model" (change)="resetResults()">
+            </ng-select>
+            <div class="error-space">
+              <span *ngIf="rateCardForm.get('model')?.hasError('required') && rateCardForm.get('model')?.touched"
+                class="text-danger">
+                Model is required.
+              </span>
+            </div>
+          </div>
+
+          <!-- Select File -->
+          <div class="col-12 col-sm-12 col-md-6 col-lg-3">
+            <label class="form-label">Select File <span style="color: red;">*</span></label>
+            <div class="input-group">
+              <input type="file" class="form-control" (change)="onFileChange($event)" #fileInput id="fileInput"
+                accept=".xlsx, .xls">
+              <button *ngIf="selectedFile" type="button" class="btn btn-outline-danger"
+                (click)="resetFileOnly(); fileInput.value=''">
+                <i class="fa fa-times"></i>
+              </button>
+            </div>
+            <div class="error-space">
+              <span *ngIf="rateCardForm.get('file')?.hasError('required') && rateCardForm.get('file')?.touched"
+                class="text-danger">
+                File is required.
+              </span>
+              <span *ngIf="rateCardForm.get('file')?.hasError('pattern') && rateCardForm.get('file')?.touched"
+                class="text-danger">
+                Please upload a valid file (.xlsx, .xls allowed).
+              </span>
+            </div>
+          </div>
+
+          <!-- Inline Action Buttons (Import & Reset) -->
+          <div class="col d-flex align-items-center justify-content-end mt-4 pt-3 gap-2">
+            <button type="submit" class="btn btn-primary" [disabled]="isUploading">
+              <i class="fa fa-upload me-1"></i> Import
+            </button>
+            <button type="button" class="btn btn-outline-dark" (click)="resetForm()">
+              <i class="fa fa-refresh me-1"></i> Reset
+            </button>
+          </div>
+
+        </form>
+
+        <!-- Inline Loader for Processing/Filtering -->
+        <div class="row" *ngIf="isUploading || isFiltering">
+          <div class="col-12 text-center py-5">
+            <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <h5 class="mt-3 text-primary">{{ isFiltering ? 'Loading List...' : 'Processing Data...' }}</h5>
+            <p class="text-muted">{{ isFiltering ? 'Please wait while the data is being filtered.' : 'Please wait while the rate card is being uploaded.' }}</p>
+          </div>
+        </div>
+
+        <!-- Filter & Search Bar (Rendered when Excel Data is Loaded/Imported) -->
+        <div class="row mb-2" *ngIf="!isUploading && importedData.length > 0">
+
+          <!-- Search Control -->
+          <div class="col-12 col-md-4 mb-2 mb-md-0">
+            <input type="text" class="form-control" [formControl]="searchControl" placeholder="Search..." />
+          </div>
+
+          <!-- Filter Pills & Export Button -->
+          <div class="col-12 col-md-8">
+            <div class="d-flex flex-wrap gap-2 justify-content-start justify-content-md-end">
+
+              <button class="btn d-flex align-items-center shadow-sm"
+                [ngClass]="currentFilter === 'All' ? 'btn-primary' : 'btn-outline-primary'" (click)="setFilter('All')">
+                <span>All Data</span>
+                <span class="bg-white rounded px-1 ms-2 fw-bold text-primary small">
+                  {{ importedData.length }}
+                </span>
+              </button>
+
+              <button class="btn d-flex align-items-center shadow-sm"
+                [ngClass]="currentFilter === 'Uploaded' ? 'btn-success' : 'btn-outline-success'"
+                (click)="setFilter('Uploaded')">
+                <span>Uploaded</span>
+                <span class="bg-white rounded px-1 ms-2 fw-bold text-success small">
+                  {{ uploadedCount }}
+                </span>
+              </button>
+
+              <button class="btn d-flex align-items-center shadow-sm"
+                [ngClass]="currentFilter === 'Not Uploaded' ? 'btn-danger' : 'btn-outline-danger'"
+                (click)="setFilter('Not Uploaded')">
+                <span>Not Uploaded</span>
+                <span class="bg-white rounded px-1 ms-2 fw-bold text-danger small">
+                  {{ notUploadedCount }}
+                </span>
+              </button>
+
+              <button class="btn btn-primary d-flex align-items-center" (click)="downloadExcelList()">
+                <i class="fa fa-download me-2"></i> Export List
+              </button>
+
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Data Table with Merged Status / Remarks Column -->
+        <div class="table-responsive mt-4" *ngIf="!isUploading && !isFiltering && importedData.length > 0"
+          [ngClass]="{ 'overflow-y-auto': importedData.length > 10 }" style="max-height: 400px;">
+          <table class="table table-bordered table-striped align-middle">
+            <thead class="sticky-top bg-white">
+              <tr>
+                <th>Status / Remarks</th>
+                <th *ngFor="let key of previewKeys">{{ key }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of filteredData">
+                <td class="text-nowrap">
+                  <!-- Uploaded (Inserted / Updated) -->
+                  <span *ngIf="row.status === 'Updated' || row.status === 'Uploaded' || row.Status === 'Inserted' || row.status === 'Inserted' || row.status === 'Success'" class="text-success fw-bold">
+                    Uploaded
+                  </span>
+
+                  <!-- Already Exists -->
+                  <span *ngIf="row.status === 'Already Exists' || row.status === 'Skipped'" class="text-warning fw-bold">
+                    Already Exists
+                  </span>
+
+                  <!-- Failed with Generalized Reason -->
+                  <span *ngIf="row.status !== 'Updated' && row.status !== 'Uploaded' && row.Status !== 'Inserted' && row.status !== 'Inserted' && row.status !== 'Success' && row.status !== 'Already Exists' && row.status !== 'Skipped'" class="text-danger fw-bold">
+                    Failed - <span class="fw-normal small">{{ row['Remarks'] || row.remarks || row.message || row.Message || row.status || 'Validation error' }}</span>
+                  </span>
+                </td>
+                <td *ngFor="let key of previewKeys">{{ row[key] }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <app-fact-box [ngClass]="isFactBoxOpen ? 'col-sm-12 col-md-4 col-lg-3' : ''" [title]="'Fact Box'"
+  [files]="uploadedFiles" 
+  [isLoading]="isLoadingFiles" 
+  [isOpen]="isFactBoxOpen" 
+  (onToggle)="toggleFactBox()" 
+  (onDownload)="downloadUploadedFile($event)">
+</app-fact-box>
+</div>
+
+
+
+

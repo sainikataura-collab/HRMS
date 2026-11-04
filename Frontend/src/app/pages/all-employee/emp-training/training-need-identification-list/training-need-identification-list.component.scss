@@ -1,0 +1,35 @@
+.status-pending {
+  color: orange;   /* or your preferred color */
+  font-weight: bold;
+}
+.status-Hold {
+  color: orange;   /* or your preferred color */
+  font-weight: bold;
+}
+
+.status-approved {
+  color: green;
+  font-weight: bold;
+}
+.status-cancelled {
+  color: steelblue;
+  font-weight: bold;
+}
+
+.status-planned {
+  color: blue;
+  font-weight: bold;
+}
+
+.status-scheduled {
+  color: rgb(17, 218, 64);
+  font-weight: bold;
+}
+.status-reject {
+  color: rgb(240, 8, 8);
+  font-weight: bold;
+}
+.status-Completed {
+  color: #31aee8;
+  font-weight: bold;
+}

@@ -1,0 +1,938 @@
+<div class="step-indicator">
+    <!-- Step 1 -->
+    <div class="step" [ngClass]="{'active-step': currentStep === 1, 'completed-step': currentStep > 1}" (click)="goToEmployeeMst()" style="cursor: pointer;">
+        <div class="step-circle">
+            <a (click)="goToEmployeeMst()">1</a>
+        </div>
+        <div class="step-label small"><span class="small">Employee Master</span></div>
+        <div class="step-line" *ngIf="currentStep > 1 || currentStep === 1"></div>
+    </div>
+    <!-- Step 2 -->
+    <div class="step" [ngClass]="{'active-step': currentStep === 2, 'completed-step': currentStep > 2}" (click)="goToAttendance()" style="cursor: pointer;">
+        <div class="step-circle">
+            <!-- <a routerLink="/dash/payroll/payrolldashboard/EmployeeAttendance">2</a> -->
+            <a (click)="goToAttendance()">2</a>
+        </div>
+        <div class="step-label small"><span class="small">Shift & Attandance Details</span></div>
+        <div class="step-line" *ngIf="currentStep > 2 || currentStep === 2"></div>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="step" [ngClass]="{'active-step': currentStep === 3,'completed-step': currentStep > 3}" (click)="goToOtherDetails()" style="cursor: pointer;">
+        <div class="step-circle">
+            <!-- <a routerLink="/dash/payroll/payrolldashboard/EmployeeOtherDetails">3</a>  -->
+            <a (click)="goToOtherDetails()">3</a>
+        </div>
+        <div class="step-label small"><span class="small">Compliance Details</span></div>
+        <div class="step-line" *ngIf="currentStep > 3 || currentStep === 3"></div>
+
+    </div>
+    <!-- Step 4 -->
+    <div class="step" [ngClass]="{'active-step': currentStep === 4, 'completed-step': currentStep > 4}" (click)="goTohead()" style="cursor: pointer;">
+        <div class="step-circle">
+            <!-- <a routerLink="/dash/payroll/payrolldashboard/EmployeeHead">4</a> -->
+            <a (click)="goTohead()">4</a>
+
+        </div>
+        <div class="step-label small"><span class="small">Salary Details </span></div>
+        <div class="step-line" *ngIf="currentStep > 4 || currentStep === 4"></div>
+    </div>
+    <!-- Step 5 -->
+    <div class="step" [ngClass]="{'active-step': currentStep === 5, 'completed-step': currentStep > 5}" (click)="goToDemographic()" style="cursor: pointer;">
+        <div class="step-circle">
+            <a (click)="goToDemographic()">5</a>
+        </div>
+        <div class="step-label small"><span class="small">Demographic Details</span></div>
+        <div class="step-line" *ngIf="currentStep > 5 || currentStep === 5"></div>
+    </div>
+    <!-- Step 6 -->
+    <div class="step" [ngClass]="{'active-step': currentStep === 6, 'completed-step': currentStep > 6}" (click)="goToQualification()" style="cursor: pointer;">
+        <div class="step-circle">
+            <a (click)="goToQualification()">6</a>
+        </div>
+        <div class="step-label small"><span class="small">Qualification Details</span></div>
+        <div class="step-line" *ngIf="currentStep > 6 || currentStep === 6"></div>
+    </div>
+    <!-- Step 7 -->
+    <div class="step" [ngClass]="{'active-step': currentStep === 7}" (click)="goToExperience()" style="cursor: pointer;">
+        <div class="step-circle">
+            <a (click)="goToExperience()">7</a>
+        </div>
+        <div class="step-label small"><span class="small">Experience Details</span></div>
+    </div>
+</div>
+
+<!-- Tab Content -->
+<div class="tab-content">
+</div>
+
+
+<div class="row mt-2">
+    <div [ngClass]="isFactBoxOpen ? 'col-sm-12 col-md-8 col-lg-9' : 'col-12'">
+        <div class="card">
+            <!-- Heading -->
+            <div class="card-header bg-blue d-flex justify-content-between align-items-center flex-wrap">
+                <div class="d-flex align-items-center">
+                    <h4 class="mb-0">{{pk_empid? 'Update Employee Master' : 'Add Employee Master' }}</h4>
+                </div>
+                <div class="d-flex align-items-center justify-content-end gap-2">
+                    <button *ngIf="pk_empid && !isFactBoxOpen" class="btn btn-outline-light btn-sm d-flex align-items-center"
+                        (click)="toggleFactBox()" title="Open Audit Log">
+                        <i class="fa fa-history me-1"></i> Audit Log
+                    </button>
+                    <button class="btn btn-light" (click)="onBack()">
+                        Back
+                    </button>
+                </div>
+            </div>
+            <!-- form Start -->
+            <div class="card-body mt-4 mb-5">
+                <form [formGroup]="EmployeeForm">
+
+
+                    <div class="row row-cols-1 row-cols-md-3 g-4">
+
+
+                        <div class="col">
+                            <label class="" for="Recruited">Recruited Candidates</label>
+                            <ng-select id="Recruited" [items]="Recruited" bindLabel="name" bindValue="value"
+                                formControlName="fk_recId" placeholder="--Select Recruited--"
+                                class="w-100 small"></ng-select>
+                        </div>
+                        <div class="col">
+                            <label class="" for="autoSizingInputGroup">Employee Code<span
+                                    style="color: red;">*</span></label>
+
+                            <input type="text" class="form-control" id="autoSizingInputGroup" formControlName="empcode"  [readonly]="isAutoEmpcode"
+                                (blur)="checkDuplicate(EmployeeForm.get('empcode')?.value)"
+                                placeholder="Enter Employee Code">
+
+
+                            <span
+                                *ngIf="showError && EmployeeForm.controls['empcode'].invalid && !EmployeeForm.get('empcode')?.errors?.['duplicate']"
+                                class="text-danger mt-1" style="font-size: 12px;">
+                                Please enter Employee Code.
+                                         </span>
+                            <div *ngIf="EmployeeForm.get('empcode')?.errors?.['duplicate']" class="text-danger"
+                                style="font-size:10px;">
+                                {{ EmployeeForm.get('empcode')?.errors?.['duplicate'] }}
+                            </div>
+                        </div>
+                        <div class="col">
+                            <label class="" for="autoSizingInputGroup">Bio Code</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="autoSizingInputGroup"
+                                    formControlName="punchingempcode" placeholder=" Enter Bio Code">
+
+                            </div>
+                        </div>
+
+                        <div class="col">
+                            <label for="">Name<span style="color: red;">*</span></label>
+                            <input type="text" class="form-control" formControlName="empname" placeholder="Enter Name">
+                            <span *ngIf="showError && EmployeeForm.controls['empname'].invalid" class="text-danger mt-1"
+                                style="font-size: 12px;">
+                                Please enter Name.
+                            </span>
+                        </div>
+                        <div class="col">
+                            <label for="fatherName">Father Name</label>
+                            <input type="text" class="form-control" formControlName="fatherName"
+                                placeholder="Enter Father Name">
+                        </div>
+                        <div class="col">
+                            <label for="motherName">Mother Name</label>
+                            <input type="text" class="form-control" formControlName="motherName"
+                                placeholder="Enter Mother Name">
+                        </div>
+
+                        <div class="col">
+                            <label for="gender" class="">Gender<span style="color: red;">*</span></label>
+                            <ng-select id="gender" [items]="GenderType" bindLabel="name" bindValue="value"
+                                formControlName="gender" placeholder="--Select Gender--"
+                                class="w-100 small"></ng-select>
+                            <span *ngIf="showError && EmployeeForm.controls['gender'].invalid" class="text-danger mt-1"
+                                style="font-size: 12px;">
+                                Please enter Gender.
+                            </span>
+                        </div>
+
+                        <div class="col">
+                            <label for="category" class="">Category<span style="color: red;">*</span></label>
+                            <ng-select id="category" [items]="Category" bindLabel="name" bindValue="value"
+                                formControlName="fk_catid" placeholder="--Select Category--"
+                                class="w-100 small"></ng-select>
+                            <span *ngIf="showError &&EmployeeForm.controls['fk_catid'].invalid" class="text-danger mt-1"
+                                style="font-size: 12px;">
+                                Please enter Category.
+                            </span>
+                        </div>
+
+
+
+                        <div class="col">
+                            <label for="fk_religionid" class="">Religion<span style="color: red;">*</span></label>
+                            <ng-select id="fk_religionid" [items]="Religion" bindLabel="name" bindValue="value"
+                                formControlName="fk_religionid" placeholder="--Select Religion--"
+                                class="w-100 small"></ng-select>
+                            <span *ngIf="showError &&EmployeeForm.controls['fk_religionid'].invalid"
+                                class="text-danger mt-1" style="font-size: 12px;">
+                                Please enter Religion.
+                            </span>
+                        </div>
+
+                        <!-- Location -->
+                        <div class="col">
+                            <label>Location <span class="text-danger">*</span></label>
+                            <ng-select [items]="Location" bindLabel="name" bindValue="value" formControlName="fk_locid"
+                                placeholder="--Select Location--" class="w-100 small"></ng-select>
+                            <span *ngIf="showError && EmployeeForm.controls['fk_locid'].invalid"
+                                class="text-danger mt-1" style="font-size: 12px;">
+                                Please enter Location.
+                            </span>
+                        </div>
+
+
+
+                        <div class="col">
+                            <label for="" class="">Posting City<span style="color: red;">*</span></label>
+                            <ng-select id="" [items]="City" bindLabel="name" bindValue="value"
+                                formControlName="fk_cityid" placeholder="--Select Rent Proff City--"
+                                class="w-100 small"></ng-select>
+                            <span *ngIf="showError && EmployeeForm.controls['fk_cityid'].invalid"
+                                class="text-danger mt-1" style="font-size: 12px;">
+                                Please enter Rent Proff City.
+                            </span>
+                        </div>
+
+                        <div class="col">
+                            <label for="LeaveNatureType" class="">Rent Proff City<span
+                                    style="color: red;">*</span></label>
+                            <ng-select id="LeaveNatureType" [items]="City" bindLabel="name" bindValue="value"
+                                formControlName="fk_rentCityId" placeholder="--Select Rent Proff City--"
+                                class="w-100 small"></ng-select>
+                            <span *ngIf="showError && EmployeeForm.controls['fk_rentCityId'].invalid"
+                                class="text-danger mt-1" style="font-size: 12px;">
+                                Please enter Rent Proff City.
+                            </span>
+                        </div>
+
+                        <div class="col">
+                            <label class="">Role</label>
+                            <ng-select [items]="Roles" bindLabel="name" bindValue="value" formControlName="fk_RoleId"
+                                placeholder="--Select Role--" class="w-100 small"></ng-select>
+                            <!-- <span *ngIf="showError && EmployeeForm.controls['fk_RoleId'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                                    Please enter Role.
+                         </span> -->
+                        </div>
+
+                        <div class="col">
+                            <label for="" class="">Department<span style="color: red;">*</span></label>
+                            <ng-select id="" [items]="Department" bindLabel="name" bindValue="value"
+                                formControlName="fk_deptid" placeholder="--Select Department--"
+                                class="w-100 small"></ng-select>
+                            <span *ngIf="showError && EmployeeForm.controls['fk_deptid'].invalid"
+                                class="text-danger mt-1" style="font-size: 12px;">
+                                Please enter Department.
+                            </span>
+                        </div>
+
+                        <div class="col">
+                            <label for="" class="">Sub Department</label>
+                            <ng-select id="" [items]="SubDepartment" bindLabel="name" bindValue="value"
+                                formControlName="fk_subdeptid" placeholder="--Select Sub Department--"
+                                class="w-100 small"></ng-select>
+                            <!-- <span *ngIf="showError && EmployeeForm.controls['fk_subdeptid'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                                    Please enter Sub Department.
+                          </span> -->
+                        </div>
+
+                        <div class="col">
+                            <label for="" class="">Designation<span style="color: red;">*</span></label>
+                            <ng-select id="LeaveNatureType" [items]="Designation" bindLabel="name" bindValue="value"
+                                formControlName="fk_desgid" placeholder="--Select Designation--"
+                                class="w-100 small"></ng-select>
+                            <span *ngIf="showError &&EmployeeForm.controls['fk_desgid'].invalid"
+                                class="text-danger mt-1" style="font-size: 12px;">
+                                Please enter Designation.
+                            </span>
+                        </div>
+
+                        <div class="col">
+                            <label for="Grade" class="">Grade<span style="color: red;">*</span></label>
+                            <ng-select id="Grade" [items]="Grade" bindLabel="name" bindValue="value"
+                                formControlName="fk_classid" placeholder="--Select Grade--"
+                                class="w-100 small"></ng-select>
+                                 <span *ngIf="showError &&EmployeeForm.controls['fk_classid'].invalid"
+                                class="text-danger mt-1" style="font-size: 12px;">
+                                Please enter Grade.
+                            </span>
+                        </div>
+
+                        <div class="col">
+                            <label for="" class="">Nature type<span style="color: red;">*</span></label>
+                            <ng-select id="fk_natureid" [items]="Nature" bindLabel="name" bindValue="value"
+                                formControlName="fk_natureid" placeholder="--Select Nature--"
+                                class="w-100 small"></ng-select>
+                            <span *ngIf="showError &&EmployeeForm.controls['fk_natureid'].invalid"
+                                class="text-danger mt-1" style="font-size: 12px;">
+                                Please enter Nature.
+                            </span>
+                        </div>
+
+                        <div class="col">
+                            <label class="">Zone</label>
+                            <ng-select [items]="Zone" bindLabel="name" bindValue="value" formControlName="fk_zoneId"
+                                placeholder="--Select Zone--" class="w-100 small"></ng-select>
+                        </div>
+
+
+                        <!-- <div class="col">
+                            <label class="">Attendance Source</label>
+                            <ng-select  [items]="AttendanceSource" bindLabel="name"
+                                bindValue="value" formControlName="attendanceSource"
+                                placeholder="--Select Attendance Source--" class="w-100 small"></ng-select>
+                        </div> -->
+
+
+
+                        <!-- <div class="col">
+                            <label class="">Contractor Name<span style="color: red;">*</span></label>
+                            <ng-select [items]="CostCenter" bindLabel="name"
+                                bindValue="value" formControlName="fk_costcentreid"
+                                placeholder="--Select Cost Center--" class="w-100 small"></ng-select>
+                                <span *ngIf="showError && EmployeeForm.controls['fk_costcentreid'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                                    Please enter Cost Center.
+                        </span>
+                        </div> -->
+
+                        <div class="col">
+                            <label class="">Functional HOD</label>
+                            <ng-select [items]="EmployeCode" bindLabel="name" bindValue="value"
+                                formControlName="fk_FunctionalHODempid" placeholder="--Select Functional HOD--"
+                                class="w-100 small"></ng-select>
+                        </div>
+
+                        <div class="col">
+                            <label for="LeaveNatureType" class="">Functional Reporting</label>
+                            <ng-select id="LeaveNatureType" [items]="EmployeCode" bindLabel="name" bindValue="value"
+                                formControlName="fk_FunctionalRepempid" placeholder="--Select Functional Reporting--"
+                                class="w-100 small"></ng-select>
+                        </div>
+
+
+
+
+
+
+
+                        <div class="col">
+                            <label for="LeaveNatureType" class="">Administrative HOD</label>
+                            <ng-select id="LeaveNatureType" [items]="EmployeCode" bindLabel="name" bindValue="value"
+                                formControlName="fk_AdministrativeHODempid" placeholder="--Select Administrative HOD--"
+                                class="w-100 small"></ng-select>
+                        </div>
+
+                        <div class="col">
+                            <label for="LeaveNatureType" class="">Administrative Reporting</label>
+                            <ng-select id="LeaveNatureType" [items]="EmployeCode" bindLabel="name" bindValue="value"
+                                formControlName="fk_AdministrativeRepempid"
+                                placeholder="--Select Administrative Reporting--" class="w-100 small"></ng-select>
+                        </div>
+
+
+
+
+
+
+
+
+
+                        <div class="col">
+                            <label for="inputEmail3">Debit Card No</label>
+                            <input type="text" class="form-control" formControlName="debit_Card" maxlength="50"
+                                placeholder="Enter Debit Card No">
+                        </div>
+
+                        <div class="col" style="display: none;">
+                            <label for="inputEmail3">PLI</label>
+                            <input type="text" class="form-control" formControlName="PLI"
+                                (keypress)="restrictInputDecimal($event)">
+                        </div>
+
+
+
+                        <div class="col " style="display: none;">
+                            <label for="LeaveNatureType" class="">Accommodation Status</label>
+                            <ng-select id="LeaveNatureType" [items]="AccommodationStatus" bindLabel="name"
+                                bindValue="value" formControlName="Accommodationstatus"
+                                placeholder="--Select Accommodation Status--" class="w-100 small"></ng-select>
+                        </div>
+
+
+
+                        <div class="col" style="display: none;">
+                            <label for="inputEmail3">Advance Limit</label>
+                            <input type="text" class="form-control" formControlName="advance_Limit"
+                                (keypress)="restrictInputDecimal($event)">
+                        </div>
+
+
+
+
+
+                        <div class="col" style="display: none;">
+                            <label for="LeaveNatureType" class="">Transport Type</label>
+                            <ng-select id="LeaveNatureType" [items]="TransportType" bindLabel="name" bindValue="value"
+                                formControlName="transportType" placeholder="--Select Transport Type--"
+                                class="w-100 small"></ng-select>
+                        </div>
+
+                        <div class="col">
+                            <label for="LeaveNatureType" class="">Tax Regime</label>
+                            <ng-select id="LeaveNatureType" [items]="TaxRegime" bindLabel="name" bindValue="value"
+                                formControlName="taxRegime" placeholder="--Select Tax Regime--"
+                                class="w-100 small"></ng-select>
+                        </div>
+
+
+
+
+                        <div class="col" style="display: none;">
+                            <label for="LeaveNatureType" class="">Attendance Type</label>
+                            <ng-select id="LeaveNatureType" [items]="AttendanceType" bindLabel="name" bindValue="value"
+                                formControlName="attendanceType" placeholder="--Select Attendance Type --"
+                                class="w-100 small"></ng-select>
+                        </div>
+
+                        <div class="col">
+                            <label for="LeaveNatureType" class="">OverTime Type</label>
+                            <ng-select id="LeaveNatureType" [items]="OverTimeType" bindLabel="name" bindValue="value"
+                                formControlName="OverTimeType" placeholder="--Select OverTime Type--"
+                                class="w-100 small"></ng-select>
+                        </div>
+
+                        <div class="col">
+                            <label for="inputEmail3">Remarks</label>
+                            <input type="text" class="form-control" formControlName="remarks"
+                                placeholder="Enter Remark">
+                        </div>
+
+                        <div class="col">
+                            <label for="LeaveNatureType" class="">Group Employee</label>
+                            <ng-select id="LeaveNatureType" [items]="GroupEmployee" bindLabel="name" bindValue="value"
+                                formControlName="groupemployee" placeholder="--Select Group Employee--"
+                                class="w-100 small"></ng-select>
+                        </div>
+
+                        <div class="col d-flex align-items-end justify-content-start">
+                            <div class="form-check pt-1">
+                                <input class="form-check-input" type="checkbox" id="autoSizingCheck"
+                                    formControlName="active">
+                                <label class="form-check-label" for="autoSizingCheck">Active</label>
+                            </div>
+                        </div>
+
+
+                        <div class="col visually-hidden">
+                            <div class=""><label>SAF Start Date</label>
+                                <input type="date" class="form-control" formControlName="safStartDate">
+                            </div>
+                        </div>
+
+
+                    </div>
+
+
+                    <!--added new-->
+
+                    <div class="d-flex justify-content-between align-items-center mt-4 mb-2">
+                        <p class="text-primary m-0 fw-bold ">Communication Details</p>
+
+                    </div>
+
+                    <div class="row row-cols-1 row-cols-md-3 g-4">
+
+
+
+                        <div class="col">
+                            <label for="inputEmail3">Personal Contact No.</label>
+                            <input type="text" class="form-control" formControlName="personalContactno"
+                                (keypress)="validateNumber($event)" maxlength="10"
+                                placeholder="Enter Personal Contact No">
+                        </div>
+
+                        <div class="col">
+                            <label for="inputEmail3">Personal Email-Id</label>
+                            <input type="email" class="form-control" formControlName="personalEmail"
+                                placeholder="Enter Personal Email-Id">
+                        </div>
+
+
+                        <div class="col">
+                            <label for="inputEmail3">Official Contact No.</label>
+                            <input type="text" class="form-control" formControlName="officialContactno"
+                                (keypress)="validateNumber($event)" maxlength="10"
+                                placeholder="Enter Official Contact No.">
+                        </div>
+
+                        <div class="col">
+                            <label for="inputEmail3">Official Email-Id</label>
+                            <input type="email" class="form-control" formControlName="email"
+                                placeholder="Enter Official Email-Id">
+                        </div>
+
+
+
+
+                    </div>
+
+
+
+
+
+                    <div class="row mt-1">
+                        <div class="col-sm-12 col-md-12 col-lg-6 col-xxl-6">
+                            <!-- All Head Details -->
+
+                            <div class="card shadow-sm border-end border-primary border-2 p-2 rounded-1">
+                                <div class="rounded-1">
+                                    <p class="text-primary fw-bold ms-4 p-1">Permanent Address</p>
+                                </div>
+                                <div class="row row-cols-1 row-cols-md-2 gy-0 gx-4">
+
+                                    <!--Add column here-->
+
+                                    <!-- State -->
+                                    <div class="col">
+                                        <label>State</label>
+                                        <div class="form-group">
+                                            <ng-select [items]="stateList" bindLabel="name" bindValue="value"
+                                                formControlName="fk_stateid_permanent" placeholder="--Select--">
+                                            </ng-select>
+
+                                            <!-- <span *ngIf="submitted && EmployeeForm.get('fk_stateid_permanent')?.invalid"
+                                                class="text-danger mt-1" style="font-size:12px;">
+                                                Please select State
+                                            </span> -->
+                                        </div>
+                                    </div>
+
+                                    <div class="col">
+                                        <label>City</label>
+                                        <div class="form-group">
+                                            <ng-select [items]="permanentCityList" bindLabel="name" bindValue="value"
+                                                formControlName="fk_cityid_permanent" placeholder="--Select--">
+                                            </ng-select>
+
+                                            <!-- <span *ngIf="submitted && EmployeeForm.get('fk_cityid_permanent')?.invalid"
+                                                class="text-danger mt-1" style="font-size:12px;">
+                                                Please select City
+                                            </span> -->
+                                        </div>
+                                    </div>
+
+                                    <div class="col">
+                                        <label>Address</label>
+                                        <div class="form-group">
+                                            <textarea class="form-control" formControlName="Address_permanent"
+                                                placeholder="Enter Address"></textarea>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col">
+                                        <label>Pincode</label>
+                                        <div class="form-group">
+                                            <input type="text" class="form-control" formControlName="pincode_permanent"
+                                                placeholder="Enter Pincode" />
+                                        </div>
+                                    </div>
+
+                                    <div class="col">
+                                        <label>Domicile</label>
+                                        <div class="form-group">
+                                            <ng-select [items]="domicileList" bindLabel="name" bindValue="value"
+                                                formControlName="Domicile" placeholder="--Select--">
+                                            </ng-select>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-12 col-md-12 col-lg-6 col-xxl-6">
+                            <!-- All current details -->
+
+                            <div class="card shadow-sm border-end border-primary border-2 p-2 rounded-1">
+                                <div class="rounded-1">
+                                    <p class="text-primary fw-bold ms-4 p-1">Current Address</p>
+                                </div>
+                                <div class="row row-cols-1 row-cols-md-2 gy-0 gx-4">
+                                    <!--Add column here-->
+                                    <div class="col">
+                                        <label>State</label>
+                                        <div class="form-group">
+                                            <ng-select [items]="stateList" bindLabel="name" bindValue="value"
+                                                formControlName="fk_stateid_current" placeholder="--Select--">
+                                            </ng-select>
+
+                                            <!-- <span *ngIf="submitted && EmployeeForm.get('fk_stateid_current')?.invalid"
+                                                class="text-danger mt-1" style="font-size:12px;">
+                                                Please select State
+                                            </span> -->
+                                        </div>
+                                    </div>
+
+                                    <div class="col">
+                                        <label>City</label>
+                                        <div class="form-group">
+                                            <ng-select [items]="currentCityList" bindLabel="name" bindValue="value"
+                                                formControlName="fk_cityid_current" placeholder="--Select--">
+                                            </ng-select>
+
+                                            <!-- <span *ngIf="submitted && EmployeeForm.get('fk_cityid_current')?.invalid"
+                                                class="text-danger mt-1" style="font-size:12px;">
+                                                Please select City
+                                            </span> -->
+                                        </div>
+                                    </div>
+
+                                    <div class="col">
+                                        <label>Address</label>
+                                        <div class="form-group">
+                                            <textarea class="form-control" formControlName="Address_current"
+                                                placeholder="Enter Address"></textarea>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col">
+                                        <label>Pincode</label>
+                                        <div class="form-group">
+                                            <input type="text" class="form-control" formControlName="pincode_current"
+                                                placeholder="Enter Pincode" />
+                                        </div>
+                                    </div>
+
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--added new-->
+
+                    <div class="d-flex justify-content-between align-items-center mt-4 mb-2">
+                        <p class="text-primary m-0 fw-bold ">Bank Details</p>
+
+                    </div>
+
+                    <div class="row row-cols-1 row-cols-md-3 g-4">
+
+
+                        <div class="col">
+                            <label for="LeaveNatureType" class="">Bank Name</label>
+                            <ng-select id="" [items]="Bank" bindLabel="name" bindValue="value"
+                                formControlName="fk_bankid" placeholder="--Select Bank--"
+                                class="w-100 small"></ng-select>
+                        </div>
+
+                        <div class="col">
+                            <label for="inputEmail3">IFSC Code</label>
+                            <input type="text" class="form-control" formControlName="IFSCCODE"
+                                placeholder="Enter IFSC Code">
+                        </div>
+
+
+                        <div class="col">
+                            <label for="inputEmail3">Account Number</label>
+                            <input type="text" class="form-control" formControlName="bankaccountno"
+                                placeholder="Enter Account Number">
+                        </div>
+
+                        <div class="col">
+                            <label for="inputEmail3">Adhaar Card No.</label>
+                            <input type="text" class="form-control" formControlName="adhaarNo" maxlength="30"
+                                mask="0000 0000 0000" [dropSpecialCharacters]="false" [validation]="false"
+                                (blur)="validateAadhaar()" placeholder="Enter Aadhaar Number">
+                            <span *ngIf="aadhaarError" class="text-danger mt-1" style="font-size: 12px;">
+                                {{ aadhaarError }}
+                            </span>
+                        </div>
+
+                        <div class="col">
+                            <label for="inputEmail3">Pan Number</label>
+                            <input type="text" class="form-control" formControlName="panno" placeholder="Enter PAN No"
+                                mask="AAAAA9999A" [dropSpecialCharacters]="false" (blur)="validatePan()"
+                                style="text-transform: uppercase" (input)="onPanInput($event)">
+                            <span *ngIf="panError" class="text-danger mt-1" style="font-size: 12px;">
+                                {{ panError }}
+                            </span>
+                        </div>
+                        <!-- 
+                        <div class="col">
+                            <label for="inputEmail3">UAN No.</label>
+                            <input type="text" class="form-control"formControlName="uanNo"maxlength="30">
+                        </div> -->
+
+
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12">
+
+                            <div class=" py-2  mt-3">
+                                <label class="text-primary m-0 fw-bold "> {{ contractorLabel }} Details</label>
+                                <div class="row row-cols-1 row-cols-md-3 g-4">
+
+                                    <div class="col" *ngIf="isContractApplicable === true">
+                                        <label class="">Contractor Name</label>
+                                        <ng-select [items]="CostCenter" bindLabel="name" bindValue="value"
+                                            formControlName="fk_costcentreid" placeholder="--Select--"
+                                            class="w-100 small"></ng-select>
+                                        <span *ngIf="showError && EmployeeForm.controls['fk_costcentreid'].invalid"
+                                            class="text-danger mt-1" style="font-size: 12px;">
+                                            Field can't be blank.
+                                        </span>
+                                    </div>
+                                    <div class="col" *ngIf="isContractApplicable === false">
+                                        <label class="">Cost Center<span style="color: red;">*</span></label>
+                                        <ng-select [items]="CostCenter" bindLabel="name" bindValue="value"
+                                            formControlName="fk_costcentreid" placeholder="--Select--"
+                                            class="w-100 small"></ng-select>
+                                        <span *ngIf="showError && EmployeeForm.controls['fk_costcentreid'].invalid"
+                                            class="text-danger mt-1" style="font-size: 12px;">
+                                            Field can't be blank.
+                                        </span>
+                                    </div>
+
+                                    <div class="col">
+                                        <label class="">Service Type</label>
+                                        <ng-select [items]="serviceTypeList" bindLabel="name" bindValue="value"
+                                            formControlName="ServiceType" placeholder="--Select--"
+                                            class="w-100 small"></ng-select>
+                                    </div>
+
+                                    <div class="col">
+                                        <label class="">Business Vertical</label>
+                                        <ng-select [items]="businessVerticalList" bindLabel="name" bindValue="value"
+                                            formControlName="BusinessVertical" placeholder="--Select--"
+                                            class="w-100 small"></ng-select>
+                                    </div>
+
+                                    <div class="col">
+                                        <label class="">Vendor</label>
+                                        <ng-select [items]="VendorList" bindLabel="name" bindValue="value"
+                                            formControlName="vendorId" placeholder="--Select--"
+                                            class="w-100 small"></ng-select>
+                                    </div>
+
+                                    <div class="col">
+                                        <label class="">BGV</label>
+                                        <ng-select [items]="bgvList" bindLabel="name" bindValue="value"
+                                            formControlName="bgv" placeholder="--Select--"
+                                            class="w-100 small"></ng-select>
+                                    </div>
+                                    <!-- <div class="col" *ngIf="showclientdetails === true">
+                                        <label class="">Branch</label>
+                                        <ng-select [items]="Branch" bindLabel="name" bindValue="value"
+                                            formControlName="fk_branchId" placeholder="--Select --"
+                                            class="w-100 small"></ng-select>
+                                        
+                                    </div> -->
+
+                                    <div class="col" *ngIf="showclientdetails === true">
+                                        <label class="">Outlet</label>
+                                        <ng-select [items]="Outlet" bindLabel="name" bindValue="value"
+                                            formControlName="fk_dealerOutletId" placeholder="--Select--"
+                                            class="w-100 small"></ng-select>
+                                        <!-- <span *ngIf="showError && EmployeeForm.controls['fk_costcentreid'].invalid"
+                                class="text-danger mt-1" style="font-size: 12px;">
+                                Please Enter Outlet.
+                            </span> -->
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
+
+                    <div class="d-flex justify-content-between align-items-center mt-4 mb-2">
+                        <p class="text-primary m-0 fw-bold ">Joining Details</p>
+
+                    </div>
+
+
+
+
+
+                    <div class="row row-cols-1 row-cols-md-3 g-4">
+
+
+                        <div class="col">
+                            <label>Date of Joining<span style="color: red;">*</span></label>
+                            <input type="date" class="form-control" formControlName="dateofjoining">
+                            <span *ngIf="showError &&EmployeeForm.controls['dateofjoining'].invalid"
+                                class="text-danger mt-1" style="font-size: 12px;">
+                                Please enter Date of Joining.
+                            </span>
+
+                        </div>
+
+
+                        <div class="col">
+                            <div class=""><label>Date of Confirmation<span style="color: red;">*</span></label>
+                                <input type="date" class="form-control" formControlName="dateOfConfirmation" readonly>
+                                <span *ngIf="showError &&EmployeeForm.controls['dateOfConfirmation'].invalid"
+                                    class="text-danger mt-1" style="font-size: 12px;">
+                                    Please enter Date of Confirmation.
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class=""><label>Date of Birth<span style="color: red;">*</span></label>
+                                <input type="date" class="form-control" formControlName="dateofbirth">
+                                <span *ngIf="showError && EmployeeForm.controls['dateofbirth'].invalid"
+                                    class="text-danger mt-1" style="font-size: 12px;">
+                                    Please enter Date of Birth.
+                                </span>
+                            </div>
+                        </div>
+
+
+
+
+
+
+                        <div class="col">
+                            <div class=""><label>Contract End Date</label>
+                                <input type="date" class="form-control" formControlName="contractenddate">
+                            </div>
+                        </div>
+
+
+
+                        <div class="col" style="display: none;">
+                            <label for="LeaveNatureType" class="">Operational Division</label>
+                            <ng-select id="LeaveNatureType" [items]="OperationalDivision" bindLabel="name"
+                                bindValue="value" formControlName="fk_OperationalId"
+                                placeholder="--Select Operational Division--" class="w-100 small"></ng-select>
+                        </div>
+
+
+
+
+
+
+
+                        <div class="col" style="display: none;">
+                            <label for="LeaveNatureType" class="">Authorized HOD for Coupons</label>
+                            <ng-select id="LeaveNatureType" [items]="EmployeCode" bindLabel="name" bindValue="value"
+                                formControlName="fk_CouponHODid" placeholder="--Authorized HOD for Coupons--"
+                                class="w-100 small"></ng-select>
+                        </div>
+                    </div>
+
+
+                    <div class="d-flex justify-content-between align-items-center mt-4 mb-2">
+                        <p class="text-primary m-0 fw-bold">Left Details</p>
+                    </div>
+
+                    <div class="row row-cols-1 row-cols-md-3 g-4">
+                        <div class="col">
+                            <label>Resign Date</label>
+                            <input type="date" class="form-control" formControlName="resigndate"
+                                placeholder="Enter Resign Date">
+                        </div>
+
+                        <div class="col">
+                            <label for="inputEmail3">Leaving Reason</label>
+                            <input type="text" class="form-control" formControlName="leftremarks"
+                                placeholder="Enter Reason">
+                        </div>
+
+                        <div class="col">
+                            <label>Last Working Day</label>
+                            <input type="date" class="form-control" formControlName="leftdate">
+                        </div>
+
+                        <div class="col">
+                            <label for="LeaveNatureType">Left Status <span style="color: red;">*</span></label>
+                            <ng-select id="LeaveNatureType" [items]="LeftStatus" bindLabel="name" bindValue="value"
+                                formControlName="employeeleftstatus" placeholder="--Left Status--"
+                                class="w-100 small"></ng-select>
+
+                            <span *ngIf="showError && EmployeeForm.controls['employeeleftstatus'].invalid"
+                                class="text-danger mt-1" style="font-size: 12px;">
+                                Please select Left Status.
+                            </span>
+                        </div>
+
+                        <div class="col">
+                            <label>Relieving Date</label>
+                            <input type="date" class="form-control" formControlName="dateOfRelieving">
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mt-4 mb-2">
+                        <p class="text-primary m-0 fw-bold">Blacklist Details</p>
+                    </div>
+
+                    <div class="row row-cols-1 row-cols-md-3 g-4">
+                        <div class="col d-flex align-items-end justify-content-start">
+                            <div class="form-check pt-1 mb-2">
+                                <input class="form-check-input" type="checkbox" id="isBlacklisted"
+                                    formControlName="isBlacklisted" (change)="onBlacklistChange()">
+                                <label class="form-check-label ms-1" for="isBlacklisted">Blacklist</label>
+                            </div>
+                        </div>
+
+                        <div class="col" *ngIf="EmployeeForm.get('isBlacklisted')?.value">
+                            <label>Effective Date <span style="color: red;">*</span></label>
+                            <input type="date" class="form-control" id="blacklistDate" formControlName="blacklistDate">
+                            <span *ngIf="showError && EmployeeForm.get('isBlacklisted')?.value && !EmployeeForm.get('blacklistDate')?.value"
+                                class="text-danger mt-1" style="font-size: 12px;">
+                                Please select Effective Date.
+                            </span>
+                        </div>
+
+                        <div class="col" *ngIf="EmployeeForm.get('isBlacklisted')?.value">
+                            <label>Reason <span style="color: red;">*</span></label>
+                            <input type="text" class="form-control" id="blacklistReason" formControlName="blacklistReason"
+                                placeholder="Enter Reason">
+                            <span *ngIf="showError && EmployeeForm.get('isBlacklisted')?.value && !EmployeeForm.get('blacklistReason')?.value"
+                                class="text-danger mt-1" style="font-size: 12px;">
+                                Please enter Reason.
+                            </span>
+                        </div>
+                    </div>
+
+                </form>
+                <div class="row">
+                    <div class="col d-flex align-items-end justify-content-end pt-4 pb-3">
+                        <button type="button" class="btn btn-primary  mx-1" (click)="onSubmit()">{{pk_empid ? 'Update' :
+                            'Save' }}</button>
+
+                        <button type="button" class="btn btn-outline-dark mx-1" (click)="resetForm()">Reset</button>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Side: Employee Master Tab-Wise Audit Log Fact Box -->
+    <app-employee-fact-box 
+        [ngClass]="isFactBoxOpen ? 'col-sm-12 col-md-4 col-lg-3' : ''"
+        [documentId]="pk_empid"
+        [documentName]="'Employee Master - Basic Details'"
+        [isOpen]="isFactBoxOpen"
+        (onToggle)="toggleFactBox()">
+    </app-employee-fact-box>
+</div>

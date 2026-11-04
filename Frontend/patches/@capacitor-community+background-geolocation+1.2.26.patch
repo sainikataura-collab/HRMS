@@ -1,0 +1,472 @@
+diff --git a/node_modules/@capacitor-community/background-geolocation/android/.classpath b/node_modules/@capacitor-community/background-geolocation/android/.classpath
+new file mode 100644
+index 0000000..bbe97e5
+--- /dev/null
++++ b/node_modules/@capacitor-community/background-geolocation/android/.classpath
+@@ -0,0 +1,6 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<classpath>
++	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-17/"/>
++	<classpathentry kind="con" path="org.eclipse.buildship.core.gradleclasspathcontainer"/>
++	<classpathentry kind="output" path="bin/default"/>
++</classpath>
+diff --git a/node_modules/@capacitor-community/background-geolocation/android/.gradle/8.0.2/checksums/checksums.lock b/node_modules/@capacitor-community/background-geolocation/android/.gradle/8.0.2/checksums/checksums.lock
+new file mode 100644
+index 0000000..24f2a4a
+Binary files /dev/null and b/node_modules/@capacitor-community/background-geolocation/android/.gradle/8.0.2/checksums/checksums.lock differ
+diff --git a/node_modules/@capacitor-community/background-geolocation/android/.gradle/8.0.2/fileChanges/last-build.bin b/node_modules/@capacitor-community/background-geolocation/android/.gradle/8.0.2/fileChanges/last-build.bin
+new file mode 100644
+index 0000000..f76dd23
+Binary files /dev/null and b/node_modules/@capacitor-community/background-geolocation/android/.gradle/8.0.2/fileChanges/last-build.bin differ
+diff --git a/node_modules/@capacitor-community/background-geolocation/android/.gradle/8.0.2/fileHashes/fileHashes.lock b/node_modules/@capacitor-community/background-geolocation/android/.gradle/8.0.2/fileHashes/fileHashes.lock
+new file mode 100644
+index 0000000..9184d25
+Binary files /dev/null and b/node_modules/@capacitor-community/background-geolocation/android/.gradle/8.0.2/fileHashes/fileHashes.lock differ
+diff --git a/node_modules/@capacitor-community/background-geolocation/android/.gradle/8.0.2/gc.properties b/node_modules/@capacitor-community/background-geolocation/android/.gradle/8.0.2/gc.properties
+new file mode 100644
+index 0000000..e69de29
+diff --git a/node_modules/@capacitor-community/background-geolocation/android/.gradle/vcs-1/gc.properties b/node_modules/@capacitor-community/background-geolocation/android/.gradle/vcs-1/gc.properties
+new file mode 100644
+index 0000000..e69de29
+diff --git a/node_modules/@capacitor-community/background-geolocation/android/.project b/node_modules/@capacitor-community/background-geolocation/android/.project
+new file mode 100644
+index 0000000..364147b
+--- /dev/null
++++ b/node_modules/@capacitor-community/background-geolocation/android/.project
+@@ -0,0 +1,34 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<projectDescription>
++	<name>capacitor-community-background-geolocation</name>
++	<comment>Project capacitor-community-background-geolocation created by Buildship.</comment>
++	<projects>
++	</projects>
++	<buildSpec>
++		<buildCommand>
++			<name>org.eclipse.jdt.core.javabuilder</name>
++			<arguments>
++			</arguments>
++		</buildCommand>
++		<buildCommand>
++			<name>org.eclipse.buildship.core.gradleprojectbuilder</name>
++			<arguments>
++			</arguments>
++		</buildCommand>
++	</buildSpec>
++	<natures>
++		<nature>org.eclipse.jdt.core.javanature</nature>
++		<nature>org.eclipse.buildship.core.gradleprojectnature</nature>
++	</natures>
++	<filteredResources>
++		<filter>
++			<id>1786972369415</id>
++			<name></name>
++			<type>30</type>
++			<matcher>
++				<id>org.eclipse.core.resources.regexFilterMatcher</id>
++				<arguments>node_modules|\.git|__CREATED_BY_JAVA_LANGUAGE_SERVER__</arguments>
++			</matcher>
++		</filter>
++	</filteredResources>
++</projectDescription>
+diff --git a/node_modules/@capacitor-community/background-geolocation/android/.settings/org.eclipse.buildship.core.prefs b/node_modules/@capacitor-community/background-geolocation/android/.settings/org.eclipse.buildship.core.prefs
+new file mode 100644
+index 0000000..68c9fab
+--- /dev/null
++++ b/node_modules/@capacitor-community/background-geolocation/android/.settings/org.eclipse.buildship.core.prefs
+@@ -0,0 +1,2 @@
++connection.project.dir=../../../../android
++eclipse.preferences.version=1
+diff --git a/node_modules/@capacitor-community/background-geolocation/android/src/main/AndroidManifest.xml b/node_modules/@capacitor-community/background-geolocation/android/src/main/AndroidManifest.xml
+index 9e65984..e214f13 100644
+--- a/node_modules/@capacitor-community/background-geolocation/android/src/main/AndroidManifest.xml
++++ b/node_modules/@capacitor-community/background-geolocation/android/src/main/AndroidManifest.xml
+@@ -4,6 +4,7 @@
+             android:name="com.equimaps.capacitor_background_geolocation.BackgroundGeolocationService"
+             android:enabled="true"
+             android:exported="true"
++            android:stopWithTask="false"
+             android:foregroundServiceType="location" />
+     </application>
+ 
+diff --git a/node_modules/@capacitor-community/background-geolocation/android/src/main/java/com/equimaps/capacitor_background_geolocation/BackgroundGeolocation.java b/node_modules/@capacitor-community/background-geolocation/android/src/main/java/com/equimaps/capacitor_background_geolocation/BackgroundGeolocation.java
+index a92fcf9..8e336af 100644
+--- a/node_modules/@capacitor-community/background-geolocation/android/src/main/java/com/equimaps/capacitor_background_geolocation/BackgroundGeolocation.java
++++ b/node_modules/@capacitor-community/background-geolocation/android/src/main/java/com/equimaps/capacitor_background_geolocation/BackgroundGeolocation.java
+@@ -155,11 +155,22 @@ public class BackgroundGeolocation extends Plugin {
+             }
+ 
+             backgroundNotification = builder.build();
++            backgroundNotification.flags |= Notification.FLAG_ONGOING_EVENT | Notification.FLAG_NO_CLEAR;
+         }
++        
++        // CRITICAL FIX: explicitly start the service so it doesn't die when unbound on app swipe-away
++        Intent serviceIntent = new Intent(getContext(), BackgroundGeolocationService.class);
++        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
++            getContext().startForegroundService(serviceIntent);
++        } else {
++            getContext().startService(serviceIntent);
++        }
++        
+         service.addWatcher(
+                 call.getCallbackId(),
+                 backgroundNotification,
+-                call.getFloat("distanceFilter", 0f)
++                call.getFloat("distanceFilter", 0f),
++                call.getString("userId", "android-user-101")
+         );
+     }
+ 
+@@ -339,9 +350,7 @@ public class BackgroundGeolocation extends Plugin {
+ 
+     @Override
+     protected void handleOnDestroy() {
+-        if (service != null) {
+-            service.stopService();
+-        }
++        // Keep background foreground service alive when app is swiped away from recent apps
+         super.handleOnDestroy();
+     }
+ }
+diff --git a/node_modules/@capacitor-community/background-geolocation/android/src/main/java/com/equimaps/capacitor_background_geolocation/BackgroundGeolocationService.java b/node_modules/@capacitor-community/background-geolocation/android/src/main/java/com/equimaps/capacitor_background_geolocation/BackgroundGeolocationService.java
+index fafbb86..a2a53c4 100644
+--- a/node_modules/@capacitor-community/background-geolocation/android/src/main/java/com/equimaps/capacitor_background_geolocation/BackgroundGeolocationService.java
++++ b/node_modules/@capacitor-community/background-geolocation/android/src/main/java/com/equimaps/capacitor_background_geolocation/BackgroundGeolocationService.java
+@@ -1,7 +1,10 @@
+ package com.equimaps.capacitor_background_geolocation;
+ 
++import android.app.AlarmManager;
+ import android.app.Notification;
++import android.app.PendingIntent;
+ import android.app.Service;
++import android.content.Context;
+ import android.content.Intent;
+ import android.content.pm.ServiceInfo;
+ import android.location.Location;
+@@ -17,21 +20,28 @@ import com.google.android.gms.location.LocationRequest;
+ import com.google.android.gms.location.LocationResult;
+ import com.google.android.gms.location.LocationServices;
+ 
++import java.io.OutputStream;
++import java.net.HttpURLConnection;
++import java.net.URL;
++import java.text.SimpleDateFormat;
++import java.util.Date;
+ import java.util.HashSet;
++import java.util.Locale;
+ 
+ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+ 
+-// A bound and started service that is promoted to a foreground service
+-// (showing a persistent notification) when the first background watcher is
+-// added, and demoted when the last background watcher is removed.
++// A bound and started service promoted to foreground service
+ public class BackgroundGeolocationService extends Service {
+     static final String ACTION_BROADCAST = (
+             BackgroundGeolocationService.class.getPackage().getName() + ".broadcast"
+     );
+     private final IBinder binder = new LocalBinder();
+ 
+-    // Must be unique for this application.
+-    private static final int NOTIFICATION_ID = 28351;
++    private static final int NOTIFICATION_ID = 28351;
++    private static FusedLocationProviderClient sPersistentClient = null;
++    private static java.util.Timer heartbeatTimer = null;
++    private static long lastLocationTime = 0;
++    private static String currentUserId = "android-user-101";
+ 
+     private class Watcher {
+         public String id;
+@@ -47,18 +56,114 @@ public class BackgroundGeolocationService extends Service {
+         return binder;
+     }
+ 
+-    // Some devices allow a foreground service to outlive the application's main
+-    // activity, leading to nasty crashes as reported in issue #59. If we learn
+-    // that the application has been killed, all watchers are stopped and the
+-    // service is terminated immediately.
++    @Override
++    public int onStartCommand(Intent intent, int flags, int startId) {
++        Notification notification = getNotification();
++        if (notification == null) {
++            String channelId = "persistent_location_channel";
++            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
++                android.app.NotificationChannel channel = new android.app.NotificationChannel(
++                        channelId,
++                        "Background Location Tracking",
++                        android.app.NotificationManager.IMPORTANCE_LOW
++                );
++                android.app.NotificationManager manager = getSystemService(android.app.NotificationManager.class);
++                if (manager != null) {
++                    manager.createNotificationChannel(channel);
++                }
++            }
++            
++            @SuppressWarnings("deprecation")
++            Notification.Builder builder = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ? 
++                    new Notification.Builder(this, channelId) : 
++                    new Notification.Builder(this);
++                    
++            notification = builder
++                    .setContentTitle("📍 GPS Background Tracker Running")
++                    .setContentText("Continuously sending location updates to .NET API")
++                    .setSmallIcon(android.R.drawable.ic_menu_mylocation)
++                    .setOngoing(true)
++                    .build();
++        }
++        
++        try {
++            startForeground(NOTIFICATION_ID, notification);
++        } catch (Exception e) {
++            Logger.error("Failed to foreground service on restart", e);
++        }
++        
++        ensurePersistentLocationTracking(getApplicationContext());
++        return START_STICKY;
++    }
++
+     @Override
+     public boolean onUnbind(Intent intent) {
+-        for (Watcher watcher : watchers) {
+-            watcher.client.removeLocationUpdates(watcher.locationCallback);
++        // KEEP FOREGROUND SERVICE ACTIVE WHEN APP IS SWIPED AWAY FROM RECENT TASKS!
++        ensurePersistentLocationTracking(getApplicationContext());
++        return true;
++    }
++
++    @Override
++    public void onTaskRemoved(Intent rootIntent) {
++        Logger.debug("App swiped away from recent apps.");
++        ensurePersistentLocationTracking(getApplicationContext());
++        // Relying on START_STICKY and android:stopWithTask="false" to keep service alive.
++        // AlarmManager restart trick causes ForegroundServiceStartNotAllowedException on Android 12+
++    }
++
++    private static void ensurePersistentLocationTracking(final Context context) {
++        if (sPersistentClient != null) return;
++
++        try {
++            sPersistentClient = LocationServices.getFusedLocationProviderClient(context);
++            LocationRequest request = new LocationRequest();
++            request.setInterval(3000);
++            request.setFastestInterval(2000);
++            request.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
++
++            sPersistentClient.requestLocationUpdates(request, new LocationCallback() {
++                @Override
++                public void onLocationResult(LocationResult locationResult) {
++                    if (locationResult == null) return;
++                    Location loc = locationResult.getLastLocation();
++                    if (loc != null) {
++                        lastLocationTime = System.currentTimeMillis();
++                        sendLocationFromNativeJava(context, loc, null);
++                    }
++                }
++            }, android.os.Looper.getMainLooper());
++            
++            if (heartbeatTimer == null) {
++                heartbeatTimer = new java.util.Timer();
++                heartbeatTimer.scheduleAtFixedRate(new java.util.TimerTask() {
++                    @Override
++                    public void run() {
++                        long now = System.currentTimeMillis();
++                        if (now - lastLocationTime > 5000) {
++                            android.location.LocationManager lm = (android.location.LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
++                            boolean gpsEnabled = false;
++                            boolean networkEnabled = false;
++                            try {
++                                gpsEnabled = lm.isProviderEnabled(android.location.LocationManager.GPS_PROVIDER);
++                                networkEnabled = lm.isProviderEnabled(android.location.LocationManager.NETWORK_PROVIDER);
++                            } catch (Exception e) {}
++                            
++                            String msg = "location signal lost";
++                            if (!gpsEnabled && !networkEnabled) {
++                                msg = "location is off pls";
++                            }
++                            sendLocationFromNativeJava(context, null, msg);
++                        }
++                    }
++                }, 3000, 3000);
++            }
++            
++            Logger.debug("Persistent native FusedLocationProviderClient active!");
++        } catch (SecurityException e) {
++            Logger.error("SecurityException starting persistent location updates", e);
++        } catch (Exception e) {
++            Logger.error("Error starting persistent location updates", e);
+         }
+-        watchers = new HashSet<Watcher>();
+-        stopSelf();
+-        return false;
+     }
+ 
+     Notification getNotification() {
+@@ -70,13 +175,22 @@ public class BackgroundGeolocationService extends Service {
+         return null;
+     }
+ 
+-    // Handles requests from the activity.
+     public class LocalBinder extends Binder {
++        public void stopService() {
++            stopSelf();
++        }
++
+         void addWatcher(
+                 final String id,
+                 Notification backgroundNotification,
+-                float distanceFilter
++                float distanceFilter,
++                String userId
+         ) {
++            if (userId != null && !userId.isEmpty()) {
++                currentUserId = userId;
++            }
++            ensurePersistentLocationTracking(getApplicationContext());
++
+             FusedLocationProviderClient client = LocationServices.getFusedLocationProviderClient(
+                     BackgroundGeolocationService.this
+             );
+@@ -90,12 +204,18 @@ public class BackgroundGeolocationService extends Service {
+                 @Override
+                 public void onLocationResult(LocationResult locationResult) {
+                     Location location = locationResult.getLastLocation();
++                    if (location != null) {
++                        lastLocationTime = System.currentTimeMillis();
++                    }
+                     Intent intent = new Intent(ACTION_BROADCAST);
+                     intent.putExtra("location", location);
+                     intent.putExtra("id", id);
+                     LocalBroadcastManager.getInstance(
+                             getApplicationContext()
+                     ).sendBroadcast(intent);
++
++                    // Post directly from native Java thread to .NET API & SQL Server!
++                    sendLocationFromNativeJava(getApplicationContext(), location, null);
+                 }
+                 @Override
+                 public void onLocationAvailability(LocationAvailability availability) {
+@@ -113,28 +233,16 @@ public class BackgroundGeolocationService extends Service {
+             watcher.backgroundNotification = backgroundNotification;
+             watchers.add(watcher);
+ 
+-            // According to Android Studio, this method can throw a Security Exception if
+-            // permissions are not yet granted. Rather than check the permissions, which is fiddly,
+-            // we simply ignore the exception.
+             try {
+                 watcher.client.requestLocationUpdates(
+                         watcher.locationRequest,
+                         watcher.locationCallback,
+-                        null
++                        android.os.Looper.getMainLooper()
+                 );
+             } catch (SecurityException ignore) {}
+ 
+-            // Promote the service to the foreground if necessary.
+-            // Ideally we would only call 'startForeground' if the service is not already
+-            // foregrounded. Unfortunately, 'getForegroundServiceType' was only introduced
+-            // in API level 29 and seems to behave weirdly, as reported in #120. However,
+-            // it appears that 'startForeground' is idempotent, so we just call it repeatedly
+-            // each time a background watcher is added.
+             if (backgroundNotification != null) {
+                 try {
+-                    // This method has been known to fail due to weird
+-                    // permission bugs, so we prevent any exceptions from
+-                    // crashing the app. See issue #86.
+                     startForeground(NOTIFICATION_ID, backgroundNotification);
+                 } catch (Exception exception) {
+                     Logger.error("Failed to foreground service", exception);
+@@ -156,20 +264,84 @@ public class BackgroundGeolocationService extends Service {
+         }
+ 
+         void onPermissionsGranted() {
+-            // If permissions were granted while the app was in the background, for example in
+-            // the Settings app, the watchers need restarting.
+             for (Watcher watcher : watchers) {
+-                watcher.client.removeLocationUpdates(watcher.locationCallback);
+-                watcher.client.requestLocationUpdates(
+-                        watcher.locationRequest,
+-                        watcher.locationCallback,
+-                        null
+-                );
++                try {
++                    watcher.client.requestLocationUpdates(
++                            watcher.locationRequest,
++                            watcher.locationCallback,
++                            android.os.Looper.getMainLooper()
++                    );
++                } catch (SecurityException ignore) {}
+             }
+         }
++    }
+ 
+-        void stopService() {
+-            BackgroundGeolocationService.this.stopSelf();
+-        }
++
++
++    private static void sendLocationFromNativeJava(final Context context, final Location location, final String fallbackMsg) {
++        new Thread(new Runnable() {
++            @Override
++            public void run() {
++                try {
++                    URL url = new URL("https://hrmsapi.empowerlogics.com/api/Location/update");
++                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
++                    conn.setRequestMethod("POST");
++                    conn.setRequestProperty("Content-Type", "application/json; utf-8");
++                    conn.setDoOutput(true);
++                    conn.setConnectTimeout(5000);
++                    conn.setReadTimeout(5000);
++
++                    String isoTime = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US).format(new Date());
++                    
++                    double lat = location != null ? location.getLatitude() : 0.0;
++                    double lng = location != null ? location.getLongitude() : 0.0;
++                    double acc = location != null ? (double) location.getAccuracy() : 0.0;
++                    String msg = fallbackMsg != null ? fallbackMsg : "Native Java Background Service";
++
++                    String jsonInputString = String.format(
++                        Locale.US,
++                        "{\"userId\":\"%s\",\"latitude\":%f,\"longitude\":%f,\"accuracy\":%f,\"timestamp\":\"%s\",\"isBackground\":true,\"deviceInfo\":\"%s\"}",
++                        currentUserId,
++                        lat,
++                        lng,
++                        acc,
++                        isoTime,
++                        msg
++                    );
++
++                    try (OutputStream os = conn.getOutputStream()) {
++                        byte[] input = jsonInputString.getBytes("utf-8");
++                        os.write(input, 0, input.length);
++                    }
++
++                    int code = conn.getResponseCode();
++                    Logger.debug("Native Java Service POST Status: " + code);
++                    
++                    if (code == 200 || code == 201) {
++                        java.io.InputStream is = conn.getInputStream();
++                        java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
++                        String responseString = s.hasNext() ? s.next() : "";
++                        is.close();
++                        
++                        if (responseString.contains("\"isTrackingEnabled\":false") || responseString.contains("\"isTrackingEnabled\": false")) {
++                            Logger.debug("User disabled tracking. Stopping service...");
++                            
++                            sPersistentClient = null;
++                            if (heartbeatTimer != null) {
++                                heartbeatTimer.cancel();
++                                heartbeatTimer = null;
++                            }
++                            
++                            Intent stopIntent = new Intent(context, BackgroundGeolocationService.class);
++                            context.stopService(stopIntent);
++                        }
++                    }
++                    
++                    conn.disconnect();
++                } catch (Exception e) {
++                    Logger.error("Native Java Service POST Error", e);
++                }
++            }
++        }).start();
+     }
+ }

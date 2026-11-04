@@ -1,0 +1,102 @@
+
+<div class="row">
+    <div class="col-12">
+      <div class="card">
+        <!--  -->
+          <div class="card-header">  
+            <div class="row w-100">
+              <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-between">
+                <h4>
+                    List of Accident Details</h4>
+               
+              </div>
+              
+              <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-center">
+                <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText" />
+              </div>
+              <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-md-end">
+                <button class="btn btnheader"  routerLink="/dash/hr/hrdashboard/AccidentDetail">
+                     Add
+                  </button>
+                  <button class="btn btn-light mx-1" (click)="exportToExcel()">
+                    Download
+                  </button>
+              </div>
+              
+            </div>
+        </div>
+        <div class="card-body">
+          <div class="row g-4">
+            <div class="col-md-4">
+              <label>Employee</label>
+              <ng-select id="year"
+                [items]="EmployeeList"
+                bindLabel="name"
+                bindValue="value"
+                placeholder="--Select employee--"
+                [(ngModel)]="fk_empid"
+                (change)="onEmpidChange(fk_empid)"
+                class="w-100">
+              </ng-select>
+            </div>
+          </div>
+        </div>
+        <!--  -->
+        <div class="card-body">
+          <div class="table-responsive table-invoice">
+            <table Id="exportTable"  class="table">
+              <thead>
+                <tr>
+                  <th>Sr&nbsp;No.</th>
+                  <th>Code</th>
+                  <th> Name</th>
+                  <th>Description</th>
+                  <th>Location</th>
+                  <th>Accident&nbsp;Date</th>
+                  <th>Expence&nbsp;Amount</th>
+                  <th>File</th>
+                  <th>Action</th>
+                  			
+                </tr>
+              </thead>
+                <tbody>
+                  <tr *ngFor=" let item of filteredData() | paginate : { itemsPerPage: pageSize, currentPage: pageIndex ,totalItems: totalItems };let i = index">
+                    <td>{{(pageIndex-1)* pageSize+i+1}}</td>
+                    <td>{{item.empcode}}</td>
+                    <td>{{item.empname}}</td>
+                     <td>{{item.description}}</td>
+                    <td>{{item.location}}</td>
+                    <td>{{item.accidentdate}}</td>
+                    <td>{{item.expenceamt}}</td>
+                    <td (click)="download(item.filename)" style="cursor: pointer; text-align: center;">
+                        <i class="fa fa-eye" aria-hidden="true" title="View/Download Image"></i>
+                      </td>
+                    <td>
+                    <button class="btn btn-sm btn-outline" (click)="edit(encryption.encryptText(item.pk_accidentId))"> <i class="fa-regular fa-pen-to-square"></i></button>&nbsp;
+                     <button class="btn btn-sm btn-outline" (click)="delete(item.pk_accidentId)"><i class="fa fa-trash"></i> </button>
+                    </td> 
+                          </tr> 
+               </tbody>
+            
+            </table>
+  
+             <!--for pagination-->
+             <pagination-controls
+             (pageChange)="onPageChange($event)"
+             [responsive]="true">
+           </pagination-controls>
+         
+                 <ng-template #noData>
+                   <tr>
+                     <td colspan="4" class="text-center">No data available</td>
+                   </tr>
+                 </ng-template>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- message modal -->
+
+  

@@ -1,0 +1,338 @@
+<div class="row">
+  <div class="col-12">
+    <div class="card w-100 shadow-sm border-0">
+
+      <!-- Heading (Matching StateMaster_list) -->
+      <div class="card-header bg-primary">
+        <div class="row w-100">
+          <!-- Title Section -->
+          <div class="col-sm-6 col-md-6 col-lg-4 d-flex align-items-center justify-content-start">
+            <h4 class="text-white mb-0">
+              {{ activeTab === 1 ? (isEditMode ? 'Update Common Rate Card' : 'Add Common Rate Card') : 'Common Rate Card List' }}
+            </h4>
+          </div>
+
+          <!-- Search Section (when in Tab 2) -->
+          <div class="col-sm-12 col-md-6 col-lg-4 d-flex align-items-center justify-content-center"
+            *ngIf="activeTab === 2">
+            <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="gridSearchTerm"
+              (ngModelChange)="onGridFilterChange()" />
+          </div>
+          <div class="col-sm-12 col-md-6 col-lg-4" *ngIf="activeTab === 1"></div>
+
+          <!-- Right Actions -->
+          <div class="col-sm-6 col-md-6 col-lg-4 d-flex align-items-center justify-content-end ms-auto gap-2">
+            <button *ngIf="activeTab === 2" class="btn btn-light" type="button" (click)="exportToExcel()">
+              Download
+            </button>
+            <button class="btn btn-light" type="button" (click)="goBack()">
+              Back
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-body mt-3">
+
+        <!-- ================= TAB 1: RATE CARD FORM & DYNAMIC RATES ================= -->
+        <div *ngIf="activeTab === 1">
+
+          <!-- Notice when existing rate card is found for combination -->
+          <div *ngIf="existingRateCardWarning"
+            class="existing-card-banner border-start border-4 border-warning d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3 bg-warning-subtle p-3 rounded">
+            <div class="d-flex align-items-start gap-2">
+              <i class="fa-solid fa-triangle-exclamation text-warning fs-5 mt-1"></i>
+              <div>
+                <strong class="d-block text-dark small fw-bold">Existing Rate Card Found for Combination</strong>
+                <span class="small text-dark">{{ existingRateCardWarning.message }}</span>
+              </div>
+            </div>
+            <button type="button" class="btn btn-sm btn-outline-dark text-nowrap" (click)="switchTab(2)">
+              <i class="fa-solid fa-eye me-1"></i> View in Tab 2
+            </button>
+          </div>
+
+          <form [formGroup]="rateCardForm" (ngSubmit)="onSubmit()">
+
+            <!-- Primary Form Fields -->
+            <div class="row mb-3">
+
+              <!-- 1. Select Client -->
+              <div class="col-sm-12 col-md-4 col-lg-4 mb-3">
+                <label>Select Client <span class="text-danger">*</span></label>
+                <ng-select [items]="clientList" bindLabel="name" bindValue="value" placeholder="-- Select Client --"
+                  formControlName="ClientID" (change)="onClientChange($event)" [clearable]="!isEditMode" [readonly]="isEditMode" class="w-100">
+                </ng-select>
+                <span *ngIf="isSubmitted && rateCardForm.get('ClientID')?.invalid" class="text-danger mt-1 d-block"
+                  style="font-size: 12px;">
+                  Please select Client.
+                </span>
+              </div>
+
+              <!-- 2. Select Model -->
+              <div class="col-sm-12 col-md-4 col-lg-4 mb-3">
+                <label>Select Model <span class="text-danger">*</span></label>
+                <ng-select [items]="modelList" bindLabel="name" bindValue="value"
+                  placeholder="{{ rateCardForm.get('ClientID')?.value ? '-- Select Model --' : 'Select Client first' }}"
+                  formControlName="ModelID" (change)="onModelChange($event)" [clearable]="!isEditMode" [readonly]="isEditMode" class="w-100">
+                </ng-select>
+                <span *ngIf="isSubmitted && rateCardForm.get('ModelID')?.invalid" class="text-danger mt-1 d-block"
+                  style="font-size: 12px;">
+                  Please select Model.
+                </span>
+              </div>
+
+              <!-- 3. Select Location -->
+              <div class="col-sm-12 col-md-4 col-lg-4 mb-3">
+                <label>Select Location <span class="text-danger">*</span></label>
+                <ng-select [items]="locationList" bindLabel="name" bindValue="value" placeholder="-- Select Location --"
+                  formControlName="LocationID" (change)="onLocationChange($event)" [clearable]="!isEditMode" [readonly]="isEditMode" class="w-100">
+                </ng-select>
+                <span *ngIf="isSubmitted && rateCardForm.get('LocationID')?.invalid" class="text-danger mt-1 d-block"
+                  style="font-size: 12px;">
+                  Please select Location.
+                </span>
+              </div>
+
+              <!-- 4. Effective From -->
+              <div class="col-sm-12 col-md-4 col-lg-4 mb-3">
+                <label>Effective From <span class="text-danger">*</span></label>
+                <input type="date" [readonly]="isEditMode" 
+                  [style.background-color]="isEditMode ? '#e9ecef' : ''" 
+                  [style.opacity]="'1'" 
+                  [style.pointer-events]="isEditMode ? 'none' : 'auto'" 
+                  class="form-control" formControlName="EffectiveFrom"
+                  (change)="onEffectiveFromChange($event)" />
+                <span *ngIf="isSubmitted && rateCardForm.get('EffectiveFrom')?.invalid" class="text-danger mt-1 d-block"
+                  style="font-size: 12px;">
+                  Please select Effective From date.
+                </span>
+              </div>
+
+              <!-- 5. FHR ID -->
+              <div class="col-sm-12 col-md-4 col-lg-4 mb-3">
+                <label>FHR ID <span class="text-danger">*</span></label>
+                <input type="text" [readonly]="isEditMode" 
+                  [style.background-color]="isEditMode ? '#e9ecef' : ''" 
+                  [style.opacity]="'1'" 
+                  class="form-control" placeholder="Enter FHR ID" formControlName="FHRID"
+                  (input)="onFhridChange($event)" (change)="onFhridChange($event)" />
+                <span *ngIf="isSubmitted && rateCardForm.get('FHRID')?.invalid" class="text-danger mt-1 d-block"
+                  style="font-size: 12px;">
+                  Please enter FHR ID.
+                </span>
+              </div>
+
+              <!-- 6. Vehicle Type (For Amazon EDSP) -->
+              <div class="col-sm-12 col-md-4 col-lg-4 mb-3" *ngIf="isPrimaryVehicleTypeRequired">
+                <label>Vehicle Type <span class="text-danger">*</span></label>
+                <ng-select [items]="vehicleTypeList" bindLabel="name" bindValue="value"
+                  placeholder="-- Select Vehicle Type --" formControlName="AmazonEdsp_VehicleTypeID"
+                  (change)="onAmazonEdspVehicleTypeChange($event)" [clearable]="true" class="w-100" [readonly]="isEditMode">
+                </ng-select>
+                <span *ngIf="isSubmitted && rateCardForm.get('AmazonEdsp_VehicleTypeID')?.invalid" class="text-danger mt-1 d-block" style="font-size: 12px;">
+                  Please select Vehicle Type.
+                </span>
+              </div>
+
+            </div>
+
+            <!-- Rate Configuration Matrix Section -->
+            <div class="bg-primary rounded-1 page-seperator mb-3 d-flex justify-content-between align-items-center">
+              <p class="p-1 text-white ms-4 mb-0">Rate Configuration Matrix</p>
+              <span class="badge bg-light text-primary me-3" *ngIf="activeRateFields.length > 0">
+                {{ activeRateFields.length }} Rates Applicable
+              </span>
+            </div>
+
+            <div class="mb-4">
+              <!-- No Rate Fields Placeholder -->
+              <div *ngIf="activeRateFields.length === 0" class="text-center py-4 text-muted border rounded bg-light">
+                <i class="bi bi-info-circle fs-3 d-block mb-2 text-primary opacity-50"></i>
+                <p class="mb-0 fw-semibold small">Please select a Client and Model to load applicable rate options.</p>
+              </div>
+
+              <!-- Rates Table -->
+              <div *ngIf="activeRateFields.length > 0" class="table-responsive rate-card-table-wrap">
+                <table class="table table-bordered mb-0 align-middle">
+                  <thead class="table-light">
+                    <tr>
+                      <th style="width: 50px;" class="text-center">Sr.</th>
+                      <th style="width: 200px;">Rate Name</th>
+                      <th style="width: 220px;">Rate Type</th>
+                      <th *ngIf="isVehicleTypeRequired" style="width: 220px;">Vehicle Type <span
+                          class="text-danger">*</span></th>
+                      <th>Value / Expression</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let field of activeRateFields; let i = index">
+                      <td class="text-center text-muted">{{ i + 1 }}</td>
+                      <td class="fw-semibold text-nowrap">{{ field.label }}</td>
+                      <td style="width: 220px;">
+                        <ng-select [items]="field.allowedRateTypes || rateTypes" bindLabel="name" bindValue="value"
+                          placeholder="-- Select Rate Type --" [formControlName]="field.key + '_RateType'"
+                          [clearable]="true" class="w-100">
+                        </ng-select>
+                      </td>
+
+                      <!-- Vehicle Type Dropdown: Placed directly after Rate Type for Large Model -->
+                      <td *ngIf="isVehicleTypeRequired" style="width: 220px;">
+                        <ng-select [items]="vehicleTypeList" bindLabel="name" bindValue="value"
+                          placeholder="-- Select Vehicle Type --" formControlName="Large_VehicleTypeID"
+                          (change)="onVehicleTypeChange($event)" [clearable]="true" class="w-100">
+                        </ng-select>
+                        <span *ngIf="isSubmitted && rateCardForm.get('Large_VehicleTypeID')?.invalid"
+                          class="text-danger mt-1 d-block" style="font-size: 12px;">
+                          Please select Vehicle Type.
+                        </span>
+                      </td>
+
+                      <td>
+                        <!-- If Fixed Rate -->
+                        <div *ngIf="rateCardForm.get(field.key + '_RateType')?.value === 'Fixed'" class="input-group">
+                          <span class="input-group-text bg-light text-muted">₹</span>
+                          <input type="number" class="form-control" placeholder="0.00"
+                            [formControlName]="field.key === 'Shopsy' ? 'Shopsy_Deduction_Rate' : field.key + '_Rate'" />
+                        </div>
+
+                        <!-- If Percentage Rate (e.g. U2S) -->
+                        <div *ngIf="rateCardForm.get(field.key + '_RateType')?.value === 'Percentage'"
+                          class="input-group">
+                          <input type="number" class="form-control" placeholder="Enter percentage value"
+                            [formControlName]="field.key + '_Rate'" />
+                          <span class="input-group-text bg-light text-muted">%</span>
+                        </div>
+
+                        <!-- If Base Rate (e.g. Grocery) -->
+                        <div *ngIf="rateCardForm.get(field.key + '_RateType')?.value === 'Base Rate'"
+                          class="d-flex align-items-center">
+                          <span class="badge bg-secondary-subtle text-secondary border px-3 py-2">
+                            <i class="bi bi-check-circle me-1"></i>Base Rate Selected (No Amount Required)
+                          </span>
+                        </div>
+
+                        <!-- If Slab Rate  or PacketSlabrate-->
+                        <div *ngIf="rateCardForm.get(field.key + '_RateType')?.value === 'Slab' || rateCardForm.get(field.key + '_RateType')?.value === 'Packet Slab'">
+                          <input type="text" class="form-control" placeholder="e.g. 0-80:12,81-100:16"
+                            [formControlName]="field.key + '_SlabExpr'" />
+                        </div>  
+
+                        <!-- If None Selected -->
+                        <span *ngIf="!rateCardForm.get(field.key + '_RateType')?.value"
+                          class="text-muted small fst-italic">
+                          Select a rate type to enter values
+                        </span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Form Action Buttons -->
+            <div class="row align-items-center mb-3">
+              <div class="col d-flex align-items-center justify-content-end">
+                <button type="submit" class="btn btn-primary mx-1" [disabled]="isSaving">
+                  <span *ngIf="isSaving" class="spinner-border spinner-border-sm me-1"></span>
+                  Save
+                </button>
+
+                <button type="button" class="btn btn-outline-dark mx-1" (click)="resetForm()">
+                  <i class="bi bi-arrow-counterclockwise me-1"></i>Reset
+                </button>
+              </div>
+            </div>
+
+          </form>
+
+        </div>
+
+        <!-- ================= TAB 2: ALL RATE CARDS (GRID VIEW) ================= -->
+        <div *ngIf="activeTab === 2">
+
+          <!-- Table Section (Matching StateMaster_list format) -->
+          <div class="mt-4 table-responsive">
+            <table id="exportTable" class="table table-bordered align-middle">
+              <thead>
+                <tr>
+                  <th class="text-nowrap text-center">S.No</th>
+                  <th class="text-nowrap">Client</th>
+                  <th class="text-nowrap">Model</th>
+                  <th class="text-nowrap">Vehicle Type</th>
+                  <th class="text-nowrap">FHR ID</th>
+                  <th class="text-nowrap">Location</th>
+                  <th class="text-nowrap">Effective From</th>
+                  <th class="text-nowrap">Configured Rates & Values</th>
+                  <th class="text-nowrap">Assign By</th>
+                  <th class="text-nowrap">Assign Date</th>
+                  <th class="text-nowrap">Update By</th>
+                  <th class="text-nowrap">Update Date</th>
+                  <th class="text-nowrap text-center">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  *ngFor="let item of gridRateCards | paginate : { itemsPerPage: pageSize, currentPage: pageIndex, totalItems: totalItems }; let i = index">
+                  <td class="text-nowrap text-center">{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+                  <td class="text-nowrap">{{ item.ClientName || item.clientName || '-' }}</td>
+                  <td class="text-nowrap">{{ item.ModelName || item.modelName || '-' }}</td>
+                  <td class="text-nowrap">
+                    <span
+                      *ngIf="item.Large_VehicleTypeName || item.large_VehicleTypeName || item.VehicleTypeName || item.vehicleTypeName">
+                      {{ cleanVehicleName(item.Large_VehicleTypeName || item.large_VehicleTypeName ||
+                      item.VehicleTypeName || item.vehicleTypeName) }}
+                    </span>
+                    <span
+                      *ngIf="!item.Large_VehicleTypeName && !item.large_VehicleTypeName && !item.VehicleTypeName && !item.vehicleTypeName">-</span>
+                  </td>
+                  <td class="text-nowrap">{{ item.FHRID || item.fhrid || '-' }}</td>
+                  <td class="text-nowrap">{{ item.LocationName || item.locationName || '-' }}</td>
+                  <td class="text-nowrap">{{ (item.EffectiveFrom || item.effectiveFrom) ? ((item.EffectiveFrom || item.effectiveFrom) |
+                    date:'dd-MM-yyyy') : '-' }}</td>
+
+                  <!-- Configured Rates & Values Breakdown -->
+                  <td>
+                    <div class="d-flex flex-wrap gap-2" *ngIf="item.configuredRates && item.configuredRates.length > 0">
+                      <div *ngFor="let r of item.configuredRates"
+                        class="p-1 px-2 border rounded bg-white d-flex align-items-center gap-1 small text-nowrap"
+                        [ngClass]="r.isFixed ? 'border-success-subtle' : 'border-primary-subtle'">
+                        <strong class="text-dark">{{ r.name }}</strong>
+                        <span class="badge" [ngClass]="r.isFixed ? 'bg-success text-white' : 'bg-primary text-white'">{{
+                          r.type }}</span>
+                        <span class="fw-bold font-monospace"
+                          [ngClass]="r.isFixed ? 'text-success' : 'text-primary'">{{ r.value }}</span>
+                      </div>
+                    </div>
+                    <span *ngIf="!item.configuredRates || item.configuredRates.length === 0"
+                      class="text-muted small fst-italic">-</span>
+                  </td>
+
+                  <td class="text-nowrap">{{ item.AssignBy || item.assignBy || '-' }}</td>
+                  <td class="text-nowrap">{{ (item.AssignDate || item.assignDate) ? ((item.AssignDate || item.assignDate) | date:'dd-MM-yyyy HH:mm:ss') : '-' }}</td>
+                  <td class="text-nowrap">{{ item.UpdateBy || item.updateBy || '-' }}</td>
+                  <td class="text-nowrap">{{ (item.UpdateDate || item.updateDate) ? ((item.UpdateDate || item.updateDate) | date:'dd-MM-yyyy HH:mm:ss') : '-' }}</td>
+
+                  <td class="text-center text-nowrap">
+                    <button type="button" class="btn btn-sm btn-outline mx-1 cursor-pointer"
+                      (click)="editDbRateCard(item)" title="Edit Rate Card">
+                      <i class="fa-solid fa-pen-to-square text-dark" style="font-size: 15px;"></i>
+                    </button>
+                  </td>
+                </tr>
+                <tr *ngIf="!isGridLoading && (!gridRateCards || gridRateCards.length === 0)">
+                  <td colspan="13" class="text-center text-muted py-4">No data available</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <pagination-controls (pageChange)="onPageChange($event)">
+            </pagination-controls>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

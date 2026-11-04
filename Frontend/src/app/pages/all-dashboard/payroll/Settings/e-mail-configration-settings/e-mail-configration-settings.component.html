@@ -1,0 +1,74 @@
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+      <div class="card">
+  
+        <!-- Header -->
+        <div class="card-header bg-primary py-lg-2 mt-0">
+          <div class="row w-100 align-items-center">
+            <div class="col-12 col-md-6">
+              <h4 class="text-white text-center text-md-start">E-Mail Configuration</h4>
+            </div>
+          </div>
+        </div>
+  
+        <!-- Form Body -->
+        <div class="card-body mt-2">
+          <form [formGroup]="EmailConfigrationForm" class="row g-3">
+  
+            <!-- Row 1 -->
+            <div class="row row-cols-1 row-cols-md-3 g-3">
+              <div class="col">
+                <label>Host</label>
+                <input type="text" class="form-control" formControlName="host">
+              </div>
+              <div class="col">
+                <label>Port</label>
+                <input type="text" class="form-control" formControlName="port">
+              </div>
+              <div class="col">
+                <label>TDS (E-mail)</label>
+                <input type="email" class="form-control" formControlName="tdsemail">
+              </div>
+            </div>
+  
+            <!-- Row 2 -->
+            <div class="row row-cols-1 row-cols-md-3 g-3">
+              <div class="col">
+                <label>User Name (E-mail)</label>
+                <input type="email" class="form-control" formControlName="userName">
+              </div>
+              <div class="col">
+                <label>Password</label>
+                <input type="text" class="form-control" formControlName="password">
+              </div>
+              <div class="col">
+                <label>From Address</label>
+                <input type="text" class="form-control" formControlName="fromEmailAddress">
+              </div>
+            </div>
+  
+            <!-- Row 3 -->
+            <div class="row row-cols-1 row-cols-md-3 g-3">
+              <div class="col">
+                <label>SSL Enabled</label>
+                <div class="form-group">
+                    <input type="checkbox" class="form-check-input fs-6" formControlName="sslEnabled">
+                </div>
+            </div>
+            </div>
+  
+            <!-- Footer Buttons -->
+            <div class="row mt-3">
+              <div class="col d-flex justify-content-end">
+                <button type="submit" class="btn btn-primary mx-1" (click)="update()">Update</button>
+                <button type="button" class="btn btn-outline-dark mx-1" (click)="EmailConfigrationForm.reset()">Reset</button>
+              </div>
+            </div>
+  
+          </form>
+        </div>
+  
+      </div>
+    </div>
+  </div>
+  

@@ -1,0 +1,209 @@
+
+
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+
+      <!-- 🔹 Header -->
+      <div class="card-header bg-primary text-white">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-6 d-flex align-items-center">
+            <h4 class="mb-0">Employee Training Attendance</h4>
+          </div>
+          <div class="col-sm-12 col-md-6 d-flex align-items-center justify-content-md-end mt-2 mt-md-0">
+            <!-- <button class="btn btn-light btn-sm"
+              routerLink="/dash/emp-training/emp-trainingdashboard/Training_Need_Identification_List_For_Employee">
+              Back
+            </button> -->
+          </div>
+        </div>
+      </div>
+
+      <!-- 🔹 Body -->
+      <div class="card-body mt-4">
+
+        <!-- Loader -->
+        <div *ngIf="isLoading" class="text-center text-muted">Loading training data...</div>
+
+        <!-- Error -->
+        <div *ngIf="errorMessage" class="alert alert-danger text-center">{{ errorMessage }}</div>
+
+        <!-- Training Details -->
+        <div *ngIf="!isLoading && trainingData">
+
+          <!-- 🧾 Program Details -->
+          <div class="row row-cols-1 row-cols-lg-2 g-4 mb-4">
+            <div class="col">
+              <div class="h-100">
+                <div class="card-header bg-light">
+                  <p class="card-title mb-0 fw-semibold">Training Info 📚</p>
+                </div>
+                <div class="card-body">
+                  <p><strong>Program Name:</strong> {{ trainingData.programName }}</p>
+                  <p><strong>SubProgram Name:</strong> {{ trainingData.subProgramName }}</p>
+                  <p><strong>Training Start:</strong> {{ trainingData.trainingDateTime | date:'medium' }}</p>
+                  <p><strong>Mode:</strong> {{ trainingData.mode }}</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="col">
+              <div class="h-100">
+                <div class="card-header bg-light">
+                  <p class="card-title mb-0 fw-semibold">Trainer & Status 👨‍🏫</p>
+                </div>
+                <div class="card-body">
+                  <p><strong>Trainer Type:</strong> {{ trainingData.trainer }}</p>
+                  <p><strong>Trainer Name:</strong> {{ trainingData.trainerName }}</p>
+                  <p><strong>Status:</strong>
+                    <span class="badge bg-info text-dark">{{ trainingData.tniStatus }}</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <hr />
+
+          <!-- 📝 Attendance Table -->
+          <div class="row">
+            <div class="col-12 px-0 mx-0">
+              <div class="card rounded-3 shadow-sm">
+                <div class="card-header ps-2 row row-cols-1 row-cols-md-3"
+                  style="border-top: 2px solid #3080e8; border-bottom: 1px solid #cdcfdf;">
+                  <div class="col">
+                    <span class="small fw-semibold text-primary">Attendance Records</span>
+                  </div>
+                  <div class="col">
+                    <input type="text" class="form-control border-success" placeholder="Search Attendance"
+                      [(ngModel)]="searchText" />
+                  </div>
+                  <div class="col d-flex align-items-center justify-content-end">
+                    <button class="btn btn-outline-success btn-sm" (click)="toggleViewAll()">
+                      {{ showAll ? '🔙 Show Less' : '📅 View All' }}
+                    </button>
+                  </div>
+                </div>
+
+
+
+                <div class="card-body p-0 table-responsive">
+                  <table class="table table-hover table-bordered mb-0 align-middle">
+                    <thead class="table-light">
+                      <tr class="text-start">
+                        <th>#</th>
+                        <th>Attendance Date</th>
+                        <th>Time</th>
+                        <th>Status</th>
+                        <th>Remarks</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+                      <tr *ngFor="let att of filteredAttendances; let i = index">
+                        <td>{{ i + 1 }}</td>
+                        <td>{{ att.attendanceDate | date:'mediumDate' }}</td>
+                        <td>{{ att.attendanceTime | date:'shortTime' }}</td>
+                        <td>
+                          <span class="badge" [ngClass]="getStatusClass(att.attendanceStatus)">
+                            {{ att.attendanceStatus }}
+                          </span>
+                        </td>
+                        <td>{{ att.remarks || '-' }}</td>
+                        <td>
+                          <button *ngIf="att.attendanceStatus === 'Not Marked' || att.attendanceStatus !== 'Not Marked'" class="btn btn-sm btn-primary"
+                            (click)="openMarkAttendanceModal(att)">
+                            <i class="bi bi-pencil-square"></i> Mark
+                          </button>
+                          <!-- <span *ngIf="att.attendanceStatus !== 'Not Marked'" class="text-muted small">
+                            Already Marked
+                          </span> -->
+                        </td>
+                      </tr>
+                      <tr *ngIf="filteredAttendances.length === 0">
+                        <td colspan="7" class="text-center text-muted">No attendance records found</td>
+                      </tr>
+                    </tbody>
+
+
+                  </table>
+                </div>
+
+
+
+
+              </div>
+            </div>
+          </div>
+
+          <!-- Footer -->
+          <div class="mt-3 text-end">
+            <button class="btn btn-outline-dark mx-1" type="button"
+              routerLink="/dash/emp-training/emp-trainingdashboard/Training_Need_Identification_List_For_Employee">
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 🔹 Mark Attendance Modal -->
+<div class="modal fade" id="markAttendanceModal" tabindex="-1" aria-labelledby="markAttendanceModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="markAttendanceModalLabel">Mark Attendance</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="attendanceForm">
+          <div class="mb-3">
+            <label class="form-label"><strong>Date:</strong></label>
+            <p>{{ selectedAttendance?.attendanceDate | date:'fullDate' }}</p>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Attendance Status <span class="text-danger">*</span></label>
+            <!-- <select id="attendanceStatus" class="form-select" formControlName="attendanceStatus" required>
+              <option value="">Select Status</option>
+              <option value="Present">Present</option>
+              <option value="Absent">Absent</option>
+            </select> -->
+            <ng-select [items]="attendanceStatus" bindLabel="name" bindValue="value" placeholder="--Select Status--"
+              formControlName="attendanceStatus" class="w-100 small">
+            </ng-select>
+            <div
+              *ngIf="attendanceForm.get('attendanceStatus')?.invalid && attendanceForm.get('attendanceStatus')?.touched"
+              class="text-danger small">
+              Status is required
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="attendanceTime" class="form-label">Attendance Time</label>
+            <input type="datetime-local" id="attendanceTime" class="form-control"
+              formControlName="attendanceDateTime" />
+          </div>
+
+          <div class="mb-3">
+            <label for="remarks" class="form-label">Remarks</label>
+            <textarea id="remarks" class="form-control" rows="3" formControlName="remarks"
+              placeholder="Add any remarks (optional)"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" (click)="saveAttendance()"
+          [disabled]="attendanceForm.invalid || isSaving">
+          <span *ngIf="isSaving" class="spinner-border spinner-border-sm me-2"></span>
+          {{ isSaving ? 'Saving...' : 'Save Attendance' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

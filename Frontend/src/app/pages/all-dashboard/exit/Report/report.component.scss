@@ -1,0 +1,23 @@
+
+
+/* Reset spacing on the PDF container */
+#pdf-content {
+  margin-left:20px  !important;
+  margin-top: 20px !important;
+  margin-right:20px  !important;
+  padding: 0 !important;
+  position: relative;
+
+  border:1px solid #2b2e41 dashed !important;
+
+}
+
+
+
+/* Print aur PDF generate karte waqt display karna */
+@media print {
+  #pdf-content {
+    display: block;
+  }
+}
+

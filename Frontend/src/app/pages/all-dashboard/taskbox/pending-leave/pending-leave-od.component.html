@@ -1,0 +1,243 @@
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+  
+      <div class="card-header bg-blue">
+        <div class="row w-100">
+          <!-- Title Section -->
+          <div class="col-sm-12 col-md-6 col-lg-4 d-flex align-items-center justify-content-start">
+            <h4 class="text-white">Pending Leave/OD</h4>
+          </div>
+          <div class="col-sm-12 col-md-6 col-lg-4 d-flex align-items-center justify-content-center">
+            <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText" />
+          </div>
+          <!-- Back Button -->
+          <div class="col-sm-12 col-md-6 col-lg-4 d-flex align-items-center justify-content-end ms-auto gap-2">
+            <!-- <button class="btn btn-light" routerLink="/dash/payroll/payrolldashboard/Leave-Master">
+              Add
+            </button> -->
+            <button class="btn btn-light" >
+              Download
+            </button>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="card-body">
+
+          <div>
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>Sr.</th>
+                  <th>Emp Code</th>
+                  <th>Emp Name</th>
+                  <th>Location</th>
+                  <th>ShortDesc</th>
+                  <th>From Date</th>
+                  <th>To Date</th>
+                  <th>To ToDay</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of filteredLeaves; let i = index">
+                  <td>{{ i + 1 }}</td>
+                  <td>{{ item.empcode }}</td>
+                  <td>{{ item.empname }}</td>
+                  <td>{{ item.locname }}</td>
+                  <td>{{ item.shortdesc }}</td>
+                  <td>{{ item.fromdate }}</td>
+                  <td>{{ item.todate }}</td>
+                  <td>{{ item.totdays }}</td>
+                  <td><span *ngIf="item.status === 'Pending HOD Approval'" style="color: #FFC107;">{{item.status}}</span>
+                                        <span *ngIf="item.status === 'Awaiting HR Review'" style="color: #008000;">{{item.status}}</span></td>
+                  <!-- <td><button class="btn text-danger"><i class="fa-solid fa-spinner" style="font-weight: bold;"></i></button></td> -->
+                  <!-- <td>
+                    <button class="btn text-success" (click)="approveLeave(i)">Approve</button>
+                  </td> -->
+                  <td>                   
+                     <button class="btn" (click)="approveLeave(item.pk_leaveappid)"><i class="fa fa-check-circle fs-6"></i> </button>
+                      <button class="btn " (click)="deleteLeaveType(item.pk_leaveappid)"><i class="fa-solid fa-trash fs-6" ></i></button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+   
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 
+<div class="row">
+    <div class="col-12">
+      <div class="card">
+    
+      <div class="card-header bg-primary">
+        <div class="row w-100">
+       
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-between">
+            <h4 class="text-white">Pending Leaves/OD</h4>
+          </div>
+
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-center">
+            <ng-select 
+              [(ngModel)]="selectedView"
+              [items]="viewOptions"
+              bindLabel="label"
+              bindValue="value"
+              placeholder="Select View"
+              class="me-2 w-50">
+            </ng-select>
+
+            <input type="text" class="form-control w-50" placeholder="Search..." [(ngModel)]="searchText"/>
+          </div>
+
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-end">
+            <button class="btn btn-light me-2" routerLink="/dash/payroll/payrolldashboard/Lwf_Slab_Master">
+              Add
+            </button>
+            <button class="btn btn-light" routerLink="/dash/payroll/payrolldashboard/Lwf_Slab_Master">
+              Download
+            </button>
+          </div>
+        </div>
+      </div>
+
+
+        <div class="card-body">
+
+
+
+
+
+            <div *ngIf="selectedView === 'pending'">
+              <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>Sr.</th>
+                    <th>Emp Code</th>
+                    <th>Emp Name</th>
+                    <th>Location</th>
+                    <th>Leave Type</th>
+                    <th>From Date</th>
+                    <th>To Date</th>
+                    <th>APPROVE</th>
+                    <th>DELETE</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let item of getFiltered(pendingAttendance); let i = index">
+                    <td>{{ i + 1 }}</td>
+                    <td>{{ item.empCode }}</td>
+                    <td>{{ item.empName }}</td>
+                    <td>{{ item.location }}</td>
+                    <td>{{ item.leaveType }}</td>
+                    <td>{{ item.fromDate }}</td>
+                    <td>{{ item.toDate }}</td>
+                    <td>
+                      <button class="btn text-success" (click)="approve(pendingAttendance, i)">Approve</button>
+                    </td>
+                    <td>
+                      <button class="btn text-danger" (click)="delete(pendingAttendance, i)">Delete</button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+     
+              <div *ngIf="selectedView === 'regularization'">
+                <table class="table table-bordered">
+                  <thead>
+                    <tr>
+                      <th>Sr.</th>
+                      <th>Emp Code</th>
+                      <th>Emp Name</th>
+                      <th>Location</th>
+                      <th>Leave Type</th>
+                      <th>From Date</th>
+                      <th>To Date</th>
+                      <th>reason</th>
+                      <th>APPROVE</th>
+                      <th>DELETE</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let item of getFiltered(regularizationRequests); let i = index">
+                      <td>{{ i + 1 }}</td>
+                      <td>{{ item.empCode }}</td>
+                      <td>{{ item.empName }}</td>
+                      <td>{{ item.location }}</td>
+                      <td>{{ item.leaveType }}</td>
+                      <td>{{ item.fromDate }}</td>
+                      <td>{{ item.toDate }}</td>
+                      <td>{{ item.reason}}</td>
+                      <td [ngClass]="{'text-danger': item.status == 'Pending', 'text-success': item.status == 'Approved'}">
+                        {{item.status}}
+                      </td>
+                      <td>
+                        <button class="btn btn-danger btn-sm" (click)="delete(regularizationRequests, i)">Delete</button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+
+          <div *ngIf="selectedView === 'shortleave'">
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>Sr.</th>
+                  <th>Emp Code</th>
+                  <th>Emp Name</th>
+                  <th>Leave Type</th>
+                  <th>Date</th>
+                  <th>time</th>
+                  <th>DELETE</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of getFiltered(shortLeaves); let i = index">
+                  <td>{{ i + 1 }}</td>
+                  <td>{{ item.empCode }}</td>
+                  <td>{{ item.empName }}</td>
+                  <td>{{ item.leaveType }}</td>
+                  <td>{{ item.date }}</td>
+                  <td>{{ item.time }}</td>
+                 
+                  <td>
+                    <button class="btn btn-danger btn-sm" (click)="delete(shortLeaves, i)">Delete</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div> -->

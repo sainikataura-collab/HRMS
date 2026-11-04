@@ -1,0 +1,80 @@
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card">
+      <div class="card-header bg-blue">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-6 col-lg-6"><h4>Knowledge Transfer Form</h4></div>
+          <div class="col-sm-12 col-md-6 col-lg-6 d-flex align-items-center justify-content-md-end">
+            <button class="btn btnheader" routerLink="/dash/exit/exitdashboard/admin_resignation_list">Back</button>
+          </div>
+        </div>
+      </div>
+      <div class="card-body mt-4">
+        <form [formGroup]="ktForm" class="row row-cols-1 row-cols-md-3">
+
+          <div class="col"><label>Employee Code</label>
+            <div class="form-group"><input type="text" class="form-control" [value]="empInfo.empCode" readonly></div>
+          </div>
+          <div class="col"><label>Employee Name</label>
+            <div class="form-group"><input type="text" class="form-control" [value]="empInfo.empName" readonly></div>
+          </div>
+          <div class="col"><label>Last Working Day</label>
+            <div class="form-group"><input type="text" class="form-control" [value]="empInfo.lwd" readonly></div>
+          </div>
+
+          <div class="col"><label for="handoverTo">Handover To<span style="color:red">*</span></label>
+            <div class="form-group">
+              <input type="text" id="handoverTo" class="form-control flex-grow-1" formControlName="handoverTo" placeholder="Employee Name / Code">
+              <span *ngIf="submitted && ktForm.get('handoverTo')?.invalid" class="text-danger mt-1" style="font-size:12px;">Required.</span>
+            </div>
+          </div>
+          <div class="col"><label for="docStatus">Documentation Status<span style="color:red">*</span></label>
+            <div class="form-group">
+              <ng-select id="docStatus" [items]="progressOptions" bindLabel="name" bindValue="value"
+                formControlName="docStatus" [clearable]="false" placeholder="--Select--" class="w-100">
+              </ng-select>
+              <span *ngIf="submitted && ktForm.get('docStatus')?.invalid" class="text-danger mt-1" style="font-size:12px;">Required.</span>
+            </div>
+          </div>
+          <div class="col"><label for="trainingStatus">Training Status<span style="color:red">*</span></label>
+            <div class="form-group">
+              <ng-select id="trainingStatus" [items]="progressOptions" bindLabel="name" bindValue="value"
+                formControlName="trainingStatus" [clearable]="false" placeholder="--Select--" class="w-100">
+              </ng-select>
+              <span *ngIf="submitted && ktForm.get('trainingStatus')?.invalid" class="text-danger mt-1" style="font-size:12px;">Required.</span>
+            </div>
+          </div>
+          <div class="col"><label for="clientTransition">Client Transition Status</label>
+            <div class="form-group">
+              <ng-select id="clientTransition" [items]="clientOptions" bindLabel="name" bindValue="value"
+                formControlName="clientTransition" [clearable]="false" placeholder="--Select--" class="w-100">
+              </ng-select>
+            </div>
+          </div>
+          <div class="col"><label for="ktCompletionDate">KT Completion Date</label>
+            <div class="form-group">
+              <input type="date" id="ktCompletionDate" class="form-control flex-grow-1" formControlName="ktCompletionDate">
+            </div>
+          </div>
+          <div class="col row-cols-1"><label for="pendingTasks">Pending Tasks</label>
+            <div class="form-group">
+              <textarea id="pendingTasks" class="form-control" formControlName="pendingTasks" rows="3" placeholder="List any pending tasks..."></textarea>
+            </div>
+          </div>
+          <div class="col"><label for="remarks">Remarks</label>
+            <div class="form-group">
+              <textarea id="remarks" class="form-control" formControlName="remarks" rows="3"></textarea>
+            </div>
+          </div>
+
+        </form>
+        <div class="row">
+          <div class="col d-flex align-items-end justify-content-end pt-4 pb-3">
+            <button type="submit" class="btn btn-primary mx-1" (click)="submitForm()">Save KT</button>
+            <button type="reset" class="btn btn-outline-dark mx-1">Reset</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,126 @@
+<div class="row">
+  <div class="col-12">
+    <div class="card w-100">
+
+      <!-- Header matching HRBook Vendor pages -->
+      <div class="card-header bg-primary py-2">
+        <div class="row w-100 align-items-center">
+          <div class="col-sm-12 col-md-6 col-lg-6">
+            <h4 class="text-white mb-0">
+              <i class="fa fa-layer-group me-2"></i>{{ isEditMode ? 'Edit Amazon DSP RateCard' : 'Add Amazon DSP RateCard' }}
+            </h4>
+          </div>
+          <div class="col-sm-12 col-md-6 col-lg-6 d-flex align-items-center justify-content-md-end mt-2 mt-md-0">
+            <button type="button" class="btn bg-white text-primary shadow-sm" (click)="goBack()">
+              <i class="fa fa-arrow-left me-2"></i>Back
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card Body with Form -->
+      <div class="card-body">
+        <form [formGroup]="rateCardForm" (ngSubmit)="onSubmit()" class="row g-3">
+
+          <!-- Location Dropdown -->
+          <div class="col-12 col-sm-6 col-md-6 col-lg-3">
+            <label class="form-label">Location <span class="text-danger">*</span></label>
+            <ng-select
+              [items]="locations"
+              bindLabel="name"
+              bindValue="value"
+              placeholder="Select Location"
+              formControlName="locationID"
+              [clearable]="!isEditMode" [readonly]="isEditMode"
+              [searchable]="true"
+              [ngClass]="{'is-invalid': rateCardForm.get('locationID')?.touched && rateCardForm.get('locationID')?.invalid}">
+            </ng-select>
+            <div *ngIf="rateCardForm.get('locationID')?.touched && rateCardForm.get('locationID')?.invalid" class="text-danger small mt-1">
+              Location is required.
+            </div>
+          </div>
+
+          <!-- Block Dropdown -->
+          <div class="col-12 col-sm-6 col-md-6 col-lg-3">
+            <label class="form-label">Block <span class="text-danger">*</span></label>
+            <ng-select
+              [items]="blocks"
+              bindLabel="name"
+              bindValue="value"
+              placeholder="Select Block"
+              formControlName="block"
+             [clearable]="!isEditMode" [readonly]="isEditMode"
+              [searchable]="true"
+              [ngClass]="{'is-invalid': rateCardForm.get('block')?.touched && rateCardForm.get('block')?.invalid}">
+            </ng-select>
+            <div *ngIf="rateCardForm.get('block')?.touched && rateCardForm.get('block')?.invalid" class="text-danger small mt-1">
+              Block is required.
+            </div>
+          </div>
+
+          <!-- Vehicle Type Dropdown -->
+          <div class="col-12 col-sm-6 col-md-6 col-lg-3">
+            <label class="form-label">Vehicle Type <span class="text-danger">*</span></label>
+            <ng-select
+              [items]="vehicleTypes"
+              bindLabel="name"
+              bindValue="value"
+              placeholder="Select Vehicle Type"
+              formControlName="vehicleType"
+              [clearable]="!isEditMode" [readonly]="isEditMode"
+              [searchable]="true"
+              [ngClass]="{'is-invalid': rateCardForm.get('vehicleType')?.touched && rateCardForm.get('vehicleType')?.invalid}">
+            </ng-select>
+            <div *ngIf="rateCardForm.get('vehicleType')?.touched && rateCardForm.get('vehicleType')?.invalid" class="text-danger small mt-1">
+              Vehicle Type is required.
+            </div>
+          </div>
+
+          <!-- Rate Input -->
+          <div class="col-12 col-sm-6 col-md-6 col-lg-3">
+            <label class="form-label">Rate (₹) <span class="text-danger">*</span></label>
+            <input
+              type="text"
+              class="form-control"
+              formControlName="rate"
+              placeholder="Enter Rate (e.g. 500.00)"
+              [ngClass]="{'is-invalid': rateCardForm.get('rate')?.touched && rateCardForm.get('rate')?.invalid}">
+            <div *ngIf="rateCardForm.get('rate')?.touched && rateCardForm.get('rate')?.hasError('required')" class="text-danger small mt-1">
+              Rate is required.
+            </div>
+            <div *ngIf="rateCardForm.get('rate')?.touched && rateCardForm.get('rate')?.hasError('pattern')" class="text-danger small mt-1">
+              Please enter a valid numeric rate.
+            </div>
+          </div>
+
+          <!-- Effective From Date -->
+          <div class="col-12 col-sm-6 col-md-6 col-lg-3">
+            <label class="form-label">Effective From <span class="text-danger">*</span></label>
+            <input
+              type="date"
+              class="form-control"
+              formControlName="effectiveFrom"
+              [readonly]="isEditMode"
+              [style.pointer-events]="isEditMode ? 'none' : 'auto'"
+              [ngClass]="{'bg-light text-muted': isEditMode, 'is-invalid': rateCardForm.get('effectiveFrom')?.touched && rateCardForm.get('effectiveFrom')?.invalid}">
+            <div *ngIf="rateCardForm.get('effectiveFrom')?.touched && rateCardForm.get('effectiveFrom')?.invalid" class="text-danger small mt-1">
+              Effective Date is required.
+            </div>
+          </div>
+
+          <!-- Action Buttons (Matching Vendor Excel Upload UI) -->
+          <div class="col-12 d-flex justify-content-end gap-2 mt-4">
+            <button type="submit" class="btn btn-primary">
+              {{ isSaving ? 'Saving...' : (isEditMode ? 'Update' : 'Save') }}
+            </button>
+            <button type="button" class="btn btn-outline-dark" (click)="resetForm()">
+              Reset
+            </button>
+          </div>
+
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>

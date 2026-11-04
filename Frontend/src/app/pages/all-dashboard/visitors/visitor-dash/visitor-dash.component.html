@@ -1,0 +1,225 @@
+<section>
+  <div class="container">
+    <div class="row border-bottom align-items-center">
+      <div class="col-lg-8">
+        <p class="small fw-semibold mb-1">Visitor Dashboard</p>
+        <div class="d-flex align-items-center small">
+          <i class="fa-solid fa-id-badge text-primary me-2"></i>
+          <span class="fw-semibold text-primary small">Total Visitors:</span>
+          <span class="fw-semibold text-primary small ps-2">320</span>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="row row-cols-3 g-2">
+          <div class="col">
+            <select class="form-select form-select-sm">
+              <option selected>Type</option>
+              <option>Guest</option>
+              <option>Vendor</option>
+            </select>
+          </div>
+          <div class="col">
+            <select class="form-select form-select-sm">
+              <option selected>Period</option>
+              <option>Today</option>
+              <option>This Week</option>
+            </select>
+          </div>
+          <div class="col">
+            <select class="form-select form-select-sm">
+              <option selected>Export</option>
+              <option>PDF</option>
+              <option>Excel</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="py-3">
+  <div class="container-fluid">
+    <div class="row g-3">
+
+      <!-- Main area -->
+      <div class="col-lg-8">
+
+   <!-- KPIs: visitor summary cards in vertical format -->
+<div class="row g-2">
+  <div class="col-md-3 col-6">
+    <div class="card shadow-sm border-0 text-center border-top border-3 border-teal">
+      <div class="card-body p-2">
+        <div class="bg-teal text-white rounded-circle mx-auto mb-2" style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;">
+          <i class="fa-solid fa-door-open"></i>
+        </div>
+        <h6 class="fw-bold text-teal mb-0">150</h6>
+        <small class="text-muted">Checked In</small>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3 col-6">
+    <div class="card shadow-sm border-0 text-center border-top border-3 border-warning">
+      <div class="card-body p-2">
+        <div class="bg-orange text-white rounded-circle mx-auto mb-2" style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;">
+          <i class="fa-solid fa-clock"></i>
+        </div>
+        <h6 class="fw-bold text-orange mb-0">12</h6>
+        <small class="text-muted">Waiting</small>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3 col-6">
+    <div class="card shadow-sm border-0 text-center border-top border-3 border-success">
+      <div class="card-body p-2">
+        <div class="bg-success text-white rounded-circle mx-auto mb-2" style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;">
+          <i class="fa-solid fa-user-check"></i>
+        </div>
+        <h6 class="fw-bold text-success mb-0">140</h6>
+        <small class="text-muted">Checked Out</small>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3 col-6">
+    <div class="card shadow-sm border-0 text-center border-top border-3 border-primary">
+      <div class="card-body p-2">
+        <div class="bg-primary text-white rounded-circle mx-auto mb-2" style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;">
+          <i class="fa-solid fa-users"></i>
+        </div>
+        <h6 class="fw-bold text-primary mb-0">320</h6>
+        <small class="text-muted">Total Visitors</small>
+      </div>
+    </div>
+  </div>
+</div>
+
+        <!-- Recent Visitors Table -->
+        <div class="card shadow-sm border-top border-2 border-primary mt-3">
+          <div class="card-body">
+            <p class="fw-semibold text-primary small mb-2">
+              <i class="fa-solid fa-user-group"></i> Recent Visitors
+            </p>
+            <div class="table-responsive small">
+              <table class="table table-hover mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Time In</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>VST201</td>
+                    <td>John Doe</td>
+                    <td>Guest</td>
+                    <td>10:15 AM</td>
+                    <td><span class="badge bg-success rounded-pill">Checked Out</span></td>
+                  </tr>
+                  <tr>
+                    <td>VST202</td>
+                    <td>Neha Sharma</td>
+                    <td>Vendor</td>
+                    <td>10:30 AM</td>
+                    <td><span class="badge bg-warning text-dark rounded-pill">Waiting</span></td>
+                  </tr>
+                  <tr>
+                    <td>VST203</td>
+                    <td>Raj Patel</td>
+                    <td>Guest</td>
+                    <td>11:00 AM</td>
+                    <td><span class="badge bg-primary rounded-pill">Checked In</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Sidebar -->
+      <div class="col-lg-4">
+
+        <!-- Latest Activity -->
+        <div class="card shadow-sm border-0 mb-3">
+          <div class="card-body">
+            <p class="fw-semibold text-warning small mb-2">
+              <i class="fa-solid fa-clock-rotate-left"></i> Latest Activity
+            </p>
+            <div class="small">
+              <div class="d-flex align-items-start mb-2">
+                <div class="text-success me-2">
+                  <i class="fa-solid fa-user-check"></i>
+                </div>
+                <div>
+                  <div class="fw-semibold">John Doe</div>
+                  <small class="text-muted">Checked out at 11:45 AM</small>
+                </div>
+              </div>
+              <div class="d-flex align-items-start mb-2">
+                <div class="text-primary me-2">
+                  <i class="fa-solid fa-user-clock"></i>
+                </div>
+                <div>
+                  <div class="fw-semibold">Neha Sharma</div>
+                  <small class="text-muted">Waiting for approval</small>
+                </div>
+              </div>
+              <div class="d-flex align-items-start">
+                <div class="text-secondary me-2">
+                  <i class="fa-solid fa-user"></i>
+                </div>
+                <div>
+                  <div class="fw-semibold">Raj Patel</div>
+                  <small class="text-muted">Checked in at 11:00 AM</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card shadow-sm border-0 mb-3">
+          <div class="card-body">
+            <p class="fw-semibold text-success small mb-2">
+              <i class="fa-solid fa-bolt"></i> Quick Actions
+            </p>
+            <div class="d-grid gap-2">
+              <button class="btn btn-outline-primary btn-sm"><i class="fa-solid fa-plus"></i> New Visitor</button>
+              <button class="btn btn-outline-success btn-sm"><i class="fa-solid fa-file-export"></i> Export Log</button>
+              <button class="btn btn-outline-secondary btn-sm"><i class="fa-solid fa-gear"></i> Settings</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Monthly Summary -->
+        <div class="row g-2">
+          <div class="col-4">
+            <div class="card shadow-sm border-0 text-center p-2">
+              <small class="text-muted">Today</small>
+              <div class="fw-bold text-dark">42</div>
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="card shadow-sm border-0 text-center p-2">
+              <small class="text-muted">This Week</small>
+              <div class="fw-bold text-dark">150</div>
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="card shadow-sm border-0 text-center p-2">
+              <small class="text-muted">This Month</small>
+              <div class="fw-bold text-dark">320</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</section>

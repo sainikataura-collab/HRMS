@@ -1,0 +1,124 @@
+.ep-header {
+      background: linear-gradient(135deg, #1b2a4a 0%, #1D9E75 100%);
+      border-radius: 14px;
+      padding: 18px 24px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .ep-header-title {
+      color: #fff;
+      
+      font-size: 17px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .ep-header-sub { color: rgba(255,255,255,0.65); font-size: 12px; margin-top: 2px; }
+    .ep-back-btn {
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: #fff !important;
+      font-size: 12px;
+      border-radius: 8px;
+      padding: 7px 16px;
+    }
+    .ep-back-btn:hover { background: rgba(255,255,255,0.25); }
+
+    .sidebar-card { background: #fff; border-radius: 16px; border: 1px solid #e8eaf0; overflow: hidden; position: sticky; top: 1.5rem; }
+    .sidebar-top { background: linear-gradient(160deg, #1b2a4a 0%, #1D9E75 100%); padding: 18px 16px 14px; text-align: center; }
+    .avatar-ring {
+      width: 80px; height: 80px; border-radius: 50%;
+      background: rgba(255,255,255,0.15);
+      border: 3px solid rgba(255,255,255,0.4);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 12px; position: relative;
+    }
+    .avatar-ring img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; }
+    .avatar-ring .avatar-placeholder { font-size: 36px; color: rgba(255,255,255,0.8); }
+    .avatar-dot {
+      position: absolute; bottom: 4px; right: 4px;
+      width: 13px; height: 13px; border: 2px solid #fff; border-radius: 50%;
+    }
+    .emp-name { color: #fff;  font-size: 15px; font-weight: 600; margin-bottom: 3px; }
+    .emp-code { color: rgba(255,255,255,0.6); font-size: 12px; margin-bottom: 12px; }
+    .badge-desig {
+      background: rgba(255,255,255,0.2); color: #fff;
+      font-size: 11px; border-radius: 20px; padding: 4px 12px; display: inline-block; margin-bottom: 8px;
+    }
+    .badge-active-pill {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 11px; border-radius: 20px; padding: 4px 12px;
+    }
+    .badge-active-pill.active { background: #dcfce7; color: #15803d; }
+    .badge-active-pill.inactive { background: #fee2e2; color: #b91c1c; }
+    .dot-status { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
+
+    .sidebar-info { padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; }
+    .sinfo-row { display: flex; align-items: center; gap: 8px; background: #f8f9fc; border-radius: 8px; padding: 7px 10px; }
+    .sinfo-icon {
+      width: 30px; height: 30px; border-radius: 8px;
+      background: #E1F5EE; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .sinfo-icon i { color: #1D9E75; font-size: 15px; }
+    .sinfo-label { font-size: 11px; font-weight: 600; color: #2b2e41; text-transform: uppercase; letter-spacing: 0.05em; }
+    .sinfo-val { font-size: 13px; font-weight: 600; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    .main-card { background: #fff; border-radius: 16px; border: 1px solid #e8eaf0; overflow: hidden; }
+    .tab-bar { padding: 16px 20px 0; border-bottom: 1px solid #f1f3f9; display: flex; gap: 6px; }
+    .ep-tab-btn {
+      border: none; background: none; padding: 9px 18px;
+      font-size: 13px; font-weight: 500; color: #64748b;
+      border-radius: 8px 8px 0 0; cursor: pointer;
+      display: flex; align-items: center; gap: 7px;
+      transition: color 0.2s, background 0.2s;
+     
+    }
+    .ep-tab-btn.active { background: #0d6efd; color: #fff !important; }
+    .ep-tab-btn:not(.active):hover { background: #f1f5f9; color: #1e293b; }
+
+    .tab-content-area { padding: 16px 18px; }
+
+    .section-hd { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; margin-top: 2px; }
+    .section-bar { width: 4px; height: 18px; border-radius: 2px; background: #0d6efd; flex-shrink: 0; }
+    .section-title {  font-size: 13px; font-weight: 600; color: #1e293b; }
+
+    .info-card { background: #fff; border-radius: 10px; border: 1px solid #e8eaf0; margin-bottom: 14px; }
+    .info-card-body { padding: 12px 0px; }
+
+    .info-cell { background: #f8fafc; border-radius: 8px; padding: 7px 10px; border: 1px solid #eef0f7; }
+    .info-cell-label { font-size: 10px; color: #2b2e41; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px; }
+    .info-cell-val { font-size: 12.5px; font-weight: 600; color: #1e293b; }
+
+    .sub-hd { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .sub-hd i { color: #0d6efd; font-size: 15px; }
+    .sub-hd-txt { font-size: 12px; font-weight: 600; color: #475569; }
+
+    .ep-divider { border: none; border-top: 1px solid #f1f3f9; margin: 10px 0; }
+
+    .badge-status { display: inline-flex; align-items: center; border-radius: 6px; padding: 3px 10px; font-size: 11px; font-weight: 600; }
+    .badge-yes { background: #dcfce7; color: #15803d; }
+    .badge-no  { background: #fee2e2; color: #b91c1c; }
+    .badge-left { background: #fee2e2; color: #b91c1c; border: 1px solid rgba(185,28,28,0.2); }
+
+    .ep-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .ep-table thead th {
+      background: #f8fafc; color: #64748b;
+      font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em;
+      padding: 10px 14px; font-weight: 600; border-bottom: 1px solid #e8eaf0;
+    }
+    .ep-table tbody td { padding: 12px 14px; border-bottom: 1px solid #f1f5f9; color: #1e293b; font-weight: 500; }
+    .ep-table tbody tr:last-child td { border-bottom: none; }
+    .ep-table tbody tr:hover td { background: #f8fafc; }
+
+    .month-badge { background: #e2e8f0; color: #475569; border-radius: 6px; padding: 3px 8px; font-size: 11px; font-weight: 600; }
+    .year-badge  { background: #dbeafe; color: #1e40af; border-radius: 6px; padding: 3px 10px; font-size: 11px; font-weight: 600; }
+    .amt-green { color: #15803d; font-weight: 700; }
+    .amt-red   { color: #dc2626; font-weight: 700; }
+    .amt-blue  { color: #1d4ed8; font-weight: 700; }
+
+    .empty-state { text-align: center; color: #94a3b8; padding: 40px 20px; font-size: 13px; }
+    .empty-state i { font-size: 36px; display: block; margin-bottom: 8px; opacity: 0.25; }
+  

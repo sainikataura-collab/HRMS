@@ -1,0 +1,94 @@
+
+<section>
+    <div class="container">
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+            <!--  -->
+            <div class="card-header bg-primary">
+                <div class="row w-100">
+                    <div
+                        class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-between">
+                        <h4>Approve Comp Off List 
+  
+                        </h4>
+
+                    </div>
+                    <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-center">
+                        <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText" />
+                    </div>
+
+             
+
+                </div>
+            </div>
+
+  <div class="card-body px-0 mx-0 mx-lg-2">
+  <div class=" ">
+    <table class="table w-100" id="exportTable">
+      <thead>
+        <tr>
+          <th>S.No.</th>
+             <th>Comp Off Date</th>
+          <th>Emp Code</th>
+          <th>Emp Name</th>
+       
+          <th>Time From</th>
+          <th>Time To</th>
+          <th>Total Hours</th>
+          <th>Comp Off Days</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let request of filteredData(); let i = index">
+          <!-- S.No - Hidden on Mobile -->
+          <td data-label="S.No. : ">{{ i + 1 }}</td>
+             <!-- Comp Off Date (Header) -->
+          <td data-label="compoffdate">{{ request.compoffdate }}</td>
+
+
+          <!-- Employee Code -->
+          <td data-label="RequestEmpcode">{{ request.empcode }}</td>
+
+          <!-- Employee Name -->
+          <td data-label="RequestEmpName">{{ request.empname }}</td>
+
+       
+          <!-- Time From -->
+          <td data-label="requestfromtime">{{ request.fromtime || request.intime }}</td>
+
+          <!-- Time To -->
+          <td data-label="requesttotime">{{ request.totime || request.outtime }}</td>
+
+          <!-- Total Hours - Hidden on Mobile -->
+          <td data-label="Total Hours: ">{{ request.totalhours }}</td>
+
+          <!-- Comp Off Days (Bottom Right Badge) -->
+          <td data-label="requestdays">{{ request.compoffdays }}</td>
+
+          <!-- Status (Top Right Pill) -->
+          <td data-label="requeststatus" [ngClass]="{
+            'text-success': request.status === 'Approved',
+            'text-warning': request.status === 'Pending',
+            'text-danger': request.status === 'Disapproved'
+          }">{{ request.status }}</td>
+
+          <!-- Action Button -->
+          <td>
+            <button class="btn btn-sm btn-outline" (click)="GoToApproval(request.pk_applycompoffId)">
+              <i class="fa fa-eye"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+    </div>
+</div>
+</div>
+    </div>
+</section>
+

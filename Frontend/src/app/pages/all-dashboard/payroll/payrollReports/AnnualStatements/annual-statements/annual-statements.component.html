@@ -1,0 +1,156 @@
+<div class="row mt-2">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+            <!-- Heading -->
+            <div class="card-header bg-blue">
+                <div class="row w-100">
+                    <div class="col-sm-12 col-md-12 col-lg-12">
+                        <h4 class="">Employee Wise Salary Increment</h4>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-md-6 col-lg-6 d-flex align-items-center justify-content-end ms-auto gap-2">
+                    <button class="btn btn-light"><i class=""></i> Goto List</button>
+                </div>
+            </div>
+            <!-- form Start -->
+            <div class="card-body mt-4">
+                <form [formGroup]="departmentForm">
+                    <div class="row mt-2">
+                        <div class="col-md-4">
+                            <label for="inputEmail3">Employee Code</label>
+                            <input type="text" class="form-control" />
+                        </div>
+                        <div class="col-md-4">
+                            <label for="inputEmail3">Employee Code (M)</label>
+                            <input type="text" class="form-control" />
+                        </div>
+                        <div class="col-md-4">
+                            <label for="inputEmail3">Employee Name</label>
+                            <input type="text" class="form-control" />
+                        </div>
+                    </div>
+
+                    <div class="row mt-2">
+                        <div class="col-md-4">
+                            <label for="LeaveNatureType" class="">Office Type</label>
+                            <ng-select id="LeaveNatureType" [items]="OfficeType" bindLabel="name" bindValue="value"
+                                formControlName="OfficeType" placeholder="--Select Office Type--"
+                                class="w-100"></ng-select>
+                        </div>
+                        <div class="col-md-4">
+                            <label>Location</label>
+                            <ng-select [items]="Location" bindLabel="name" bindValue="value" [multiple]="true"
+                                [(ngModel)]="selectedLocations" [closeOnSelect]="false"
+                                placeholder="--Select Locations--" class="w-100">
+                                <!-- Custom Checkbox for Select All -->
+                                <ng-template ng-option-tmp let-item="item" let-index="index">
+                                    <div *ngIf="index === 0">
+                                        <input type="checkbox" (change)="toggleSelectAll($event)"
+                                            [checked]="isAllSelected()" />
+                                        <strong>Select All</strong>
+                                    </div>
+                                    <div *ngIf="index !== 0">
+                                        <input type="checkbox" [checked]="selectedLocations.includes(item.value)"
+                                            (change)="toggleLocation(item.value)" />
+                                        {{ item.name }}
+                                    </div>
+                                </ng-template>
+                            </ng-select>
+                        </div>
+                        <div class="col-md-4">
+                            <label>Department</label>
+                            <ng-select [items]="NewDepartment" bindLabel="name" bindValue="value" [multiple]="true"
+                                [(ngModel)]="selectedDepartment" [closeOnSelect]="false"
+                                placeholder="--Select NewDepartment--" class="w-100">
+                                <!-- Custom Checkbox for Select All -->
+                                <ng-template ng-option-tmp let-item="item" let-index="index">
+                                    <div *ngIf="index === 0">
+                                        <input type="checkbox" (change)="toggleNewDepartmentAll($event)"
+                                            [checked]="isAllSelectedDepartment()" />
+                                        <strong>Select All</strong>
+                                    </div>
+                                    <div *ngIf="index !== 0">
+                                        <input type="checkbox" [checked]="selectedDepartment.includes(item.value)"
+                                            (change)="toggleNewDepartment(item.value)" />
+                                        {{ item.name }}
+                                    </div>
+                                </ng-template>
+                            </ng-select>
+                        </div>
+                    </div>
+
+                    <div class="row mt-2">
+                        <div class="col-md-4">
+                            <label for="LeaveNatureType" class="">Designation</label>
+                            <ng-select id="LeaveNatureType" [items]="Designation" bindLabel="name" bindValue="value"
+                                formControlName="LeaveNatureType" placeholder="--Select Designation--"
+                                class="w-100"></ng-select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="LeaveNatureType" class="">Nature Type</label>
+                            <ng-select id="LeaveNatureType" [items]="NatureType" bindLabel="name" bindValue="value"
+                                formControlName="NatureType" placeholder="--Select Nature Type--"
+                                class="w-100"></ng-select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="LeaveNatureType" class="">Short By</label>
+                            <ng-select id="LeaveNatureType" [items]="ShortBy" bindLabel="name" bindValue="value"
+                                formControlName="ShortBy" placeholder="--Select ShortBy--"
+                                class="w-100"></ng-select>
+                        </div>
+                    </div>
+
+                    <div class="row mt-2">
+                        <div class="col-md-4">
+                            <label for="LeaveNatureType" class="">Report Type</label>
+                            <ng-select id="ReportType" [items]="ReportType" bindLabel="name" bindValue="value"
+                                formControlName="Month" placeholder="--Select Report Type--"
+                                class="w-100"></ng-select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="LeaveNatureType" class="">Posting City</label>
+                            <ng-select id="LeaveNatureType" [items]="PostingCity" bindLabel="name" bindValue="value"
+                                formControlName="PostingCity" placeholder="--Select Year--"
+                                class="w-100"></ng-select>
+                        </div>
+                        <div class="col-md-4">
+                            <label>From Date</label>
+                            <input type="date" class="form-control" formControlName="fromDate" />
+                          </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-md-4">
+                            <label>To Date</label>
+                            <input type="date" class="form-control" formControlName="fromDate" />
+                          </div>
+                        
+                        <div class="col-md-8 mt-lg-4 pt-1">
+                            <div class="col-md-8 d-flex align-items-center justify-content-start">
+                                <div class="form-check form-check-inline pt-2">
+                                    <input class="form-check-input ms-2" type="radio" name="inlineRadioOptions"
+                                        id="inlineRadio1" value="option1" />
+                                    <label class="form-check-label" for="inlineRadio1">View In Crystal
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-inline pt-2">
+                                    <input class="form-check-input" type="radio" name="inlineRadioOptions"
+                                        id="inlineRadio2" value="option2" />
+                                    <label class="form-check-label" for="inlineRadio2">View In PDF</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer mt-2">
+                        <button type="button" class="btn btn-outline-dark mx-1">Reset</button>
+                        <button type="button" class="btn btn-primary mx-1">preview</button>
+                      </div>
+
+                </form>
+            </div>
+
+
+
+
+        </div>
+    </div>
+</div>

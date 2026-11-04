@@ -1,0 +1,43 @@
+// Pure white table header styling
+.custom-comp-table {
+  thead {
+    th {
+      background-color: #ffffff !important;
+      color: #334155 !important;
+      font-weight: 600 !important;
+      border-bottom: 2px solid #e2e8f0 !important;
+      vertical-align: middle;
+    }
+  }
+}
+
+// Soft Subtle Badges for Status & Variance
+.badge-subtle-success {
+  background-color: #ecfdf5 !important;
+  color: #059669 !important;
+  border: 1px solid #a7f3d0 !important;
+}
+
+.badge-subtle-danger {
+  background-color: #fef2f2 !important;
+  color: #dc2626 !important;
+  border: 1px solid #fecaca !important;
+}
+
+.badge-subtle-warning {
+  background-color: #fffbeb !important;
+  color: #d97706 !important;
+  border: 1px solid #fde68a !important;
+}
+
+.badge-subtle-info {
+  background-color: #eff6ff !important;
+  color: #2563eb !important;
+  border: 1px solid #bfdbfe !important;
+}
+
+.badge-subtle-neutral {
+  background-color: #f8fafc !important;
+  color: #64748b !important;
+  border: 1px solid #e2e8f0 !important;
+}

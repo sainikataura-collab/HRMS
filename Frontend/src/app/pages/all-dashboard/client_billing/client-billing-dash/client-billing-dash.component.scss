@@ -1,0 +1,111 @@
+.small {
+  font-size: 12px;
+}
+
+// Card styles
+.card {
+  border-radius: 10px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+}
+
+// Icon box inside stat cards
+.icon-box {
+  font-size: 16px;
+  min-width: 32px;
+  text-align: center;
+}
+
+// Small text
+.small {
+  font-size: 12px;
+  font-weight: 400;
+}
+
+// Custom legend dots for chart
+.legend-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+// Quick action button hover
+.btn-outline-primary:hover,
+.btn-outline-success:hover,
+.btn-outline-secondary:hover,
+.btn-outline-warning:hover,
+.btn-outline-danger:hover,
+.btn-outline-info:hover {
+  color: white;
+}
+
+// Hover row highlight
+.joiner-row {
+  transition: background 0.2s ease;
+  cursor: default;
+
+  &:hover {
+    background-color: #f0f7ff !important;
+  }
+}
+
+// Table header
+thead.table-light th {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: #6c757d;
+  border-bottom: 2px solid #dee2e6;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+}
+
+td {
+  font-size: 11px !important;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+}
+
+// Avatar circle with letter
+.avatar-circle {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+// Avatar color variants
+.avatar-blue   { background-color: #3080e8; }
+.avatar-green  { background-color: #54ca68; }
+.avatar-orange { background-color: #ffa446; }
+.avatar-purple { background-color: #7c5cbf; }
+.avatar-teal   { background-color: #20c997; }
+.avatar-red    { background-color: #e35b5d; }
+
+// Department pill
+.dept-pill {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 20px;
+  background-color: #e8f0fe;
+  color: #3080e8;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.badge {
+  font-size: 10px;
+}

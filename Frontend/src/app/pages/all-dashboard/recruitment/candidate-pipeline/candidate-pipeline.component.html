@@ -727,11 +727,18 @@
                     </button>
                   </ng-container>
 
-                  <!-- Stage 13: Hired — Joined Badge -->
-                  <span *ngIf="c.stage === 'Hired'"
-                    class="badge bg-success-subtle text-success border border-success-subtle" style="font-size: 9px;">
-                    <i class="bi bi-check2-all me-1"></i>Joined &amp; Active
-                  </span>
+                  <!-- Stage 13: Hired — Joined Badge & Offer Letter PDF -->
+                  <ng-container *ngIf="c.stage === 'Hired'">
+                    <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size: 9px;">
+                      <i class="bi bi-check2-all me-1"></i>Joined &amp; Active
+                    </span>
+
+                    <!-- Download/View Offer Letter PDF for Hired Candidate -->
+                    <button *ngIf="hasOfferLetter(c)" class="action-btn ghost" (click)="downloadOfferLetter(c, $event)"
+                      title="Download / View Official Offer Letter PDF">
+                      <i class="bi bi-file-earmark-pdf-fill text-danger"></i> PDF
+                    </button>
+                  </ng-container>
 
                   <!-- Move Stage Button: Only for intermediate stages without dedicated wizard modals -->
                   <button
@@ -3539,6 +3546,14 @@
                       <span class="fw-semibold text-dark ms-2" *ngIf="selectedCandidateDetails.expectedCTC"
                         style="font-size: 11px;">Expected: ₹{{ selectedCandidateDetails.expectedCTC }}</span>
                     </div>
+                    <!-- View/Download Offer Letter PDF -->
+                    <button *ngIf="hasOfferLetter(selectedCandidateDetails)"
+                      class="btn btn-sm btn-outline-danger py-0.5 px-2 d-inline-flex align-items-center gap-1"
+                      style="font-size: 10px; font-weight: 600; border-radius: 4px;"
+                      (click)="downloadOfferLetter(selectedCandidateDetails, $event)"
+                      title="Download / View Official Offer Letter PDF">
+                      <i class="bi bi-file-earmark-pdf-fill"></i> View Offer Letter PDF
+                    </button>
                   </div>
                 </div>
               </div>

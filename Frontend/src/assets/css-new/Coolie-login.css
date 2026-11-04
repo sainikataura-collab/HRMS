@@ -1,0 +1,39 @@
+
+@media only screen and (max-width: 500px) {
+    .login-form-sectiond img{
+
+ padding-bottom:15%;
+
+     }
+   }
+
+
+
+.login-form-section h2{
+    color: #3080e8;
+}
+
+.login-form-section p{
+    color: #2b2e41;
+}
+
+
+
+.login-form-section button:hover{
+    color: white !important;
+    background-color: #2b2e41 !important;
+    /* border: none; */
+   
+}
+
+.google-icon{
+  background: linear-gradient(#f30101, 
+  #ffd000,  #0420f7, #07f51b); 
+-webkit-text-fill-color: transparent; 
+/* -webkit-background-clip: text; */
+/* color:red !important;  */
+}
+
+
+
+

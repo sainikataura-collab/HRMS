@@ -1,0 +1,75 @@
+.custom-checkbox {
+    transform: scale(1); /* Increases checkbox size */
+    margin-left:-98px; /* Moves checkbox to the left */
+  }
+  // .card-header{
+  //   // background-color: #3080e8;
+  // colo
+  // }
+  // .ngx-pagination .current {
+  // padding: .1875rem .625rem;
+  // background:  #3080e8 !important;
+  // color: #fefefe;
+  // cursor: default;
+  // }
+  .dropdown-menu {
+    max-height: 200px; /* Adjust height as needed */
+    overflow-y: auto;
+  }
+
+  .fact-box-progress {
+    height: 6px;
+    background-color: #e9ecef;
+    border-radius: 10px;
+    overflow: hidden;
+
+    .progress-bar {
+      height: 100%;
+      border-radius: 10px;
+      background-color: #28a745;
+      transition: width 0.6s ease;
+    }
+  }
+
+  .fact-box-stat-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 0;
+      font-size: 11px;
+      border-bottom: 1px dashed #e9ecef;
+
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+
+    .stat-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #495057;
+    }
+
+    .stat-badge {
+      font-weight: 700;
+      font-size: 11.5px;
+    }
+  }
+
+  .stat-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+
+    &.dot-warning { background-color: #ffc107; }
+    &.dot-danger { background-color: #dc3545; }
+    &.dot-success { background-color: #28a745; }
+    &.dot-secondary { background-color: #6c757d; }
+  }

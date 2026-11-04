@@ -1,0 +1,70 @@
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card">
+      <div class="card-header bg-primary text-white">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-4 d-flex align-items-center justify-content-between">
+            <h4>Employee Rent List</h4>
+          </div>
+
+          <div class="col-sm-12 col-md-4 d-flex align-items-center justify-content-center">
+            <input type="text" class="form-control" placeholder="Search..."   [(ngModel)]="searchText" (ngModelChange)="onSearchTextChanged()" />
+          </div>
+
+          <div class="col-sm-12 col-md-4 d-flex align-items-center justify-content-md-end">
+            <button *ngIf="isAdded" class="btn btnheader" routerLink="/dash/reimbursement/reimbursementdashboard/RentDetails">
+              Add
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="">
+        <table class="table"  id="exportTable">
+          <thead>
+            <tr>
+              <th>S.No.</th>
+              <th>Request Date</th>
+              <th>Financial Year</th>
+              <th>Total Amount</th>
+              <th>Submission Status</th>
+              <th>Filename</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+         <tbody>
+            <tr *ngFor="let rent of filteredData() | paginate: { itemsPerPage: pageSize, currentPage: page, totalItems: totalItems }; let i = index">
+              <td data-label="Sr.no.">{{ (page - 1) * pageSize + i + 1 }}</td>
+              <td data-label="Request Date">{{ rent.dated }}</td>
+              <td data-label="Financial Year">{{ rent.finDescription }}</td>
+              <td data-label="Total Amount">{{ rent.totalAmount }}</td>
+              <!-- <td data-label="Status">{{ rent.docsub_status }}</td> -->
+                <td data-label="Status" [ngClass]="{'text-light bg-success ': rent.docsub_status === 'Submitted', 'text-white bg-warning' : rent.docsub_status === 'Under Taking' , 'text-white bg-danger' : rent.docsub_status === 'Under Taking'}">{{ rent.docsub_status}}</td>
+
+           <td data-label="file" 
+                 
+                  style="cursor: pointer; text-align: center"
+                >
+                  <i  *ngIf="rent.filename" (click)="download(rent.filename)"
+                    class="fa fa-eye"
+                    aria-hidden="true"
+                    title="View/Download Image"
+                  ></i>
+                </td>
+
+              <td data-label="Action">
+                <button *ngIf="rent.docsub_status !=='Submitted'" class="btn" (click)="viewRent(rent.pk_rentId)">
+                  <i class="fa-solid fa-pen"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+         <pagination-controls (pageChange)="onPageChange($event)" [responsive]="true">
+                    </pagination-controls>
+
+      </div>
+    </div>
+  </div>
+</div>

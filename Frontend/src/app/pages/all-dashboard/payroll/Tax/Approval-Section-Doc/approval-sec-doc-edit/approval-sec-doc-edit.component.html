@@ -1,0 +1,82 @@
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+      <div class="card">
+        <div class="card-header bg-primary">
+          <div class="row w-100">
+            <div class="col-sm-12 col-md-4 col-lg-6">
+              <h4>Flexi Bill Detail</h4>
+            </div>
+            <div class="col-sm-12 col-md-4 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+              <button class="btn btnheader" routerLink="/dash/payroll/payrolldashboard/Approval-Section-Doc">
+                Back
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="card-body mt-2">
+          <form [formGroup]="detailForm" (ngSubmit)="onSubmit()">
+            <div class="row">
+              <div class="col-md-6">
+                <label>Code</label>
+                <div class="form-group">
+                  <input type="text" class="form-control" formControlName="code" readonly>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label>Name</label>
+                <div class="form-group">
+                  <input type="text" class="form-control" formControlName="name" readonly>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <label>Section</label>
+                <div class="form-group">
+                  <input type="text" class="form-control" formControlName="section" readonly>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label>Sub Section</label>
+                <div class="form-group">
+                  <input type="text" class="form-control" formControlName="subSection" readonly>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <label>Bill Date</label>
+                <div class="form-group">
+                  <input type="text" class="form-control" formControlName="billDate"  [value]="detailForm.get('billDate')?.value | date:'dd MMM yyyy'" readonly>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label>Bill Amount</label>
+                <div class="form-group">
+                  <input type="text" class="form-control" formControlName="billAmount" readonly>
+                </div>
+              </div>
+            </div>
+            <div class="page-seperator bg-primary mx-2 rounded-1">
+              <p class="text-white ms-4 p-1">Approval Detail</p>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <label>Status<span class="text-danger">*</span></label>
+                <ng-select [items]="Status"  bindLabel="name" bindValue="value" formControlName="status"></ng-select>
+              </div>
+              <div class="col-md-6">
+                <label>Remarks<span class="text-danger">*</span></label>
+                <div class="form-group">
+                  <textarea class="form-control" formControlName="remarks"></textarea>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-primary" [disabled]="!detailForm.valid">Submit</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>

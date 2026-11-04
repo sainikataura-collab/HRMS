@@ -1,0 +1,221 @@
+<!-- Right Side: DARCL Fact Box Sidebar -->
+
+<div class="card h-100 shadow-sm border-0" *ngIf="isOpen">
+
+  <!-- Fact Box Header -->
+  <div class="card-header bg-primary d-flex justify-content-between align-items-center flex-wrap px-3 ">
+    <span class="text-white mb-0 small d-flex align-items-center">
+      <i class="fa fa-info-circle me-2 fs-6 "></i>{{ title || 'DARCL Fact Box' }} <span
+        class="badge bg-white text-primary rounded-pill py-1 px-2 ms-3" *ngIf="(totalItems || displayFiles.length) > 0">
+        {{ totalItems || displayFiles.length }}
+      </span>
+    </span>
+    <button type="button" class="btn-close-factbox btn-close btn-close-white" (click)="toggleFactBox()"
+      aria-label="Close" title="Close Fact Box">
+      <i class="fa fa-times text-white" style="font-size: 13px;"></i>
+    </button>
+  </div>
+
+  <div class="card-body p-1 flex-column d-flex">
+    <!-- Top Section (e.g. Workflow Navigation / Actions) projected inside Fact Box at top -->
+    <ng-content select="[top], [factbox-top]"></ng-content>
+
+    <!-- Scrollable Files List -->
+    <div class="file-history-list px-1 flex-grow-1">
+      <div *ngIf="isLoading" class="text-center py-3 text-dark small">
+        <i class="fa fa-spinner fa-spin me-1"></i>Loading history...
+      </div>
+
+      <div *ngIf="!isLoading && displayFiles.length === 0"
+        class="text-dark small text-center py-3 bg-light rounded border">
+        <i class="fa fa-info-circle me-1"></i>No uploaded files found.
+      </div>
+
+      <div
+        *ngFor="let item of displayFiles | paginate: { id: 'factbox_pagination', itemsPerPage: itemsPerPage, currentPage: currentPage, totalItems: totalItems }; let i = index"
+        class="p-2 mb-2 rounded border shadow-sm"
+        [ngClass]="i % 2 === 0 ? 'factbox-card-warning bg-warning-subtle' : 'factbox-card-success bg-success-subtle'">
+        <!-- Metrics Above File Name (if present) -->
+        <div *ngIf="hasMetrics(item)" class="d-flex align-items-center justify-content-between gap-1 mb-2">
+          <span class=" small">Total :</span>
+          <span class="fact-metric-badge fact-metric-total" title="Total records">
+            {{ item.totalRecords ?? item.TotalRecords ?? item.total_records ?? item.Total_Records ??
+            item.Total ?? item.total ?? item.totalCount ?? item.TotalCount ?? 0 }}
+          </span>
+          <span class="fact-metric-badge fact-metric-success" title="Uploaded successfully">
+            {{ item.successCount ?? item.SuccessCount ?? item.success_count ?? item.Success_Count ??
+            item.Uploaded ?? item.uploaded ?? item.success ?? item.Success ?? 0 }}
+          </span>
+          <span class="fact-metric-badge fact-metric-failed" title="Not uploaded / Failed">
+            {{ item.failedCount ?? item.FailedCount ?? item.failed_count ?? item.Failed_Count ??
+            item['Not Uploaded'] ?? item.notUploaded ?? item.failed ?? item.Failed ?? 0 }}
+          </span>
+        </div>
+
+        <!-- File Name (View link) & Download Button -->
+        <div class="d-flex align-items-start justify-content-between gap-2 mb-1">
+          <a class="text-primary text-decoration-none fact-file-name text-break d-flex align-items-start gap-1 lh-sm cursor-pointer flex-grow-1"
+            role="button" (click)="viewUploadedFile(item)" [title]="'Click to view file: ' + getFileName(item)">
+            <i class="fa-regular fa-file-excel text-success fs-6 flex-shrink-0 mt-1"></i>
+            <span class="text-decoration-underline-hover">{{ getFileName(item) }}</span>
+          </a>
+          <button type="button" class="btn btn-sm btn-outline-primary btn-factbox-download flex-shrink-0"
+            (click)="downloadUploadedFile(item)" title="Download file">
+            <i class="fa-solid fa-download"></i>
+          </button>
+        </div>
+
+        <!-- Upload Details (Uploader & Date/Time) -->
+        <div
+          class="d-flex justify-content-between align-items-center text-dark gap-2 pt-1 border-top mt-1 fact-upload-details">
+          <span class="d-inline-flex align-items-center text-nowrap flex-shrink-0" title="Uploaded by">
+            <i class="fa fa-user me-1 text-dark flex-shrink-0"></i>
+            <strong class="text-dark">{{ getUploaderDisplayName(item) }}</strong>
+          </span>
+          <span role="button" (click)="viewUploadedFile(item)" [title]="'Click to view file'"
+            class="text-primary-hover d-inline-flex align-items-center text-nowrap flex-shrink-0 ms-auto">
+            <i class="fa fa-calendar-alt me-1 text-dark flex-shrink-0"></i>
+            <span>{{ (item.entry_date || item.date || item.Date || item.createdDate ||
+              item.CreatedDate || item.uploadTime || item.UploadTime) | date: 'dd-MMM-yyyy hh:mm:ss a' }}</span>
+          </span>
+        </div>
+      </div>
+
+
+    </div>
+
+    <!-- Projected Content (Workflow Suggestion & Related Actions: Bottom 30% section) -->
+    <ng-content></ng-content>
+  </div>
+
+  <div class="card-footer py-2 bg-white border-top">
+    <!-- Fact Box Sliding Window Pagination Controls -->
+    <div class="d-flex justify-content-center align-items-center w-100" *ngIf="totalPagesCount > 1">
+      <ul class="factbox-pagination mb-0 p-0 list-unstyled">
+        <!-- Previous Button -->
+        <li class="factbox-page-item" [class.disabled]="currentPage === 1">
+          <button type="button" class="btn-pagination btn-nav" (click)="handlePageChange(currentPage - 1)"
+            [disabled]="currentPage === 1" aria-label="Previous Page" title="Previous Page">
+            &laquo;
+          </button>
+        </li>
+
+        <!-- Dynamic Sliding Window Numbers & Ellipses -->
+        <li *ngFor="let item of cachedPaginationItems; trackBy: trackByPaginationItem" class="factbox-page-item">
+          <span *ngIf="item.type === 'ellipsis'" class="factbox-ellipsis">&hellip;</span>
+          <button *ngIf="item.type === 'page'" type="button" class="btn-pagination"
+            [class.active]="item.value === currentPage" (click)="handlePageChange(+item.value)">
+            {{ item.value }}
+          </button>
+        </li>
+
+        <!-- Next Button -->
+        <li class="factbox-page-item" [class.disabled]="currentPage === totalPagesCount">
+          <button type="button" class="btn-pagination btn-nav" (click)="handlePageChange(currentPage + 1)"
+            [disabled]="currentPage === totalPagesCount" aria-label="Next Page" title="Next Page">
+            &raquo;
+          </button>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+<!-- Bottom-Right Floating Button to toggle Fact Box -->
+<button class="btn btn-primary btn-float-fact" type="button" (click)="toggleFactBox()" *ngIf="!isOpen"
+  title="Open DARCL Fact Box">
+  <i class="fa fa-sitemap"></i>
+</button>
+
+<!-- Pop-up Modal File Preview -->
+<div class="factbox-preview-backdrop" *ngIf="isPreviewOpen" (click)="closePreview()">
+  <div class="factbox-preview-modal card border-0 shadow-lg" (click)="$event.stopPropagation()">
+    <!-- Header -->
+    <div class="card-header bg-blue text-white d-flex align-items-center justify-content-between px-3 py-2">
+      <div class="d-flex align-items-center gap-2 overflow-hidden">
+        <i class="fa-solid fa-file-excel fs-5 text-warning flex-shrink-0"></i>
+        <div class="text-truncate">
+          <h5 class="mb-0 text-white text-truncate fw-bold" style="font-size: 15px;">{{ previewFileName }}</h5>
+          <small class="text-white-50" *ngIf="totalPreviewRowsCount > 0" style="font-size: 11px;">
+            {{ totalPreviewRowsCount }} total rows loaded
+          </small>
+        </div>
+      </div>
+      <div class="d-flex align-items-center gap-2">
+        <button type="button" class="btn btn-sm btn-light py-1 px-2 d-flex align-items-center gap-1 shadow-sm"
+          (click)="downloadFromPreview()" title="Download original Excel file">
+          <i class="fa-solid fa-download text-primary"></i>
+          <span class="d-none d-sm-inline fw-semibold" style="font-size: 12px;">Download</span>
+        </button>
+        <button type="button" class="btn-close btn-close-white ms-1" (click)="closePreview()"
+          aria-label="Close"></button>
+      </div>
+    </div>
+
+    <!-- Sheet Tabs (if multi-sheet) -->
+    <div class="bg-light border-bottom px-3 py-1 d-flex gap-2 align-items-center overflow-auto factbox-sheet-bar"
+      *ngIf="previewSheetNames && previewSheetNames.length > 1">
+      <span class="small text-dark fw-bold me-1 flex-shrink-0" style="font-size: 11px;">
+        <i class="fa-solid fa-layer-group me-1 text-primary"></i>Sheets:
+      </span>
+      <button *ngFor="let sheetName of previewSheetNames; let sIdx = index" type="button"
+        class="btn btn-sm py-1 px-3 factbox-sheet-tab" [ngClass]="activeSheetIndex === sIdx ? 'active' : ''"
+        (click)="selectSheet(sIdx)">
+        {{ sheetName }}
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="factbox-preview-body p-0">
+      <!-- Loader -->
+      <div *ngIf="isPreviewLoading" class="text-center py-5">
+        <div class="spinner-border text-primary mb-2" role="status" style="width: 2.5rem; height: 2.5rem;"></div>
+        <p class="text-dark small fw-semibold">Reading and rendering Excel sheets...</p>
+      </div>
+
+      <!-- Error Message -->
+      <div *ngIf="!isPreviewLoading && previewErrorMessage"
+        class="alert alert-danger m-3 d-flex align-items-center gap-2">
+        <i class="fa-solid fa-circle-exclamation fs-5 flex-shrink-0"></i>
+        <div>{{ previewErrorMessage }}</div>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="!isPreviewLoading && !previewErrorMessage && previewRows.length === 0"
+        class="text-center py-5 text-dark">
+        <i class="fa-regular fa-folder-open fs-1 mb-2 d-block text-dark opacity-50"></i>
+        <span class="fw-semibold">No data rows found in this sheet.</span>
+      </div>
+
+      <!-- Excel Data Table -->
+      <div class="table-responsive" *ngIf="!isPreviewLoading && !previewErrorMessage && previewRows.length > 0">
+        <table class="table table-bordered table-striped table-hover factbox-preview-table mb-0">
+          <thead>
+            <tr>
+              <th class="text-center bg-light text-dark sticky-th" style="width: 50px;">#</th>
+              <th *ngFor="let header of previewHeaders" class="sticky-th">{{ header }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let row of previewRows; let rIdx = index">
+              <td class="text-center text-dark small bg-light fw-bold" style="width: 50px;">{{ rIdx + 1 }}</td>
+              <td *ngFor="let header of previewHeaders; let cIdx = index">
+                {{ (row[cIdx] !== undefined && row[cIdx] !== null) ? row[cIdx] : '' }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="factbox-preview-footer bg-white p-2 border-top d-flex justify-content-between align-items-center px-3">
+      <small class="text-dark fw-semibold" *ngIf="previewRows.length > 0" style="font-size: 11px;">
+        Showing <span class="text-dark">{{ previewRows.length }}</span> row(s)
+      </small>
+      <div class="d-flex align-items-center gap-2 ms-auto">
+        <button type="button" class="btn btn-secondary btn-sm px-3 py-1 shadow-sm"
+          (click)="closePreview()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

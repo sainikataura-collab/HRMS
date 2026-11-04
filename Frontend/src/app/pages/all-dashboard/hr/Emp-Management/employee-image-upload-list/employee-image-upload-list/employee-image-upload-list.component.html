@@ -1,0 +1,101 @@
+
+<div class="row">
+    <div class="col-12">
+      <div class="card"> 
+        <div class="card-header bg-blue py-lg-1 mt-0">
+            <div class="col-sm-12 col-md-12 col-lg-3 col-12">
+          
+                <div class="row w-100">
+                    <div class="col-sm-12 col-md-12 col-lg-12 ">
+                        <h4 class="">List of Employee Images</h4>
+                    </div>
+                </div>
+          
+            </div>
+          
+            <div class="col-sm-12 col-md-12 col-lg-7 col-12">
+                <div class="row w-100">
+                    <div class="col-sm-12 col-md-8 col-lg-8">
+                        <app-common-search  [(ngModel)]="searchText"(filtersChanged)="handleFilters($event)"></app-common-search>
+                    </div>
+                    <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-center">
+                      <input type="text" class="form-control"placeholder="Search..."  [(ngModel)]="searchText" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-12 col-lg-2 col-12">
+            <div class="col-sm-12 col-md-4 col-lg-12  d-flex align-items-center justify-content-md-center">
+              <button class="btn btnheader" routerLink="/dash/hr/hrdashboard/Employee_Image_Mst">
+                   Add
+                </button>
+       
+            </div>
+            </div>
+          </div>
+         
+
+          <div class="card-body">
+            <div class="table-responsive table-invoice">
+              <table Id="exportTable"  class="table">
+                <thead>
+                  <tr>
+                    <th>Sr.No.</th>
+                    <!-- <th >fk_empid</th> -->
+                    <th >Description</th>
+                    <th>Dated</th>
+                    <th >File Name</th>
+                    <th >Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+
+                  <tr *ngFor="let item of filteredData() | paginate: { itemsPerPage: pageSize, currentPage: pageIndex ,totalItems:totalCount};let i = index">
+
+                    <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+                    <!-- <td >{{item.fkEmpId}}</td>  -->
+                    <td >{{item.description}}</td> 
+                    <td >{{item.dated}}</td> 
+                    <!-- <td >{{item.filename}}</td> -->
+                    <!-- <td>
+                      <img *ngIf="imageMap[item.filename]"
+                      [src]="imageMap[item.filename]"
+                       width="50" height="50"
+                     />
+                              
+                      </td> -->
+                      <td>
+                        <img *ngIf="imageMap[item.filename]"
+                             [src]="imageMap[item.filename]"
+                             width="50" height="50"
+                             style="cursor: pointer;"
+                             (click)="openImageModal(item.filename)" />
+                             <div *ngIf="showModal" class="modal-backdrop">
+                              <div class="modal-content">
+                                <span class="close-icon p-1 m-0" (click)="closeModal()">&times;</span>
+                                <img [src]="selectedImage" alt="Full Image" />
+                              </div>
+                            </div>
+                      </td>
+                
+                    <td>
+                        <!-- <button class="btn btn-sm btn-outline" ">
+                           delete
+                          </button> -->
+
+                          <button class="btn btn-sm btn-outline" (click)="isDelete(item.pk_imageid)">
+                            <i class="fa fa-trash"></i>
+                          </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+    
+             <!-- Pagination controls -->
+             <pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>
+            </div>
+          </div>
+        </div>
+        
+    </div>
+</div>
+

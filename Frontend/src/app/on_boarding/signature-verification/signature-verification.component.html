@@ -1,0 +1,94 @@
+<section>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+          <div class="card-header bg-blue">
+            <div class="row w-100">
+              <div class="col-sm-12 col-md-6 col-lg-6">
+                <h4>Signature Image</h4>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-body mt-2">
+            <!-- ====================== VIEW MODE ====================== -->
+            <div *ngIf="isViewMode && signatureData">
+              <div class="row">
+                <div class="col-md-6" *ngIf="signatureData.signaturePhoto">
+                  <label class="fw-semibold">Uploaded Signature</label><br />
+                  <div class="p-2 border rounded bg-light my-2 d-inline-block">
+                    <img
+                      [src]="signatureData.signaturePhoto"
+                      alt="Signature"
+                      style="
+                        max-width: 320px;
+                        max-height: 150px;
+                        object-fit: contain;
+                      "
+                    />
+                  </div>
+                </div>
+
+                <div class="col-12 mt-3">
+                  <button type="button" class="btn btn-warning" (click)="editSignature()">
+                    <i class="fas fa-edit me-1"></i> Re-upload Signature
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- ====================== FORM MODE ====================== -->
+            <form *ngIf="!isViewMode" [formGroup]="signatureForm" (ngSubmit)="onSubmit()">
+              <div class="row">
+                <div class="col-sm-12 col-md-8 col-lg-6">
+                  <label>
+                    Upload Signature Image
+                    <span class="text-danger" *ngIf="!signatureData?.signaturePhoto">*</span>
+                  </label>
+                  <div class="input-group">
+                    <input
+                      type="file"
+                      class="form-control"
+                      (change)="onFileSelected($event)"
+                      accept="image/jpeg,image/png,image/jpg"
+                    />
+                  </div>
+                  <small class="text-muted">Allowed: JPG, PNG (Max 3MB). Please upload a clear photo/scan of your signature on white paper.</small>
+                  <div
+                    *ngIf="submitted && validate['SignaturePhotoFile'].errors && !signatureData?.signaturePhoto"
+                    class="text-danger mt-1 small"
+                  >
+                    Please upload your signature image.
+                  </div>
+
+                  <!-- Image Preview -->
+                  <div *ngIf="previewSignature" class="mt-3 p-2 border rounded bg-light d-inline-block">
+                    <label class="d-block small text-muted mb-1">Preview:</label>
+                    <img
+                      [src]="previewSignature"
+                      alt="Signature Preview"
+                      style="max-width: 280px; max-height: 140px; object-fit: contain;"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Submit Buttons -->
+              <div class="row mt-4">
+                <div class="col-12">
+                  <button type="submit" class="btn btn-primary me-2">
+                    <i class="fas fa-save me-1"></i> Save & Continue
+                  </button>
+                  <button type="button" class="btn btn-secondary" (click)="reset()">
+                    Reset
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

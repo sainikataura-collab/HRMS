@@ -1,0 +1,216 @@
+
+@media screen and (max-width: 767.98px) {
+  
+  #exportTable thead {
+    display: none;
+  }
+
+  /* ===== HIDE UNWANTED COLUMNS ===== */
+  #exportTable tbody td[data-label="Sr.no."] {
+    display: none !important;
+  }
+
+  /* ===== CARD CONTAINER ===== */
+  #exportTable tbody tr {
+    display: block;
+    margin: 1rem 0.2rem;
+    padding: 0rem;
+    background: #ffffff;
+    border: 1px dashed #87dabc;
+    border-left: 4px solid #10b981;
+    border-radius: 0.3rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    position: relative;
+  }
+
+   #exportTable tbody tr:nth-child(even) {
+    border-left-color: #10b981;
+       border-left: 4px solid #3080e8;
+  }
+
+  /* ===== RESET TD ===== */
+  #exportTable tbody td {
+    display: inline-flex;
+    padding: 0;
+    // padding-bottom: 10px;
+    margin: 0;
+    border: none;
+    background: transparent;
+    height: auto;
+  }
+
+  #exportTable tbody td::before {
+    display: none !important;
+  }
+
+  /* ===== DATE HEADER ===== */
+  #exportTable tbody td[data-label="empcode"] {
+    display: inline-flex;
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: #2b2e41 !important;
+    padding: 0.3rem 0.5rem;
+    background: #bed9c95c;
+    text-align: start !important;
+    width: 20%;
+    border-radius: 0.2rem;
+  }
+
+
+  #exportTable tbody td[data-label="empname"] {
+    display: inline-flex;
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: #2b2e41 !important;
+    padding: 0.3rem 0.5rem;
+    background: #bed9c95c;
+    text-align: start !important;
+      width: 80%;
+  }
+
+
+
+  /* ===== STATUS BADGE (Top Right) ===== */
+
+
+  #exportTable tbody td[data-label="date"] {
+    display: inline-flex;
+    align-items: center;
+    padding: 0 0.3rem;
+    font-size: 0.65rem;
+    color: #1f2937;
+    font-weight: 500;
+    width: 50%;
+    text-align: start;
+     line-height: 1.4;  
+  }
+
+  #exportTable tbody td[data-label="date"]::before {
+    content: 'Date:' !important;
+    display: inline-flex !important;
+    font-size: 0.65rem;
+    margin-right: 0.5rem;
+    font-weight: 700;
+  }
+
+
+  #exportTable tbody td[data-label="Effective-date"] {
+    display: inline-flex;
+    align-items: center;
+    padding: 0 0.0rem;
+    font-size: 0.65rem;
+    color: #1f2937;
+    font-weight: 500;
+    width: 50%;
+    text-align: start;
+     line-height: 1.4;  
+  }
+
+  #exportTable tbody td[data-label="Effective-date"]::before {
+    content: 'EF Date:' !important;
+    display: inline-flex !important;
+    font-size: 0.65rem;
+    margin-right: 0.5rem;
+    font-weight: 700;
+  }
+
+   #exportTable tbody td[data-label="ctcbasic"] {
+    display: inline-flex;
+    align-items: center;
+    padding: 0 0.5rem;
+    font-size: 0.65rem;
+    color: #1f2937;
+    font-weight: 500;
+    width: 40%;
+    text-align: start;
+     line-height: 1.4;  
+  }
+
+    #exportTable tbody td[data-label="ctcbasic"]::before {
+    content: 'CTC-' !important;
+    display: inline-flex !important;
+    font-size: 0.65rem;
+    margin-right: 0.5rem;
+    font-weight: 700;
+  }
+
+   #exportTable tbody td[data-label="percentage"] {
+    display: inline-flex;
+    align-items: center;
+    padding: 0 0.5rem;
+    font-size: 0.65rem;
+    color: #1f2937;
+    font-weight: 500;
+    width: 50%;
+    text-align: start;
+     line-height: 1.4;  
+  }
+
+    #exportTable tbody td[data-label="percentage"]::before {
+    content: 'Percentage-' !important;
+    display: inline-flex !important;
+    font-size: 0.65rem;
+    margin-right: 0.5rem;
+    font-weight: 700;
+  }
+   #exportTable tbody td[data-label="Increment Amount"] {
+    display: inline-flex;
+    align-items: center;
+    padding: 0 0.5rem;
+    font-size: 0.65rem;
+    color: #1f2937;
+    font-weight: 500;
+    width: 50%;
+    text-align: start;
+     line-height: 1.4;  
+  }
+
+    #exportTable tbody td[data-label="Increment Amount"]::before {
+    content: 'Inc-Amt-' !important;
+    display: inline-flex !important;
+    font-size: 0.65rem;
+    margin-right: 0.5rem;
+    font-weight: 700;
+  }
+
+   #exportTable tbody td[data-label="New CTC"] {
+    display: inline-flex;
+    align-items: center;
+    padding: 0 0.5rem;
+    font-size: 0.65rem;
+    color: #1f2937;
+    font-weight: 500;
+    width: 50%;
+    text-align: start;
+     line-height: 1.4;  
+  }
+
+    #exportTable tbody td[data-label="New CTC"]::before {
+    content: 'New CTC-' !important;
+    display: inline-flex !important;
+    font-size: 0.65rem;
+    margin-right: 0.5rem;
+    font-weight: 700;
+   
+  }
+
+
+
+  
+
+  /* ===== EMPTY STATE ===== */
+  #exportTable tbody tr td[colspan] {
+    display: block;
+    padding: 2rem 1rem;
+    text-align: center;
+    color: #94a3b8;
+    font-size: 0.65rem;
+    position: static;
+  }
+
+  #exportTable tbody tr td[colspan]::before,
+  #exportTable tbody tr td[colspan]::after {
+    content: none !important;
+  }
+}

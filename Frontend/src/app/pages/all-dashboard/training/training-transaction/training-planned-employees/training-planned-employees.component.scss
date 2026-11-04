@@ -1,0 +1,59 @@
+/* Custom Gradient for Header */
+.bg-gradient-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+}
+
+/* Card Enhancement */
+.card {
+  transition: transform 0.2s ease;
+}
+
+/* Hover Effect for Back Button */
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Table Row Hover Effect */
+.table-row-hover {
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.table-row-hover:hover {
+  background-color: #f8f9fa !important;
+  transform: scale(1.01);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Custom Table Styling */
+.custom-table thead th {
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid #dee2e6;
+}
+
+/* Search Input Focus Effect */
+.input-group input:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+/* Badge Animations */
+.badge {
+  transition: transform 0.2s ease;
+}
+
+.badge:hover {
+  transform: scale(1.05);
+}
+
+/* Responsive Table */
+@media (max-width: 768px) {
+  .table-responsive {
+    border-radius: 8px;
+    overflow: hidden;
+  }
+}

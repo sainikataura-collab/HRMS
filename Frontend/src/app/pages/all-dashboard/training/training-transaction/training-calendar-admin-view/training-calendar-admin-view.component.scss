@@ -1,0 +1,317 @@
+
+
+
+
+
+
+
+
+
+
+// training-calendar-admin-view.component.scss
+
+.calendar-container {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  overflow: hidden;
+}
+
+.calendar-header {
+  padding: 16px 24px;
+  background: #fff;
+  border-bottom: 1px solid #e0e0e0;
+  
+  h4 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 400;
+    color: #3c4043;
+  }
+}
+
+.calendar-body {
+  padding: 0;
+  background: #fff;
+}
+
+// Google Calendar Theme
+::ng-deep {
+  .fc {
+    font-family: 'Roboto', 'Arial', sans-serif;
+    
+    // Toolbar (Header)
+    .fc-toolbar {
+      padding: 16px 24px;
+      margin-bottom: 0;
+      background: #fff;
+      border-bottom: 1px solid #dadce0;
+      
+      .fc-toolbar-chunk {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      
+      .fc-toolbar-title {
+        font-size: 22px;
+        font-weight: 400;
+        color: #3c4043;
+        margin: 0 16px;
+      }
+      
+      // Buttons styling
+      .fc-button {
+        background: #fff;
+        border: 1px solid #dadce0;
+        color: #3c4043;
+        padding: 8px 16px;
+        font-size: 14px;
+        font-weight: 500;
+        border-radius: 4px;
+        text-transform: none;
+        box-shadow: none;
+        transition: all 0.2s;
+        
+        &:hover {
+          background: #f8f9fa;
+          border-color: #dadce0;
+          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+        
+        &:active,
+        &:focus {
+          background: #e8eaed;
+          box-shadow: none !important;
+        }
+        
+        &.fc-button-active {
+          background: #e8f0fe;
+          color: #1967d2;
+          border-color: #e8f0fe;
+        }
+        
+        &:disabled {
+          opacity: 0.4;
+          cursor: not-allowed;
+        }
+      }
+      
+      .fc-button-primary:not(:disabled).fc-button-active,
+      .fc-button-primary:not(:disabled):active {
+        background: #e8f0fe;
+        color: #1967d2;
+        border-color: #e8f0fe;
+      }
+      
+      .fc-prev-button,
+      .fc-next-button {
+        padding: 8px 12px;
+        
+        .fc-icon {
+          font-size: 18px;
+        }
+      }
+    }
+    
+    // Calendar grid
+    .fc-scrollgrid {
+      border: none;
+      border-top: 1px solid #dadce0;
+    }
+    
+    // Table borders
+    .fc-scrollgrid-section > * {
+      border: none;
+    }
+    
+    .fc-col-header-cell {
+      background: #fff;
+      border-bottom: 1px solid #dadce0;
+      border-right: 1px solid #dadce0;
+      padding: 12px 8px;
+      font-weight: 500;
+      font-size: 11px;
+      color: #70757a;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      
+      &:last-child {
+        border-right: none;
+      }
+    }
+    
+    .fc-daygrid-day {
+      border-right: 1px solid #dadce0;
+      border-bottom: 1px solid #dadce0;
+      background: #fff;
+      min-height: 120px;
+      
+      &:last-child {
+        border-right: none;
+      }
+      
+      &.fc-day-today {
+        background: #f8f9fa !important;
+        
+        .fc-daygrid-day-number {
+          background: #1a73e8;
+          color: #fff;
+          border-radius: 50%;
+          width: 28px;
+          height: 28px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: 500;
+        }
+      }
+      
+      &.fc-day-other {
+        background: #fff;
+        
+        .fc-daygrid-day-number {
+          color: #80868b;
+        }
+      }
+      
+      &:hover {
+        background: #f8f9fa;
+      }
+    }
+    
+    .fc-daygrid-day-frame {
+      padding: 4px 8px;
+    }
+    
+    .fc-daygrid-day-top {
+      display: flex;
+      justify-content: center;
+      padding: 8px 0 4px;
+    }
+    
+    .fc-daygrid-day-number {
+      padding: 4px 8px;
+      font-size: 13px;
+      font-weight: 400;
+      color: #3c4043;
+      text-decoration: none;
+    }
+    
+    // Events styling - Google Calendar style
+    .fc-daygrid-event {
+      margin: 1px 2px;
+      padding: 0;
+      border: none;
+      border-radius: 4px;
+      font-size: 12px;
+      cursor: pointer;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+      transition: all 0.2s;
+      
+      &:hover {
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        transform: translateY(-1px);
+      }
+    }
+    
+    .fc-event-main {
+      padding: 4px 8px;
+      color: #fff;
+    }
+    
+    .fc-event-title {
+      font-weight: 500;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    
+    .fc-event-time {
+      font-weight: 400;
+      font-size: 11px;
+      margin-right: 4px;
+    }
+    
+    // More link styling
+    .fc-daygrid-more-link {
+      color: #1967d2;
+      font-size: 11px;
+      font-weight: 500;
+      padding: 2px 4px;
+      margin: 2px;
+      border-radius: 2px;
+      
+      &:hover {
+        background: #e8f0fe;
+        text-decoration: none;
+      }
+    }
+    
+    // Popover for more events
+    .fc-popover {
+      border: none;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+      border-radius: 8px;
+      
+      .fc-popover-header {
+        background: #fff;
+        color: #3c4043;
+        padding: 12px 16px;
+        font-weight: 500;
+        font-size: 14px;
+        border-bottom: 1px solid #dadce0;
+      }
+      
+      .fc-popover-body {
+        padding: 8px;
+      }
+    }
+    
+    // Week view styling
+    .fc-timegrid {
+      .fc-timegrid-slot {
+        height: 48px;
+        border-bottom: 1px solid #f0f0f0;
+      }
+      
+      .fc-timegrid-slot-label {
+        font-size: 11px;
+        color: #70757a;
+        text-transform: uppercase;
+      }
+    }
+    
+    // Remove focus outline
+    .fc-button:focus,
+    .fc-daygrid-day:focus,
+    .fc-event:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.4);
+    }
+    
+    // Loading state
+    .fc-loading {
+      background: rgba(255, 255, 255, 0.8);
+    }
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  ::ng-deep .fc {
+    .fc-toolbar {
+      flex-direction: column;
+      gap: 12px;
+      
+      .fc-toolbar-chunk {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+    
+    .fc-daygrid-day {
+      min-height: 80px;
+    }
+  }
+}

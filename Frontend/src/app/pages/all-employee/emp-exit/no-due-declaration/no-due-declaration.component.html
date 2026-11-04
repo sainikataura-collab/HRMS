@@ -1,0 +1,148 @@
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card">
+      <div class="card-header bg-blue">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-6 col-lg-6">
+            <h4>{{ isViewMode ? 'View No Due Self Declaration' : 'No Due Self Declaration' }}</h4>
+          </div>
+
+          <div class="col-sm-12 col-md-6 col-lg-6 d-flex align-items-center justify-content-md-end">
+            <button class="btn btnheader" type="button" (click)="goBack()">
+              Back
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-body mt-4">
+        <form [formGroup]="declarationForm">
+
+          <div class="row row-cols-1 row-cols-md-3 mb-4">
+            <div class="col">
+              <label>Employee Code</label>
+              <div class="form-group">
+                <input type="text" class="form-control" [value]="empInfo.empcode" readonly>
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Employee Name</label>
+              <div class="form-group">
+                <input type="text" class="form-control" [value]="empInfo.empname" readonly>
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Department</label>
+              <div class="form-group">
+                <input type="text" class="form-control" [value]="empInfo.department" readonly>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-primary rounded-1 page-seperator mb-3">
+            <p class="p-1 text-white ms-4 mb-0">Declaration Checklist</p>
+          </div>
+
+          <div class="row row-cols-1 row-cols-md-2 mb-4">
+            <div class="col">
+              <div class="form-group">
+
+                <div class="form-check mb-2">
+                  <input class="form-check-input" type="checkbox" id="noSalaryAdvance" formControlName="noSalaryAdvance"
+                    (click)="preventChangeInViewMode($event)">
+                  <label class="form-check-label" for="noSalaryAdvance">
+                    No salary advance is pending
+                  </label>
+                </div>
+
+                <div class="form-check mb-2">
+                  <input class="form-check-input" type="checkbox" id="noLoan" formControlName="noLoan"
+                    (click)="preventChangeInViewMode($event)">
+                  <label class="form-check-label" for="noLoan">
+                    No loan is pending
+                  </label>
+                </div>
+
+                <div class="form-check mb-2">
+                  <input class="form-check-input" type="checkbox" id="noReimbursement" formControlName="noReimbursement"
+                    (click)="preventChangeInViewMode($event)">
+                  <label class="form-check-label" for="noReimbursement">
+                    No reimbursement claim is pending
+                  </label>
+                </div>
+
+                <div class="form-check mb-2">
+                  <input class="form-check-input" type="checkbox" id="noCompanyProperty"
+                    formControlName="noCompanyProperty" (click)="preventChangeInViewMode($event)">
+                  <label class="form-check-label" for="noCompanyProperty">
+                    No company property is pending return
+                  </label>
+                </div>
+
+              </div>
+            </div>
+
+            <div class="col">
+              <div class="form-group">
+                <label for="declarationDate">
+                  Declaration Date<span style="color:red">*</span>
+                </label>
+
+                <input type="date" id="declarationDate" class="form-control" formControlName="declarationDate"
+                  [readonly]="isViewMode">
+
+                <span *ngIf="submitted && declarationForm.get('declarationDate')?.invalid" class="text-danger mt-1"
+                  style="font-size:12px;">
+                  Please provide Declaration Date.
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-primary rounded-1 page-seperator mb-3">
+            <p class="p-1 text-white ms-4 mb-0">Employee Acknowledgement</p>
+          </div>
+
+          <div class="row mb-4">
+            <div class="col-12">
+              <p class="text-muted" style="font-size:13px;">
+                I, <strong>{{ empInfo.empname }}</strong>, hereby declare that all the above statements are true to the
+                best of my knowledge. I understand that any false declaration may result in legal or financial action.
+              </p>
+
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="agreeDeclaration" formControlName="agreeDeclaration"
+                  (click)="preventChangeInViewMode($event)">
+
+                <label class="form-check-label fw-semibold" for="agreeDeclaration">
+                  I agree and accept the above declaration <span style="color:red">*</span>
+                </label>
+              </div>
+
+              <span *ngIf="submitted && declarationForm.get('agreeDeclaration')?.value === false"
+                class="text-danger mt-1" style="font-size:12px;">
+                You must accept the declaration.
+              </span>
+            </div>
+          </div>
+
+        </form>
+
+        <div class="row" *ngIf="!isViewMode">
+          <div class="col d-flex align-items-end justify-content-end pt-4 pb-3">
+            <button type="button" class="btn btn-primary mx-1" (click)="submitForm()">
+              {{ pk_noDueDeclarationId > 0 ? 'Update Declaration' : 'Submit Declaration' }}
+            </button>
+
+            <button type="button" class="btn btn-outline-dark mx-1" (click)="resetForm()">
+              Reset
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

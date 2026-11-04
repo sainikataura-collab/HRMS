@@ -1,0 +1,146 @@
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+
+      <!-- 🔹 Header Section -->
+      <div class="card-header bg-primary">
+        <form [formGroup]="filterForm" class="row w-100">
+
+          <!-- Title -->
+          <div class="col-sm-12 col-md-4 d-flex align-items-center">
+            <h4 class="text-white mb-0">Admin Training Calendar </h4>
+          </div>
+
+          <!-- Search -->
+          <div class="col-sm-12 col-md-4 d-flex align-items-center justify-content-center">
+            <input type="text" class="form-control" placeholder="Search programs..." formControlName="searchText" />
+          </div>
+
+          <!-- Buttons -->
+          <div class="col-sm-12 col-md-4 d-flex align-items-center justify-content-md-end">
+            <button class="btn btnheader" routerLink="/dash/training/trainingdashboard/TrainingCalendar">
+              Add
+            </button>
+            <button class="btn btn-light mx-1" (click)="exportToExcel()">
+              Download
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- 🔹 Body Section -->
+      <div class="card-body">
+        <div class="table-responsive table-invoice">
+          <table id="exportTable" class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Sr.</th>
+                <th>Program</th>
+                <th>SubProgram</th>
+                <th>Trainer</th>
+                <th>Start Date </th>
+                <th>End Date </th>
+                <th>Location</th>
+                <th>Status</th>
+                <th>Mode</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr *ngFor="let item of calendarData| paginate: { 
+                  itemsPerPage: pageSize, 
+                  currentPage: pageIndex, 
+                  totalItems: totalItems 
+                }; let i = index">
+
+                
+                <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+
+               
+                <td>{{ item.programName }}</td>
+
+                
+                <td>{{ item.subprogramName }}</td>
+
+
+                <td>{{ item.trainer || '-' }}</td>
+
+                <td>
+                  <span *ngIf="item.trainingDateTime; else noDate">
+                    {{ item.trainingDateTime | date:'dd/MM/yyyy' }} <br>
+                    <small class="text-muted">{{ item.trainingDateTime | date:'HH:mm' }}</small>
+                  </span>
+                  <ng-template #noDate>-</ng-template>
+                </td>
+                <td>
+                  <span *ngIf="item.trainingEndDate; else noDate">
+                    {{ item.trainingEndDate | date:'dd/MM/yyyy' }} <br>
+                    <small class="text-muted">{{ item.trainingEndDate | date:'HH:mm' }}</small>
+                  </span>
+                  <ng-template #noDate>-</ng-template>
+                </td>
+
+                <!-- Location -->
+                <td>{{ item.location || '-' }}</td>
+
+                <!-- Status -->
+                <td>
+                  <span class="badge" [ngClass]="{
+                          'info2': item.trainingStatus === 'Upcoming',
+                          'bg-success': item.trainingStatus === 'Completed',
+                          'bg-warning': item.trainingStatus === 'Ongoing',
+                          'bg-danger': item.trainingStatus === 'Cancelled',
+                          'bg-info': item.trainingStatus === 'Scheduled',
+                          'bg-secondary': item.trainingStatus === 'OnHold'
+                        }">
+                    {{ item.trainingStatus }}
+                  </span>
+                </td>
+
+                <!-- Mode -->
+                <td>
+                  {{ item.mode || 'TBD' }}
+                  <!-- <span class="badge" [ngClass]="{
+                          'bg-secondary': item.mode === 'online',
+                          'bg-warning': item.mode === 'offline'
+                        }">
+                    {{ item.mode || 'TBD' }}
+                  </span> -->
+                </td>
+
+                <!-- Actions -->
+                <td class="d-flex align-items-center justify-content-around">
+                  <button class="btn btn-sm btn-outline-primary border-0 px-0" (click)="viewDetails(item)">
+                    <i class="fa fa-eye"></i>
+                  </button>
+                  <!-- ✅ Edit button only for Upcoming trainings -->
+                  <button *ngIf="item.trainingStatus === 'Upcoming'" class="btn btn-sm btn-outline-dark border-0 px-0"
+                    (click)="editItem(item)">
+                    <i class="fa fa-edit"></i>
+                  </button>
+
+
+                  <button *ngIf="item.trainingStatus === 'Pending'" class="btn btn-sm btn-outline-danger border-0 px-0"
+                    (click)="deleteItem(item)">
+                    <i class="fa fa-trash"></i>
+                  </button>
+                </td>
+              </tr>
+
+              <!-- No Data -->
+              <tr *ngIf="calendarData.length === 0">
+                <td colspan="9" class="text-center text-muted">
+                  No calendar data found
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Pagination -->
+          <pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

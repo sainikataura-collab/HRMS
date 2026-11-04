@@ -1,0 +1,413 @@
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card mt-lg-1">
+            <!-- card header  -->
+            <div class="card-header bg-primary">
+                <div class="row w-100">
+                    <div
+                        class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-between">
+                        <h4 class="py-lg-1">{{Isedit? 'Edit Schedule for Interview':'Schedule for Interview'}}</h4>
+                    </div>
+                    <!-- <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+                        <button class="btn btnheader" routerLink="/dash/payroll/payrolldashboard/shift-master-list">
+                            Back
+                        </button>
+                    </div> -->
+
+                </div>
+            </div>
+            <!--  -->
+            <div class="card-body mt-3 px-2 px-lg-4">
+                <form class="row" [formGroup]="ScheduleInterview">
+                    <div class="col-sm-12 col-md-12 col-lg-4">
+                        <label>Job Details <span style="color: red;">*</span></label>
+                        <div class="form-group">
+                            <ng-select [items]="jobList" bindLabel="name" bindValue="value" formControlName="fk_jobId"
+                                placeholder="--Select --" class="w-100" (change)="onJobChange()"></ng-select>
+                            <div *ngIf="showerror   && ScheduleInterview.get('fk_jobId')?.invalid"
+                                class="text-danger mt-1" style="font-size: 12px;">
+                                Please choose Job
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="col-sm-12 col-md-12 col-lg-8 ">
+                        <div class="row pt-lg-4 ">
+
+
+                            <div class="col-sm-0 col-md-0 col-lg-3">
+                                <div class="card rounded border border-primary ps-2 shadow-none">
+                                    <p class="small text-black lh-base fw-semibold px-1 pt-2 "
+                                        style="font-size: 0.7rem;"><span class="ps-2">Total Candidate: <span
+                                                class="text-primary"></span>{{candidateList.length}} </span></p>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-12 col-md-6 col-lg-3">
+                                <div class="card rounded border border-primary ps-2 shadow-none">
+                                    <p class="small text-black lh-base fw-semibold px-1 pt-2 "
+                                        style="font-size: 0.7rem;"><span class="ps-2">Opening: <span
+                                                class="text-primary">{{ jobData?.job_opening_date | date: 'MM/dd/yyyy'
+                                                }}</span> </span></p>
+
+                                </div>
+                            </div>
+
+
+                            <div class="col-sm-12 col-md-6 col-lg-3">
+                                <div class="card rounded border border-primary ps-2 shadow-none">
+                                    <p class="small text-black lh-base fw-semibold px-1 pt-2 "
+                                        style="font-size: 0.7rem;"><span class="ps-2"> Closing : <span
+                                                class="text-primary">{{ jobData?.job_closing_date | date:
+                                                'MM/dd/yyyy' }}</span> </span></p>
+
+                                </div>
+                            </div>
+                             <div class="col-sm-12 col-md-6 col-lg-3">
+                                <div class="card rounded border border-primary ps-2 shadow-none">
+                                    <p class="small text-black lh-base fw-semibold px-1 pt-2 "
+                                        style="font-size: 0.7rem;"><span class="ps-2"> Vacancy : <span
+                                                class="text-primary">{{ jobData?.no_of_post}}</span> </span></p>
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </div>
+                </form>
+
+
+                <div class="row row-cols-1 row-cols-md-4 mt-2 mb-2">
+                    <div class="col">
+                        <p class="text-primary m-0 fw-semibold">List of Scheduled Interview</p>
+                    </div>
+
+                    <div class="col small">
+                        <p class="d-flex align-items-center justify-content-start">
+                            <span class="fw-semibold small">Date:</span>
+                            <span class="ps-2">
+                                <input type="date" class="form-control flex-grow-1" [(ngModel)]="interviewDate"
+                                    (ngModelChange)="onInterviewDateChange($event)" name="interviewDate" />
+                            </span>
+                        </p>
+                    </div>
+
+                    <div class="col small">
+                        <p class="d-flex align-items-center justify-content-start">
+                            <span class="fw-semibold small">Time:</span>
+                            <span class="ps-2">
+                                <input type="time" class="form-control flex-grow-1" [(ngModel)]="interviewTime"
+                                    (ngModelChange)="onInterviewTimeChange($event)" name="interviewTime" />
+                            </span>
+                        </p>
+                    </div>
+
+                    <!-- <div class="col small d-flex align-items-center justify-content-end">
+                        <button class="btn btn-sm btn-primary" (click)="submitScreening()"
+                            [disabled]="!interviewDate || !interviewTime">
+                            Update All
+                        </button>
+                    </div> -->
+                    <div class="col small d-flex align-items-center justify-content-end">
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-sm btn-primary" (click)="submitScreening()"
+                                [disabled]="!interviewDate || !interviewTime">
+                                Update All
+                            </button>
+
+                            <button class="btn btn-sm btn-success" (click)="submitScreening()"
+                                [disabled]="!interviewDate || !interviewTime">
+                                Send All
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div style="max-height: 500px; overflow-y: auto;">
+                    <div *ngFor="let candidate of candidateList; let i = index" class="card border rounded shadow-sm ">
+
+                        <div class="row g-0 flex-column flex-md-row employee-card ">
+                            <div
+                                class="col-sm-12 col-md-2 col-lg-2  d-flex flex-column align-items-center justify-content-center bg-light">
+                                <img [src]="candidate.imageUrl || 'assets/img/users/user-10.png'"
+                                    class="img-fluid rounded-circle border" alt="Candidate Image"
+                                    style="width: 70px; height: 70px; object-fit: cover;" />
+
+                                <p class="text-center fw-semibold text-primary p-1 pt-3 m-0 lh-sm"> {{
+                                    candidate.candidate_name }}</p>
+                                <button class="lh-sm  btn btn-outline-primary rounded-1" type="submit"
+                                    (click)="viewMore(candidate)">
+                                    🔍 View More
+                                </button>
+                            </div>
+
+
+                            <div class="col-12 col-md-10 p-2">
+
+
+                                <div class="row row-cols-1 row-cols-md-3 g-2">
+                                    <div class="col">
+                                        <p><span class="fw-semibold small">Father Name:</span> <span class="ps-2">{{
+                                                candidate.father_name
+                                                }}</span></p>
+                                    </div>
+                                    <div class="col">
+                                        <p><span class="fw-semibold small">DOB:</span> <span class="ps-2">{{
+                                                candidate.dateofbirth
+                                                }}</span></p>
+                                    </div>
+                                    <div class="col">
+
+                                        <p><span class="fw-semibold small">📍 Address:</span> <span class="ps-2">{{
+                                                candidate.corresAddress
+                                                }}</span></p>
+                                    </div>
+                                    <div class="col">
+                                        <p><span class="fw-semibold small">📧 Email:</span> <span class="ps-2">{{
+                                                candidate.email
+                                                }}</span></p>
+                                    </div>
+                                    <div class="col">
+                                        <p><span class="fw-semibold small">📱 Mobile No:</span> <span class="ps-2">{{
+                                                candidate.mobile
+                                                }}</span></p>
+                                    </div>
+                                   
+                                </div>
+
+
+                                <div class="row row-cols-1 row-cols-md-3">
+                                    <div class="col small">
+                                        <p class="d-flex align-items-center justify-content-start small">
+                                            <span class="fw-semibold small">Date:</span>
+                                            <span class="ps-2">
+                                                <input type="date" class="form-control flex-grow-1"
+                                                    [(ngModel)]="candidate.interview_date"
+                                                    name="interview_date_{{candidate.id}}" />
+                                            </span>
+                                        </p>
+                                    </div>
+
+                                    <div class="col small">
+                                        <p class="d-flex align-items-center justify-content-start">
+                                            <span class="fw-semibold small">Time:</span>
+                                            <span class="ps-2">
+                                                <input type="time" class="form-control flex-grow-1"
+                                                    [(ngModel)]="candidate.interview_time"
+                                                    name="interview_time_{{candidate.id}}" />
+                                            </span>
+                                        </p>
+                                    </div>
+
+
+
+
+                                    <!-- <div class="col d-flex align-items-center justify-content-end">
+                                        <button class="btn btn-sm btn-primary" (click)="submitSingleRecord(candidate)">
+                                            Update
+                                        </button>
+                                    </div>
+                                    <div class="col d-flex align-items-center justify-content-end">
+                                        <button class="btn btn-sm btn-primary" (click)="submitSingleRecord(candidate)">
+                                            Update
+                                        </button>
+                                    </div> -->
+                                    <div class="col d-flex align-items-center justify-content-end">
+                                        <div class="d-flex gap-2">
+                                            <button class="btn btn-sm btn-primary"
+                                                (click)="submitSingleRecord(candidate)">
+                                                Update
+                                            </button>
+                                            <button class="btn btn-sm btn-primary"
+                                                (click)="submitSingleRecord(candidate)">
+                                                Send
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Scrollable Card Container -->
+                <!-- <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary mx-1" (click)="submitScreening()">{{ Isedit ? 'Update'
+                        : 'Save' }}</button>
+
+                    <button type="reset" class="btn btn-outline-dark mx-1">Reset</button>
+                </div> -->
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<!-- Modal  -->
+
+<div class="modal fade" id="candidateModal" tabindex="-1" aria-labelledby="candidateModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg ">
+        <div class="modal-content  rounded-3 shadow">
+            <!-- Header -->
+            <div
+                class="modal-header pt-1 pb-0 m-0 border-0 text-dark d-flex align-items-center justify-content-between ">
+                <p class=" modal-title text-center py-2 small" id="candidateModalLabel">
+
+                </p>
+                <button type="button" class="btn-close btn-close-dark position-absolute btn-sm end-0 me-1 mt-1 small"
+                    data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+
+
+
+            <!-- Profile Modal Body -->
+            <div class="modal-body bg-white text-dark">
+                <div class="row g-0">
+
+
+                    <section>
+                        <div class="container py-2">
+
+                            <div class="row">
+
+                                <div class="col-lg-3">
+                                    <div class="card ">
+                                        <div class="card-body text-center">
+                                            <img [src]="selectedCandidate?.imageUrl || 'assets/img/users/user-10.png'"
+                                                alt="avatar" class="rounded-circle animated-border"
+                                                style="width: 100px;">
+                                            <p class=" pt-2 fs-6 text-primary">{{selectedCandidate?.candidate_name}}</p>
+
+
+                                        </div>
+                                    </div>
+
+                                </div>
+
+
+                                <div class="col-lg-9">
+                                    <div class="card mb-4">
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-sm-3">
+                                                    <p class="mb-0">Full Name</p>
+                                                </div>
+                                                <div class="col-sm-9">
+                                                    <p class="text-muted mb-0">{{selectedCandidate?.candidate_name}}</p>
+                                                </div>
+                                            </div>
+
+                                            <hr>
+                                            <div class="row">
+                                                <div class="col-sm-3">
+                                                    <p class="mb-0">Email</p>
+                                                </div>
+                                                <div class="col-sm-9">
+                                                    <p class="text-muted mb-0">{{ selectedCandidate?.email}}</p>
+                                                </div>
+                                            </div>
+
+
+                                            <hr>
+                                            <div class="row">
+                                                <div class="col-sm-3">
+                                                    <p class="mb-0">Mobile</p>
+                                                </div>
+                                                <div class="col-sm-9">
+                                                    <p class="text-muted mb-0">{{ selectedCandidate?.mobile }}</p>
+                                                </div>
+                                            </div>
+
+
+
+
+
+                                        </div>
+                                    </div>
+
+
+
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-sm-12 col-md-12 col-lg-12 col-xxl-12">
+                                    <div class="row row-cols-1 row-cols-md-3 g-3">
+
+                                        <div class="col">
+                                            <p><span class="small">Father Name : </span> <span
+                                                    class="text-muted mb-0 small">{{selectedCandidate?.father_name}}</span>
+                                            </p>
+                                        </div>
+                                         <div class="col">
+                                            <p><span class="small">Address : </span> <span
+                                                    class="text-muted mb-0 small">{{ selectedCandidate?.corresAddress
+                                                    }}</span></p>
+                                        </div>
+
+                                        <div class="col">
+                                            <p><span class="small">DOB : </span> <span class="text-muted mb-0 small">{{
+                                                    selectedCandidate?.dateofbirth}}</span></p>
+                                        </div>
+
+                                        <!-- <div class="col">
+                                            <p><span class="small">Gender : </span> <span
+                                                    class="text-muted mb-0 small">{{ selectedCandidate?.gender }}</span>
+                                            </p>
+                                        </div>
+
+                                        <div class="col">
+                                            <p><span class="small">Education : </span> <span
+                                                    class="text-muted mb-0 small">{{ selectedCandidate?.education
+                                                    }}</span></p>
+                                        </div>
+
+                                        <div class="col">
+                                            <p><span class="small">Expected Salary : </span> <span
+                                                    class="text-muted mb-0 small">{{ selectedCandidate?.expectedctc
+                                                    }}</span></p>
+                                        </div>
+
+                                        <div class="col">
+                                            <p><span class="small">Total Exp: </span> <span
+                                                    class="text-muted mb-0 small">{{ selectedCandidate?.totexperience
+                                                    }}</span></p>
+                                        </div>
+
+                                        <div class="col">
+                                            <p><span class="small">Notice Period : </span> <span
+                                                    class="text-muted mb-0 small">{{ selectedCandidate?.noticePeriod
+                                                    }}</span></p>
+                                        </div>
+
+                                        <div class="col">
+                                            <p><span class="small">Remark : </span> <span
+                                                    class="text-muted mb-0 small">{{ selectedCandidate?.remarks
+                                                    }}</span></p>
+                                        </div> -->
+
+                                       
+
+
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

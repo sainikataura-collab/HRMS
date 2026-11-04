@@ -1,0 +1,188 @@
+<!-- Search Bar -->
+
+
+
+<!-- <div class="row">
+    <div class="col-md-12">
+        <div class="input-group">
+           
+            <input type="search" 
+                class="form-control custom-input" 
+                placeholder="Search Filter"
+                id="autoSizingInputGroup" 
+                style="border-right: 1px solid #3080e8; border-left-color: transparent;"
+                (input)="onSearchInput($event)" 
+                (focus)="isInputFocused = true" 
+                (keydown.enter)="applyQuickSearch($event)"
+                 (keyup)="applyQuickSearch($event)"
+                (blur)="isInputFocused = false">
+            <button class="input-group-text filter-btn" (click)="toggleFilterForm($event)">
+                <i class="fa-solid fa-sliders fs-5 text-primary"></i>
+            </button>
+        </div>
+    </div>
+</div> -->
+
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="input-group">
+
+            <input type="search" class="form-control custom-input" placeholder="Search Filter" id="autoSizingInputGroup"
+                style="border-right: 1px solid #3080e8; border-left-color: transparent;" (input)="onSearchInput($event)"
+                (focus)="isInputFocused = true" (blur)="isInputFocused = false">
+            <button class="input-group-text filter-btn" (click)="toggleFilterForm($event)">
+                <i class="fa-solid fa-sliders fs-5 text-primary"></i>
+            </button>
+            <span class="input-group-text position-relative tooltip-container" *ngIf="empCodeCount > 0" 
+                  style="cursor: pointer;"
+                  (click)="showTooltip = !showTooltip">
+                <span class="badge bg-warning-subtle text-dark rounded-pill border">{{ empCodeCount }}</span>
+                
+                <div class="shadow-lg border p-3 bg-white rounded tooltip_common_search" 
+                     *ngIf="showTooltip"
+                     (click)="$event.stopPropagation()"
+                     style="position: absolute; top: 100%; right: 0; z-index: 1050; min-width: 400px; max-width: 600px; max-height: 300px; margin-top: 8px; overflow-y: auto;">
+                    
+                    <!-- Search Input -->
+                    <div class="mb-3">
+                        <input type="search" class="form-control" placeholder="Search employee code..." [(ngModel)]="tooltipSearchQuery" (keydown.enter)="$event.preventDefault()" />
+                    </div>
+
+                    <div class="d-flex flex-wrap gap-2 align-items-center">
+                        <span class="badge bg-light text-dark border px-3 py-2" *ngFor="let code of filteredEmpCodeList">{{ code }}</span>
+                        <div *ngIf="filteredEmpCodeList.length === 0" class="text-muted w-100 text-center small">No codes found.</div>
+                    </div>
+                </div>
+            </span>
+        </div>
+    </div>
+</div>
+<!--  -->
+<!-- Advanced Filter Form -->
+<div class="card shadow-lg border position-absolute w-100" *ngIf="isFilterFormVisible"
+    [ngClass]="{'d-none': !isFilterFormVisible}" (click)="onModalClick($event)" style="z-index: 1050; background: white; border-radius: 0; max-width: 100%; 
+            left: 50%; transform: translateX(-50%); ">
+    <div class="card-body px-3 pb-2">
+
+
+        <form class="row row-cols-1 row-cols-md-3 g-3 mb-1" [formGroup]="commonsearch" (ngSubmit)="submitFilterForm()">
+
+            <div class="col">
+                <label for="empcode" class="form-label">Code</label>
+                <input type="text" class="form-control" placeholder="Enter Employee Code" formControlName="empCode"
+                    (input)="onEmpCodeInput($event)">
+            </div>
+
+            <div class="col">
+                <label for="name" class="form-label">Emp Name</label>
+                <input type="text" class="form-control" placeholder="Enter Employee Name" formControlName="empName">
+            </div>
+
+            <div class="col pt-2">
+                <label>Location</label>
+                <ng-select [items]="locationOptions" bindLabel="name" bindValue="value" [multiple]="true"
+                    [closeOnSelect]="false" class="w-100 small" formControlName="selectedLocations"
+                    (clear)="clearLocations()">
+                    <!-- Display Selected Locations -->
+                    <ng-template ng-multi-label-tmp>
+                        <span>{{ getLocationDisplayText() || '--Select Locations--' }}</span>
+                    </ng-template>
+
+                    <!-- Custom Checkbox for Select All -->
+                    <ng-template ng-option-tmp let-item="item" let-index="index">
+
+                        <div *ngIf="item.value === '__select_all__'">
+                            <input type="checkbox" (change)="toggleSelectAllLocations($event)"
+                                [checked]="isAllLocationsSelected()" class="form-check-input fs-6 mx-1" />
+                            <strong>Select All</strong>
+                        </div>
+
+                        <!-- Normal location rows -->
+                        <div *ngIf="item.value !== '__select_all__'">
+                            <input type="checkbox" [checked]="selectedLocations.includes(item.value)"
+                                (change)="toggleLocation(item.value)" class="form-check-input fs-6 mx-1" />
+                            {{ item.name }}
+                        </div>
+                    </ng-template>
+                </ng-select>
+
+            </div>
+
+            <!-- Department Multi-Select -->
+            <div class="col">
+                <label>Department</label>
+                <ng-select [items]="departmentOptions" bindLabel="name" bindValue="value" [multiple]="true"
+                    [closeOnSelect]="false" class="w-100 small" formControlName="selectedDepartments"
+                    (clear)="clearDepartments()">
+                    <!-- Display Selected Departments -->
+                    <ng-template ng-multi-label-tmp>
+                        <span>{{ getDepartmentDisplayText() || '--Select Departments--' }}</span>
+                    </ng-template>
+
+                    <!-- Custom Checkbox for Select All -->
+
+
+                    <!-- Custom Checkbox for Select All -->
+                    <ng-template ng-option-tmp let-item="item">
+                        <!-- Select All row (value must be '__select_all__') -->
+                        <div *ngIf="item.value === '__select_all__'">
+                            <input type="checkbox" (change)="toggleSelectAllDepartments($event)"
+                                [checked]="isAllDepartmentsSelected()" class="form-check-input fs-6 mx-1" />
+                            <strong>Select All</strong>
+                        </div>
+
+                        <!-- Normal department rows -->
+                        <div *ngIf="item.value !== '__select_all__'">
+                            <input type="checkbox" [checked]="selectedDepartments.includes(item.value)"
+                                (change)="toggleDepartment(item.value)" class="form-check-input fs-6 mx-1" />
+                            {{ item.name }}
+                        </div>
+                    </ng-template>
+
+                </ng-select>
+            </div>
+
+
+
+            <div class="col">
+                <label>Designation</label>
+                <ng-select [items]="designationOptions" bindLabel="name" bindValue="value"
+                    formControlName="selectedDesignation" class="w-100 small">
+                </ng-select>
+            </div>
+
+            <div class="col">
+                <label>City</label>
+                <ng-select [items]="cityOptions" bindLabel="name" bindValue="value" formControlName="selectedCity"
+                    class="w-100 small">
+                </ng-select>
+            </div>
+
+            <div class="col">
+                <label>Sort By</label>
+                <ng-select [items]="sortByOptions" bindLabel="name" bindValue="value" formControlName="sortBy"
+                    class="w-100 small">
+                </ng-select>
+            </div>
+
+            <div class="col">
+                <label>Status</label>
+                <ng-select [items]="statusOptions" bindLabel="name" bindValue="value" formControlName="empStatus"
+                    class="w-100 small">
+                </ng-select>
+            </div>
+
+
+
+            <div class="col-12  align-content-end d-flex align-items-end justify-content-end">
+
+                <button type="button" class="btn btn-outline-dark mx-1 btn-sm" (click)="clearForm()">Reset</button>
+                <button type="submit" class="btn btn-primary mx-1 btn-sm">Set Filter</button>
+                <button type="button" class="btn btn-dark mx-1 btn-sm" (click)="closeFilterForm()">Close</button>
+            </div>
+
+
+        </form>
+    </div>
+</div>

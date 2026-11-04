@@ -1,0 +1,226 @@
+<div class="row g-2">
+    <div [ngClass]="workflowNav.isSidebarOpen ? 'col-sm-12 col-lg-9' : 'col-12'">
+        <div class="card">
+            <div
+                class="card-header bg-primary py-2 px-3 mt-0 d-flex align-items-center justify-content-between flex-nowrap gap-3 w-100">
+                <div class="d-flex align-items-center flex-shrink-0" style="flex: 1 1 0; min-width: 0;">
+                    <h4 class="mb-0 text-white text-nowrap fw-semibold">Attendance Report</h4>
+                </div>
+                <div class="d-flex justify-content-center mx-auto" style="width: 100%; max-width: 450px;">
+                    <app-common-search class="w-100" (filtersChanged)="handleFilters($event)"></app-common-search>
+                </div>
+                <div class="d-flex align-items-center justify-content-end flex-shrink-0" style="flex: 1 1 0; min-width: 0;">
+                </div>
+            </div>
+            <div class="card-body mt-4">
+                <form [formGroup]="ExportExcel" (ngSubmit)="OnVeiw()">
+                    <div class="row row-cols-1 row-cols-md-4">
+                        <div class="col">
+                            <label>Month<span style="color: red;">*</span></label>
+                            <div class="form-group">
+                                <ng-select id="fk_monthId" [items]="months" bindLabel="name" bindValue="value"
+                                    formControlName="fk_monthId" class="w-100"
+                                    placeholder="--Select Month --"></ng-select>
+                                <span *ngIf="showError && ExportExcel.controls['fk_monthId'].invalid"
+                                    class="text-danger mt-1" style="font-size: 12px;">
+                                    Please enter Month.
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <label>Year<span style="color: red;">*</span></label>
+                            <div class="form-group">
+                                <ng-select id="fk_yearId" [items]="years" bindLabel="name" bindValue="value"
+                                    formControlName="fk_yearId" placeholder="--Select Year --"
+                                    class="w-100"></ng-select>
+                                <span *ngIf="showError && ExportExcel.controls['fk_yearId'].invalid"
+                                    class="text-danger mt-1" style="font-size: 12px;">
+                                    Please enter Year.
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col" *ngIf="isContractApplicable">
+                            <label>Contractor Name</label>
+
+                            <div class="form-group">
+                                <ng-select [items]="CostCenter" bindLabel="name" bindValue="value" [multiple]="true"
+                                    [closeOnSelect]="false" formControlName="fk_costcentreid" placeholder="--Select --"
+                                    class="w-100" (clear)="clearCostCenters()">
+                                    <ng-template ng-multi-label-tmp>
+                                        <span>{{ getCostCenterDisplayText() || '--Select --' }}</span>
+                                    </ng-template>
+
+                                    <ng-template ng-option-tmp let-item="item" let-index="index">
+                                        <div *ngIf="item.value === '__select_all__'">
+                                            <input type="checkbox" (change)="toggleSelectAllCostCenters($event)"
+                                                [checked]="isAllCostCentersSelected()"
+                                                class="form-check-input fs-6 mx-1" />
+                                            <strong>Select All</strong>
+                                        </div>
+                                        <div *ngIf="item.value !== '__select_all__'">
+                                            <input type="checkbox" [checked]="selectedCostCenters.includes(item.value)"
+                                                (change)="toggleCostCenter(item.value)"
+                                                class="form-check-input fs-6 mx-1" />
+                                            {{ item.name }}
+                                        </div>
+                                    </ng-template>
+                                </ng-select>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <label>Export Type<span style="color: red;">*</span></label>
+                            <div class="form-group">
+                                <ng-select id="ExportType" [items]="ExportTypelist" bindLabel="name" bindValue="value"
+                                    formControlName="ExportType" placeholder="--Select --" class="w-100"></ng-select>
+                                <span *ngIf="showError && ExportExcel.controls['ExportType'].invalid"
+                                    class="text-danger mt-1" style="font-size: 12px;">
+                                    Please select a type.
+                                </span>
+                            </div>
+                        </div>
+
+
+                    </div>
+                    <div class="row row-cols-1 row-cols-md-12">
+                        <div class="col d-flex align-items-center justify-content-end">
+                            <button type="submit" class="btn btn-primary mx-1">View</button>
+                            <button type="reset" class="btn btn-outline-dark mx-1" (click)="restfrom()">Reset</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <!-- List of Employee -->
+            <div *ngIf="showEmployeeList">
+                <div class="row row-cols-1 row-cols-md-2 p-2">
+                    <div class="col">
+                        <p class="text-dark m-0 d  ps-3 text-primary ">List of Employee</p>
+                    </div>
+
+
+                    <div class="col d-flex align-items-center justify-content-end">
+                        <button class="btn btn-primary mx-1" (click)="onPDFClick()"
+                            *ngIf="ExportExcel.get('ExportType')?.value === 1 || ExportExcel.get('ExportType')?.value === 11">
+                            <i class="fa fa-download me-2"></i> Export PDF
+                        </button>
+
+                        <!-- <button type="submit" class="btn btn-primary mx-1" (click)="downloadExcel()">Export</button> -->
+                        <button class="btn btn-primary mx-1" (click)="onExportClick()" [disabled]="isExporting">
+
+                            <!-- <i class="fa fa-download me-2"></i> Export Excel -->
+                            <i *ngIf="!isExporting" class="fa fa-download me-2"></i>
+                            <i *ngIf="isExporting" class="fa fa-spinner fa-spin me-2"></i>
+                            {{ isExporting ? 'Wait...' : 'Export Excel' }}
+
+                        </button>
+                        <input type="text" class="form-control w-50" placeholder="Search employee..."
+                            placeholder="Search..." [(ngModel)]="searchText" />
+                    </div>
+
+                </div>
+
+
+                <div class="table-responsive table-invoice" [ngClass]="{ 'scroll-active': EmployeeList.length > 10 }">
+                    <table class="table table-bordered" id="exportTable">
+                        <thead>
+                            <tr>
+                                <th *ngFor="let col of tableHeaders">{{ col }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- <tr
+                                *ngFor="let item of filteredData()| paginate: { itemsPerPage: pageSize, currentPage: currentPage,totalItems: totalCount  }; let i = index">
+                               
+                                <td *ngFor="let col of tableHeaders">{{ item[col] }}</td>
+
+                                <td *ngFor="let col of tableHeaders" [innerHTML]="item[col]"></td>
+                            </tr> -->
+                            <tr *ngFor="let item of filteredData() | paginate: { 
+    itemsPerPage: ExportExcel.get('ExportType')?.value === 1 ? pageSize : filteredData().length, 
+    currentPage: currentPage, 
+    totalItems: ExportExcel.get('ExportType')?.value === 1 ? totalCount : filteredData().length 
+}; let i = index">
+                                <td *ngFor="let col of tableHeaders">
+                                    <ng-container
+                                        *ngIf="(col === 'OTHrs' || col === 'OT Hours') && ExportExcel.get('ExportType')?.value == 1">
+                                        <a href="javascript:void(0)" (click)="openOTDetails(item)"
+                                            class="text-primary text-decoration-underline" [innerHTML]="item[col]"></a>
+                                    </ng-container>
+                                    <ng-container
+                                        *ngIf="!((col === 'OTHrs' || col === 'OT Hours') && ExportExcel.get('ExportType')?.value == 1)">
+                                        <span [innerHTML]="item[col]"></span>
+                                    </ng-container>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <pagination-controls *ngIf="ExportExcel.get('ExportType')?.value === 1 && totalCount > 0"
+                        (pageChange)="onPageChange($event)" totalItems="totalCount" itemsPerPage="pageSize">
+                    </pagination-controls>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 30%: Shared Report Navigation Sidebar -->
+    <div class="col-sm-12 col-lg-3" *ngIf="workflowNav.isSidebarOpen">
+        <app-workflow-sidebar currentStep="report" [returnUrl]="returnUrl" [returnLabel]="returnLabel"
+            [getContextFn]="getPayrollContext"></app-workflow-sidebar>
+    </div>
+</div>
+
+<!-- Floating Open Button (Bottom-right, when closed) -->
+<button class="btn btn-primary btn-float-fact" type="button" *ngIf="!workflowNav.isSidebarOpen"
+    (click)="workflowNav.toggleSidebar(true)" title="Open Navigation">
+    <i class="fa fa-sitemap"></i>
+</button>
+
+
+
+<!-- OT Details Modal -->
+<div class="modal fade" id="otDetailsModal" tabindex="-1" aria-labelledby="otDetailsModalLabel" aria-hidden="true"
+    [ngClass]="{'show': isOtModalOpen}" [style.display]="isOtModalOpen ? 'block' : 'none'">
+    <div class="modal-dialog modal-lg modal-dialog-centered my-5 py-3">
+        <div class="modal-content ">
+            <div class="modal-header bg-primary text-white py-0">
+                <p class="modal-title pt-2" id="otDetailsModalLabel">OT Details</p>
+                <button type="button" class="btn-close btn-close-white" (click)="closeOTDetails()"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-3 pb-2 border-bottom">
+                    <div class="col-md-3"><span>Code:</span> <span class="text-primary">{{ otModalEmpCode
+                            }}</span></div>
+                    <div class="col-md-4"><span>Name:</span> <span class="text-primary">{{ otModalEmpName }}</span>
+                    </div>
+                    <!-- <div class="col-md-3"><strong>Month:</strong> <span class="text-primary">{{ otModalMonth }}</span></div>
+            <div class="col-md-2"><strong>Year:</strong> <span class="text-primary">{{ otModalYear }}</span></div> -->
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped">
+                        <thead class="table-light">
+                            <tr>
+                                <th *ngFor="let col of otDetailsHeaders">{{ col }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let detail of otDetailsList">
+                                <td *ngFor="let col of otDetailsHeaders" [innerHTML]="detail[col]"></td>
+                            </tr>
+                            <tr *ngIf="!otDetailsList || otDetailsList.length === 0">
+                                <td [attr.colspan]="otDetailsHeaders.length || 6" class="text-center text-muted">No OT
+                                    hours found for this month</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="closeOTDetails()">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal Backdrop -->
+<div class="modal-backdrop fade show" *ngIf="isOtModalOpen"></div>

@@ -1,0 +1,152 @@
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card">
+
+      <!-- header -->
+      <div class="card-header bg-primary">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-between">
+            <h4>Master Import</h4>
+
+          </div>
+
+        </div>
+      </div>
+      <!-- Body section area -->
+      <div class="card-body mt-2">
+
+        <form [formGroup]="importForm" (ngSubmit)="importData()" class="row g-3 align-items-end">
+          <!-- Master Type Field -->
+          <div class="row row-cols-1 row-cols-md-3 g-4">
+
+            <div class="col">
+
+
+              <label class="form-label">Select Master Type<span style="color: red;">*</span></label>
+              <ng-select [items]="masters" bindLabel="name" bindValue="id" placeholder="Select Master"
+                formControlName="masterType" (change)="resetResults()">
+              </ng-select>
+              <span *ngIf="importForm.get('masterType')?.hasError('required') && importForm.get('masterType')?.touched"
+                style="font-size: 12px;" class="text-danger mt-1">
+                Master type is required.
+              </span>
+            </div>
+            <!-- Excel File Field -->
+            <div class="col">
+
+              <label class="form-label">Select Excel File (.xlsx, .xls) <span style="color: red;">*</span></label>
+              <div class="input-group">
+                <input type="file" class="form-control" (change)="onFileChange($event)" #fileInput id="fileInput">
+                <button *ngIf="selectedFile" type="button" class="btn btn-outline-danger"
+                  (click)="resetFile(); fileInput.value=''">
+                  <i class="fa fa-times"></i>
+                </button>
+              </div>
+
+              <span *ngIf="importForm.get('file')?.hasError('required') && importForm.get('file')?.touched"
+                class="text-danger mt-1" style="font-size: 12px;">
+                Excel file is required.
+              </span>
+              <span *ngIf="importForm.get('file')?.hasError('pattern') && importForm.get('file')?.touched"
+                class="text-danger mt-1" style="font-size: 12px;">
+                Please upload a valid .xlsx or .xls file.
+              </span>
+
+
+
+
+
+            </div>
+          </div>
+          <!-- Footer buttons -->
+          <div class="modal-footer">
+
+                <button type="submit" class="btn btn-primary " >
+              <i class="fa fa-upload me-1"></i>Import
+            </button>
+            <button type="button" class="btn btn-outline-primary ms-2" (click)="downloadTemplate()">
+              <i class="fa fa-download me-1"></i>Template
+            </button>
+        
+
+
+
+          </div>
+
+
+        </form>
+
+        <!-- Result Tables -->
+        <div class="mt-4" *ngIf="successList.length > 0 || failedList.length > 0">
+          <ul class="nav nav-tabs border-dark mb-2" id="importTab" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link  small text-success" [ngClass]="{'active': activeTab === 'success'}"
+                (click)="activeTab = 'success'" id="success-tab" type="button" role="tab">
+                Successful ({{ successList.length }})
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link small text-danger" [ngClass]="{'active': activeTab === 'failed'}"
+                (click)="activeTab = 'failed'" id="failed-tab" type="button" role="tab">
+                Failed/Duplicates ({{ failedList.length }})
+              </button>
+            </li>
+          </ul>
+
+          <div class="tab-content border p-3 rounded" id="importTabContent">
+            <!-- Success Tab -->
+            <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'success'}" id="success"
+              role="tabpanel">
+              <div class="table-responsive" style="max-height: 80vh">
+                <table class="table " *ngIf="successList.length > 0">
+                  <thead>
+                    <tr>
+                      <th>Sr.</th>
+                      <th *ngFor="let key of successKeys">{{ key }}</th>
+                      <th>Message</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let item of successList; let i = index">
+                      <td>{{ i + 1 }}</td>
+                      <td *ngFor="let key of successKeys">{{ item[key] }}</td>
+                      <td class="text-success">{{ item.Message || item.message || 'Imported' }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <div *ngIf="successList.length === 0" class="text-muted text-center py-4">No successful records.</div>
+              </div>
+            </div>
+
+            <!-- Failed Tab -->
+            <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'failed'}" id="failed" role="tabpanel">
+              <div class="table-responsive" style="max-height: 400px;">
+                <table class="table" *ngIf="failedList.length > 0">
+                  <thead>
+                    <tr>
+                      <th>Sr.</th>
+                      <th *ngFor="let key of failedKeys">{{ key }}</th>
+                      <th>Error/Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let item of failedList; let i = index">
+                      <td>{{ i + 1 }}</td>
+                      <td *ngFor="let key of failedKeys">{{ item[key] }}</td>
+                      <td class="text-danger ">{{ item.Message || item.message || item.Status || item.status ||
+                        'Failed' }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <div *ngIf="failedList.length === 0" class="text-muted text-center py-4">No failed records.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+
+
+      </div>
+    </div>
+  </div>

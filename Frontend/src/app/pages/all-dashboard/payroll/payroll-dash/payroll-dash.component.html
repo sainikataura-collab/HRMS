@@ -1,0 +1,336 @@
+<!-- first section -->
+<section>
+
+  <div class="container-fluid">
+    <!-- header section -->
+
+    <div class="row border-bottom">
+
+      <div class="col-sm-12 col-md-12 col-lg-7 col-xxl-7">
+        <p class="small"><span>Payroll Management</span><br>
+          <span class="fw-bold fs-6 text-success">
+            <i class="fa-solid fa-user fw-bold"></i> {{ getLabel('TotalEmployee') }} -
+          </span> <span class=" fw-bold text-success"> {{ getValue('TotalEmployee') }}
+          </span>
+        </p>
+      </div>
+
+      <form [formGroup]="payrollform" class="col-sm-12 col-md-12 col-lg-5 col-xxl-5">
+        <!-- <div > -->
+        <p class="row row-cols-3 row-cols-md-3 g-2 pt-lg-3">
+
+          <span class="col">
+            <!-- <select id="inputState" class="form-select form-select-sm">
+          <option selected><i class="fa-solid fa-file-import"></i>Export</option>
+          <option>Export PDF</option>
+          <option>Export Excel </option>
+        </select> -->
+          </span>
+
+
+          <span class="col">
+            <ng-select [items]="months" bindLabel="name" bindValue="value" formControlName="month"
+              placeholder="Select Month">
+
+            </ng-select>
+
+
+          </span>
+
+          <span class="col">
+            <ng-select id="fk_yearId" [items]="years" bindLabel="name" bindValue="value" formControlName="year"
+              placeholder="--Year --" class="w-100"></ng-select>
+
+          </span>
+
+        </p>
+
+
+        <!-- </div> -->
+
+      </form>
+
+    </div>
+
+    <!-- Profile section -->
+
+
+
+
+
+
+
+
+
+  </div>
+</section>
+
+
+<!-- second list -->
+
+<section>
+  <div class="container">
+    <div class="row pt-4">
+
+      <!-- Left side -->
+      <div class="col-sm-12 col-md-12 col-lg-8">
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+
+          <!-- Attendance -->
+          <div class="col">
+            <div class="card rounded border border-primary shadow-none p-3 hover-shadow">
+              <div class="row align-items-center">
+                <div class="col-8">
+                  <p class="small text-black lh-base fw-semibold m-0">
+                    <span class="text-primary">Attendance</span><br>
+                    <span class="small">Process: {{ getValue('AttendanceProcess') }}</span><br>
+                    <span class="small">Unprocess: {{ getValue('AttendanceUnprocess') }}</span>
+                  </p>
+                </div>
+                <div class="col-4 text-center">
+                  <div class="progress-circle2 border-primary" style="margin-left: 0.5rem;">
+                    {{ getValue('AttendancePercent') }} %
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Salary -->
+          <div class="col">
+            <div class="card rounded border border-success shadow-none p-3 hover-shadow">
+              <div class="row align-items-center">
+                <div class="col-8">
+                  <p class="small text-black lh-base fw-semibold m-0">
+                    <span class="text-success">Salary</span><br>
+                    <span class="small">Process: {{ getValue('SalaryProcess') }}</span><br>
+                    <span class="small">Unprocess: {{ getValue('SalaryUnprocess') }}</span>
+                  </p>
+                </div>
+                <div class="col-4 text-center">
+                  <div class="progress-circle2 border-success" style="margin-left: 0.5rem;">
+                    {{ getValue('SalaryPercent') }} %
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Income -->
+          <div class="col">
+            <div class="card rounded border border-warning shadow-none p-3 hover-shadow">
+              <div class="row align-items-center">
+                <div class="col-8">
+                  <p class="small text-black lh-base fw-semibold m-0">
+                    <span class="text-warning">Income</span><br>
+                    <span class="small">Process: {{ getValue('IncomeTaxProcess') }}</span><br>
+                    <span class="small">Unprocess: {{ getValue('IncomeTaxUnprocess') }}</span>
+                  </p>
+                </div>
+                <div class="col-4 text-center">
+                  <div class="progress-circle2 border-warning" style="margin-left: 0.5rem;">
+                    {{ getValue('TaxPercent') }} %
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Compliance Section -->
+        <div class="row mt-4">
+          <div class="col-12">
+            <p class="text-success fw-semibold">Compliance</p>
+            <div class="card-body p-0">
+              <div class="table-responsive">
+                <table class="table border align-middle text-center mb-0">
+                  <thead class="table-light table-primary">
+                    <tr>
+                      <th>{{ getLabel('TotalPF') }}</th>
+                      <th>{{ getLabel('TotalESI') }}</th>
+                      <th>{{ getLabel('TotalLWF') }}</th>
+                      <th>{{ getLabel('TotalIT') }}</th>
+                      <th>{{ getLabel('TotalProfitTax') }}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>{{ getValue('TotalPF') }}</td>
+                      <td>{{ getValue('TotalESI') }}</td>
+                      <td>{{ getValue('TotalLWF') }}</td>
+                      <td>{{ getValue('TotalIT') }}</td>
+                      <td>{{ getValue('TotalProfitTax') }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Side -->
+      <div class="col-sm-12 col-md-12 col-lg-4">
+        <img src="assets/Image/training-hrms2.png" alt="Dashboard Graphic" class="w-100 object-fit-contain p-4 pt-2">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- third section -->
+
+<section>
+  <div class="container">
+    <div class="row">
+
+   
+
+  
+
+
+<!-- card section  -->
+
+<!-- 
+  <div class="col-sm-12 col-md-12 col-lg-5 ">
+    <div class="card shadow-sm animate-fade-in shadow-base border-top border-primary border-2 rounded-2">
+    <div class="card-body" style="padding: 10px 20px;">
+      
+     
+      <div class="d-flex justify-content-between align-items-centerpt-2 mt-3">
+        <p class="card-title fw-bold mb-0">{{ getLabel('Payroll Dashboard') }}</p>
+        <button class="btn btn-outline-secondary btn-sm">📅 {{ cyear }}</button>
+      </div>
+
+   
+
+    
+       <p class="text-muted small my-3"></p>
+
+     
+      <ul class="list-group mt-3">
+        <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+          <span class="small">Payroll Master <small class="text-muted small">Updated: 15 Jan</small></span>
+          <div class="progress-circle2" data-percent="97"></div>
+        </li>
+        <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+          <span class="small">Transactions <small class="text-muted small">Updated: 12 Jan</small></span>
+          <div class="progress-circle2" data-percent="85"></div>
+        </li>
+        <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+          <span class="small">Tax <small class="text-muted small">Updated: 15 Jan</small></span>
+          <div class="progress-circle2" data-percent="61"></div>
+        </li>
+      </ul>
+
+    </div>
+  </div>
+</div> -->
+
+
+<div class="col-sm-12 col-md-12 col-lg-12">
+  <div class="row row-cols-2 row-cols-md-4 row-cols-lg-5 g-4 ">
+
+    <!-- 1. On Leaves -->
+    <div class="col">
+      <div class="card border border-primary shadow-sm rounded-3">
+        <div class="card-body text-center pt-3 pb-2">
+          <span class="text-primary fs-4">
+            <i class="fa-solid fa-plane-departure"></i>
+          </span>
+          <h6 class="fw-bold text-primary mb-0 mt-0">{{ getValue('OnLeaves') }}</h6>
+          <small class="d-block border-bottom border-primary pb-1">{{ getLabel('OnLeaves') }}</small>
+          <span class="text-primary small mt-1 d-block">
+            <i class="fa-solid fa-arrow-up"></i> {{ getValue('LeavePercentWeek') }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. Total OD -->
+    <div class="col">
+      <div class="card border border-success shadow-sm rounded-3">
+        <div class="card-body text-center pt-3 pb-2">
+          <span class="text-success fs-4">
+            <i class="fa-solid fa-briefcase-clock"></i>
+          </span>
+          <h6 class="fw-bold text-success mb-0 mt-0">{{ getValue('TotalOD') }}</h6>
+          <small class="d-block border-bottom border-success pb-1">{{ getLabel('On OD') }}</small>
+          <span class="text-success small mt-1 d-block">
+            <i class="fa-solid fa-arrow-up"></i> {{ getValue('ODPercentWeek') }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. Total Loan -->
+
+    <div class="col">
+      <div class="card border border-warning shadow-sm rounded-3">
+        <div class="card-body text-center pt-3 pb-2">
+          <span class="text-warning fs-4">
+            <!-- <i class="fa-solid fa-hand-holding"></i> -->
+             <!-- <i class="fa-solid fa-arrow-up"></i> -->
+              <i class="fa-solid fa-right-left"></i>
+          </span>
+          <h6 class="fw-bold text-warning mb-0 mt-0">{{ getValue('TotalLoan') }}</h6>
+          <small class="d-block border-bottom border-warning pb-1">{{ getLabel('Monthly Tot. Loan') }}</small>
+          <span class="text-warning small mt-1 d-block">
+            <i class="fa-solid fa-arrow-up"></i> {{ getValue('AvgLoanPerWeek') }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. Total Loan -->
+
+    <div class="col">
+      <div class="card border border-danger shadow-sm rounded-3">
+        <div class="card-body text-center pt-3 pb-2 ">
+          <span class="text-danger fs-4">
+           <!-- <i class="fa-solid fa-sack-dollar"></i> -->
+            <i class="fa-solid fa-align-right"></i>
+          </span>
+          <h6 class="fw-bold text-danger mb-0 mt-2">{{ getValue('TotalLoanOverall') }}</h6>
+          <small class="d-block">{{ getLabel('Total Loan') }}</small>
+         <span class="text-warning small d-block">
+            <i class="fa-solid fa-arrow-up2"></i> 
+          </span>
+        </div>
+      </div>
+    </div>
+
+
+    
+
+    <!-- 5. Total Employees -->
+
+    <div class="col">
+      <div class="card border border-info shadow-sm rounded-3">
+        <div class="card-body text-center pt-3 pb-2">
+          <span class="text-info fs-4">
+            <i class="fa-solid fa-users"></i>
+          </span>
+          <h6 class="fw-bold text-info mb-0 mt-2">{{ getValue('TotalContractor') }}</h6>
+          <small class="d-block">{{ getLabel('Total Contractor') }}</small>
+          <span class="text-warning small d-block">
+            <i class="fa-solid fa-arrow-up2"></i> 
+          </span>
+         
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+
+
+
+
+
+
+    </div>
+  </div>
+</section>

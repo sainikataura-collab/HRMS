@@ -1,0 +1,239 @@
+<div class="row g-2">
+  <!-- 70%: Main Content -->
+  <div [ngClass]="workflowNav.isSidebarOpen ? 'col-sm-12 col-lg-9' : 'col-12'">
+    <div class="card">
+      <div class="card-header bg-primary py-2 px-3 mt-0">
+        <div class="d-flex align-items-center justify-content-between flex-nowrap gap-3 w-100">
+          <div class="d-flex align-items-center flex-shrink-0" style="flex: 1 1 0; min-width: 0;">
+            <h4 class="mb-0 text-white text-nowrap fw-semibold">Salary Lock</h4>
+          </div>
+          <div class="d-flex justify-content-center mx-auto" style="width: 100%; max-width: 450px;">
+            <app-common-search class="w-100" (filtersChanged)="handleFilters($event)"></app-common-search>
+          </div>
+          <div class="d-flex align-items-center justify-content-end flex-shrink-0" style="flex: 1 1 0; min-width: 0;">
+          </div>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <form [formGroup]="EmployeeForm" (ngSubmit)="OnVeiw()">
+          <div class="row row-cols-1 row-cols-md-3 g-4">
+            <div class="col">
+              <label>Month</label>
+              <div class="form-group">
+                <ng-select id="fk_monthId" [items]="months" bindLabel="name" bindValue="value"
+                  formControlName="fk_monthId" placeholder="--Select --"
+                  class="w-100"></ng-select>
+                <span *ngIf="showError && EmployeeForm.controls['fk_monthId'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                  Please enter Month.
+                </span>
+              </div> 
+            </div>
+
+            <div class="col">
+              <label>Year</label>
+              <div class="form-group">
+                <ng-select id="fk_yearId" [items]="years" bindLabel="name" bindValue="value"
+                  formControlName="fk_yearId" placeholder="--Select --"
+                  class="w-100"></ng-select>
+                <span *ngIf="showError && EmployeeForm.controls['fk_yearId'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                  Please enter Year.
+                </span>
+              </div> 
+            </div>
+
+            <div class="col" *ngIf="isContractApplicable">
+              <label>Contractor Name</label>
+              <div class="form-group">
+                <ng-select id="year" [items]="CostCenter"
+                  bindLabel="name"
+                  bindValue="value"
+                  formControlName="fk_costcentreid" placeholder="--Select --"
+                  class="w-100"></ng-select>
+              </div> 
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col d-flex align-items-end justify-content-end pt-4 pb-3">
+              <button type="submit" class="btn btn-primary mx-1">Veiw</button>
+              <button type="reset" class="btn btn-outline-dark mx-1">Reset</button>
+            </div>
+          </div> 
+        </form>
+
+        <!-- Row for Count Cards -->
+        <div class="row" *ngIf="showEmployeeList && (
+          (EmployeeList.salarylocked?.length > 0) ||
+          (EmployeeList.salaryunlock?.length > 0)
+        )">
+          <div class="col-12 col-md-6 mb-3">
+            <div class="card" style="height: 40px; border: 1px solid #ffc107; box-shadow: none; border-left: 5px solid #ffc107;">
+              <div class="card-body d-flex justify-content-between align-items-center">
+                <div>
+                  <p class="card-title">Salary Unlocked Count : &nbsp;<b>{{ salaryunlockcount }}</b></p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 col-md-6 mb-3">
+            <div class="card" style="height: 40px; border: 1px solid #dc3545; box-shadow: none; border-left: 5px solid #dc3545;">
+              <div class="card-body d-flex justify-content-between align-items-center">
+                <div>
+                  <p class="card-title">Salary Locked Count : &nbsp;<b>{{ salarylockedcount }}</b></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- List1 of Employee -->
+        <div *ngIf="showEmployeeList && (
+          (EmployeeList.salarylocked?.length > 0) ||
+          (EmployeeList.salaryunlock?.length > 0)
+        )">
+          <div class="card-header">
+            <div class="row w-100">
+              <div class="col-sm-12 col-md-6 col-lg-6 text-primary">                    
+                <h4 class="text-primary">List of Employee (Salary Not Locked)</h4>   
+              </div>
+            </div>
+            <!-- 🔵 Unprocessed Attendance -->
+            <div class="d-flex justify-content-between align-items-center">
+              <input
+                type="text"
+                class="form-control w-auto"
+                placeholder="Search employee..."
+                [(ngModel)]="searchTextUnUnLock"
+                (input)="filtersalaryData('UnLocked')" />
+            </div>
+          </div>
+
+          <div class="table-responsive table-invoice">
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>Sr.</th>
+                  <th>
+                    <input type="checkbox"
+                           [checked]="isSelectAllUnLocked"
+                           (change)="selectAllUnLocked($event)" />
+                  </th>
+                  <th>Employee Code</th>
+                  <th>Employee Name</th>
+                  <th>Department</th>
+                  <th>Location</th>
+                  <th>Designation</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngIf="filteredUnLockedList?.length === 0">
+                  <td colspan="7" class="text-center">No records found</td>
+                </tr>
+                <tr *ngFor="let emp of filteredUnLockedList | paginate: { id: 'unlocked', itemsPerPage: pageSize1, currentPage: pageIndex1, totalItems: salaryunlockcount }; let i = index">
+                  <td>{{ (pageIndex1 - 1) * pageSize1 + i + 1 }}</td>
+                  <td>
+                    <input type="checkbox"
+                           [checked]="isEmpUnLockedSelected(emp.empcode)"
+                           (change)="toggleUnLockedSelection(emp.empcode, $event)" />
+                  </td>
+                  <td>{{ emp.empcode }}</td>
+                  <td>{{ emp.empname }}</td>
+                  <td>{{ emp.department }}</td>
+                  <td>{{ emp.location }}</td>
+                  <td>{{ emp.designation }}</td>
+                </tr>
+              </tbody>
+            </table>
+            <pagination-controls  
+              *ngIf="salaryunlockcount > 0"
+              (pageChange)="onpageChange1($event)"
+              id="unlocked"
+              totalItems="salaryunlockcount"
+              itemsPerPage="pageSize1">
+            </pagination-controls>
+          </div>
+
+          <div class="card-header">
+            <div class="row w-100">
+              <div class="col-sm-12 col-md-6 col-lg-6 text-primary">                    
+                <h4 class="text-primary">List of Employee (Salary Locked)</h4>   
+              </div>
+            </div>
+            <!-- 🔒 Locked Attendance -->
+            <div class="d-flex justify-content-between align-items-center">
+              <input
+                type="text"
+                class="form-control w-auto"
+                placeholder="Search employee..."
+                [(ngModel)]="searchTextLock"
+                (input)="filtersalaryData('Locked')" />
+            </div>
+          </div>
+
+          <div class="table-responsive table-invoice">
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>Sr.</th>
+                  <th>
+                    <input type="checkbox"
+                           [checked]="isSelectAllLocked"
+                           (change)="selectAllLocked($event)" />
+                  </th>
+                  <th>Employee Code</th>
+                  <th>Employee Name</th>
+                  <th>Department</th>
+                  <th>Location</th>
+                  <th>Designation</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngIf="filteredLockedList?.length === 0">
+                  <td colspan="7" class="text-center">No records found</td>
+                </tr>
+                <tr *ngFor="let emp of filteredLockedList | paginate: { id: 'Locked', itemsPerPage: pageSize2, currentPage: pageIndex2, totalItems: salarylockedcount }; let i = index">
+                  <td>{{ (pageIndex2 - 1) * pageSize2 + i + 1 }}</td>
+                  <td>
+                    <input type="checkbox"
+                           [checked]="isEmpLockedSelected(emp.empcode)"
+                           (change)="toggleLockedSelection(emp.empcode, $event)" />
+                  </td>
+                  <td>{{ emp.empcode }}</td>
+                  <td>{{ emp.empname }}</td>
+                  <td>{{ emp.department }}</td>
+                  <td>{{ emp.location }}</td>
+                  <td>{{ emp.designation }}</td>
+                </tr>
+              </tbody>
+            </table>
+            <pagination-controls  
+              *ngIf="salarylockedcount > 0"
+              (pageChange)="onpageChange($event)"
+              id="Locked"
+              totalItems="salarylockedcount"
+              itemsPerPage="pageSize2">
+            </pagination-controls>
+            <div class="row">
+              <div class="col d-flex align-items-end justify-content-end pt-4 pb-3">
+                <button type="submit" class="btn btn-outline-dark mx-1" (click)="updateLock()">Lock</button>
+                <button type="submit" class="btn btn-primary mx-1" (click)="updateunLock()">Unlock</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation Sidebar -->
+  <div class="col-sm-12 col-lg-3" *ngIf="workflowNav.isSidebarOpen">
+    <app-workflow-sidebar currentStep="salary-lock" [getContextFn]="getPayrollContext"></app-workflow-sidebar>
+  </div>
+</div>
+
+<!-- Floating Open Button (Bottom-right, when closed) -->
+<button class="btn btn-primary btn-float-fact" type="button" *ngIf="!workflowNav.isSidebarOpen" (click)="workflowNav.toggleSidebar(true)" title="Open Process Actions">
+  <i class="fa fa-sitemap"></i>
+</button>

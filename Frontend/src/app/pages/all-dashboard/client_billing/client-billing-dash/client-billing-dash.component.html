@@ -1,0 +1,499 @@
+<section>
+  <div class="container">
+    <div class="row border-bottom">
+
+      <!-- Title -->
+      <div class="col-lg-6">
+        <p class="small fw-semibold">
+          <span>Client Billing Dashboard</span><br>
+          <span class="fw-semibold text-primary">
+            <i class="fa-solid fa-users"></i> Total Clients -
+          </span>
+          <span class="fw-bold text-primary">{{ billingSummary.TotalClients }}</span>
+        </p>
+      </div>
+
+      <!-- Filters -->
+      <form class="col-sm-12 col-md-12 col-lg-6 col-xxl-6" [formGroup]="form">
+        <p class="row row-cols-2 row-cols-md-4 g-2 pt-lg-3">
+          <span class="col">
+            <ng-select [items]="clients" bindLabel="name" bindValue="value" formControlName="client"
+              placeholder="All Clients" (change)="onSelectionChange()"></ng-select>
+          </span>
+          <span class="col">
+            <ng-select [items]="months" bindLabel="name" bindValue="value" formControlName="month"
+              placeholder="Select Month" (change)="onSelectionChange()"></ng-select>
+          </span>
+          <span class="col">
+            <ng-select [items]="years" bindLabel="name" bindValue="value" formControlName="year"
+              placeholder="-- Year --" (change)="onSelectionChange()"></ng-select>
+          </span>
+          <span class="col">
+            <ng-select [items]="billingStatuses" bindLabel="name" bindValue="value" formControlName="status"
+              placeholder="Billing Status" (change)="onSelectionChange()"></ng-select>
+          </span>
+        </p>
+      </form>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===================== KPI CARDS ===================== -->
+<section>
+  <div class="container-fluid py-2">
+    <div class="row g-3">
+
+      <!-- LEFT SIDE -->
+      <div class="col-lg-8">
+
+        <div class="row row-cols-2 row-cols-md-4 g-3">
+
+          <!-- Total Revenue -->
+          <div class="col">
+            <div class="card p-2 border-0 border-start border-3 border-success rounded-1">
+              <div class="d-flex align-items-center gap-2">
+                <span class="icon-box bg-success text-white p-1 px-2 rounded-1">
+                  <i class="fas fa-rupee-sign"></i>
+                </span>
+                <div>
+                  <p class="small fw-semibold mb-0">Total Revenue</p>
+                  <span class="fw-bold text-success">₹{{ totalRevenue | number }}</span>
+                  <span class="d-block" style="font-size:10px;"
+                    [ngClass]="revenueGrowth >= 0 ? 'text-success' : 'text-danger'">
+                    <i class="fas" [ngClass]="revenueGrowth >= 0 ? 'fa-arrow-up' : 'fa-arrow-down'"></i>
+                    {{ revenueGrowth }}% vs last month
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Total Invoices -->
+          <div class="col">
+            <div class="card p-2 border-0 border-start border-3 border-primary rounded-1">
+              <div class="d-flex align-items-center gap-2">
+                <span class="icon-box bg-primary p-1 px-2 rounded text-white">
+                  <i class="fas fa-file-invoice"></i>
+                </span>
+                <div>
+                  <p class="small fw-semibold mb-0">Total Invoices</p>
+                  <span class="fw-bold text-primary">{{ billingSummary.TotalInvoices }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Active Clients -->
+          <div class="col">
+            <div class="card p-2 border-0 border-start border-3 border-info rounded-1">
+              <div class="d-flex align-items-center gap-2">
+                <span class="icon-box bg-info p-1 px-2 rounded text-white">
+                  <i class="fas fa-building"></i>
+                </span>
+                <div>
+                  <p class="small fw-semibold mb-0">Active Clients</p>
+                  <span class="fw-bold text-info">{{ billingSummary.ActiveClients }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Employees Billed -->
+          <div class="col">
+            <div class="card p-2 border-0 border-start border-3 border-warning rounded-1">
+              <div class="d-flex align-items-center gap-2">
+                <span class="icon-box bg-warning p-1 px-2 rounded text-white">
+                  <i class="fas fa-user-tie"></i>
+                </span>
+                <div>
+                  <p class="small fw-semibold mb-0">Employees Billed</p>
+                  <span class="fw-bold text-warning">{{ billingSummary.EmployeesBilled }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Collected -->
+          <div class="col">
+            <div class="card p-2 border-0 border-start border-3 border-success rounded-1">
+              <div class="d-flex align-items-center gap-2">
+                <span class="icon-box bg-success p-1 px-2 rounded text-white">
+                  <i class="fas fa-check-circle"></i>
+                </span>
+                <div>
+                  <p class="small fw-semibold mb-0">Collected</p>
+                  <span class="fw-bold text-success">₹{{ collectedAmount | number }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pending -->
+          <div class="col">
+            <div class="card p-2 border-0 border-start border-3 border-secondary rounded-1">
+              <div class="d-flex align-items-center gap-2">
+                <span class="icon-box bg-secondary p-1 px-2 rounded text-white">
+                  <i class="fas fa-clock"></i>
+                </span>
+                <div>
+                  <p class="small fw-semibold mb-0">Pending</p>
+                  <span class="fw-bold text-secondary">₹{{ pendingAmount | number }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Overdue -->
+          <div class="col">
+            <div class="card p-2 border-0 border-start border-3 border-danger rounded-1">
+              <div class="d-flex align-items-center gap-2">
+                <span class="icon-box bg-danger p-1 px-2 rounded text-white">
+                  <i class="fas fa-exclamation-circle"></i>
+                </span>
+                <div>
+                  <p class="small fw-semibold mb-0">Overdue</p>
+                  <span class="fw-bold text-danger">₹{{ overdueAmount | number }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Avg Revenue/Employee -->
+          <div class="col">
+            <div class="card p-2 border-0 border-start border-3 border-primary rounded-1">
+              <div class="d-flex align-items-center gap-2">
+                <span class="icon-box bg-primary p-1 px-2 rounded text-white">
+                  <i class="fas fa-chart-line"></i>
+                </span>
+                <div>
+                  <p class="small fw-semibold mb-0">Avg/Employee</p>
+                  <span class="fw-bold text-primary">₹{{ avgRevenuePerEmployee | number }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ===== CLIENT BILLING SUMMARY TABLE ===== -->
+        <div class="row mt-3" style="max-height: 400px;">
+          <div class="col-12">
+            <div class="card rounded-3">
+
+              <div class="card-header ps-2 row d-flex align-items-center justify-content-between"
+                style="border-top: 2px solid #3080e8; border-bottom: 1px solid #cdcfdf;">
+
+                <div class="col-auto d-flex align-items-center gap-2">
+                  <span class="small fw-semibold text-primary">
+                    <i class="fa-solid fa-file-invoice-dollar me-1"></i>Client Billing Summary
+                  </span>
+                  <select class="form-select form-select-sm w-auto" [(ngModel)]="filterBillingStatus"
+                    [ngModelOptions]="{standalone: true}">
+                    <option value="">All Status</option>
+                    <option value="Paid">Paid</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Partially Paid">Partially Paid</option>
+                    <option value="Overdue">Overdue</option>
+                  </select>
+                </div>
+
+                <div class="col-auto">
+                  <input type="text" class="form-control border-success form-control-sm"
+                    placeholder="Search client / invoice..." [(ngModel)]="searchText"
+                    [ngModelOptions]="{standalone: true}" />
+                </div>
+
+                <div class="col-auto d-flex align-items-center justify-content-end gap-1">
+                  <button class="btn btn-outline-success btn-sm" (click)="exportExcel()">
+                    <i class="fa-solid fa-file-excel me-1"></i>Excel
+                  </button>
+                  <button class="btn btn-outline-danger btn-sm" (click)="exportPdf()">
+                    <i class="fa-solid fa-file-pdf me-1"></i>PDF
+                  </button>
+                  <button class="btn btn-outline-success btn-sm" (click)="toggleViewAll()">
+                    {{ showAll ? '🔙 Show Less' : '📅 View All' }}
+                  </button>
+                </div>
+
+              </div>
+
+              <div class="card-body p-0 table-responsive" style="max-height: 200px; overflow-y: auto;">
+
+                <div *ngIf="filteredBillingList.length === 0" class="text-center py-5 text-muted small">
+                  <i class="fa-solid fa-file-invoice fs-3 mb-2 d-block"></i>
+                  No billing records found
+                </div>
+
+                <table class="table table-hover table-borderedless mb-0" *ngIf="filteredBillingList.length > 0">
+                  <thead class="table-light sticky-top bg-white" style="top: -8px;">
+                    <tr class="text-start">
+                      <th>Sr.No.</th>
+                      <th>Client Name</th>
+                      <th>Employees</th>
+                      <th>Billing Rate</th>
+                      <th>Monthly Billing</th>
+                      <th>Yearly Billing</th>
+                      <th>Paid</th>
+                      <th>Pending</th>
+                      <th>Last Invoice</th>
+                      <th class="text-center">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let bill of filteredBillingList; let i = index" (click)="selectClient(bill)"
+                      style="cursor:pointer;">
+                      <td>{{ i + 1 }}</td>
+                      <td>{{ bill.clientName }}</td>
+                      <td>
+                        <span class="badge bg-light text-dark border p-1 px-2">{{ bill.totalEmployees }}</span>
+                      </td>
+                      <td>₹{{ bill.billingRate | number }}</td>
+                      <td class="fw-semibold text-success">₹{{ bill.monthlyBilling | number }}</td>
+                      <td class="fw-semibold text-primary">₹{{ bill.yearlyBilling | number }}</td>
+                      <td class="text-success">₹{{ bill.paidAmount | number }}</td>
+                      <td class="text-warning">₹{{ bill.pendingAmount | number }}</td>
+                      <td>{{ bill.lastInvoiceDate }}</td>
+                      <td class="text-center">
+                        <span class="badge p-1 px-2 small" [ngClass]="{
+                            'bg-success-subtle text-success': bill.status === 'Paid',
+                            'bg-warning-subtle text-warning': bill.status === 'Pending',
+                            'bg-info-subtle text-info': bill.status === 'Partially Paid',
+                            'bg-danger-subtle text-danger': bill.status === 'Overdue'
+                          }">{{ bill.status }}</span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+
+              </div>
+
+              <div class="card-footer text-end py-2 px-3" *ngIf="filteredBillingList.length > 0">
+                <a class="small text-primary fw-semibold text-decoration-none"
+                  routerLink="/dash/billing/client-billing-dash/all-invoices">
+                  View All Invoices <i class="fa-solid fa-arrow-right ms-1"></i>
+                </a>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== EMPLOYEE WISE BILLING TABLE (visible when client selected) ===== -->
+        <div class="row mt-3" *ngIf="selectedClient">
+          <div class="col-12">
+            <div class="card rounded-3">
+
+              <div class="card-header ps-2 row d-flex align-items-center justify-content-between"
+                style="border-top: 2px solid #54ca68; border-bottom: 1px solid #cdcfdf;">
+                <div class="col-auto d-flex align-items-center gap-2">
+                  <span class="small fw-semibold text-success">
+                    <i class="fa-solid fa-users me-1"></i>Employee Wise Billing —
+                    <strong>{{ selectedClient.clientName }}</strong>
+                  </span>
+                </div>
+                <div class="col-auto">
+                  <button class="btn btn-sm btn-outline-secondary" (click)="selectedClient = null">
+                    <i class="fa-solid fa-xmark"></i> Close
+                  </button>
+                </div>
+              </div>
+
+              <div class="card-body p-0 table-responsive" style="max-height: 200px; overflow-y: auto;">
+                <table class="table table-hover table-borderedless mb-0"
+                  *ngIf="employeeBillingList.length > 0; else noEmpData">
+                  <thead class="table-light sticky-top bg-white" style="top: -8px;">
+                    <tr class="text-start">
+                      <th>Emp ID</th>
+                      <th>Employee Name</th>
+                      <th>Designation</th>
+                      <th>Billing Rate</th>
+                      <th>Working Days</th>
+                      <th>Billable Days</th>
+                      <th>Monthly Billing</th>
+                      <th>Yearly Billing</th>
+                      <th class="text-center">Invoice Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let emp of employeeBillingList; let i = index">
+                      <td>
+                        <span class="badge bg-light text-dark border p-1 px-2">{{ emp.empCode }}</span>
+                      </td>
+                      <td>{{ emp.empName }}</td>
+                      <td>{{ emp.designation }}</td>
+                      <td>₹{{ emp.billingRate | number }}</td>
+                      <td>{{ emp.workingDays }}</td>
+                      <td>{{ emp.billableDays }}</td>
+                      <td class="fw-semibold text-success">₹{{ emp.monthlyBilling | number }}</td>
+                      <td class="fw-semibold text-primary">₹{{ emp.yearlyBilling | number }}</td>
+                      <td class="text-center">
+                        <span class="badge p-1 px-2 small" [ngClass]="{
+                            'bg-success-subtle text-success': emp.invoiceStatus === 'Paid',
+                            'bg-warning-subtle text-warning': emp.invoiceStatus === 'Pending',
+                            'bg-danger-subtle text-danger': emp.invoiceStatus === 'Overdue'
+                          }">{{ emp.invoiceStatus }}</span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+                <ng-template #noEmpData>
+                  <div class="text-center py-5 text-muted small">
+                    <i class="fa-solid fa-users-slash fs-3 mb-2 d-block"></i>
+                    No employee billing data found
+                  </div>
+                </ng-template>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT SIDE -->
+      <div class="col-lg-4">
+
+        <!-- Quick Actions -->
+        <div class="card shadow-sm p-3 pt-0 mb-3 border-top border-2 border-success">
+          <p class="fw-semibold text-success small mb-2 mt-2">
+            <i class="fa-solid fa-bolt"></i> Quick Actions
+          </p>
+          <div class="row row-cols-1 row-cols-md-2 g-2">
+            <div class="col">
+              <button class="btn btn-outline-primary btn-sm w-100 small" (click)="generateInvoice()">
+                <i class="fa-solid fa-file-circle-plus"></i> Generate Invoice
+              </button>
+            </div>
+            <div class="col">
+              <button class="btn btn-outline-success btn-sm w-100 small" (click)="downloadInvoice()">
+                <i class="fa-solid fa-download"></i> Download Invoice
+              </button>
+            </div>
+            <div class="col">
+              <button class="btn btn-outline-secondary btn-sm w-100 small" (click)="exportExcel()">
+                <i class="fa-solid fa-file-excel"></i> Export Excel
+              </button>
+            </div>
+            <div class="col">
+              <button class="btn btn-outline-danger btn-sm w-100 small" (click)="exportPdf()">
+                <i class="fa-solid fa-file-pdf"></i> Export PDF
+              </button>
+            </div>
+            <div class="col">
+              <button class="btn btn-outline-warning btn-sm w-100 small" (click)="sendBillingReport()">
+                <i class="fa-solid fa-paper-plane"></i> Send Report
+              </button>
+            </div>
+            <div class="col">
+              <button class="btn btn-outline-info btn-sm w-100 small" (click)="refreshDashboard()">
+                <i class="fa-solid fa-rotate"></i> Refresh
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Invoice Status Chart -->
+        <div class="card mt-3 shadow-sm">
+          <div class="card-body">
+            <p class="text-primary fw-semibold small text-center mb-2">Invoice Status Overview</p>
+            <div style="position: relative; height: 200px; width: 100%;">
+              <canvas id="billingChartDiv"></canvas>
+            </div>
+            <!-- Legend -->
+            <div class="d-flex justify-content-center gap-1 mt-0 small flex-wrap">
+              <span><span class="legend-dot bg-success"></span> Paid: <strong class="text-success">{{ paidInvoices }}</strong></span>
+              <span><span class="legend-dot bg-warning"></span> Pending: <strong class="text-warning">{{ pendingInvoices }}</strong></span>
+              <span><span class="legend-dot bg-info"></span> Partial: <strong class="text-info">{{ partialInvoices }}</strong></span>
+              <span><span class="legend-dot bg-danger"></span> Overdue: <strong class="text-danger">{{ overdueInvoices }}</strong></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Top 5 Revenue Clients -->
+        <div class="card mt-3 shadow-sm">
+          <div class="card-header ps-2"
+            style="border-top: 2px solid #ffa446; border-bottom: 1px solid #cdcfdf;">
+            <span class="small fw-semibold text-warning">
+              <i class="fa-solid fa-trophy me-1"></i>Top 5 Revenue Clients
+            </span>
+          </div>
+          <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th style="font-size:10px;">#</th>
+                  <th style="font-size:10px;">Client</th>
+                  <th style="font-size:10px;">Revenue</th>
+                  <th style="font-size:10px;">Growth</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let client of topClients; let i = index">
+                  <td>
+                    <span class="badge p-1 px-2" [ngClass]="{
+                        'bg-warning text-dark': i === 0,
+                        'bg-secondary text-white': i === 1,
+                        'bg-danger text-white': i === 2,
+                        'bg-light text-dark border': i > 2
+                      }">{{ i + 1 }}</span>
+                  </td>
+                  <td>{{ client.clientName }}</td>
+                  <td class="fw-semibold text-success">₹{{ client.revenue | number }}</td>
+                  <td>
+                    <span [ngClass]="client.growth >= 0 ? 'text-success' : 'text-danger'" style="font-size:10px;">
+                      <i class="fas" [ngClass]="client.growth >= 0 ? 'fa-arrow-up' : 'fa-arrow-down'"></i>
+                      {{ client.growth }}%
+                    </span>
+                  </td>
+                </tr>
+                <tr *ngIf="topClients.length === 0">
+                  <td colspan="4" class="text-center text-muted small py-3">No data available</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Client Profitability -->
+        <div class="card mt-3 shadow-sm">
+          <div class="card-header ps-2"
+            style="border-top: 2px solid #7c5cbf; border-bottom: 1px solid #cdcfdf;">
+            <span class="small fw-semibold" style="color:#7c5cbf;">
+              <i class="fa-solid fa-chart-pie me-1"></i>Client Profitability
+            </span>
+          </div>
+          <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th style="font-size:10px;">Client</th>
+                  <th style="font-size:10px;">Revenue</th>
+                  <th style="font-size:10px;">Cost</th>
+                  <th style="font-size:10px;">Profit %</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let p of profitabilityList">
+                  <td>{{ p.clientName }}</td>
+                  <td>₹{{ p.revenue | number }}</td>
+                  <td>₹{{ p.employeeCost | number }}</td>
+                  <td>
+                    <span [ngClass]="p.profitPct >= 0 ? 'text-success fw-bold' : 'text-danger fw-bold'">
+                      {{ p.profitPct }}%
+                    </span>
+                  </td>
+                </tr>
+                <tr *ngIf="profitabilityList.length === 0">
+                  <td colspan="4" class="text-center text-muted small py-3">No data available</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</section>

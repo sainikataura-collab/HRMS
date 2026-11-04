@@ -1,0 +1,333 @@
+<div class="card mt-1">
+    <!-- Card Header -->
+    <div class="card-header bg-primary">
+        <div class="row w-100">
+            <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-between">
+                <h4>{{pk_headid? 'Update Salary Head Master' : 'Add Salary Head Master' }}</h4>
+            </div>
+            <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+                <button class="btn btnheader" routerLink="/dash/user/userdashboard/head-master_list">
+                    Back
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card Body -->
+    <div class="card-body mt-4">
+        <form [formGroup]="SalaryHeadForm" class="row row-cols-1 row-cols-md-3 g-4">
+
+
+            <!-- Description -->
+            <div class="col">
+                <label for="description">Description<span style="color: red;">*</span></label>
+                <input id="description" type="text" class="form-control" formControlName="description"
+                    (blur)="checkDescriptionDuplicate(SalaryHeadForm.get('description')?.value)">
+
+                <span
+                    *ngIf="showError && SalaryHeadForm.controls['description'].invalid && !SalaryHeadForm.get('description')?.errors?.['duplicate']"
+                    class="text-danger mt-1" style="font-size: 12px;">
+                    Please enter Description.
+                </span>
+                <div *ngIf="SalaryHeadForm.get('description')?.errors?.['duplicate']" class="text-danger"
+                    style="font-size:10px;">
+                    {{ SalaryHeadForm.get('description')?.errors?.['duplicate'] }}
+                </div>
+
+            </div>
+            <!-- Short Description -->
+            <div class="col">
+                <label for="shortdesc">Short Description<span style="color: red;">*</span></label>
+                <input id="shortdesc" type="text" class="form-control" formControlName="shortdesc"
+                    (blur)="checkShortdescDuplicate(SalaryHeadForm.get('shortdesc')?.value)"
+                    (keypress)="restrictInput($event)">
+                <span
+                    *ngIf="showError && SalaryHeadForm.controls['shortdesc'].invalid && !SalaryHeadForm.get('shortdesc')?.errors?.['duplicate']"
+                    class="text-danger mt-1" style="font-size: 12px;">
+                    Please enter Short Description.
+                </span>
+                <div *ngIf="SalaryHeadForm.get('shortdesc')?.errors?.['duplicate']" class="text-danger"
+                    style="font-size:10px;">
+                    {{ SalaryHeadForm.get('shortdesc')?.errors?.['duplicate'] }}
+                </div>
+            </div>
+
+            <!-- Head Type -->
+            <div class="col">
+                <label for="headType">Head Type<span style="color: red;">*</span></label>
+                <ng-select placeholder="Select Head Type" [items]="headTypes" id="headtype" bindLabel="name"
+                    bindValue="value" formControlName="headtype" placeholder="-select head type-"></ng-select>
+                <span *ngIf="showError && SalaryHeadForm.controls['headtype'].invalid" class="text-danger mt-1"
+                    style="font-size: 12px;">
+                    Please enter Head Type.
+                </span>
+            </div>
+            <!-- Deduction Type -->
+            <div class="col">
+                <label for="deductiontype">Deduction Type</label>
+
+                <ng-select [items]="deductionTypes" id="deductiontype" bindLabel="name" bindValue="value"
+                    formControlName="deductiontype"></ng-select>
+                <div *ngIf="submitted && SalaryHeadForm.controls['deductiontype'].invalid">
+                    <span class="text-danger" style="font-size: 12px;"> Please enter Deduction Type.
+                    </span>
+                </div>
+
+            </div>
+            <!-- Interest Calculate -->
+            <div class="col">
+                <label for="calcinterest">Interest Calculate</label><br>
+                <input type="checkbox" id="calcinterest" formControlName="calcinterest" class="form-check-input">
+
+            </div>
+
+            <!-- Interest Percent -->
+            <div class="col">
+                <label for="interestper">Interest Percent</label>
+                <input type="number" id="interestper" class="form-control" formControlName="interestper">
+            </div>
+
+
+
+
+            <!-- Section Part -->
+            <div class="col" [hidden]="true">
+                <label for="sectionPart">Section Part</label>
+                <ng-select [items]="sectionParts" id="undersection" bindLabel="name" bindValue="value"
+                    formControlName="undersection" placeholder="-select section part-"></ng-select>
+
+            </div>
+
+            <!-- Parent Head -->
+            <div class="col" [hidden]="true">
+                <label for="parentHead">Parent Head</label>
+                <ng-select [items]="ParentHeads" id="fk_headid" bindLabel="name" bindValue="value"
+                    formControlName="fk_headid" placeholder="-select parent head-"></ng-select>
+
+            </div>
+
+            <!-- Fixed Head -->
+            <div class="col" [hidden]="true">
+                <label for="fixedHead">Fixed Head</label>
+                <ng-select [items]="fixedHeads" id="fk_headfixedid" bindLabel="name" bindValue="value"
+                    formControlName="fk_headfixedid" placeholder="-select fixed head-"></ng-select>
+
+            </div>
+
+
+
+
+
+
+
+            <!-- Mapping Checkbox 1 -->
+            <div class="col">
+                <label for="mapping">Mapping</label><br>
+                <input type="checkbox" id="mapping" formControlName="mapping" class="form-check-input">
+            </div>
+
+            <div class="col">
+                <label for="formula">Formula</label>
+                <ng-select id="fk_formulaid" [items]="Formula" bindLabel="name" bindValue="value"
+                    formControlName="fk_formulaid" class="w-100"></ng-select>
+            </div>
+
+            <!-- Amount -->
+            <div class="col">
+                <label for="amount">Amount</label>
+                <input id="amount" type="number" class="form-control" formControlName="amount">
+            </div>
+
+            <!-- Display Order -->
+            <div class="col">
+                <label for="displayorder">Display Order<span style="color: red;">*</span></label>
+                <input id="displayorder" type="number" class="form-control" formControlName="displayorder">
+                <span *ngIf="showError && SalaryHeadForm.controls['displayorder'].invalid" class="text-danger mt-1"
+                    style="font-size: 12px;">
+                    Please enter Display Order.
+                </span>
+            </div>
+
+
+            <!-- Order Level (Basic) -->
+            <div class="col">
+                <label for="orderlevel">Order Level (Basic)<span style="color: red;">*</span></label>
+                <input id="orderlevel" type="number" class="form-control" formControlName="orderlevel">
+                <span *ngIf="showError && SalaryHeadForm.controls['orderlevel'].invalid" class="text-danger mt-1"
+                    style="font-size: 12px;">
+                    Please enter Order Level (Basic).
+                </span>
+            </div>
+            <div class="col">
+                <label for="orderlevel_ctc">Order Level (CTC)<span style="color: red;">*</span></label>
+                <input id="orderlevel_ctc" type="number" class="form-control" formControlName="orderlevel_ctc">
+                <span *ngIf="showError && SalaryHeadForm.controls['orderlevel_ctc'].invalid" class="text-danger mt-1"
+                    style="font-size: 12px;">
+                    Please enter Order Level (CTC).
+                </span>
+            </div>
+
+            <div class="col">
+                <label for="taxable">Taxable<span style="color: red;">*</span></label>
+                <ng-select id="taxable" [items]="taxable" bindLabel="name" bindValue="value" formControlName="taxable"
+                    class="w-100"></ng-select>
+                <span *ngIf="showError && SalaryHeadForm.controls['taxable'].invalid" class="text-danger mt-1"
+                    style="font-size: 12px;">
+                    Please enter Taxable.
+                </span>
+            </div>
+            <div class="col">
+                <label for="non_taxable_limit">Non Taxable Limit</label>
+                <input id="non_taxable_limit" type="text" class="form-control" formControlName="non_taxable_limit">
+            </div>
+            <div class="col">
+                <label for="chapVItype">Chapter VI Type</label>
+                <ng-select placeholder="Select Chapter VI Type" id="chapVItype" [items]="chapterVITypes"
+                    bindLabel="name" bindValue="value" formControlName="chapVItype" class="w-100"></ng-select>
+            </div>
+
+            <div class="col">
+                <label for="rounding">Rounding<span style="color: red;">*</span></label>
+                <ng-select placeholder="Select Rounding" id="rounding" [items]="roundings" bindLabel="name"
+                    bindValue="value" formControlName="rounding" class="w-100"></ng-select>
+                <span *ngIf="showError && SalaryHeadForm.controls['rounding'].invalid" class="text-danger mt-1"
+                    style="font-size: 12px;">
+                    Please enter Rounding.
+                </span>
+            </div>
+
+            <div class="col">
+                <label for="effecttype">Effect Type<span style="color: red;">*</span></label>
+                <ng-select placeholder="Select Effect Type" id="effecttype" [items]="effectTypes" bindLabel="name"
+                    bindValue="value" formControlName="effecttype" class="w-100"></ng-select>
+                <span *ngIf="showError && SalaryHeadForm.controls['effecttype'].invalid" class="text-danger mt-1"
+                    style="font-size: 12px;">
+                    Please enter Effect Type.
+                </span>
+            </div>
+
+            <div class="col">
+                <label for="importdesc">Import Desc<span style="color: red;">*</span></label>
+                <input id="importdesc" type="text" class="form-control" formControlName="importdesc"
+                    (keypress)="restrictInput($event)"
+                    (blur)="checkImportdescDuplicate(SalaryHeadForm.get('importdesc')?.value)">
+                <span
+                    *ngIf="showError && SalaryHeadForm.controls['importdesc'].invalid && !SalaryHeadForm.get('importdesc')?.errors?.['duplicate']"
+                    class="text-danger mt-1" style="font-size: 12px;">
+                    Please enter Import Desc.
+                </span>
+                <div *ngIf="SalaryHeadForm.get('importdesc')?.errors?.['duplicate']" class="text-danger"
+                    style="font-size:10px;">
+                    {{ SalaryHeadForm.get('importdesc')?.errors?.['duplicate'] }}
+                </div>
+            </div>
+            <!-- PF Gross Part -->
+            <div class="col">
+                <label for="pfGrossPart">PF Gross Part</label><br>
+                <input type="checkbox" id="pf_gross_part" formControlName="pf_gross_part" class="form-check-input mt-2">
+            </div>
+            <!-- PF Rate Part -->
+            <div class="col">
+                <label for="grossPart">PF Rate Part</label><br>
+                <input type="checkbox" id="pf_rate_part" formControlName="pf_rate_part" class="form-check-input">
+            </div>
+            <!-- ESI Gross Part -->
+            <div class="col">
+                <label for="esiGrossPart">ESI Gross Part</label><br>
+                <input type="checkbox" id="esi_groos_part" formControlName="esi_groos_part" class="form-check-input">
+            </div>
+            <div class="col">
+                <label for="esiRatepart">ESI Rate Part</label><br>
+                <input type="checkbox" id="esi_Rate_Part" formControlName="esi_Rate_Part" class="form-check-input">
+            </div>
+
+
+
+            <!-- Formula -->
+
+
+            <!-- Gross Part -->
+            <div class="col">
+                <label for="grossPart">Gross Part</label><br>
+                <input type="checkbox" id="gross_Part" formControlName="gross_Part" class="form-check-input">
+            </div>
+
+
+
+
+
+
+            <!-- Presence Dependant -->
+            <div class="col">
+                <label for="prsence_dep">Presence Dependent</label><br>
+                <input type="checkbox" id="prsence_dep" formControlName="prsence_dep" class="form-check-input">
+            </div>
+
+
+
+            <!-- Show on Register -->
+            <div class="col">
+                <label for="salRegShow_Flag">Show on Register</label><br>
+                <input type="checkbox" id="salRegShow_Flag" formControlName="salRegShow_Flag" class="form-check-input">
+            </div>
+
+
+
+
+
+
+
+
+            <div class="col">
+                <label for="isRatePart">Is Rate Part</label><br>
+                <input type="checkbox" id="isRatePart" formControlName="isRatePart" class="form-check-input">
+            </div>
+             <div class="col">
+                <label for="isPartCTC">Is CTC Part</label><br>
+                <input type="checkbox" id="isPartCTC" formControlName="isPartCTC" class="form-check-input">
+            </div>
+
+
+
+            <div class="col">
+                <label for="blocksummation">Block Summation</label><br>
+                <input type="checkbox" id="blocksummation" formControlName="blocksummation" class="form-check-input">
+            </div>
+
+            <div class="col">
+                <label for="active">Active</label><br>
+                <input type="checkbox" id="active" formControlName="active" class="form-check-input">
+            </div>
+
+
+
+
+
+            <div class="col">
+                <label for="taxablesubbill">Sub of Bill Submission</label><br>
+                <input type="checkbox" id="taxablesubbill" formControlName="taxablesubbill" class="form-check-input">
+            </div>
+
+            <div class="col">
+                <label for="allowImportMonthly">Allow Import Monthly</label><br>
+                <input type="checkbox" id="allowImportMonthly" formControlName="allowImportMonthly"
+                    class="form-check-input">
+            </div>
+
+
+            <div class="col">
+                <label for="remarks">Remarks</label>
+                <textarea id="remarks" class="form-control" formControlName="remarks" rows="3"></textarea>
+            </div>
+
+
+        </form>
+        <div class="row">
+            <div class="col d-flex align-items-end justify-content-end pt-4 pb-3">
+                <button type="button" class="btn btn-primary  mx-1" (click)="onSubmit()">{{pk_headid ? 'Update' : 'Save'
+                    }}</button>
+                <button type="button" class="btn btn-outline-dark mx-1" (click)="resetForm()">Reset</button>
+            </div>
+        </div>
+    </div>
+</div>

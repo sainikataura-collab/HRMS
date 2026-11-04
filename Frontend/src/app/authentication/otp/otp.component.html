@@ -1,0 +1,42 @@
+<section class="h-100 otp-section" style="background:url('assets/Image/123.png') no-repeat; width: 100%; ">
+    <div class="container-fluid login-form-section" >
+        <div class="row pb-2 ">
+            <div class="col-sm-12 col-md-12 col-lg-1"></div>
+            <div class="col-sm-12 col-md-12 col-lg-5 d-none d-lg-block">
+                <img src="assets/Image/hrms-login.png" 
+                alt="coolie-login-images" class="object-fit-contain w-100">
+            </div>
+            <!-- <div class="col-sm-12 col-md-12 col-lg-1"></div> -->
+            <div class="col-sm-12 col-md-12 col-lg-6 pt-5 mt-5 otp_verification_col">
+                <div class="row">
+                    <div class="col-sm-0 col-md-0 col-lg-2"></div>
+                    <div class="col-sm-12 col-md-12 col-lg-8">
+                        <p class="fw-bold otp_verification_font">OTP Verification</p>
+                        <p class="lh-base" style="font-size: 15px; color:#2b2e41; font-weight: 600;">Please enter the one-time password to verify your account</p>
+                       
+                        <div id="otp" class="inputs d-flex flex-row justify-content-center mt-2 mb-2" (keydown.enter)="validate()">
+                            <input class="m-2 text-center form-control rounded" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]*"  [(ngModel)]="otp[0]" maxlength="1" (keyup)="moveFocus(0, $event)" (paste)="handlePaste($event, 0)" />
+                            <input class="m-2 text-center form-control rounded" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]*"  [(ngModel)]="otp[1]" maxlength="1" (keyup)="moveFocus(1, $event)" (paste)="handlePaste($event, 1)" />
+                            <input class="m-2 text-center form-control rounded" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]*"  [(ngModel)]="otp[2]" maxlength="1" (keyup)="moveFocus(2, $event)" (paste)="handlePaste($event, 2)" />
+                            <input class="m-2 text-center form-control rounded" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]*"  [(ngModel)]="otp[3]" maxlength="1" (keyup)="moveFocus(3, $event)" (paste)="handlePaste($event, 3)" />
+                            <input class="m-2 text-center form-control rounded" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]*"  [(ngModel)]="otp[4]" maxlength="1" (keyup)="moveFocus(4, $event)" (paste)="handlePaste($event, 4)" />
+                            <input class="m-2 text-center form-control rounded" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]*"  [(ngModel)]="otp[5]" maxlength="1" (keyup)="moveFocus(5, $event)" (paste)="handlePaste($event, 5)" />
+
+                           </div>
+                <div class="mt-4 d-grid gap-2 col-12">
+                           
+                            <button class="btn btn-primary px-4 validate" 
+        style="background-color: #3080e8; color: white;" 
+        [disabled]="isValidateDisabled || isVerifying" 
+        (click)="validate()">
+  <span *ngIf="!isVerifying">Validate</span>
+  <span *ngIf="isVerifying"><i class="fa fa-spinner fa-spin"></i> Verifying...</span>
+</button>
+                        </div>
+                    </div>
+                    <div class="col-sm-0 col-md-0 col-lg-2"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

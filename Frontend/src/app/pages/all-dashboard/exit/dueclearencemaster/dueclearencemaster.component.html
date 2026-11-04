@@ -1,0 +1,202 @@
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card">
+
+      <!-- Due Clearance Section -->
+      <div class="card-header bg-blue">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-6 col-lg-6">
+            <h4>{{ isEdit ? 'Update Due Clearance' : 'Due Clearance' }}</h4>
+          </div>
+
+          <div class="col-sm-12 col-md-6 col-lg-6 d-flex align-items-center justify-content-md-end">
+            <button class="btn btnheader" routerLink="/dash/exit/exitdashboard/due_clearance_list">
+              Back
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-body mt-4">
+        <form [formGroup]="Dueclearencemasterform">
+          <div class="row align-items-center">
+
+            <!-- Department -->
+            <div class="col-md-4">
+              <label>Department <span class="text-danger">*</span></label>
+              <div class="form-group mb-0">
+                <ng-select [items]="Department" bindLabel="name" bindValue="value" formControlName="fk_deptid"
+                  placeholder="--Select Department--" class="w-100 small">
+                </ng-select>
+
+                <div *ngIf="submitted && Dueclearencemasterform.get('fk_deptid')?.invalid" class="text-danger mt-1"
+                  style="font-size: 12px;">
+                  Department is required!
+                </div>
+              </div>
+            </div>
+
+            <!-- Approval By -->
+            <div class="col-md-4">
+              <label>Approval By <span class="text-danger">*</span></label>
+              <div class="form-group mb-0">
+                <ng-select [items]="approvalEmployees" bindLabel="name" bindValue="value" formControlName="fk_empid"
+                   placeholder="--Select Employee--" class="w-100 small" [searchable]="true" [virtualScroll]="true"
+                   (scrollToEnd)="onScrollToEnd()" (search)="onEmployeeSearch($event)" [loading]="loadingEmployees"
+                   loadingText="Searching employees...">
+                </ng-select>
+
+                <div *ngIf="submitted && Dueclearencemasterform.get('fk_empid')?.invalid" class="text-danger mt-1"
+                  style="font-size: 12px;">
+                  Approval By is required!
+                </div>
+              </div>
+            </div>
+
+            <!-- Is Active -->
+            <div class="col-md-3">
+              <div class="d-flex align-items-center mt-4">
+                <label for="isActive" class="me-3 mb-0">Is Active</label>
+                <input id="isActive" type="checkbox" class="form-check-input fs-6 m-0" formControlName="IsActive">
+              </div>
+            </div>
+
+          </div>
+        </form>
+      </div>
+
+      <!-- Parameters Section -->
+      <div class="card-header bg-blue mt-3">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-6 col-lg-6">
+            <h4>Parameters</h4>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-body mt-4">
+
+        <!-- Parameter Input Form -->
+        <form [formGroup]="parameterForm">
+          <div class="row align-items-center">
+
+            <!-- Description -->
+            <div class="col-md-4">
+              <label>Description <span class="text-danger">*</span></label>
+              <div class="form-group mb-0">
+                <input type="text" class="form-control" formControlName="Description" placeholder="Enter description">
+
+                <div *ngIf="parameterSubmitted && parameterForm.get('Description')?.invalid" class="text-danger mt-1"
+                  style="font-size: 12px;">
+                  Description is required!
+                </div>
+              </div>
+            </div>
+
+            <!-- Order Number -->
+            <div class="col-md-4">
+              <label>Order Number</label>
+              <div class="form-group mb-0">
+                <input type="number" class="form-control" formControlName="orderno" placeholder="Enter order number">
+              </div>
+            </div>
+
+            <!-- Parameter Is Active -->
+            <div class="col-md-2">
+              <div class="d-flex align-items-center mt-4">
+                <label for="pisActive" class="me-3 mb-0">Is Active</label>
+                <input id="pisActive" type="checkbox" class="form-check-input fs-6 m-0" formControlName="IsActive">
+              </div>
+            </div>
+
+            <!-- Add Parameter Button -->
+            <div class="col-md-2 d-flex justify-content-end mt-4">
+              <button type="button" class="btn btn-primary" (click)="addParameter()">
+                {{ isEditingParameter ? 'Update Parameter' : 'Add Parameter' }}
+              </button>
+            </div>
+
+          </div>
+
+          <!-- Cancel Button -->
+          <div class="row mt-3" *ngIf="isEditingParameter">
+            <div class="col-md-12 d-flex justify-content-end">
+              <button type="button" class="btn btn-secondary" (click)="cancelParameterEdit()">
+                <i class="fa fa-times"></i> Cancel
+              </button>
+            </div>
+          </div>
+        </form>
+
+        <!-- Parameters List -->
+        <div *ngIf="parametersList.length > 0" class="mt-4">
+          <div class="card-header bg-blue">
+            <div class="row w-100">
+              <div class="col-sm-12 col-md-6 col-lg-6">
+                <h4>Added Parameters ({{ parametersList.length }})</h4>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-body">
+            <div class="table-responsive table-invoice">
+              <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>Sr.</th>
+                    <th>Description</th>
+                    <th>Order Number</th>
+                    <th>Input Type</th>
+                    <th>Is Active</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  <tr *ngFor="let parameter of parametersList; let i = index"
+                    [ngClass]="{'table-warning': isEditingParameter && editingParameterIndex === i}">
+
+                    <td>{{ i + 1 }}</td>
+                    <td>{{ parameter.Description }}</td>
+                    <td>{{ parameter.orderno }}</td>
+
+                    <td>
+                      <span class="badge" [ngClass]="parameter.IsActive ? 'bg-success' : 'bg-secondary'">
+                        {{ parameter.IsActive ? 'Yes' : 'No' }}
+                      </span>
+                    </td>
+
+                    <td>
+                      <button class="btn btn-sm btn-outline me-1" (click)="editParameter(i)"
+                        [disabled]="isEditingParameter && editingParameterIndex === i">
+                        <i class="fa-regular fa-pen-to-square"></i>
+                      </button>
+
+                      <button class="btn btn-sm btn-outline" (click)="removeParameter(i)"
+                        [disabled]="isEditingParameter && editingParameterIndex === i">
+                        <i class="fa fa-trash"></i>
+                      </button>
+                    </td>
+
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <hr class="mt-5">
+
+        <!-- Action Buttons -->
+        <div class="modal-footer mt-4">
+          <button type="button" class="btn btn-primary mx-1" (click)="submit()">
+            {{ isEdit ? 'Update' : 'Save' }}
+          </button>
+
+          <button type="button" class="btn btn-outline-secondary ms-1" (click)="resetForm()">
+            Reset
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>

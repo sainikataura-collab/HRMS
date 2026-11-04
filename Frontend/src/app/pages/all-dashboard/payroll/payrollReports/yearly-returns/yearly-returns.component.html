@@ -1,0 +1,79 @@
+
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+         <!--  -->
+    <div class="card-header bg-blue ">
+        <div class="row w-100 ">
+      <div class="col-sm-12 col-md-6 col-lg-6 ">                    
+        <h4>Monthly Statement Generation</h4>   
+      </div>
+      <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+        <button class="btn btnheader" (click)="OnVeiw()"type="submit">Veiw
+          </button>
+      </div>
+  </div>
+  
+      
+      </div>
+      <div class="card-body mt-4">
+        <form [formGroup]="EmployeeForm">
+          <div class="row">
+
+            <app-common-search ></app-common-search>
+        </div>
+        <div class="row row-cols-1 row-cols-md-3">
+            <div class="col">
+              <label>Office Type</label>
+         
+              <div class="form-group">
+                <ng-select id="year" [items]="selects" bindLabel="name" bindValue="value"
+                formControlName="officeType" placeholder="--Select --"
+                class="w-100"></ng-select>
+              </div>  
+          </div>
+   
+                <div class="col">
+                    <label>Report Type</label>         
+                    <div class="form-group">
+                      <ng-select id="year" [items]="selects" bindLabel="name" bindValue="value"
+                      formControlName="reportType" placeholder="--Select --"
+                      class="w-100"></ng-select>
+                      <span *ngIf="showError &&EmployeeForm.controls['reportType'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                        Please enter Report Type.
+                      </span>
+                    </div> 
+                  </div>
+    
+            <div class="col">
+              <label>Report Period</label>         
+              <div class="form-group">
+                <ng-select id="year" [items]="selects" bindLabel="name" bindValue="value"
+                formControlName="reportPeriod" placeholder="--Select --"
+                class="w-100"></ng-select>
+                <span *ngIf="showError &&EmployeeForm.controls['reportPeriod'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                  Please enter Report Period.
+                </span>
+              </div> 
+            </div>
+         
+           </div>
+            
+           <div class="modal-footer"> 
+                
+            <div class="form-group mt-4">
+                <input type="radio"name="2"formControlName=""class="form-check-input fs-6 mx-1">&nbsp;View In PDF	
+                &nbsp;&nbsp; &nbsp;&nbsp;
+            </div>
+            <button type="submit" class="btn btn-outline-dark mx-1"(click)="resetForm()">Reset</button>
+             <button type="submit" class="btn btn-primary mx-1">Preveiw</button>
+
+          </div>
+        </form>
+      </div>
+
+      
+  </div>
+</div>    
+
+</div>

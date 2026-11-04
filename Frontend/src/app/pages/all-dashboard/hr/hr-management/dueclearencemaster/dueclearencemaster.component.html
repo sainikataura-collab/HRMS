@@ -1,0 +1,136 @@
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+            <!--  -->
+            <div class="card-header bg-blue ">
+                <div class="row w-100 ">
+                    <div class="col-sm-12 col-md-6 col-lg-6 ">
+                        <h4>Due Clearence</h4>
+                    </div>
+                    <!-- <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+                        <button class="btn btnheader" routerLink="/dash/hr/hrdashboard/CRD_BudgetIssue_Mst_list">Back
+                        </button>
+                    </div> -->
+                </div>
+
+
+            </div>
+            <div class="card-body mt-4">
+                <div class="row">
+                    <div class="col-md-4">
+                        <label>Department</label>
+                        <div class="form-group">
+                            <ng-select id="year" [items]="selects" bindLabel="name" bindValue="value"
+                                formControlName="Department" placeholder="--Select --" class="w-100"></ng-select>
+                        
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label>Remarks</label>
+                        <div class="form-group">
+                            <input type="textarea" class="form-control" formControlName="Remarks">
+
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label>Order Number</label>
+                        <div class="form-group">
+                            <input type="text" class="form-control" formControlName="OrderNumber">
+
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+
+                        <div class="form-group">
+                            <label>Is Active</label>&nbsp;&nbsp;
+                            <input type="checkbox" class="form-check-input fs-6 mx-1" formControlName="IsActive">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- NextFrom---------- -->
+            <div class="card-header bg-blue mt-3 ">
+                <div class="row w-100 ">
+                    <div class="col-sm-12 col-md-6 col-lg-6 ">
+                        <h4>Parameters</h4>
+                    </div>
+                       <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+                        <button class="btn btnheader" routerLink="/dash/hr/hrdashboard/Due_Clearence_list">Back
+                        </button>
+                    </div>
+
+                </div>
+
+
+            </div>
+            <div class="card-body mt-4">
+                <form [formGroup]="Dueclearencemasterform">
+             
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label>Description</label>
+                            <div class="form-group">
+                                <input type="textarea" class="form-control" formControlName="Description">
+                                <div *ngIf="submitted   && Dueclearencemasterform.get('Description')?.invalid"
+                                class="text-danger">
+                                Description is required!
+                            </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label>Order Number</label>
+                            <div class="form-group">
+                                <input type="number" class="form-control" formControlName="OrderNumber">
+                                <div *ngIf="submitted   && Dueclearencemasterform.get('OrderNumber')?.invalid"
+                                class="text-danger">
+                                Order Number is required!
+                            </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label>Input Type</label>
+                            <div class="form-group">
+                                <ng-select id="year" [items]="selects" bindLabel="name" bindValue="value"
+                                    formControlName="InputType" placeholder="--Select --"
+                                    class="w-100"></ng-select>
+                                <div *ngIf="submitted   && Dueclearencemasterform.get('InputType')?.invalid"
+                                    class="text-danger">
+                                    Input Type is required!
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+
+                            <div class="form-group">
+                                <label>Is Active</label>&nbsp;&nbsp;
+                                <input type="checkbox" class="form-check-input fs-6 mx-1" formControlName="IsActive">
+
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+
+                        </div>
+
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="modal-footer">
+
+                        <button type="submit" class="btn btn-outline-dark mx-1" (click)="resetForm()">Reset</button>
+                        <button type="submit" class="btn btn-primary mx-1" (click)="submit()">Add</button>
+
+
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+
+</div>

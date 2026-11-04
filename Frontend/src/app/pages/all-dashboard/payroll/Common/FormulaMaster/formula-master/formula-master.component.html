@@ -1,0 +1,152 @@
+<div class="row">
+  <div class="col-sm-12">
+    <div class="card">
+      <!-- Card Header -->
+      <div class="card-header bg-primary py-lg-2 ">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 col-8">
+            <!-- <h4>{{Isedit? 'Edit ZoneMaster':'Zone Master'}}</h4> -->
+            <h4>Formula Master</h4>
+          </div>
+          <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 col-4 d-flex align-items-center justify-content-end">
+            <button class="btn btnheader" routerLink="/dash/payroll/payrolldashboard/zonelist">
+              Back
+            </button>
+          </div>
+
+        </div>
+    </div>
+
+      <!-- Card Body -->
+      <div class="card-body my-3">
+        <div class="row">
+
+          <div class="col-sm-12 col-md-12 col-lg-10 col-xxl-10">
+            <div class="row row-cols-1 row-cols-md-3 radio-group pt-2">
+
+              <div class="col">
+              <label>
+                <input  type="radio" formControlName="formulaType" name="formulaType" value="basic" (change)="onFormulaTypeChange('basic')" checked>
+                Enter Basic Based
+              </label>
+            </div>
+
+            <div class="col">
+              <label>
+                <input type="radio" formControlName="formulaType" name="formulaType" value="ctc" (change)="onFormulaTypeChange('ctc')">
+                Enter CTC Based
+              </label>
+            </div>
+
+            <div class="col">
+              <label>
+                <input type="radio" formControlName="formulaType" name="formulaType" value="notExceed" (change)="onFormulaTypeChange('notExceed')">
+                Enter Not Exceed
+              </label>
+            </div>
+
+          </div>
+
+
+
+            <form [formGroup]="FormulaMasterForm" class="row row-cols-1 row-cols-md-3 pt-3 g-3">
+    
+                <div class="col">
+                  <label for="description" class="form-label">Description<span style="color: red;">*</span></label>
+                  <input id="description" type="text" class="form-control" formControlName="description" >
+                </div>
+            
+                <div class="col">
+                  <label for="basicFormula" class="form-label">Formula [Basic Based]</label>
+                  <input id="basicFormula" type="text" class="form-control" formControlName="basicFormula" readonly [value]="formula">
+                </div>
+            
+                <div class="col">
+                  <label for="ctcFormula" class="form-label">Formula [CTC Based]</label>
+                  <input id="ctcFormula" type="text" class="form-control" formControlName="ctcFormula" readonly [value]="formula">
+                </div>
+            
+                <div class="col">
+                  <label for="notExceedFormula" class="form-label">Formula [Not Exceed]</label>
+                  <input id="notExceedFormula" type="text" class="form-control" formControlName="notExceedFormula" readonly [value]="formula">
+                </div>
+
+                <div class="col">
+                  <label for="notExceedFormula" class="form-label">Order</label>
+                  <input id="notExceedFormula" type="text" class="form-control" formControlName="order">
+                </div>
+          
+          
+
+              </form>
+            
+
+              <!-- Footer buttons -->
+              <div class="pt-4">
+                <button type="submit" class="btn btn-primary mx-1">SAVE</button>
+                <button type="button" class="btn btn-outline-dark mx-1" (click)="resetForm()">Reset</button>
+                <button type="button" class="btn btn-outline-dark mx-1">View</button>
+              
+
+               
+              </div>
+         
+            </div>
+
+
+          <div class="col-sm-12 col-md-12 col-lg-2 col-xxl-2">
+         
+       
+
+        <div class="calculator container mt-3 p-2 shadow-sm rounded border">
+          <div class="row mb-2">
+            <div class="col">
+              <input type="text" class="form-control text-end fs-6 py-1" readonly [value]="formula" />
+            </div>
+          </div>
+        
+          <div class="row g-1">
+            <ng-container *ngFor="let btn of buttons">
+              <div class="col-3">
+                <button type="button" class="btn btn-outline-secondary w-100 py-1 fs-6"  (click)="handleClick(btn)"> {{ btn }} </button>
+              </div>
+            </ng-container>
+        
+            <div class="col-4">
+              <button type="button" class="btn btn-outline-danger w-100 py-1 fs-6" (click)="clearFormula()">All</button>
+            </div>
+
+           
+
+            <div class="col-4">
+              <button type="button" class="btn btn-outline-warning w-100 py-1 fs-6 " (click)="clearAllFormula()">Cl</button>
+            </div>
+
+            <div class="col-4">
+              <button type="button" class="btn btn-success w-100 py-1 fs-6" (click)="calculateResult()">=</button>
+            </div>
+           
+          </div>
+        </div>
+        
+      </div>
+        
+
+         
+            
+            </div>
+<!-- 
+            <div class="modal-footer p-0 m-0">
+              <button type="submit" class="btn btn-primary mx-1">SAVE</button>
+              <button type="button" class="btn btn-outline-dark mx-1" (click)="resetForm()">Reset</button>
+              <button type="button" class="btn btn-outline-dark">View</button>
+            
+
+             
+            </div> -->
+
+        </div>
+      </div>
+    </div>
+  </div>
+  

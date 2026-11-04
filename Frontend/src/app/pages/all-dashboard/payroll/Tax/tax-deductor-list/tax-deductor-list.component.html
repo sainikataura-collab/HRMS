@@ -1,0 +1,59 @@
+<div class="row">
+  <div class="col-12">
+      <div class="card">
+          <!-- Heading Section -->
+          <div class="card-header bg-primary">
+              <div class="row w-100">
+                  <!-- Title Section -->
+                  <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-between">
+                      <h4 class="text-white">List of Deductors</h4>
+                  </div>
+                  <!-- Add Button -->
+                  <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+                      <button class="btn btn-light" routerLink="/dash/payroll/payrolldashboard/taxDeductor">
+                          Add
+                      </button>
+                  </div>
+              </div>
+          </div>
+          
+          <!-- Table Section -->
+          <div class="card-body">
+              <div class="table-responsive table-invoice">
+                  <table class="table table-bordered">
+                      <thead>
+                          <tr>
+                              <th>Sr.</th>
+                              <th>Financial Year</th>
+                              <th>Deductor Name</th>
+                              <th>Deductor Branch</th>
+                              <th>Res. Person Name</th>
+                              <th>Res. Person Desig.</th>
+                              <th>Action</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          <tr *ngFor="let data of TaxDeductorList | paginate: { itemsPerPage: pageSize, currentPage: pageIndex, totalItems: totalItems }; let i = index">
+                              <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+                              <td>{{ data.fYear }}</td>
+                              <td>{{ data.name_dd }}</td>
+                              <td>{{ data.branch_dd }}</td>
+                              <td>{{ data.name_rp }}</td>
+                              <td>{{ data.desig_rp }}</td>
+                              <td>
+                                  <button class="btn" (click)="editTaxDeductor(this.encryptionService.encryptText(data.pk_dedId))">
+                                      <i class="fa-regular fa-pen-to-square"></i>
+                                  </button>
+                                  <button class="btn" (click)="deleteTaxDeductor(data.pk_dedId)">
+                                      <i class="fa fa-trash"></i>
+                                  </button>
+                              </td>
+                          </tr>
+                      </tbody>
+                  </table>
+                  <pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>

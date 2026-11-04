@@ -1,0 +1,185 @@
+<section>
+  <div class="container">
+    <div class="row border-bottom">
+      <div class="col-sm-12 col-md-12 col-lg-8 col-xxl-8">
+        <p class="small fw-semibold">
+          <span>Feedback Dashboard </span><br>
+          <span class="fw-semibold text-success">
+            <i class="fa-solid fa-comments"></i> Welcome Vishal!
+          </span>
+        </p>
+      </div>
+
+      <div class="col-sm-12 col-md-12 col-lg-4 col-xxl-4">
+        <p class="row row-cols-3 g-2 pt-lg-3">
+          <span class="col">
+            <select id="feedbackMonth" class="form-select form-select-sm">
+              <option selected>Month</option>
+              <option>Jan</option><option>Feb</option><option>Mar</option>
+              <option>Apr</option><option>May</option><option>Jun</option>
+              <option>Jul</option><option>Aug</option><option>Sep</option>
+              <option>Oct</option><option>Nov</option><option>Dec</option>
+            </select>
+          </span>
+          <span class="col">
+            <select id="feedbackYear" class="form-select form-select-sm">
+              <option selected>Year</option>
+              <option>2023</option><option>2024</option><option>2025</option>
+            </select>
+          </span>
+          <span class="col">
+            <select id="feedbackExport" class="form-select form-select-sm">
+              <option selected>Export</option>
+              <option>Export PDF</option>
+              <option>Export Excel</option>
+            </select>
+          </span>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container-fluid py-2 my-lg-2">
+    <div class="row g-3">
+      
+      <!-- LEFT SIDE CONTENT -->
+      <div class="col-sm-12 col-md-12 col-lg-8 my-4">
+        
+        <!-- Cards Row -->
+        <div class="row row-cols-2 row-cols-md-4 g-3">
+          <div class="col">
+            <div class="card rounded pt-2">
+              <h4 class="text-center">
+                <span class="badge bg-primary rounded">
+                  <i class="fas fa-comments fs-5 text-white"></i>
+                </span>
+              </h4>
+              <p class="small text-center fw-semibold">Total Feedback<br>
+                <span class="fw-semibold text-primary">24</span>
+              </p>
+            </div>
+          </div>
+          <div class="col">
+            <div class="card rounded pt-2">
+              <h4 class="text-center">
+                <span class="badge bg-success rounded">
+                  <i class="fas fa-thumbs-up fs-5 text-white"></i>
+                </span>
+              </h4>
+              <p class="small text-center fw-semibold">Positive<br>
+                <span class="fw-semibold text-success">15</span>
+              </p>
+            </div>
+          </div>
+          <div class="col">
+            <div class="card rounded pt-2">
+              <h4 class="text-center">
+                <span class="badge bg-warning rounded">
+                  <i class="fas fa-minus-circle fs-5 text-white"></i>
+                </span>
+              </h4>
+              <p class="small text-center fw-semibold">Neutral<br>
+                <span class="fw-semibold text-warning">5</span>
+              </p>
+            </div>
+          </div>
+          <div class="col">
+            <div class="card rounded pt-2">
+              <h4 class="text-center">
+                <span class="badge bg-danger rounded">
+                  <i class="fas fa-thumbs-down fs-5 text-white"></i>
+                </span>
+              </h4>
+              <p class="small text-center fw-semibold">Negative<br>
+                <span class="fw-semibold text-danger">4</span>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Feedback Log -->
+        <div class="row mt-3">
+          <div class="col-lg-12">
+            <div class="card shadow-sm p-lg-3">
+              <p class="fw-semibold text-primary mb-2"><i class="fa-solid fa-list"></i> Recent Feedback</p>
+              <div class="bg-transparent" style="min-height: 240px; max-height: 240px; overflow-y: auto;">
+                
+                <div class="card me-1 rounded top-perfomance-card shadow-sm p-3 mb-3">
+                  <p class="lh-sm small mb-1"><strong>Manager:</strong> Great leadership during Q2 project!</p>
+                  <p class="lh-sm small mb-0 text-end text-success">20-Jun-2025</p>
+                </div>
+                
+                <div class="card me-1 rounded top-perfomance-card shadow-sm p-3 mb-3">
+                  <p class="lh-sm small mb-1"><strong>HR:</strong> Please improve attendance consistency.</p>
+                  <p class="lh-sm small mb-0 text-end text-warning">18-Jun-2025</p>
+                </div>
+
+                <div class="card me-1 rounded top-perfomance-card shadow-sm p-3 mb-3">
+                  <p class="lh-sm small mb-1"><strong>Colleague:</strong> Amazing collaboration on Project Alpha!</p>
+                  <p class="lh-sm small mb-0 text-end text-primary">15-Jun-2025</p>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Items -->
+        <div class="row mt-3">
+          <div class="col-lg-12">
+            <div class="card shadow-sm p-3 border-top border-2 border-warning">
+              <p class="fw-semibold text-warning mb-2"><i class="fa-solid fa-tasks"></i> Suggested Actions</p>
+              <ul class="small mb-0">
+                <li>Improve communication in team meetings.</li>
+                <li>Provide faster responses to client queries.</li>
+                <li>Enhance report presentation quality.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      
+      <!-- RIGHT SIDE CONTENT -->
+      <div class="col-sm-12 col-md-12 col-lg-4">
+        
+        <!-- Feedback Summary -->
+        <div class="card shadow-sm mb-3">
+          <div class="card-header border-bottom border-secondary py-0 my-0">
+            <p class="fw-semibold text-success-emphasis my-1"><i class="fa-solid fa-chart-pie"></i> Feedback Summary</p>
+          </div>
+          <div class="card-body small">
+            <div class="d-flex justify-content-between"><span>Positive:</span><span class="fw-bold text-success">62%</span></div>
+            <div class="d-flex justify-content-between"><span>Neutral:</span><span class="fw-bold text-warning">21%</span></div>
+            <div class="d-flex justify-content-between"><span>Negative:</span><span class="fw-bold text-danger">17%</span></div>
+            <hr class="my-2">
+            <div class="d-flex justify-content-between"><span>Overall Sentiment:</span><span class="fw-bold text-primary">Good</span></div>
+          </div>
+        </div>
+
+        <!-- Top Feedback Providers -->
+        <div class="card shadow-sm mb-3 border-top border-2 border-info">
+          <p class="fw-semibold text-info p-2 mb-0"><i class="fa-solid fa-users"></i> Top Feedback Providers</p>
+          <ul class="list-group small">
+            <li class="list-group-item d-flex justify-content-between"><span>Manager</span><span class="text-success fw-bold">12</span></li>
+            <li class="list-group-item d-flex justify-content-between"><span>HR</span><span class="text-primary fw-bold">6</span></li>
+            <li class="list-group-item d-flex justify-content-between"><span>Colleagues</span><span class="text-warning fw-bold">5</span></li>
+          </ul>
+        </div>
+
+        <!-- Upcoming Reviews -->
+        <div class="card shadow-sm mb-3 border-top border-2 border-danger">
+          <p class="fw-semibold text-danger p-2 mb-0"><i class="fa-solid fa-calendar-alt"></i> Upcoming Reviews</p>
+          <div class="small p-2">
+            <div class="d-flex justify-content-between"><span>Mid-Year Feedback:</span><span>30-Jun-2025</span></div>
+            <div class="d-flex justify-content-between"><span>Annual Feedback:</span><span>10-Dec-2025</span></div>
+            <div class="d-flex justify-content-between"><span>Pending Responses:</span><span class="fw-bold text-danger">3</span></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>

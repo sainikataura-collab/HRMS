@@ -1,0 +1,263 @@
+/* Sidebar Menu */
+.sidebar-menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Menu Header */
+.menu-header {
+  padding: 16px 20px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #94a3b8;
+  letter-spacing: 0.8px;
+}
+
+/* Step Item */
+.step-item {
+  position: relative;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.step-item .nav-link {
+  display: flex;
+  align-items: flex-start;
+  padding: 10px 20px;
+  gap: 12px;
+  text-decoration: none;
+  color: #64748b;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.step-item:hover .nav-link {
+  background-color: #f8fafc;
+}
+
+/* Step Indicator Container */
+.step-indicator {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  padding-top: 2px;
+}
+
+/* Circle */
+.step-circle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid #cbd5e1;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 12px;
+  color: #64748b;
+  z-index: 2;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+/* Step Number & Checkmark */
+.step-number,
+.checkmark {
+  font-size: 12px;
+  line-height: 1;
+  padding-left: 0px;
+}
+
+.checkmark {
+  font-size: 14px;
+  padding-left: 7px;
+}
+
+/* Connecting Line */
+.step-line {
+  position: absolute;
+  top: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  height: 32px;
+  background: #e2e8f0;
+  z-index: 1;
+  transition: all 0.3s ease;
+}
+
+.step-item:last-child .step-line {
+  display: none;
+}
+
+/* Step Content */
+.step-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  padding-top: 2px;
+}
+
+.step-content svg {
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
+.step-content span {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+/* Completed State */
+.step-item.completed .step-circle {
+  background: #10b981;
+  border-color: #10b981;
+  color: #ffffff;
+}
+
+.step-item.completed .step-line {
+  background: #10b981;
+}
+
+.step-item.completed .nav-link {
+  color: #059669;
+}
+
+.step-item.completed .step-content svg {
+  opacity: 1;
+  color: #059669;
+}
+
+.step-item.completed .step-number {
+  display: none;
+}
+
+/* Active State */
+.step-item.active .step-circle {
+  background: #fff;
+  border-color: #3b82f6;
+  color: #19a98c;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.step-item.active .nav-link {
+  color: #fff;
+  // background-color: #eff6ff;
+  background-color: #19a98c;
+}
+
+.step-item.active .step-content {
+  font-weight: 600;
+}
+
+.step-item.active .step-content svg {
+  opacity: 1;
+  color: #2563eb;
+}
+
+/* Pending State (default) */
+.step-item .step-circle {
+  background: #ffffff;
+  border-color: #cbd5e1;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .step-item .nav-link {
+    padding: 8px 16px;
+    gap: 10px;
+  }
+  
+  .step-circle {
+    width: 26px;
+    height: 26px;
+  }
+  
+  .step-number,
+  .checkmark {
+    font-size: 11px;
+  }
+  
+  .step-content span {
+    font-size: 11px;
+  }
+  
+  .menu-header {
+    padding: 14px 16px 10px;
+    font-size: 10px;
+  }
+}
+
+
+@media screen and (max-width:768px){
+  .step-content svg{
+    display: none;
+  }
+}
+@media screen and (min-width:768px){
+  .step-content svg{
+    display: none;
+  }
+}
+  
+.checkmark{
+  display: none;
+}
+
+
+.sidebar-mini .main-sidebar .sidebar-menu>li>a span {
+    display: none;
+}
+
+
+.step-item.active.nav-link{
+  background-color: transparent !important;
+  color: #3080e8 !important;
+}
+
+.step-item:hover .nav-link{
+    background-color: #3080e8;
+    color: white;
+}
+
+//added
+
+.step-circle {
+  position: relative;
+  
+  .step-number {
+    display: inline;
+  }
+  
+  .checkmark {
+    display: none;
+    color: #fff;
+    font-weight: bold;
+    font-size: 16px;
+  }
+  
+  &.completed {
+    background-color: #28a745 !important;
+    border-color: #28a745 !important;
+    
+    .step-number {
+      display: none;
+    }
+    
+    .checkmark {
+      display: inline;
+    }
+  }
+}
+
+.small{
+  font-size: 10px !important;
+}

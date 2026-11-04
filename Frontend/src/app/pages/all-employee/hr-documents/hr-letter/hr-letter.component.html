@@ -1,0 +1,206 @@
+
+<!--  -->
+
+<div class="row m-0">
+    <div class="col-12 px-0 py-0">
+        <div class="card px-0 m-0">
+
+
+   <div class="card-header">
+                <div class="row w-100">
+                    <div
+                        class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-between">
+                        <h4 class="mb-0">HR Letter</h4>
+
+                        <div class="dropdown d-flex align-items-center justify-content-center d-md-none">
+                            <button class="btn bg-transparent text-white px-0 mt-1" type="button"
+                                id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fa-solid fa-bars fs-6"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+
+                                <!-- <li><a class="dropdown-item">Add</a></li> -->
+                                <!-- <li><a class="dropdown-item">PDF</a></li> -->
+                            </ul>
+                        </div>
+                    </div>
+
+
+                    <div
+                        class="col-12 col-md-3 all-pickup-point-search-header d-flex align-items-center justify-content-md-end">
+                        <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText" />
+                    </div>
+
+
+                    <div class="col-12 col-md-3 d-flex justify-content-end align-items-center mt-md-0">
+                        <div class="d-none d-md-flex">
+                            <!-- <button class="btn btnheader mx-2">+ Add</button> -->
+                            <!-- <button class="btn btnheader"><i class="fa-solid fa-file-arrow-down"></i>&nbsp;Download</button>-->
+                        </div> 
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
+
+            <div class="card-body px-0  m-2">
+                <!-- table-responsive-md makes the full table scrollable ONLY above md breakpoint -->
+                <div class="table-responsive-md">
+                    <table Id="exportTable" class="table">
+                        <thead>
+                            <tr>
+                             
+
+
+
+                                 <th>Sr.No.</th>
+                                 <th>Employee Name</th>
+                                <th>Description</th>
+                                <th>Date</th>
+                                <!-- <th>Action</th>-->
+                                 <th>View</th> 
+                                <th>Download</th>
+
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let item of filteredData() | paginate: { itemsPerPage: pageSize, currentPage: pageIndex, totalItems: totalItems }; let i = index">
+                                <td data-label="Sr.No. : ">{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+                                <td data-label="Employee Name: ">{{ item.name }}</td>
+                                <td data-label="Description: ">{{ item.formatTypeName }}</td>
+                                <td data-label="Date : ">{{ item.dated | date:'dd MMM yyyy'}}</td>
+                                <!-- <td data-label="Action:">
+                                    <button 
+                                        class="btn btn-sm btn-outline-success mx-1"
+                                        (click)="updateStatus(item.pk_trnid, 1)">
+                                        Accept
+                                    </button>
+
+                                    <button 
+                                        class="btn btn-sm btn-outline-danger mx-1"
+                                        (click)="updateStatus(item.pk_trnid, 0)">
+                                        Reject
+                                    </button>
+                                    </td> -->
+                                 
+                                <!-- <td data-label="File name : " class="lh-sm" >{{ item.filename }}</td> -->
+<!-- 
+                                   <td data-label="File: " class="lh-sm" (click)="item.filename ?download(item.filename) : null" style="cursor: pointer; text-align: center;">
+                <i *ngIf="item.filename" class="fas fa-file-pdf text-danger" aria-hidden="true" title="View/Download file"></i>
+              </td> -->
+              <!-- ANjali 5 Feb 2026 -->
+              <!-- <td data-label="Download: " class="lh-sm" 
+                (click)="downloadLetter(item.pk_trnid)"                          
+          style="cursor: pointer; text-align: center;">
+                                    <i class="fas fa-eye text-dark"
+                                       aria-hidden="true" 
+                                       title="Download Letter"></i>
+
+
+
+                                       <!-- view button Anjali -->
+                                          <!-- <i class="fas fa-eye text-success" 
+                                       (click)="viewLetter(item.pk_trnid)"
+                                       style="cursor: pointer;" 
+                                       aria-hidden="true" 
+                                       title="View Letter"></i> 
+                                </td> -->
+
+               <!-- <td  data-label="File: " class="lh-sm" (click)="download(item.filename)" style="cursor: pointer; text-align: center;">
+                        <i  *ngIf="item.filename" class="fas fa-file-pdf text-danger" aria-hidden="true" title="View/Download Image"></i>
+                      </td> -->
+
+                            
+
+
+                                <!-- <td class="pt-1 pb-0 m-0 d-flex align-items-center justify-content-center">
+                                    <button class="btn btn-sm btn-outline px-1 mx-1 pt-1 pb-0 my-0"><i
+                                            class="fa-regular fa-pen-to-square fw-semibold"></i></button>
+                                    <button class="btn btn-sm btn-outline px-1 mx-1 pt-1 pb-0 my-0"><i
+                                            class="fa fa-trash text-dark"></i></button>
+                                </td> -->
+                                <td data-label="View:" class="text-center">
+  <i *ngIf="item.status === false"
+  class="fas fa-eye text-dark"
+     style="cursor:pointer"
+     (click)="openLetterModal(item)">
+  </i>
+</td>
+<td data-label="Download:" class="text-center"> <i *ngIf="item.status === true"
+     class="fas fa-download text-dark"
+     style="cursor:pointer"
+     (click)="downloadLetterAfterAccept(item.pk_trnid)">
+  </i></td>
+
+                            </tr>
+
+                        </tbody>
+                    </table>
+                       <pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>
+                </div>
+            </div>
+<!-- Modal -->
+<div class="modal my-5 my-lg-3 fade" id="letterModal" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+
+      <!-- Header -->
+      <div class="modal-header justify-content-center position-relative p-0">
+        <p class="modal-title w-100 text-center fw-semibold">View Letter</p>
+        <button type="button"
+                class="btn-close position-absolute end-0 me-3"
+                data-bs-dismiss="modal"></button>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body px-1 px-lg-3 py-0 ">
+
+        <!-- PDF -->
+        <iframe *ngIf="selectedLetter?.fileUrl"
+                [src]="selectedLetter.fileUrl"
+                class="pdf-frame">
+        </iframe>
+
+        <div *ngIf="!selectedLetter?.fileUrl" class="text-center">
+          <p>No file available</p>
+        </div>
+
+        <!-- Remark -->
+        <div class="mt-3">
+          <label class="form-label"><b>Remark</b><span style="color: red;">*</span></label>
+          <input type="text"
+                 class="form-control"
+                 [(ngModel)]="remark"
+                 placeholder="Enter remark">
+        </div>
+
+      </div>
+
+      <!-- Footer -->
+      <div class="modal-footer justify-content-center flex-wrap gap-2">
+        <button class="btn btn-success px-4"
+                (click)="updateStatus(selectedLetter.pk_trnid, 1)">
+          Accept
+        </button>
+
+        <button class="btn btn-danger px-4"
+                (click)="updateStatus(selectedLetter.pk_trnid, 0)">
+          Reject
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+            <!--end-->
+        </div>
+    </div>
+</div>
+
+
+<!--modal-->
+

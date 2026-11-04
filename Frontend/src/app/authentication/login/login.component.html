@@ -1,0 +1,119 @@
+<section class="h-100 login-section" style="background:url('assets/Image/123.png') no-repeat; width: 100%;">
+  <div class="container-fluid login-form-section pb-5 mb-0 h-100">
+    <div class="row pb-4">
+
+      <div class="col-sm-12 col-md-12 col-lg-7 login-display-none">
+        <div class="row">
+          <div class="col-lg-3"></div>
+          <div class="col-lg-9">
+            <img src="assets/Image/hrms_login.png" alt="login-images" class="object-fit-cover pt-lg-5 mt-lg-2"
+              width="100%">
+          </div>
+        </div>
+      </div>
+      
+
+      <div class="col-sm-12 col-md-12 col-lg-5">
+
+
+     
+       
+        <div class="tab-content" id="pills-tabContent">
+
+        
+          <!-- Employee Login -->
+          <div class="tab-pane active" id="pills-emplogin" role="tabpanel" aria-labelledby="pills-emplogin-tab" tabindex="0">
+            <div class="row justify-content-center mt-lg-5">
+              <div class="col-md-8">
+
+                <p class="text-start fw-semibold mb-4 fs-4">Employee Login</p>
+                <form [formGroup]="EmploginForm" (ngSubmit)="onSubmit()">
+              
+
+                   <label for="username" class="form-label">Company code</label>
+                  <div class="input-group mb-0">
+
+                    <span class="input-group-text p-3"><i class="fa-solid fa-building"></i></span>
+                    <input type="text" class="form-control" placeholder="Company Code" formControlName="companyCode"
+                      maxlength="50">
+                    
+                    <button type="button" class="btn btn-primary" (click)="validateCompanyCode()"
+                      style="font-size: 12px;">Verify</button>
+                   
+
+                        
+
+
+                  </div>
+                  <p class="text-success small ps-5" *ngIf="companyname.length>0">
+  <i class="bi bi-check-circle-fill me-1"></i>
+  {{ companyname }}
+</p>
+                  <div *ngIf="submitted && EmploginForm.get('companyCode')?.errors as errors">
+                      <div *ngIf="errors['required']"  class="text-danger mt-1" style="font-size: 12px;">Company Code is required</div>
+                    </div>
+                <label for="username" class="form-label">Username</label>
+                  <div class="input-group mb-2">
+                    <span class="input-group-text p-3"><i class="fa-solid fa-user"></i></span>
+                    <input type="text" class="form-control" placeholder="Username" formControlName="username"
+                      maxlength="50">
+                  </div>
+                  <div *ngIf="submitted && EmploginForm.get('username')?.errors as errors">
+                      <div *ngIf="errors['required']" class="text-danger mt-1" style="font-size: 12px;">Username is required</div>
+                    </div>
+
+                   <label for="password" class="form-label">Password</label>
+                  <div class="input-group mb-2">
+                     <span class="input-group-text p-3"><i class="fa-solid fa-lock"></i></span>
+                    <input [type]="showPassword ? 'text' : 'password'" type="password" class="form-control" placeholder="Password"   formControlName="password" 
+                      maxlength="50">
+                         <span class="input-group-text p-3 password-toggle" (click)="togglePasswordVisibility()">
+                        <i [class]="showPassword ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
+                      </span>
+                  </div>
+                 <div *ngIf="submitted && EmploginForm.get('password')?.errors as errors">
+                      <div *ngIf="errors['required']" class="text-danger mt-1" style="font-size: 12px;">Password is required</div>
+                    </div>
+                  
+
+                    <!-- Login Button -->
+                    <div class="d-grid gap-2 col-12">
+                     
+                   <button type="submit" class="btn mt-3 border-0 fw-bold fs-6"
+        style="background-color: #3080e8; color: white;"
+        [disabled]="isLoggingIn">
+  
+  <i *ngIf="isLoggingIn" class="fa fa-spinner fa-spin"></i>
+  {{ isLoggingIn ? 'Wait...' : 'Login' }}
+</button>
+
+                    </div>
+                </form>
+
+              </div>
+            </div>
+
+
+          </div>
+
+
+
+
+
+        </div>
+
+       
+
+
+
+      </div>
+
+
+
+
+
+
+
+    </div>
+  </div>
+</section>

@@ -1,0 +1,89 @@
+ 
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-primary">
+                <div class="row w-100">
+                  <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-between">
+                    <h4>List of Channel</h4>
+                  </div>
+                  <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-center">
+                    <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText" />
+                  </div>
+                  <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-md-end">
+                    <button class="btn btnheader" routerLink="/dash/payroll/payrolldashboard/ChannelMaster">
+                         Add
+                      </button>
+                      <button class="btn btn-light mx-1" (click)="exportToExcel()">
+                        Download
+                      </button>
+                  </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive table-invoice">
+                    <table id="exportTable" class="table">
+                      <thead>
+                        <tr> 
+                          <th>Sr.No</th>    
+                          <th>Channel Code</th>
+                          <th>Channel Name</th>
+                          <th>UserId</th>
+                          <th>Location</th>
+                          <th>City</th>
+                          <th>Office Type</th>
+                          <th>Company Name</th>           
+                          <th>Contact Person</th>                  
+                          <th>Contact Number</th>
+                          <th>Email</th>
+                          <th>Status</th>
+                          <th>Action</th> 
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let item of filteredData() 
+                        | paginate : { itemsPerPage: pageSize, currentPage: page, totalItems: totalItems }; let i = index">
+                          <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+                          <td>{{ item.channelCode }}</td>
+                          <td>{{ item.channelName }}</td>
+                                                    <td>{{ item.userId }}</td>
+                                                    <td>{{ item.location }}</td>
+                                                    <td>{{ item.city }}</td>
+                                                    <td>{{ item.officeType }}</td>
+
+                          <td>{{ item.companyName }}</td>
+                          <td>{{ item.contactPerson }}</td>
+                          <td>{{ item.contactNo }}</td>
+                          <td>{{ item.emailId }}</td>
+                          <td>
+                            <span [class]="item.isActive ? 'badge bg-success' : 'badge bg-danger'">
+                              {{ item.isActive ? 'Active' : 'Inactive' }}
+                            </span>
+                          </td>
+                          <td>
+                            <button class="btn" (click)="Isedit(encryptionService.encryptText(item.pk_ChannelId.toString()))">
+                              <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                            <button class="btn" (click)="deleteChannel(item.pk_ChannelId)">
+                              <i class="fa fa-trash"></i>
+                            </button>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <pagination-controls
+                      (pageChange)="onPageChange($event)"
+                      [responsive]="true">
+                    </pagination-controls>
+                
+                    <ng-template #noData>
+                      <tr>
+                        <td colspan="9" class="text-center">No data available</td>
+                      </tr>
+                    </ng-template>
+                  </div>
+            </div>
+        </div>
+    </div>
+</div>

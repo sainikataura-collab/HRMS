@@ -1,0 +1,267 @@
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card mt-lg-1">
+      <!-- card header  -->
+      <div class="card-header bg-primary">
+        <div class="row w-100">
+          <div class="col-sm-8 col-md-6 col-lg-6 col-xxl-6 col-10 d-flex align-items-center justify-content-between">
+            <h4 class="py-lg-1">{{Isedit ? 'Update Candidate Salary' : 'Candidate Salary Details'}}</h4>
+          </div>
+          <div class="col-sm-4 col-md-6 col-lg-6 col-xxl-6 col-2 d-flex align-items-center justify-content-md-end">
+            <button class="btn btnheader" routerLink="/dash/recruitment/recruitmentdashboard/Candidate-Salary_list">
+              Back
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      <!--  -->
+
+
+      <div class="card-body">
+        <form class="row" [formGroup]="CandidateSalary">
+          <div class="row" class="row row-cols-1 row-cols-md-3 gy-2 gx-3">
+
+
+
+            <!--Candidate Search Input (Reactive Form) -->
+            <!-- <div class="col">
+              <label for="name">Candidate Name<span class="text-danger">*</span></label>
+              <div class="input-group mb-3">
+                <input type="text" class="form-control w-75 rounded rounded-end-0" placeholder="Candidate Name"
+                  formControlName="candidateSearch">
+                <span class="input-group-text" (click)="onCandidateSearchChange()" style="cursor: pointer;"><i
+                    class="fa-solid fa-search text-primary fw-bold"></i></span>
+              </div>
+            </div> -->
+
+
+            <div class="col-sm-12 col-md-12 col-lg-4">
+              <label>Job Details <span style="color: red;">*</span></label>
+              <div class="form-group">
+                <ng-select [items]="jobList" bindLabel="name" bindValue="value" formControlName="fk_jobId"
+                  placeholder="--Select --" class="w-100" (change)="onJobChange()"></ng-select>
+                <div *ngIf="showError   && CandidateSalary.get('fk_jobId')?.invalid" class="text-danger mt-1"
+                  style="font-size: 12px;">
+                  Please choose Job
+                </div>
+              </div>
+
+            </div>
+
+            <!-- ⬇️ Candidate Dropdown (Reactive Form) -->
+            <div class="col">
+              <label for="Candidate">Select Candidate<span class="text-danger">*</span></label>
+              <ng-select id="Candidate" [items]="CandidateList" bindLabel="name" bindValue="value"
+                formControlName="fk_recId" class="w-100" [clearable]="true" [searchable]="false"
+                (click)="getCandidatedata()">
+              </ng-select>
+              <span *ngIf="showError && CandidateSalary.controls['fk_recId'].invalid" class="text-danger mt-1"
+                style="font-size: 12px;">
+                Please select a Candidate.
+              </span>
+            </div>
+
+
+
+
+            <div class="col">
+              <label for="name">Father Name<span class="text-danger">*</span></label>
+              <input id="name" type="text" class="form-control" formControlName="fathername" readonly>
+            </div>
+
+            <div class="col">
+              <label>DOB<span class="text-danger font-bold">*</span></label>
+              <input type="date" class="form-control" formControlName="dateofbirth" readonly>
+              
+            </div>
+
+            <div class="col">
+              <label for="name">Experience<span class="text-danger">*</span></label>
+              <input id="name" type="text" class="form-control" formControlName="experience" readonly>
+            </div>
+
+            <div class="col">
+              <label for="name">Current CTC<span class="text-danger">*</span></label>
+              <input id="name" type="text" class="form-control" formControlName="CurrentCTC" readonly>
+            </div>
+            <div class="col">
+              <label for="name">Notification No<span class="text-danger">*</span></label>
+              <input id="name" type="text" class="form-control" formControlName="notificationNo" readonly>
+            </div>
+            <div class="col">
+              <label for="name">Job Title<span class="text-danger">*</span></label>
+              <input id="name" type="text" class="form-control" formControlName="Jobtitle" readonly>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-between align-items-center mt-4">
+            <p class="text-primary m-0 fw-bold ">Others Details</p>
+          </div>
+
+          <div class="row" class="row row-cols-1 row-cols-md-3 gy-2 gx-3">
+
+            <div class="col">
+              <div class="col-md-4">
+                <label for="PfDeduction">PF Applicable</label>
+              </div>
+              <div class="col-md-8">
+                <input type="checkbox" id="PfDeduction" formControlName="pfApp" class="form-check-input">
+              </div>
+            </div>
+
+            <div class="col">
+              <div class="col-md-4">
+                <label for="PfDeduction">ESI Applicable</label>
+              </div>
+              <div class="col-md-8">
+                <input type="checkbox" id="PfDeduction" formControlName="esiApp" class="form-check-input">
+              </div>
+            </div>
+
+            <!-- Based On -->
+            <div class="col">
+              <label>Based On</label><br>
+              <div class="form-check form-check-inline pt-2">
+                <input class="form-check-input" type="radio" id="inlineRadio3" value="C" formControlName="basedon">
+                <label class="form-check-label" for="inlineRadio3">Gross</label>
+              </div>
+              <div class="form-check form-check-inline pt-2">
+                <input class="form-check-input" type="radio" id="inlineRadio4" value="B" formControlName="basedon">
+                <label class="form-check-label" for="inlineRadio4">Basic</label>
+              </div>
+            </div>
+
+            <!-- Location -->
+            <div class="col">
+              <label>Location <span class="text-danger">*</span></label>
+              <ng-select [items]="Location" bindLabel="name" bindValue="value" formControlName="LocId"
+                placeholder="--Select Location--" class="w-100 small"></ng-select>
+                <span *ngIf="showError && CandidateSalary.controls['LocId'].invalid" class="text-danger mt-1"
+                style="font-size: 12px;">
+                Please select Location
+              </span>
+
+
+            </div>
+
+
+
+            <!-- Grade -->
+            <div class="col">
+              <label>Grade <span class="text-danger">*</span></label>
+              <ng-select [items]="Grade" bindLabel="name" bindValue="value" formControlName="FkGradeId"
+                placeholder="--Select Grade Type--" class="w-100 small">
+              </ng-select>
+              <span *ngIf="showError && CandidateSalary.controls['FkGradeId'].invalid" class="text-danger mt-1"
+                style="font-size: 12px;">
+                Please select Grade
+              </span>
+
+            </div>
+
+            <div class="col">
+              <label for="name">Amount<span class="text-danger"></span></label>
+              <input id="name" type="text" class="form-control" formControlName="amount">
+            </div>
+
+            <div class="col">
+              <label for="name">Remarks<span class="text-danger"></span></label>
+              <input id="name" type="text" class="form-control" formControlName="remarks" readonly>
+            </div>
+
+            <div class="col">
+              <div class="d-flex align-items-center justify-content-start pt-4 mt-2">
+                <button type="button" class="btn btn-primary btn-sm mx-1" (click)="getHeadList()">Heads</button>
+                <button type="button" class="btn btn-outline-dark btn-sm mx-1" (click)="resetTable()">Reset</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Head Tables -->
+
+          <div class="col-md-6 mt-5" *ngIf="showEarningHeads">
+
+            <p class="text-dark m-0 d fw-bold  ps-3 text-primary ">List of Earning Heads</p>
+
+            <table class="table mt-2" formArrayName="earningHeads">
+              <thead>
+                <tr>
+                  <th>Sr.No.</th>
+                  <th>Description</th>
+                  <th>Amount</th>
+                  <th>headtype</th>
+
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of earningHeads.controls; let i = index" [formGroupName]="i">
+                  <td>{{ i + 1 }}</td>
+                  <td>
+                   {{ item.get('shortDesc')?.value || item.get('shortdesc')?.value }}
+                  </td>
+                  <td>
+                    <input type="text" class="form-control" formControlName="amount"
+                      (keypress)="restrictInputDecimal($event)" maxlength="8">
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="row row-cols-1 row-cols-md-3 g-2 d-flex align-items-center justify-content-start mt-4">
+            <div class="col pt-2">
+              <label for="inputEmail3"><span class="fw-semibold">Total Earnings : </span> <span
+                  class="px-2 fw-bold text-success">{{earningCount}}</span></label>
+
+            </div>
+          </div>
+
+
+          <!-- <div class=" row mt-lg-4">
+            <div class="col-5">
+              <p class="text-primary m-0 fw-bold ">List of Applied Condidate</p>
+            </div>
+            <div class="col-2"></div>
+            <div class="col-5">
+              <p class="text-primary m-0 fw-bold ">List of Applied Condidate</p>
+            </div>
+
+
+          </div>
+          <div class="row">
+
+
+
+            <div class="col-5">
+              <label for="name">Total Earnings <span class="text-danger"></span></label>
+              <input id="name" type="text" class="form-control" formControlName="TotalEarnings	">
+            </div>
+
+            <div class="col-2"></div>
+
+            <div class="col-5">
+              <label for="name">Total Deductions : <span class="text-danger"></span></label>
+              <input id="name" type="text" class="form-control" formControlName="Total Deductions">
+            </div>
+
+
+
+          </div> -->
+
+
+          <!-- Footer buttons -->
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary mx-1" (click)="submitCandidateSalary()">
+              {{Isedit ? 'Update' : 'Save'}}
+            </button>
+            <button type="button" class="btn btn-outline-dark mx-1">Reset</button>
+          </div>
+
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

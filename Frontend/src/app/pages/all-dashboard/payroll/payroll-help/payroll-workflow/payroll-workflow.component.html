@@ -1,0 +1,319 @@
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card border-top border-3 border-primary">
+      <ul class="nav nav-pills mt-4 mb-0" id="pills-tab" role="tablist">
+
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active p-1 fw-semibold" id="pills-HR-Salary-Process-tab" data-bs-toggle="pill"
+            data-bs-target="#pills-HR-Salary-Process" type="button" role="tab" aria-controls="pills-HR-Salary-Process"
+            aria-selected="true">HR Salary Process</button>
+        </li>
+
+        <li class="nav-item" role="presentation">
+          <button class="nav-link p-1 fw-semibold" id="pills-Payroll-Finalization-Process-tab" data-bs-toggle="pill"
+            data-bs-target="#pills-Payroll-Finalization-Process" type="button" role="tab"
+            aria-controls="pills-Payroll-Finalization-Process" aria-selected="false">Payroll Finalization
+            Process</button>
+        </li>
+
+
+        <li class="nav-item" role="presentation">
+          <button #taxTab class="nav-link p-1 fw-semibold" id="pills-Tax-Filing-tab" data-bs-toggle="pill"
+            data-bs-target="#pills-Tax-Filing" type="button" role="tab" aria-controls="pills-Tax-Filing"
+            aria-selected="false">
+            Tax Filing & Compliance
+          </button>
+        </li>
+
+
+
+        <li class="nav-item" role="presentation">
+          <button #transactionTab class="nav-link p-1 fw-semibold" id="pills-Transaction-Process-tab"
+            data-bs-toggle="pill" data-bs-target="#pills-Transaction-Process" type="button" role="tab"
+            aria-controls="pills-Transaction-Process" aria-selected="false">
+            Payroll Transaction Process
+          </button>
+        </li>
+
+
+
+        <li class="nav-item" role="presentation">
+          <button class="nav-link p-1 fw-semibold" id="pills-Exit-Clearance-Process-tab" data-bs-toggle="pill"
+            data-bs-target="#pills-Exit-Clearance-Process" type="button" role="tab"
+            aria-controls="pills-Exit-Clearance-Process" aria-selected="false"> Exit Clearance Process</button>
+        </li>
+
+      </ul>
+
+
+      <div class="tab-content" id="pills-tabContent">
+
+        <!-- 1 workflow -->
+
+        <div class="tab-pane fade show active" id="pills-HR-Salary-Process" role="tabpanel"
+          aria-labelledby="pills-HR-Salary-Process-tab" tabindex="0">
+
+          <!--  -->
+          <div class="row border-top border-2 border-primary m-3 p-3">
+            <div class="col-12">
+              <p class="text-center fs-6 fw-bold mb-4 text-dark"><span>HR Salary Process &nbsp;</span> </p>
+            </div>
+
+
+            <div class="payroll-theme-workflow">
+
+              <ng-container *ngFor="let step of workflowSteps; let i = index">
+
+                <div class="workflow-step step-entry p-3 rounded" style="border: 1px solid rgb(160, 161, 163);">
+
+                  <div class="circle-card step-card" style="cursor: pointer;"
+                    (click)="downloadImage(step.filePath, step.fileName)">
+                    <span class="step-title p-2">
+                      {{ step.title }}<i class="fa-solid fa-eye ms-2"></i>
+                    </span>
+                  </div>
+
+                  <div class="step-description mt-2 text-center">
+                    {{ step.description }}    
+                  </div>
+
+                  <!-- Optional Sub Steps -->
+                  <div *ngIf="step.subSteps" class="sub-timeline mt-3">
+                    <ng-container *ngFor="let sub of step.subSteps">
+                      <div class="sub-timeline-step animate-entry">
+                        <div class="sub-bubble shadow">
+                          <div class="sub-icon mb-1">{{ sub.icon }}</div>
+                          <div class="sub-title">{{ sub.title }}</div>
+                          <div class="sub-desc small">{{ sub.description }}</div>
+                        </div>
+                      </div>
+                    </ng-container>
+                  </div>
+
+                </div>
+
+                <!-- Arrow between steps -->
+                <div class="workflow-connector" *ngIf="i < workflowSteps.length - 1">
+                  <span class="arrow">➜</span>
+                </div>
+
+              </ng-container>
+
+            </div>
+
+
+          </div>
+
+        </div>
+
+
+        <!-- Workflow 2 -->
+        <div class="tab-pane fade" id="pills-Payroll-Finalization-Process" role="tabpanel"
+          aria-labelledby="pills-Payroll-Finalization-Process-tab" tabindex="0">
+
+          <div class="row border-top border-2 border-success p-3 m-lg-3">
+            <p class="text-center fs-6 fw-bold mb-4 text-dark">Payroll Finalization Process</p>
+            <div class="payroll-theme-workflow">
+
+
+              <ng-container *ngFor="let step of payrollSteps; let i = index">
+                <div class="workflow-step step-entry p-3 rounded" style="border: 1px solid rgb(160, 161, 163);">
+                  <div class="circle-card step-card" style="cursor: pointer;"
+                    (click)="downloadImage(step.filePath, step.fileName)">
+                    <span class="step-title p-2">
+                      {{ step.title }}<i class="fa-solid fa-eye ms-2"></i>
+                    </span>
+                  </div>
+
+                  <div class="step-description mt-2 text-center">
+                    {{ step.description }}
+                  </div>
+
+                  <!-- Optional Sub Steps -->
+                  <div *ngIf="step.subSteps" class="sub-timeline mt-3">
+                    <ng-container *ngFor="let sub of step.subSteps">
+                      <div class="sub-timeline-step animate-entry">
+                        <div class="sub-bubble shadow">
+                          <div class="sub-icon mb-1">{{ sub.icon }}</div>
+                          <div class="sub-title">{{ sub.title }}</div>
+                          <div class="sub-desc small">{{ sub.description }}</div>
+                        </div>
+                      </div>
+                    </ng-container>
+                  </div>
+
+                </div>
+
+                <!-- Arrow between steps -->
+                <div class="workflow-connector" *ngIf="i < payrollSteps.length - 1">
+                  <span class="arrow">➜</span>
+                </div>
+              </ng-container>
+
+            </div>
+          </div>
+
+
+        </div>
+
+
+        <!-- Workflow 3 -->
+
+        <div class="tab-pane fade" id="pills-Tax-Filing" role="tabpanel" aria-labelledby="pills-Tax-Filing-tab"
+          tabindex="0">
+
+
+          <div class="row border-top border-2 border-info p-3 m-lg-3">
+            <p class="text-center fs-6 fw-bold mb-4 text-dark">Tax Computation Process</p>
+            <div class="payroll-theme-workflow">
+              <ng-container *ngFor="let step of taxSteps; let i = index">
+                <div class="workflow-step step-entry p-3 rounded" style="border: 1px solid rgb(160, 161, 163);">
+                  <div class="circle-card step-card" style="cursor: pointer;"
+                    (click)="downloadImage(step.filePath, step.fileName)">
+                    <span class="step-title p-2">
+                      {{ step.title }}<i class="fa-solid fa-eye ms-2"></i>
+                    </span>
+                  </div>
+
+                  <div class="step-description mt-2 text-center">
+                    {{ step.description }}
+                  </div>
+
+                  <!-- Optional Sub Steps -->
+                  <div *ngIf="step.subSteps" class="sub-timeline mt-3">
+                    <ng-container *ngFor="let sub of step.subSteps">
+                      <div class="sub-timeline-step animate-entry">
+                        <div class="sub-bubble shadow">
+                          <div class="sub-icon mb-1">{{ sub.icon }}</div>
+                          <div class="sub-title">{{ sub.title }}</div>
+                          <div class="sub-desc small">{{ sub.description }}</div>
+                        </div>
+                      </div>
+                    </ng-container>
+                  </div>
+
+                </div>
+
+                <!-- Arrow between steps -->
+                <div class="workflow-connector" *ngIf="i <taxSteps.length - 1">
+                  <span class="arrow">➜</span>
+                </div>
+              </ng-container>
+
+
+
+            </div>
+          </div>
+
+        </div>
+
+
+
+        <!-- workflow 4 -->
+
+        <div class="tab-pane fade" id="pills-Transaction-Process" role="tabpanel"
+          aria-labelledby="pills-Transaction-Process-tab" tabindex="0">
+
+          <div class="row border-top border-2 border-dark p-3 m-lg-3">
+            <p class="text-center fs-6 fw-bold mb-4 text-dark">Tax Computation Process</p>
+            <div class="payroll-theme-workflow">
+
+              <ng-container *ngFor="let step of transactionSteps; let i = index">
+                <div class="workflow-step step-entry p-3 rounded" style="border: 1px solid rgb(160, 161, 163);">
+
+                  <div class="circle-card step-card" style="cursor: pointer;"
+                    (click)="downloadImage(step.filePath, step.fileName)">
+                    <span class="step-title p-2">
+                      {{ step.title }}<i class="fa-solid fa-eye ms-2"></i>
+                    </span>
+                  </div>
+
+                  <div class="step-description mt-2 text-center">
+                    {{ step.description }}
+                  </div>
+
+                  <!-- Optional Sub Steps -->
+                  <div *ngIf="step.subSteps" class="sub-timeline mt-3">
+                    <ng-container *ngFor="let sub of step.subSteps">
+                      <div class="sub-timeline-step animate-entry">
+                        <div class="sub-bubble shadow">
+                          <div class="sub-icon mb-1">{{ sub.icon }}</div>
+                          <div class="sub-title">{{ sub.title }}</div>
+                          <div class="sub-desc small">{{ sub.description }}</div>
+                        </div>
+                      </div>
+                    </ng-container>
+                  </div>
+
+                </div>
+
+                <!-- Arrow between steps -->
+                <div class="workflow-connector" *ngIf="i < transactionSteps.length - 1">
+                  <span class="arrow">➜</span>
+                </div>
+              </ng-container>
+
+            </div>
+          </div>
+
+
+
+        </div>
+        <!-- workflow 5 -->
+
+
+        <div class="tab-pane fade" id="pills-Exit-Clearance-Process" role="tabpanel"
+          aria-labelledby="pills-Exit-Clearance-Process-tab" tabindex="0">
+
+
+          <div class="row border-top border-2 border-danger p-3 m-lg-3">
+            <p class="text-center fs-6 fw-bold mb-4 text-dark">Exit Clearance Process</p>
+            <div class="payroll-theme-workflow">
+              <ng-container *ngFor="let step of exitSteps; let i = index">
+                <div class="workflow-step step-entry p-3 rounded" style="border: 1px solid rgb(160, 161, 163);">
+                  <div class="circle-card step-card" style="cursor: pointer;"
+                    (click)="downloadImage(step.filePath, step.fileName)">
+                    <span class="step-title p-2">
+                      {{ step.title }}<i class="fa-solid fa-eye ms-2"></i>
+                    </span>
+                  </div>
+
+                  <div class="step-description mt-2 text-center">
+                    {{ step.description }}
+                  </div>
+
+                  <!-- Optional Sub Steps -->
+                  <div *ngIf="step.subSteps" class="sub-timeline mt-3">
+                    <ng-container *ngFor="let sub of step.subSteps">
+                      <div class="sub-timeline-step animate-entry">
+                        <div class="sub-bubble shadow">
+                          <div class="sub-icon mb-1">{{ sub.icon }}</div>
+                          <div class="sub-title">{{ sub.title }}</div>
+                          <div class="sub-desc small">{{ sub.description }}</div>
+                        </div>
+                      </div>
+                    </ng-container>
+                  </div>
+
+                </div>
+
+                <!-- Arrow between steps -->
+                <div class="workflow-connector" *ngIf="i < exitSteps.length - 1">
+                  <span class="arrow">➜</span>
+                </div>
+              </ng-container>
+            </div>
+          </div>
+
+
+
+        </div>
+
+
+
+
+      </div>
+
+    </div>
+  </div>
+</div>

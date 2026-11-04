@@ -1,0 +1,166 @@
+<div class="row">
+  <div class="col-sm-12">
+    <div class="card">
+     
+
+    <div class="card-header bg-primary text-white d-flex align-items-center justify-content-between">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-4 d-flex align-items-center justify-content-between">
+       <h4>{{ pkAppEmpId ? 'Appraisal Approval ' : 'Appraisal' }}</h4>
+
+
+          </div>
+ 
+          <div class="col-sm-12 col-md-4 d-flex align-items-center justify-content-between">
+            <button class="btn btnheader" routerLink="/dash/performance/performancedashboard/AppraisalApprovalList">
+                Go To Appraisal Approval List
+            </button>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="card-body">
+        <form [formGroup]="form">
+          <div class="row">
+            <!-- Employee Dropdown -->
+            <div class="col-md-4 mb-3">
+              <label for="employeeSelect">Employee</label>
+              <ng-select id="employeeSelect" [items]="employeeList" bindLabel="name" bindValue="value"
+                formControlName="selectedEmployee" placeholder="-- Select Employee --"   [disabled]="isUpdateMode"></ng-select>
+            </div>
+
+            <!-- Appraisal Year Dropdown -->
+            <div class="col-md-4 mb-3">
+              <label for="year">Appraisal Year</label>
+              <ng-select id="year" [items]="years" bindLabel="name"
+               bindValue="value" formControlName="selectedYear"
+               
+                placeholder="--Select --" class="w-100"
+                ></ng-select>
+            </div>
+
+            <div class="col-md-4 mb-3"></div>
+          </div>
+
+          <!-- Employee Info -->
+          <div class="row" *ngIf="selectedEmpDetails">
+            <p class="fw-bold text-primary">Employee Info</p>
+   <div class="row mb-4">
+  <div class="col-12">
+    <div class="border rounded p-3 bg-light">
+      <div class="row gy-3 small">
+        <div class="col-md-6">
+          <strong>Emp Name:&nbsp;</strong>
+          <span class="text-break">{{ selectedEmpDetails.name }}</span>
+        </div>
+        <div class="col-md-6">
+          <strong>Emp Code:&nbsp;</strong>
+          <span>{{ selectedEmpDetails.code }}</span>
+        </div>
+        <div class="col-md-6">
+          <strong>Department:&nbsp;</strong>
+          <span class="text-break">{{ selectedEmpDetails.department }}</span>
+        </div>
+        <div class="col-md-6">
+          <strong>Designation:&nbsp;</strong>
+          <span class="text-break">{{ selectedEmpDetails.designation }}</span>
+        </div>
+        <div class="col-md-6">
+          <strong>Reporting Manager:&nbsp;</strong>
+          <span class="text-break">{{ selectedEmpDetails.manager || 'N/A' }}</span>
+        </div>
+        <!-- <div class="col-md-6">
+          <strong>Appraisal Period:&nbsp;</strong>
+          <span>{{ selectedEmpDetails.Date}}</span>
+        </div> -->
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+            <!-- KRA Evaluation -->
+            <p class="fw-bold text-primary">KRA Evaluation</p>
+            <div class="table-responsive" formArrayName="kraList">
+              <table class="table table-bordered align-middle">
+                <thead class="table-light">
+                  <tr>
+                    <th>S.No</th>
+                    <th class="text-start">KRA Description</th>
+                    <th class="text-start">Target</th>
+                    <th class="text-start">Achievement</th>
+                    <th class="text-start">Weight (%)</th>
+                    <th class="text-start">Rating (0–5)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let kra of kraListFormArray.controls; let i = index" [formGroupName]="i">
+                    <td>{{ i + 1 }}</td>
+                    <td class="text-start" [innerHTML]="kra.get('description')?.value | safeHtml"></td>
+                   <td class="text-start"  [innerHTML]="kra.get('target')?.value | safeHtml"></td>
+
+                    <td class="text-start">{{ kra.get('achievement')?.value }}</td>
+                    <td class="text-start">{{ kra.get('weight')?.value }}</td>
+                    <td>
+                      <input formControlName="rating" type="number" class="form-control" min="0" max="5"  />
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Behavioral Attributes -->
+            <p class="fw-bold text-primary">Behavioral Attributes</p>
+            <div class="table-responsive">
+              <table class="table table-bordered align-middle">
+                <thead class="table-light">
+                  <tr>
+                    <th>Attribute</th>
+                    <th>Rating (0–5)</th>
+                    <th>Comments</th>
+                  </tr>
+                </thead>
+                <tbody formArrayName="behavioralAttributes">
+                  <tr *ngFor="let attr of behavioralAttributesFormArray.controls; let i = index" [formGroupName]="i">
+                    <td>{{ attr.get('name')?.value }}</td>
+                    <td>
+                      <input type="number" class="form-control" formControlName="rating" min="0" max="5"/>
+                    </td>
+                    <td>
+                      <input type="text" class="form-control" formControlName="comment" placeholder="Add comments"  />
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Summary & Comments -->
+            <p class="fw-bold text-primary">Summary & Comments</p>
+            <div class="row mb-3">
+              <div class="col-md-3"><strong>Final KRA Score:</strong> {{ finalKraScore }}</div>
+              <div class="col-md-3"><strong>Behavioral Score:</strong> {{ behavioralScoreAvg }}</div>
+              <div class="col-md-3"><strong>Final Weighted Score:</strong> {{ finalWeightedScore }}</div>
+            </div>
+
+          <div class="row">
+  <div class="col-md-4">
+    <label>Manager Comments:</label>
+    <textarea class="form-control" rows="3" formControlName="managerComment" ></textarea>
+  </div>
+  <div class="col-md-4">
+    <label>Employee Comments:</label>
+    <textarea class="form-control" rows="3" formControlName="employeeComment" ></textarea>
+  </div>
+</div>
+<div class="text-end mt-3" *ngIf="isUpdateMode">
+  <button class="btn btn-success" (click)="approveAppraisal()">Approve</button>
+</div>
+
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

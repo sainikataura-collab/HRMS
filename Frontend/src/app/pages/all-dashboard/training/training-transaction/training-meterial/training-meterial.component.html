@@ -1,0 +1,267 @@
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card">
+
+      <div class="card-header bg-blue">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-6 col-lg-6 col-9">
+            <h4>{{ isEdit ? 'Update Training Content ' : 'Training Content Upload' }}</h4>
+          </div>
+          <div class="col-sm-12 col-md-6 col-lg-6 col-3 d-flex align-items-center justify-content-md-end">
+            <button class="btn btnheader"
+              routerLink="/dash/training/trainingdashboard/Training_content_list">Back</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-body mt-4">
+        <form [formGroup]="materialForm">
+
+
+          <div class="row row-cols-1 row-cols-md-3 g-4">
+
+            <div class="col">
+              <label>Training Program <span style="color:red">*</span></label>
+
+              <ng-select [items]="trainingPrograms" bindLabel="name" bindValue="value" formControlName="fk_planningId"
+                placeholder="Select Training Program">
+              </ng-select>
+
+              <!-- <ng-select [items]="trainingPrograms" bindLabel="name" bindValue="value" formControlName="fk_planningId"
+                placeholder="-select code-"></ng-select>  -->
+
+
+              <div *ngIf="showError && materialForm.get('fk_planningId')?.invalid" class="text-danger mt-1"
+                style="font-size:12px;">
+                Please select Training Program
+              </div>
+            </div>
+
+
+            <!-- <div class="col">
+            <label>Planned Session</label>
+            <ng-select [items]="planningSessions"
+                       bindLabel="name"
+                       bindValue="id"
+                       formControlName="sessionId"
+                       placeholder="Select Session">
+            </ng-select>
+          </div> -->
+
+
+            <div class="col">
+              <label>Content Title <span style="color:red">*</span></label>
+              <input type="text" class="form-control" formControlName="materialTitle"
+                placeholder="Enter Material Title">
+              <div *ngIf="showError && materialForm.get('materialTitle')?.invalid" class="text-danger mt-1"
+                style="font-size:12px;">
+                Please enter Material Title
+              </div>
+            </div>
+
+
+            <div class="col">
+              <label>Content Type <span style="color:red">*</span></label>
+              <ng-select [items]="materialTypes" bindLabel="name" bindValue="id" formControlName="materialType"
+                placeholder="Select Material Type" (change)="onMaterialTypeChange()">
+              </ng-select>
+              <div *ngIf="showError && materialForm.get('materialType')?.invalid" class="text-danger mt-1"
+                style="font-size:12px;">
+                Please select Material Type
+              </div>
+
+            </div>
+
+            <div class="col"
+              *ngIf="materialForm.get('materialType')?.value === 'video' || materialForm.get('materialType')?.value === 'document'">
+              <label>Upload File <span style="color:red">*</span></label>
+              <input type="file" class="form-control" (change)="onFileSelect($event)">
+              <!-- <div *ngIf="selectedFileName" class="mt-1 text-success">{{ selectedFileName }}</div> -->
+            </div>
+
+
+            <div class="col"
+              *ngIf="materialForm.get('materialType')?.value === 'youtube' || materialForm.get('materialType')?.value === 'link'">
+              <label>Content URL <span style="color:red">*</span></label>
+              <input type="url" class="form-control" formControlName="materialUrl"
+                placeholder="Enter link or YouTube URL">
+            </div>
+
+
+            <!-- <div class="col">
+            <label>Duration (Minutes)</label>
+            <input type="number" class="form-control" formControlName="duration" placeholder="e.g. 45">
+          </div> -->
+
+
+            <!-- <div class="col">
+            <label>Display Order</label>
+            <input type="number" class="form-control" formControlName="displayOrder">
+          </div> -->
+
+            <div class="col">
+              <label>Description</label>
+              <textarea class="form-control" formControlName="description" placeholder="Enter description"></textarea>
+            </div>
+
+
+
+
+
+            <!-- <div class="col">
+            <label>Is Mandatory?</label>
+            <div class="radio-group d-flex gap-3">
+              <label><input type="radio" formControlName="mandatory" value="1"> Yes</label>
+              <label><input type="radio" formControlName="mandatory" value="0"> No</label>
+            </div>
+          </div> -->
+
+
+            <div class="col">
+              <label>Status</label>
+              <div class="radio-group d-flex gap-3">
+                <label><input type="radio" formControlName="isActive" value="true"> Active</label>
+                <label><input type="radio" formControlName="isActive" value="false"> Inactive</label>
+              </div>
+            </div>
+
+
+
+
+          </div>
+
+          <div class="row ">
+            <div class="col-sm-12 col-md-12 col-lg-12 d-flex align-items-center justify-content-end">
+
+              <button type="button" class="btn btn-primary  mx-1" (click)="SaveMaterial()">{{ isEdit? 'Update' : 'Save'
+                }}</button>
+              <!-- <button type="button" class="btn btn-outline-dark mx-1"(click)="resetForm()">Reset</button>                  -->
+
+            </div>
+          </div>
+
+
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+<!-- <div class="container">
+  <div class="header">
+    <h1>📚 Training Material Management</h1>
+  </div>
+
+  <div class="card">
+
+    <form [formGroup]="materialForm" (ngSubmit)="onSubmit()">
+
+      <div class="form-grid">
+      
+        <div class="form-group">
+          <label>Training Program *</label>
+          <ng-select
+            [items]="trainingPrograms"
+            bindLabel="name"
+            bindValue="id"
+            formControlName="trainingId"
+            placeholder="Select Training Program">
+          </ng-select>
+        </div>
+
+       
+        <div class="form-group">
+          <label>Planning Session</label>
+          <ng-select
+            [items]="planningSessions"
+            bindLabel="name"
+            bindValue="id"
+            formControlName="planningId"
+            placeholder="Select Session (Optional)">
+          </ng-select>
+        </div>
+
+      
+        <div class="form-group">
+          <label>Material Title *</label>
+          <input type="text" class="form-control" formControlName="materialTitle" placeholder="Enter material title">
+        </div>
+
+      
+        <div class="form-group">
+          <label>Material Type *</label>
+          <ng-select
+            [items]="materialTypes"
+            bindLabel="name"
+            bindValue="id"
+            formControlName="materialType"
+            (change)="onMaterialTypeChange()"
+            placeholder="Select Type">
+          </ng-select>
+        </div>
+
+        <div class="form-group">
+          <label>Duration (minutes)</label>
+          <input type="number" formControlName="duration" class="form-control" placeholder="e.g., 45">
+        </div>
+
+        <div class="form-group">
+          <label>Display Order</label>
+          <input type="number" formControlName="displayOrder" class="form-control">
+        </div>
+      </div>
+
+      
+      <div class="form-group">
+        <label>Description</label>
+        <textarea formControlName="description" class="form-control" placeholder="Enter material description"></textarea>
+      </div>
+
+     
+      <div *ngIf="materialForm.value.materialType === 'video' || materialForm.value.materialType === 'document'">
+        <div class="form-group">
+          <label>Upload File *</label>
+          <input type="file" (change)="onFileSelected($event)" accept="video/*,.pdf,.doc,.docx">
+          <div *ngIf="selectedFile">📁 {{ selectedFile.name }}</div>
+        </div>
+      </div>
+
+    
+      <div *ngIf="materialForm.value.materialType === 'youtube' || materialForm.value.materialType === 'link'">
+        <div class="form-group">
+          <label>URL *</label>
+          <input type="url" formControlName="url" class="form-control" placeholder="Enter YouTube or external link">
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Is Mandatory?</label>
+          <div>
+            <label><input type="radio" formControlName="mandatory" [value]="1"> Yes</label>
+            <label><input type="radio" formControlName="mandatory" [value]="0"> No</label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Status</label>
+          <div>
+            <label><input type="radio" formControlName="active" [value]="1"> Active</label>
+            <label><input type="radio" formControlName="active" [value]="0"> Inactive</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn btn-primary" type="submit">💾 Upload Material</button>
+        <button class="btn btn-secondary" type="reset">🔄 Reset</button>
+      </div>
+    </form>
+  </div>
+</div> -->

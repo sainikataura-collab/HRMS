@@ -1,0 +1,76 @@
+<section>
+  <div class="container-fluid mx-0 px-1">
+
+    <div class="row">
+      <div class="col-sm-12 col-lg-12 col-md-12">
+        <div class="card px-0 mx-0 ">
+
+          <!-- Card Header -->
+          <div class="card-header bg-primary">
+            <div class="row w-100">
+              <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-between">
+                <h4>Progression Detail List</h4>
+              </div>
+
+              <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-center">
+                <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText" />
+              </div>
+
+
+            </div>
+          </div>
+
+          <!-- Card Body -->
+          <div class="card-body px-1">
+            <div class=" table-invoice">
+              <table id="exportTable" class="table">
+                <thead>
+                  <tr>
+                    <th>S. No.</th>
+                    <th>Emp Code</th>
+                    <th>Emp Name</th>
+                    <th>Type</th>
+                    <th>Date</th>
+                    <th>Effective Date</th>
+                    <th>CTC</th>
+                    <th>New CTC</th>
+                    <th>Percentage</th>
+                    <th>Increment Amount</th>
+
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let item of filteredData(); let i = index">
+                    <td data-label="Sr.no.">{{ i + 1 }}</td>
+                    <td data-label="empcode">{{ item.empcode }}</td>
+                    <td data-label="empname">{{ item.empname }}</td>
+                    <td data-label="type">{{ item.type }}</td>
+                    <td data-label="date">{{ item.dated }}</td>
+                    <td data-label="Effective-date">{{ item.effectivefrom }}</td>
+                    <td data-label="ctcbasic">{{ item.ctcbasic }}</td>
+                    <td data-label="New CTC">{{ item.ctcbasic_n }}</td>
+                    <td data-label="percentage">{{ item.incper }}</td>
+                    <td data-label="Increment Amount">{{ item.incamt }}</td>
+                  </tr>
+
+                  <tr *ngIf="filteredData().length === 0">
+                    <td colspan="12" class="text-center py-4">
+                      <div class="no-record-wrapper">
+                        <i class="fa-regular fa-folder-open no-record-icon"></i>
+                        <div class="no-record-text"> <span>No records found</span> <span class="fs-5">🫡</span> </div>
+
+                      </div>
+                    </td>
+                  </tr>
+
+                  
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

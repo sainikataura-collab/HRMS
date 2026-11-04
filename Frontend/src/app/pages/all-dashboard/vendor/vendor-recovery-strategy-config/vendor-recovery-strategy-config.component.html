@@ -1,0 +1,549 @@
+<div class="row">
+  <div class="col-12">
+    <div class="card shadow-sm border-0">
+
+      <!-- ── Card Header (Exact Vendor Transaction Sync & City Master List Style) ── -->
+      <div class="card-header bg-primary">
+        <div class="row align-items-center">
+          <div class="col-12 col-md-auto d-flex align-items-center gap-2">
+            <h4 class="text-white mb-0 d-flex align-items-center">
+              <i class="fa fa-sliders me-2"></i>Deduction Recovery Strategy Configurator
+            </h4>
+            <span class="badge bg-light text-primary px-3 py-2 fw-semibold d-none d-lg-inline-block">
+              <i class="fa fa-info-circle me-1"></i>Pivots daily deductions into payout transactions
+            </span>
+          </div>
+          <div class="col-12 col-md d-flex justify-content-md-end align-items-center gap-2 mt-2 mt-md-0">
+            <button type="button" class="btn btn-light text-dark btn-sm px-3 fw-semibold action-btn-header border" (click)="openAuditDrawer()">
+              <i class="fa fa-history me-1 text-dark"></i> Audit Trail History
+            </button>
+           
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Card Body ── -->
+      <div class="card-body">
+
+        <!-- ── Section 1: Policy Application Scope ── -->
+        <div class="card shadow-sm border border-warning-subtle mb-4">
+          <div class="card-header bg-warning-subtle py-2 px-3 d-flex justify-content-between align-items-center border-bottom border-warning-subtle">
+            <span class="fw-bold text-dark section-header-title">
+              <i class="fa fa-globe text-primary me-2"></i>1. Policy Application Scope
+            </span>
+            <div>
+              <div *ngIf="isInherited" class="summary-chip chip-total py-1 px-3">
+                <i class="fa fa-level-down me-1"></i> Inherited from: <strong>{{ inheritedFrom === 'GlobalDefault' ? 'Global Default' : 'Client Default' }}</strong>
+              </div>
+              <div *ngIf="!isInherited" class="summary-chip chip-synced py-1 px-3">
+                <i class="fa fa-check-circle me-1"></i> <strong>Custom Rule Active</strong>
+              </div>
+            </div>
+          </div>
+          <div class="card-body py-3">
+            <div class="row align-items-end g-3">
+
+              <!-- Sleek Switch Control with distinct Warning & Success Colors -->
+              <div class="col-12 col-lg-auto">
+                <label class="form-label fw-semibold mb-1 font-11 text-dark d-flex align-items-center">
+                  <i class="fa fa-sliders text-primary me-1"></i> Scope Mode
+                </label>
+                <div>
+                  <div class="scope-mode-toggle d-inline-flex rounded-2">
+                    <!-- Button 1: Global Default (Warning Color Theme) -->
+                    <button type="button" class="btn scope-btn"
+                      [class.active-global]="scopeType === 'GLOBAL'"
+                      (click)="onScopeChange('GLOBAL')">
+                      <i class="fa fa-globe font-11"></i>
+                      <span>Global Default (All)</span>
+                    </button>
+
+                    <!-- Button 2: Specific Client & Model (Success Color Theme) -->
+                    <button type="button" class="btn scope-btn"
+                      [class.active-specific]="scopeType === 'SPECIFIC'"
+                      (click)="onScopeChange('SPECIFIC')">
+                      <i class="fa-solid fa-building font-11"></i>
+                      <span>Specific Client & Model</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Client & Model Dropdowns -->
+              <div class="col-12 col-lg" *ngIf="scopeType === 'SPECIFIC'" [formGroup]="configForm">
+                <div class="row g-2">
+                  <div class="col-12 col-sm-6">
+                    <label class="form-label fw-semibold mb-1 font-13 text-dark">
+                      Select Client <span class="text-danger">*</span>
+                    </label>
+                    <ng-select [items]="clientList" bindLabel="name" bindValue="value"
+                      formControlName="clientId" placeholder="-- Select Client --" appendTo="body">
+                    </ng-select>
+                  </div>
+                  <div class="col-12 col-sm-6">
+                    <label class="form-label fw-semibold mb-1 font-13 text-dark">
+                      Select Model <span class="text-dark fw-normal font-12">(Optional - All if blank)</span>
+                    </label>
+                    <ng-select [items]="modelList" bindLabel="name" bindValue="value"
+                      formControlName="modelId" placeholder="-- All Models --" appendTo="body">
+                    </ng-select>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Global Scope Context Box (Single Line) -->
+              <div class="col-12 col-lg" *ngIf="scopeType === 'GLOBAL'">
+                <div class="scope-info-box d-flex align-items-center gap-2 px-3 rounded-2 text-nowrap"
+                  title="Applies as baseline recovery hierarchy across all clients & models unless an overridden client/model policy is active.">
+                  <i class="fa fa-info-circle text-primary font-13 flex-shrink-0"></i>
+                  <span class="font-12 text-dark text-truncate">
+                    Applies as baseline recovery hierarchy across <strong class="text-dark">all clients & models</strong> unless an overridden policy is active.
+                  </span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Section 2: Choose Settlement Strategy ── -->
+        <div class="mb-4">
+          <div class="d-flex align-items-center mb-3">
+            <h6 class="fw-bold text-dark mb-0 section-header-title">
+              <i class="fa fa-cogs text-primary me-2"></i>2. Choose Settlement Strategy
+            </h6>
+          </div>
+
+          <div class="row g-3">
+
+            <!-- Card 1: FIFO Strategy -->
+            <div class="col-12 col-lg-4">
+              <div class="card h-100 strategy-card"
+                [class.active-fifo]="selectedStrategy === 'FIFO'"
+                (click)="selectStrategy('FIFO')">
+                <div class="card-body p-3">
+                  <div class="d-flex justify-content-between align-items-start mb-3">
+                    <!-- Left: Icon + (Title & Badge to its right) -->
+                    <div class="d-flex align-items-center gap-3">
+                      <div class="strategy-icon bg-primary text-white flex-shrink-0">
+                        <i class="fa-solid fa-calendar-check fa-lg"></i>
+                      </div>
+                      <div>
+                        <h5 class="fw-bold mb-1 text-dark strategy-title">FIFO Strategy</h5>
+                        <div class="d-flex align-items-center gap-1 flex-wrap">
+                          <span class="summary-chip chip-total py-1 px-2 font-12 fw-semibold">
+                            ⭐ Recommended Standard
+                          </span>
+                          <span *ngIf="selectedStrategy === 'FIFO'" class="badge bg-primary text-white font-11 px-2 py-1 rounded-pill">
+                            <i class="fa fa-check me-1"></i>Active
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Right: Custom Radio Indicator -->
+                    <div class="custom-radio-indicator flex-shrink-0 mt-1" [class.checked]="selectedStrategy === 'FIFO'">
+                      <i class="fa fa-check radio-check" *ngIf="selectedStrategy === 'FIFO'"></i>
+                    </div>
+                  </div>
+                  <p class="strategy-desc mb-0">
+                    Penalties are settled strictly in chronological order (oldest logged entry first).
+                    Older penalties clear 100%, leaving clean round balances without odd decimals.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 2: Priority-Based Ranking -->
+            <div class="col-12 col-lg-4">
+              <div class="card h-100 strategy-card"
+                [class.active-priority]="selectedStrategy === 'PRIORITY'"
+                (click)="selectStrategy('PRIORITY')">
+                <div class="card-body p-3">
+                  <div class="d-flex justify-content-between align-items-start mb-3">
+                    <!-- Left: Icon + (Title & Badge to its right) -->
+                    <div class="d-flex align-items-center gap-3">
+                      <div class="strategy-icon bg-warning text-dark flex-shrink-0">
+                        <i class="fa fa-sort-amount-desc fa-lg"></i>
+                      </div>
+                      <div>
+                        <h5 class="fw-bold mb-1 text-dark strategy-title">Priority-Based Ranking</h5>
+                        <div class="d-flex align-items-center gap-1 flex-wrap">
+                          <span class="summary-chip chip-pending py-1 px-2 font-12 fw-semibold">
+                            ⚡ Cash-First Hierarchy
+                          </span>
+                          <span *ngIf="selectedStrategy === 'PRIORITY'" class="badge bg-warning text-dark font-11 px-2 py-1 rounded-pill">
+                            <i class="fa fa-check me-1"></i>Active
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Right: Custom Radio Indicator -->
+                    <div class="custom-radio-indicator flex-shrink-0 mt-1" [class.checked]="selectedStrategy === 'PRIORITY'">
+                      <i class="fa fa-check radio-check" *ngIf="selectedStrategy === 'PRIORITY'"></i>
+                    </div>
+                  </div>
+                  <p class="strategy-desc mb-0">
+                    Recovers critical penalties first (e.g., COD cash collections) before routine operational deductions.
+                    Customize ranking below via Up/Down controls.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 3: Proportional Distribution -->
+            <div class="col-12 col-lg-4">
+              <div class="card h-100 strategy-card"
+                [class.active-proportional]="selectedStrategy === 'PROPORTIONAL'"
+                (click)="selectStrategy('PROPORTIONAL')">
+                <div class="card-body p-3">
+                  <div class="d-flex justify-content-between align-items-start mb-3">
+                    <!-- Left: Icon + (Title & Badge to its right) -->
+                    <div class="d-flex align-items-center gap-3">
+                      <div class="strategy-icon bg-info text-white flex-shrink-0">
+                        <i class="fa fa-pie-chart fa-lg"></i>
+                      </div>
+                      <div>
+                        <h5 class="fw-bold mb-1 text-dark strategy-title">Proportional Distribution</h5>
+                        <div class="d-flex align-items-center gap-1 flex-wrap">
+                          <span class="summary-chip chip-payable py-1 px-2 font-12 fw-semibold">
+                            ⚖️ Weighted Average
+                          </span>
+                          <span *ngIf="selectedStrategy === 'PROPORTIONAL'" class="badge bg-info text-white font-11 px-2 py-1 rounded-pill">
+                            <i class="fa fa-check me-1"></i>Active
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Right: Custom Radio Indicator -->
+                    <div class="custom-radio-indicator flex-shrink-0 mt-1" [class.checked]="selectedStrategy === 'PROPORTIONAL'">
+                      <i class="fa fa-check radio-check" *ngIf="selectedStrategy === 'PROPORTIONAL'"></i>
+                    </div>
+                  </div>
+                  <p class="strategy-desc mb-0">
+                    Distributes available earnings across all deduction heads based on their proportional size.
+                    Every deduction gets a partial settlement.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ── Section 2A: Priority Re-Ordering Section (Visible when PRIORITY is selected) ── -->
+        <div class="card shadow-sm border border-warning-subtle mb-4" *ngIf="selectedStrategy === 'PRIORITY'">
+          <div class="card-header bg-warning-subtle py-2 px-3 border-bottom border-warning-subtle d-flex justify-content-between align-items-center">
+            <span class="fw-bold text-dark section-header-title">
+              <i class="fa fa-list-ol me-2 text-warning-emphasis"></i> Deduction Hierarchy (Top of list gets cleared first)
+            </span>
+            <span class="fw-semibold text-dark font-13">
+              Use ⬆️ and ⬇️ to re-order recovery ranking
+            </span>
+          </div>
+          <div class="card-body p-0">
+            <div *ngIf="priorityItems.length === 0" class="text-center py-4 text-dark">
+              <i class="fa fa-info-circle me-1"></i> No deduction types found for the selected model.
+            </div>
+            <ul class="list-group list-group-flush priority-list" *ngIf="priorityItems.length > 0">
+              <li *ngFor="let item of priorityItems; let idx = index"
+                class="list-group-item d-flex justify-content-between align-items-center py-2 px-3 border-bottom">
+                <div class="d-flex align-items-center gap-3">
+                  <div class="summary-chip chip-total py-1 px-2 fw-bold font-13">#{{ idx + 1 }}</div>
+                  <div>
+                    <span class="fw-bold text-dark font-14">{{ item.label }}</span>
+                  </div>
+                </div>
+                <div class="btn-group btn-group-sm">
+                  <button type="button" class="btn btn-outline-secondary px-3"
+                    [disabled]="idx === 0"
+                    (click)="movePriorityUp(idx)"
+                    title="Move higher priority">
+                    <i class="fa fa-arrow-up"></i>
+                  </button>
+                  <button type="button" class="btn btn-outline-secondary px-3"
+                    [disabled]="idx === priorityItems.length - 1"
+                    (click)="movePriorityDown(idx)"
+                    title="Move lower priority">
+                    <i class="fa fa-arrow-down"></i>
+                  </button>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- ── Section 2B: Max Recovery Cap Card ── -->
+        <div class="card shadow-sm border mb-4">
+          <div class="card-header bg-light py-2 px-3 border-bottom d-flex justify-content-between align-items-center">
+            <span class="fw-bold text-dark section-header-title">
+              <i class="fa fa-shield text-primary me-2"></i>2B. Payout Protection: Max Recovery Percentage Cap (% of Net Earnings)
+            </span>
+            <div class="summary-chip chip-total py-1 px-3 fw-bold">
+              Active Cap: <strong>{{ maxRecoveryPercent }}%</strong>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="row align-items-center g-3">
+              <div class="col-12 col-md-5">
+                <label class="form-label fw-semibold text-dark mb-1">
+                  Max Deductible from Vendor Post-GST Earnings per Cycle:
+                </label>
+                <div class="input-group mb-2">
+                  <input type="number" class="form-control fw-bold text-center font-16"
+                    [ngModel]="maxRecoveryPercent"
+                    (keydown)="onCapKeyDown($event)"
+                    (input)="onCapInput($event)"
+                    (paste)="onCapPaste($event)"
+                    (blur)="onCapBlur($event)"
+                    min="1" max="100" step="1">
+                  <span class="input-group-text fw-bold bg-primary text-white font-14">%</span>
+                </div>
+                <div class="d-flex gap-2 flex-wrap">
+                  <button type="button" class="btn btn-outline-secondary btn-sm fw-semibold" (click)="setRecoveryCap(30)">30%</button>
+                  <button type="button" class="btn btn-outline-secondary btn-sm fw-semibold" (click)="setRecoveryCap(40)">40%</button>
+                  <button type="button" class="btn btn-outline-primary btn-sm fw-semibold" (click)="setRecoveryCap(50)">50% (Recommended)</button>
+                  <button type="button" class="btn btn-outline-secondary btn-sm fw-semibold" (click)="setRecoveryCap(75)">75%</button>
+                  <button type="button" class="btn btn-outline-dark btn-sm fw-semibold" (click)="setRecoveryCap(100)">100% (No Cap)</button>
+                </div>
+              </div>
+              <div class="col-12 col-md-7">
+                <div class="alert alert-light border mb-0 p-3 font-13">
+                  <div class="d-flex gap-2">
+                    <i class="fa fa-info-circle text-primary mt-1"></i>
+                    <div>
+                      <strong class="text-dark">Vendor Retention Protection:</strong>
+                      Ensures that a delivery associate/vendor is never left with ₹0 payout when large deficits exist.
+                      At <strong>{{ maxRecoveryPercent }}%</strong>, the system will deduct at most <strong>{{ maxRecoveryPercent }}%</strong> of available post-GST earnings in any single cycle.
+                      Remaining deficit automatically rolls over to the next cycle.
+                      <div class="mt-1 text-dark">
+                        <em>Note: During Payment Transaction Sync, supervisors can also customize this percentage per vendor row before syncing.</em>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Section 3: Interactive Live Simulator (KPI Chips + Exact Table Style) ── -->
+        <div class="card shadow-sm border border-warning-subtle mb-4">
+          <div class="card-header bg-warning-subtle py-2 px-3 border-bottom border-warning-subtle d-flex justify-content-between align-items-center">
+            <span class="fw-bold text-dark section-header-title">
+              <i class="fa fa-calculator text-success me-2"></i>3. Live Simulation Preview (Recalculates Live)
+            </span>
+            <div class="summary-chip chip-pending py-1 px-3">
+              <i class="fa fa-bolt me-1"></i> Interactive Test Scenario
+            </div>
+          </div>
+          <div class="card-body">
+
+            <!-- Sample Earnings Input -->
+            <div class="row g-3 mb-3 align-items-center">
+              <div class="col-12 col-md-4">
+                <label class="form-label fw-semibold text-dark mb-1">Sample Vendor Available Earnings (Post-GST)</label>
+                <div class="input-group">
+                  <span class="input-group-text fw-bold">₹</span>
+                  <input type="number" class="form-control fw-bold font-14" [(ngModel)]="simEarnings" (ngModelChange)="recalculateSimulation()" min="0" step="1000">
+                </div>
+                <div class="text-dark font-12 mt-1">Change earnings to see how the rule handles over-deductions.</div>
+              </div>
+
+              <div class="col-12 col-md-8">
+                <!-- Summary KPI Chips (Exact Vendor Transaction Sync Style) -->
+                <div class="row g-2">
+                  <div class="col-auto">
+                    <div class="summary-chip chip-total">
+                      <i class="fa fa-money me-1"></i>
+                      Sample Earnings: <strong>₹{{ simEarnings | number:'1.2-2' }}</strong>
+                    </div>
+                  </div>
+                  <div class="col-auto">
+                    <div class="summary-chip chip-pending">
+                      <i class="fa fa-list-alt me-1"></i>
+                      Total Deductions: <strong>₹{{ simTotalDeductions | number:'1.2-2' }}</strong>
+                    </div>
+                  </div>
+                  <div class="col-auto">
+                    <div class="summary-chip chip-synced">
+                      <i class="fa fa-check-circle me-1"></i>
+                      Recovered: <strong>₹{{ (simTotalDeductions > simEarnings ? simEarnings : simTotalDeductions) | number:'1.2-2' }}</strong>
+                    </div>
+                  </div>
+                  <div class="col-auto">
+                    <div class="summary-chip chip-deficit">
+                      <i class="fa fa-exclamation-triangle me-1"></i>
+                      Leftover Deficit: <strong>₹{{ (simTotalDeductions > simEarnings ? simTotalDeductions - simEarnings : 0) | number:'1.2-2' }}</strong>
+                    </div>
+                  </div>
+                  <div class="col-auto">
+                    <div class="summary-chip chip-payable">
+                      <i class="fa fa-sliders me-1"></i>
+                      Strategy: <strong>{{ selectedStrategy }}</strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Simulation Grid Table (Exact Vendor Transaction Sync Columns & Header Style) -->
+            <div class="table-responsive bg-white rounded border">
+              <table class="table table-hover table-bordered align-middle sync-table mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th style="width: 45px;" class="text-center">#</th>
+                    <th>Deduction Name</th>
+                    <th class="text-end">Original Amount</th>
+                    <th class="text-end text-nowrap positive-col-header">
+                      <i class="fa fa-plus-circle text-success me-1 small opacity-75"></i>
+                      Recovered from Earnings
+                    </th>
+                    <th class="text-end text-nowrap deduction-col-header">
+                      <i class="fa fa-minus-circle text-danger me-1 small opacity-75"></i>
+                      Deficit Carried Forward
+                    </th>
+                    <th class="text-center" style="width: 170px;">Simulated Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let res of simulatedResults; let i = index" class="pending-row">
+                    <td class="text-center text-dark font-13">{{ i + 1 }}</td>
+                    <td class="fw-semibold text-dark font-13">{{ res.name }}</td>
+                    <td class="text-end fw-semibold text-dark font-13">₹{{ res.original | number:'1.2-2' }}</td>
+                    <td class="text-end fw-bold text-success font-13">
+                      ₹{{ res.recovered | number:'1.2-2' }}
+                    </td>
+                    <td class="text-end fw-bold text-danger font-13">
+                      <span *ngIf="res.pending > 0" class="deficit-carryforward-badge">
+                        ₹{{ res.pending | number:'1.2-2' }}
+                      </span>
+                      <span *ngIf="res.pending <= 0" class="text-dark font-13">-</span>
+                    </td>
+                    <td class="text-center">
+                      <span *ngIf="res.status === 'Fully Recovered'" class="summary-chip chip-synced py-1 px-3 fw-semibold">
+                        <i class="fa fa-check-circle me-1"></i> Fully Recovered
+                      </span>
+                      <span *ngIf="res.status === 'Partially Recovered'" class="summary-chip chip-pending py-1 px-3 fw-semibold">
+                        <i class="fa fa-clock-o me-1"></i> Partially Recovered
+                      </span>
+                      <span *ngIf="res.status === 'Pending'" class="summary-chip chip-deficit py-1 px-3 fw-semibold">
+                        <i class="fa fa-exclamation-circle me-1"></i> Pending
+                      </span>
+                    </td>
+                  </tr>
+                  <tr *ngIf="simulatedResults.length === 0">
+                    <td colspan="6" class="text-center py-4 text-dark">
+                      <i class="fa fa-info-circle me-1"></i> No deduction heads configured for the selected scope.
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ── Bottom Action Footer ── -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center pt-2 mb-3 gap-3 border-top">
+          <div class="text-dark font-13">
+            <i class="fa fa-lock me-1 text-warning"></i>
+            <strong class="text-dark">Immutability Guarantee:</strong> Changes will only apply to future/pending syncs. Historical synced cycles are locked.
+          </div>
+          <div class="d-flex gap-2">
+            <button type="button" class="btn btn-outline-secondary px-4 py-2 font-13 fw-semibold" (click)="loadPolicy()">
+              <i class="fa fa-undo me-1"></i> Reset
+            </button>
+            <button type="button" class="btn btn-success px-4 py-2 font-13 fw-semibold shadow-sm" (click)="savePolicy()">
+              <i class="fa fa-check me-1"></i> Save Configuration
+            </button>
+          </div>
+        </div>
+
+      </div> <!-- end card-body -->
+    </div> <!-- end main card -->
+  </div> <!-- end col-12 -->
+</div> <!-- end row -->
+
+<!-- Audit Trail Slide-over Drawer -->
+<div class="modal-backdrop-custom" *ngIf="showAuditDrawer" (click)="closeAuditDrawer()"></div>
+<div class="audit-drawer shadow-lg" *ngIf="showAuditDrawer">
+  <div class="audit-header d-flex justify-content-between align-items-center p-3 border-bottom bg-light">
+    <h5 class="mb-0 fw-bold">
+      <i class="fa fa-history text-primary me-2"></i> Policy Change Audit Trail
+    </h5>
+    <button type="button" class="btn-close" (click)="closeAuditDrawer()"></button>
+  </div>
+  <div class="audit-body p-3">
+    <div *ngIf="isAuditLoading" class="text-center py-4 text-dark">
+      <i class="fa fa-spinner fa-spin fa-2x mb-2"></i>
+      <div>Loading audit records...</div>
+    </div>
+    <div *ngIf="!isAuditLoading && auditLogs.length === 0" class="text-center py-5 text-dark">
+      <i class="fa fa-folder-open-o fa-3x mb-2 opacity-50"></i>
+      <div>No policy changes recorded yet.</div>
+    </div>
+    <div *ngIf="!isAuditLoading && auditLogs.length > 0" class="table-responsive">
+      <table class="table table-sm table-hover align-middle sync-table">
+        <thead class="table-light">
+          <tr>
+            <th>Date & Time</th>
+            <th>Scope</th>
+            <th>Field</th>
+            <th>Previous Value</th>
+            <th>Current Value</th>
+            <th>Changed By</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let log of auditLogs">
+            <td class="font-13 text-nowrap">{{ log.entryDate | date:'dd-MMM-yyyy HH:mm' }}</td>
+            <td class="font-13 fw-semibold">{{ log.documentCode }}</td>
+            <td class="font-13">
+              <span class="badge bg-light text-dark border">{{ formatFieldName(log.fieldName) }}</span>
+            </td>
+
+            <!-- Previous Value -->
+            <td class="font-13">
+              <div *ngIf="log.fieldName === 'PriorityOrder'" class="d-flex flex-column gap-1">
+                <div *ngFor="let item of getAuditOrderItems(log.previousValue); let i = index" class="d-flex align-items-center gap-1">
+                  <span class="summary-chip chip-deficit py-0 px-2 font-12">
+                    #{{ i + 1 }} {{ item }}
+                  </span>
+                </div>
+                <span *ngIf="getAuditOrderItems(log.previousValue).length === 0" class="text-dark">-</span>
+              </div>
+              <span *ngIf="log.fieldName === 'Strategy'" class="text-danger fw-semibold">
+                {{ formatStrategyName(log.previousValue) }}
+              </span>
+              <span *ngIf="log.fieldName !== 'PriorityOrder' && log.fieldName !== 'Strategy'" class="text-dark">
+                {{ log.previousValue || '-' }}
+              </span>
+            </td>
+
+            <!-- Current Value -->
+            <td class="font-13">
+              <div *ngIf="log.fieldName === 'PriorityOrder'" class="d-flex flex-column gap-1">
+                <div *ngFor="let item of getAuditOrderItems(log.currentValue); let i = index" class="d-flex align-items-center gap-1">
+                  <span class="summary-chip chip-synced py-0 px-2 font-12 fw-semibold">
+                    #{{ i + 1 }} {{ item }}
+                  </span>
+                </div>
+                <span *ngIf="getAuditOrderItems(log.currentValue).length === 0" class="text-dark">-</span>
+              </div>
+              <span *ngIf="log.fieldName === 'Strategy'" class="text-success fw-bold">
+                {{ formatStrategyName(log.currentValue) }}
+              </span>
+              <span *ngIf="log.fieldName !== 'PriorityOrder' && log.fieldName !== 'Strategy'" class="text-success fw-bold">
+                {{ log.currentValue }}
+              </span>
+            </td>
+
+            <td class="font-13 text-nowrap">
+              <i class="fa fa-user me-1 text-dark"></i>{{ log.userName || log.userId }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">HrBook</string>
+    <string name="title_activity_main">HrBook</string>
+    <string name="package_name">com.empowerlogics.hrbook</string>
+    <string name="custom_url_scheme">com.empowerlogics.hrbook</string>
+</resources>

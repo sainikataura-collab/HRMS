@@ -1,0 +1,92 @@
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card">
+      <!-- Header -->
+      <div class="card-header bg-blue">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-6 col-lg-6 col-10">
+            <h4>Regularization Attendance</h4>
+          </div>
+          <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 col-2 d-flex align-items-center justify-content-md-end">
+            <button class="btn btnheader"
+              routerLink="/dash/attendance/attendancedashboard/RegulariseAttendanceList">Back</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Body -->
+      <div class="card-body mt-4">
+        <form [formGroup]="regularizeForm" class="row row-cols-1 row-cols-md-3">
+
+          <!-- Regularization Date -->
+
+          <div class="col">
+            <label for="attenDate">Regularization Date <span class="text-danger font-bold">*</span></label>
+            <ng-select id="attenDate" [items]="AttendenceTypeddl" bindLabel="name" bindValue="value"
+              formControlName="attenDate" placeholder="--Select leavetype --"
+              (change)="onAttendancetypeChange($event)">
+            </ng-select>
+            <span *ngIf="showError && regularizeForm.controls['attendancetype'].invalid" class="text-danger mt-1"
+              style="font-size: 12px;">
+              Please Select Date.
+            </span>
+          </div>
+
+          <!-- In Time -->
+          <div class="col">
+            <label>In Time <span style="color: red;">*</span></label>
+            <div class="form-group">
+              <input type="time" class="form-control" formControlName="intime" [attr.readonly]="isLateComing ? true : null" />
+              <span *ngIf="showError && regularizeForm.controls['intime'].invalid" class="text-danger mt-1"
+                style="font-size: 12px;">
+                Please enter In Time
+              </span>
+            </div>
+          </div>
+
+          <!-- Out Time -->
+          <div class="col">
+            <label>Out Time <span style="color: red;">*</span></label>
+            <div class="form-group">
+              <input type="time" class="form-control" formControlName="outtime" [attr.readonly]="isLateComing ? true : null" />
+              <span *ngIf="showError && regularizeForm.controls['outtime'].invalid" class="text-danger mt-1"
+                style="font-size: 12px;">
+                Please enter Out Time
+              </span>
+            </div>
+          </div>
+
+          <!-- Working Hours -->
+          <div class="col">
+            <label>Working Hours <span style="color: red;">*</span></label>
+            <div class="form-group">
+              <input type="text" class="form-control" formControlName="totalhours" readonly />
+              <span *ngIf="showError && regularizeForm.controls['totalhours'].invalid" class="text-danger mt-1"
+                style="font-size: 12px;">
+                Total working hours required
+              </span>
+            </div>
+          </div>
+
+          <!-- Remarks -->
+          <div class="col">
+            <label>Remarks</label>
+            <div class="form-group">
+              <textarea class="form-control" formControlName="remarks" rows="1"></textarea>
+            </div>
+          </div>
+
+          <!-- Buttons -->
+          <div class="col-sm-12 col-md-12 col-lg-12 d-flex align-items-center justify-content-end">
+            <button type="button" class="btn btn-primary mx-1" (click)="onSubmit()">Save</button>
+            <button type="button" class="btn btn-outline-dark mx-1" (click)="resetForm()">Reset</button>
+          </div>
+
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+

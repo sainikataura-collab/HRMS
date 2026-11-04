@@ -1,0 +1,345 @@
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card">
+      <!-- Header -->
+      <div class="card-header bg-blue">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-6 col-lg-6 col-9">
+            <h4>Apply Local Travel</h4>
+          </div>
+          <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 col-3 d-flex align-items-center justify-content-md-end">
+            <button class="btn btnheader"
+              routerLink="/dash/travelexpence_emp/travelexpence_empdashboard/localtravelList">Back</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Body -->
+      <div class="card-body">
+        <form [formGroup]="ApplyLocalTravel">
+
+          <!-- Local Travel Requisition Section -->
+          <div class="row">
+            <div class="col-12 mt-2">
+              <p class="fw-bold text-primary fs-6 border-bottom border-2">Local Travel Requisition</p>
+            </div>
+          </div>
+
+          <div class="row row-cols-1 row-cols-md-3 g-3" formGroupName="dateTransaction">
+            <!-- Travel Date -->
+            <div class="col">
+              <label for="travelDate">Travel Date <span style="color: red;">*</span></label>
+              <input type="date" formControlName="traveldate" class="form-control"
+                [readonly]="localTravelDetailsList.length > 0" />
+              <span *ngIf="showError && ApplyLocalTravel.get('dateTransaction.traveldate')?.invalid"
+                class="text-danger mt-1" style="font-size: 12px;">
+                Please enter Travel Date.
+              </span>
+            </div>
+
+            <!-- In Time -->
+            <div class="col">
+              <label for="inTime">In Time <span style="color: red;">*</span></label>
+              <input type="time" formControlName="InTime" class="form-control"
+                [readonly]="localTravelDetailsList.length > 0" />
+              <span *ngIf="showError && ApplyLocalTravel.get('dateTransaction.InTime')?.invalid"
+                class="text-danger mt-1" style="font-size: 12px;">
+                Please enter In Time.
+              </span>
+            </div>
+
+            <!-- Out Time -->
+            <div class="col">
+              <label for="outTime">Out Time <span style="color: red;">*</span></label>
+              <input type="time" formControlName="OutTime" class="form-control"
+                [readonly]="localTravelDetailsList.length > 0" />
+              <span *ngIf="showError && ApplyLocalTravel.get('dateTransaction.OutTime')?.invalid"
+                class="text-danger mt-1" style="font-size: 12px;">
+                Please enter Out Time.
+              </span>
+            </div>
+
+            <!-- Total Hour -->
+            <div class="col">
+              <label for="totalHour">Total Hour</label>
+              <input type="text" formControlName="TotalHour" class="form-control" readonly />
+            </div>
+
+            <!-- Fixed FDA -->
+            <div class="col">
+              <label for="fixedfda">Fixed FDA</label>
+              <input type="text" formControlName="fixedfda" class="form-control"
+                [readonly]="localTravelDetailsList.length > 0" />
+            </div>
+          </div>
+
+          <!-- Local Travel Detail Section -->
+          <div class="row mt-3">
+            <div class="col-12">
+              <p class="fw-bold text-primary fs-6 border-bottom border-2">Local Travel Detail</p>
+            </div>
+          </div>
+
+          <div class="row row-cols-1 row-cols-md-3 mb-3" formGroupName="transactionDetail">
+            <!-- Travel Mode -->
+            <div class="col">
+              <div class="form-group">
+                <label>Travel Mode<span style="color: red;">*</span></label>
+                <ng-select [items]="Modelist" bindLabel="name" bindValue="value" formControlName="fk_travelmodeId"
+                  placeholder="--Select --" class="w-100">
+                </ng-select>
+                <div *ngIf="submitted && ApplyLocalTravel.get('transactionDetail.fk_travelmodeId')?.invalid"
+                  class="text-danger mt-1" style="font-size: 12px;">
+                  please choose Travel Mode.
+                </div>
+              </div>
+            </div>
+
+            <!-- Purpose -->
+            <div class="col">
+              <label for="purpose">Purpose <span style="color: red;">*</span></label>
+              <textarea class="form-control" formControlName="purpose" rows="1"></textarea>
+              <span *ngIf="showError && ApplyLocalTravel.get('transactionDetail.purpose')?.invalid"
+                class="text-danger mt-1" style="font-size: 12px;">
+                Please enter Purpose.
+              </span>
+            </div>
+
+            <!-- Is Existing Client -->
+            <div class="col">
+              <label for="isExistingClient">Is Existing Client <span style="color: red;">*</span></label>
+              <ng-select formControlName="isexitingclienttype" [items]="yesNoOptions" bindLabel="name" bindValue="value"
+                placeholder="-- Select --" class="custom-ng-select">
+              </ng-select>
+              <span *ngIf="showError && ApplyLocalTravel.get('transactionDetail.isexitingclienttype')?.invalid"
+                class="text-danger mt-1" style="font-size: 12px;">
+                Please select an option.
+              </span>
+            </div>
+
+            <!-- Client Visited -->
+            <div class="col">
+              <label for="clientVisited">Client Visited</label>
+              <input type="text" formControlName="clientvisited" class="form-control" />
+            </div>
+
+            <!-- New Client -->
+            <!-- <div class="col">
+              <label for="newClient">New Client</label>
+              <input type="text" formControlName="newClient" class="form-control" />
+            </div> -->
+
+            <!-- Place From -->
+            <div class="col">
+              <label for="placeFrom">Place From</label>
+              <input type="text" formControlName="placefrom" class="form-control" />
+            </div>
+
+            <!-- Place To -->
+            <div class="col">
+              <label for="placeTo">Place To</label>
+              <input type="text" formControlName="placeto" class="form-control" />
+            </div>
+
+            <!-- K.M -->
+            <!-- <div class="col">
+              <label for="km">K.M</label>
+              <input type="text" formControlName="kilometere" class="form-control"
+                (keypress)="validateNumber($event)" />
+            </div> -->
+
+            <!-- K.M, Rate, and Rate Effective Date in one row -->
+            <div class="col">
+              <div class="row g-2">
+                <!-- K.M -->
+                <div class="col-6 col-md-3">
+                  <label for="km">K.M</label>
+                  <input type="text" formControlName="kilometere" class="form-control"
+                    (keypress)="validateNumber($event)" />
+                </div>
+
+                <!-- Rate -->
+                <div class="col-6 col-md-3">
+                  <label for="rate">Rate</label>
+                  <input type="text" formControlName="rate" class="form-control" (keypress)="validateNumber($event)"
+                    readonly />
+                </div>
+
+                <!-- Rate Effective Date -->
+                <div class="col-12 col-md-6">
+                  <label for="effectivedate">Effective Date</label>
+                  <input type="text" formControlName="effectivedate" class="form-control" readonly />
+                </div>
+              </div>
+            </div>
+
+            <!-- Amount -->
+            <div class="col">
+              <label for="amount">Amount</label>
+              <input type="text" formControlName="amount" class="form-control" (keypress)="validateNumber($event)" />
+            </div>
+
+            <!-- Other Charges -->
+            <div class="col">
+              <label for="otherCharges">Other Charges</label>
+              <input type="text" formControlName="othercharges" class="form-control"
+                (keypress)="validateNumber($event)" />
+            </div>
+
+            <!-- Other Charges Remarks -->
+            <div class="col">
+              <label for="otherChargesRemarks">Other Charges Remarks</label>
+              <textarea class="form-control" formControlName="otherchargesremarks" rows="1"></textarea>
+            </div>
+
+            <!-- Total Amount -->
+            <div class="col">
+              <label for="totalAmount">Total Amount</label>
+              <input type="text" formControlName="totalamount" class="form-control" readonly />
+            </div>
+
+            <!-- File Upload -->
+            <!-- <div class="col">
+              <label for="file">File</label>
+              <input type="file" class="form-control" accept=".pdf,.jpg,.jpeg,.png" />
+              <small class="text-muted">Max file size: 5MB</small>
+            </div> -->
+            <!-- File Upload -->
+            <div class="col">
+              <label>Upload File</label>
+
+              <div class="form-group d-flex align-items-center justify-content-between mb-1">
+                <!-- File Input -->
+                <input type="file" class="form-control me-2" accept=".pdf,.jpg,.jpeg,.png"
+                  (change)="onFileSelected($event, editIndex !== null ? editIndex : undefined)" #fileInput />
+
+                <!-- ✅ Eye Button (Show only when existing file and no new file selected) -->
+                <a *ngIf="ImageUrl && !fileToUpload" [href]="ImageUrl" target="_blank"
+                  class="d-flex align-items-center justify-content-center btn btn-outline-primary p-2"
+                  title="View File">
+                  <i class="fa-solid fa-eye" style="font-size: 0.9rem;"></i>
+                </a>
+              </div>
+
+              <!-- ✅ Show New File Name (if file selected) -->
+              <div *ngIf="fileToUpload" class="text-success small" >
+                <i class="bi bi-check-circle"></i> {{ fileToUpload.name }}
+              </div>
+
+              <!-- ✅ Show Existing File Name (if no new file selected in edit mode) -->
+              <div *ngIf="!fileToUpload && FileName" class="text-muted mt-0 small" >
+                <i class="bi bi-file-earmark"></i> {{ FileName }}
+              </div>
+
+              <small class="text-muted d-block mt-0 small " >Max file size: 5MB</small>
+            </div>
+
+          </div>
+
+          <div class="col d-flex align-items-center justify-content-end">
+            <button type="button" class="btn btn-primary mx-1" (click)="addLocalTravel()">
+              {{ editIndex !== null ? 'Update Detail' : 'Add Detail' }}
+            </button>
+            <button type="button" class="btn btn-outline-dark mx-1">Reset Detail</button>
+          </div>
+
+          <!-- CURRENT DATE SECTION - Details List -->
+          <div class="row mt-3" *ngIf="currentDateTransaction">
+
+
+            <div class="col-12">
+              <p class="fw-bold text-success fs-6 border-bottom border-2">
+                Current Travel Details ({{ localTravelDetailsList.length }})
+              </p>
+            </div>
+
+            <div class="col-12 table-responsive ">
+              <div *ngIf="localTravelDetailsList.length === 0" class="alert alert-warning">
+                No details added yet for this date. Please add travel details above.
+              </div>
+
+              <table *ngIf="localTravelDetailsList.length > 0" class="table table-bordered">
+                <thead class="table-light">
+                  <tr>
+                    <th>Sr No.</th>
+                    <th>Travel Mode</th>
+                    <th>Purpose</th>
+                    <th>Place From</th>
+                    <th>Place To</th>
+                    <th>KM</th>
+                    <th>Amount</th>
+                    <th>Other Charges</th>
+                    <th>Total Amount</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let item of localTravelDetailsList; let i = index">
+                    <td>{{ i + 1 }}</td>
+                    <td>{{ item.description }}</td>
+                    <td>{{ item.purpose }}</td>
+                    <td>{{ item.placefrom }}</td>
+                    <td>{{ item.placeto }}</td>
+                    <td>{{ item.kilometere }}</td>
+                    <td>{{ item.amount | number: '1.2-2' }}</td>
+                    <td>{{ item.othercharges | number: '1.2-2' }}</td>
+                    <td>{{ item.totalamount | number: '1.2-2' }}</td>
+                    <td>
+
+
+                      <button class="btn" (click)="editLocalTravel(i)">
+                        <i class="fa-solid fa-pen"></i>
+                      </button>
+
+                      <button class="btn" (click)="deleteLocalTravel(i)">
+                        <i class="fa fa-trash"></i>
+                      </button>
+
+                    </td>
+                  </tr>
+                </tbody>
+                <tfoot>
+
+
+                  <tr class="table-success fw-bold">
+                    <td colspan="8" class="text-end">Grand Total:</td>
+                    <td>{{ (calculateCurrentSubTotal() + currentDateTransaction.fixedfda) | number: '1.2-2' }}</td>
+                    <td></td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+
+
+          </div>
+
+
+
+          <!-- Final Buttons -->
+          <div class="row mt-4">
+            <div class="col-sm-12 col-md-12 col-lg-12 d-flex align-items-center justify-content-end">
+              <button type="button" class="btn btn-success mx-1" (click)="saveLocalTravelForm()"
+                [disabled]="allDateSections.length === 0 && localTravelDetailsList.length === 0">
+                <!-- <i class="bi bi-save"></i> Save All & Submit -->
+
+                <i class="bi" [class.bi-save]="!isEditMode" [class.bi-arrow-repeat]="isEditMode"></i>
+                {{ isEditMode ? 'Update' : 'Save' }}
+              </button>
+              <!-- <button type="button" class="btn btn-outline-dark mx-1" (click)="resetForm()">
+                <i class="bi bi-arrow-clockwise"></i> Reset All
+              </button> -->
+
+               <button type="button" class="btn btn-success mx-1" (click)="submitLocalTravelForm()"
+      [disabled]="allDateSections.length === 0 && localTravelDetailsList.length === 0">
+      <i class="bi bi-send"></i>
+      Submit
+    </button>
+            </div>
+          </div>
+
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>

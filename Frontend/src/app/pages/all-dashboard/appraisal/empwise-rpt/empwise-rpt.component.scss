@@ -1,0 +1,45 @@
+// .card-header{
+//     background-color: #3080e8;
+  
+//     font-weight: bold;
+//   }
+//   .ngx-pagination .current {
+//   padding: .1875rem .625rem;
+//   background:  #3080e8 !important;
+//   color: #fefefe;
+//   cursor: default;
+//   }
+//   .btn:hover{
+//     background-color: #2b2e41 !important;
+//     color:white !important;
+//   }
+
+
+.scroll-active {
+  max-height: 600px !important; /* or any height */
+  overflow-y: auto;
+  position: relative;
+}
+
+
+.table-invoice.scroll-active {
+  max-height: 600px !important;
+  overflow-y: auto;
+}
+
+.table thead th {
+ 
+  position: sticky;
+  top: 0;
+  background: #f8f9fa; /* Or match your theme */
+  z-index: 2;
+}
+.table-responsive{
+  overflow-x: auto;
+}
+.table td {
+  white-space: nowrap;
+}
+.table th {
+  white-space: nowrap;
+}

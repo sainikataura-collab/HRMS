@@ -1,0 +1,503 @@
+<div class="row">
+  <div [ngClass]="isFactBoxOpen ? 'col-sm-12 col-md-8 col-lg-9' : 'col-12'">
+    <div class="card">
+      <div class="card-header bg-primary py-lg-1 mt-0">
+        <div class="row w-100 align-items-center">
+          <!-- Title Section -->
+          <div class="col-12 col-md-3">
+            <h4>Import Salary Other Head</h4>
+          </div>
+          <!-- Search Section -->
+          <div class="col-12 col-md-6 mt-2 mt-md-0">
+            <app-common-search (filtersChanged)="handleFilters($event)"></app-common-search>
+          </div>
+          <!-- Fact Box toggle button -->
+          <div class="col-12 col-md-3 d-flex justify-content-end align-items-center">
+            <button *ngIf="!isFactBoxOpen" class="btn btn-outline-light btn-sm d-flex align-items-center"
+              (click)="toggleFactBox()" title="Open Fact Box">
+              <i class="bi bi-info-circle me-1"></i> Fact Box
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-body ">
+
+
+        <form [formGroup]="EmployeeForm" (ngSubmit)="onSubmit()"
+          class="row d-flex justify-content-between align-items-center">
+          <div class="row row-cols-1 row-cols-md-4">
+
+            <div class="col" *ngIf="isContractApplicable">
+              <label>Contractor Name</label>
+
+              <div class="form-group">
+                <ng-select [items]="CostCenter" bindLabel="name" bindValue="value" [multiple]="true"
+                    [closeOnSelect]="false" formControlName="fk_costcentreid" placeholder="--Select --"
+                    class="w-100" (clear)="clearCostCenters()" (change)="onCostCenterChange()" (search)="onCostCenterSearch($event)">
+                    <ng-template ng-multi-label-tmp>
+                        <span>{{ getCostCenterDisplayText() || '--Select --' }}</span>
+                    </ng-template>
+
+                    <ng-template ng-option-tmp let-item="item" let-index="index">
+                        <div *ngIf="item.value === '__select_all__'">
+                            <input type="checkbox"
+                                [checked]="isAllCostCentersSelected()"
+                                class="form-check-input fs-6 mx-1" style="pointer-events: none;" />
+                            <strong>Select All</strong>
+                        </div>
+                        <div *ngIf="item.value !== '__select_all__'">
+                            <input type="checkbox"
+                                [checked]="selectedCostCenters.includes(item.value)"
+                                class="form-check-input fs-6 mx-1" style="pointer-events: none;" />
+                            {{ item.name }}
+                        </div>
+                    </ng-template>
+                </ng-select>
+
+              </div>
+            </div>
+            <div class="col">
+              <label>Head</label>
+
+              <div class="form-group">
+                <ng-select id="year" [items]="headlist" bindLabel="name" bindValue="value"
+                  formControlName="heads" placeholder="--Select --" class="w-100" [multiple]="true" [closeOnSelect]="false"></ng-select>
+
+              </div>
+            </div>
+             <div class="col">
+              <label class="form-label">Effective Date</label>
+              <input type="date" class="form-control" formControlName="EffectiveDate">
+            </div>
+          </div>
+
+          
+
+          <div class="col-sm-12 col-md-6 col-lg-4 mt-4 mb-2 d-flex align-items-center justify-content-start ">
+            <input type="text" class="form-control w-auto" placeholder="Search employee..."
+              [formControl]="searchControl"
+              [style.visibility]="(!showImportView && salaryHeadList.length > 0) ? 'visible' : 'hidden'" />
+          </div>
+
+
+          <div class="col-sm-12 col-md-6 col-lg-8 mt-lg-4 mb-2"
+            style="display:flex; flex-wrap:wrap; align-items:center; justify-content:end; gap:5px;">
+
+
+            <!-- <button *ngIf="!showImportView && salaryHeadList.length > 0" type="button" class="btn btn-primary px-3 mx-1"
+              (click)="toggleImportView()">Import Excle</button> -->
+                          <button type="button" class="btn btn-primary px-3 mx-1"
+              (click)="toggleImportView()">Import Excel</button>
+
+
+            <button *ngIf="salaryHeadList.length > 0" type="button" class="btn bg-white bg-primary mx-1"
+              (click)="exportTemplate()" [disabled]="isExporting">
+              <!-- <i class="fa fa-download me-2"></i> Export Excel -->
+                 <i *ngIf="!isExporting" class="fa fa-download me-2"></i>
+              <i *ngIf="isExporting" class="fa fa-spinner fa-spin me-2"></i>
+              {{ isExporting ? 'Wait...' : 'Export Excel' }}
+            </button>
+            <button type="submit" class="btn btn-primary mx-1" [disabled]="isViewing">
+                <i *ngIf="!isViewing"></i>
+              <i *ngIf="isViewing" class="fa fa-spinner fa-spin me-2"></i>
+
+              {{ isViewing ? 'Wait...' : 'View' }}
+            </button>
+            <button type="reset" class="btn btn-outline-dark mx-1">Reset</button>
+          </div>
+
+
+
+        </form>
+
+        <!-- Export / Import Salary Table -->
+        <div class="container" *ngIf="!showImportView && salaryHeadList.length > 0">
+          <div class="table-responsive">
+            <table class="table table-bordered table-sm">
+              <thead>
+                <tr>
+                  <th>Sr.</th>
+                  <th>Emp Code</th>
+                  <th>Name</th>
+                  <th>ManualempCode</th>
+                  <th>Location</th>
+                  <th>Department</th>
+                  <th>Designation</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngIf="salaryHeadList.length === 0">
+                  <td colspan="4" class="text-center">No records found</td>
+                </tr>
+                <tr
+                  *ngFor="let emp of filteredData | paginate: {itemsPerPage: pageSize, currentPage: pageIndex, totalItems: totalCount }; let i = index">
+                  <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+                  <td>{{ emp.empcode }}</td>
+                  <td>{{ emp.empname }}</td>
+                  <td>{{ emp.manualempcode }}</td>
+
+                  <td>{{ emp.location }}</td>
+                  <td>{{ emp.department }}</td>
+                  <td>{{ emp.designation }}</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <pagination-controls (pageChange)="onPageChange($event)" totalItems="totalCount" itemsPerPage="pageSize">
+            </pagination-controls>
+          </div>
+        </div>
+
+
+
+
+      </div>
+
+      <!-- export data  -->
+      <div *ngIf="showImportView">
+        <div class="card-body">
+
+          <form [formGroup]="EmployeeForm" (ngSubmit)="Import()" class="row g-2 align-items-end mb-4">
+
+            <!-- File Input on the left -->
+            <div class="col-md-4">
+              <label class="form-label">Select File <span class="text-danger">*</span></label>
+              <input type="file" class="form-control" formControlName="file" (change)="onFileChange($event)">
+              <div *ngIf="EmployeeForm.get('file')?.hasError('required') && EmployeeForm.get('file')?.touched"
+                class="text-danger" style="font-size: 12px;">
+                File is required.
+              </div>
+
+              <!-- Validation message for invalid file type -->
+              <div *ngIf="EmployeeForm.get('file')?.hasError('pattern') && EmployeeForm.get('file')?.touched"
+                class="text-danger" style="font-size: 12px;">
+                Please upload a valid file (only .xlsx files allowed).
+              </div>
+            </div>
+
+            <!-- Effective Date -->
+            <div class="col-md-4">
+              <label class="form-label">Effective Date <span class="text-danger">*</span></label>
+              <input type="date" class="form-control" formControlName="importEffectiveDate">
+              <div *ngIf="EmployeeForm.get('importEffectiveDate')?.hasError('required') && EmployeeForm.get('importEffectiveDate')?.touched"
+                class="text-danger" style="font-size: 12px;">
+                Effective Date is required.
+              </div>
+            </div>
+
+            <!-- Right-aligned Buttons -->
+            <div class="col d-flex align-items-center justify-content-end  gap-2">
+
+              <button type="submit" class="btn btn-primary" [disabled]="isImporting">
+                <i *ngIf="!isImporting" class="fa fa-upload me-2"></i>
+                <i *ngIf="isImporting" class="fa fa-spinner fa-spin me-2"></i>
+
+                {{ isImporting ? 'Wait...' : 'Import' }}
+              </button>
+              <button type="reset" class="btn btn-outline-dark">Reset</button>
+              <button class="btn btn-outline-danger d-flex align-items-center justify-content-center p-2"
+                (click)="toggleImportView()"><i class="fa-solid fa-xmark fs-6 fw-semibold"></i></button>
+
+
+            </div>
+          </form>
+          <!-- Success message -->
+          <div *ngIf="messag" class="alert text-success" role="alert">
+            {{ messag }}
+          </div>
+
+          <!-- Error message -->
+          <div *ngIf="errormessag" class="alert text-danger" role="alert">
+            {{ errormessag }}
+          </div>
+
+          <!-- Comparison & Imported Data Preview Section -->
+          <div class="mt-3" *ngIf="(importedData && importedData.length > 0) || (comparisonData && comparisonData.length > 0)">
+            <hr />
+
+            <!-- Tab Switcher -->
+            <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+              <div class="d-flex flex-wrap gap-2">
+                <button type="button" class="btn"
+                  [ngClass]="activeImportTab === 'raw' ? 'btn-primary' : 'btn-outline-primary'"
+                  (click)="setActiveImportTab('raw')">
+                  <i class="fa fa-table me-1"></i>
+                  <span>Import File Report ({{ importedData.length }})</span>
+                </button>
+                <button type="button" class="btn"
+                  [ngClass]="activeImportTab === 'comparison' ? 'btn-primary' : 'btn-outline-primary'"
+                  (click)="setActiveImportTab('comparison')">
+                  <i class="fa fa-chart-line me-1"></i>
+                  <span>Rate Difference Comparison ({{ comparisonData.length }})</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- TAB 1: Rate Comparison / Difference View -->
+            <div *ngIf="activeImportTab === 'comparison'">
+              <!-- KPI Summary Cards Row -->
+              <div class="row g-2 mb-3">
+                <div class="col-6 col-md-2">
+                  <div class="border rounded p-2 text-center bg-white shadow-sm h-100">
+                    <div class="small fw-semibold" style="color: #334155;">Total Employees</div>
+                    <div class="fs-6 fw-bold text-dark">{{ comparisonData.length }}</div>
+                  </div>
+                </div>
+                <div class="col-6 col-md-2">
+                  <div class="border-start border-3 border-success rounded p-2 text-center bg-white shadow-sm h-100">
+                    <div class="small fw-semibold" style="color: #334155;">Increased / New</div>
+                    <div class="fs-6 fw-bold text-success">
+                      <i class="fa fa-arrow-trend-up me-1"></i>{{ totalIncreasedCount }}
+                    </div>
+                  </div>
+                </div>
+                <div class="col-6 col-md-2">
+                  <div class="border-start border-3 border-danger rounded p-2 text-center bg-white shadow-sm h-100">
+                    <div class="small fw-semibold" style="color: #334155;">Decreased</div>
+                    <div class="fs-6 fw-bold text-danger">
+                      <i class="fa fa-arrow-trend-down me-1"></i>{{ totalDecreasedCount }}
+                    </div>
+                  </div>
+                </div>
+                <div class="col-6 col-md-2">
+                  <div class="border-start border-3 border-secondary rounded p-2 text-center bg-white shadow-sm h-100">
+                    <div class="small fw-semibold" style="color: #334155;">Unchanged</div>
+                    <div class="fs-6 fw-bold text-secondary">
+                      <i class="fa fa-equals me-1"></i>{{ totalUnchangedCount }}
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="border rounded p-2 text-center bg-white shadow-sm h-100" [ngClass]="totalNetVariance >= 0 ? 'border-success' : 'border-danger'">
+                    <div class="small fw-semibold" style="color: #334155;">Net Rate Variance</div>
+                    <div class="fs-6 fw-bold" [ngClass]="totalNetVariance >= 0 ? 'text-success' : 'text-danger'">
+                      {{ totalNetVariance >= 0 ? '+' : '' }}₹ {{ totalNetVariance | number:'1.2-2' }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Search & Filter Controls for Comparison -->
+              <div class="row align-items-center mb-3 g-2">
+                <div class="col-12 col-md-4">
+                  <input type="text" class="form-control form-control-sm" [formControl]="searchComparisonControl" placeholder="Search code, name, location, department..." />
+                </div>
+                <div class="col-12 col-md-8">
+                  <div class="d-flex flex-wrap gap-2 justify-content-start justify-content-md-end align-items-center">
+                    <button type="button" class="btn btn-sm shadow-sm"
+                      [ngClass]="comparisonFilter === 'All' ? 'btn-primary' : 'btn-outline-primary'"
+                      (click)="setComparisonFilter('All')">
+                      All ({{ comparisonData.length }})
+                    </button>
+                    <button type="button" class="btn btn-sm shadow-sm"
+                      [ngClass]="comparisonFilter === 'Changed' ? 'btn-warning text-dark' : 'btn-outline-warning text-dark'"
+                      (click)="setComparisonFilter('Changed')">
+                      Changed ({{ totalChangedCount }})
+                    </button>
+                    <button type="button" class="btn btn-sm shadow-sm"
+                      [ngClass]="comparisonFilter === 'Increased' ? 'btn-success' : 'btn-outline-success'"
+                      (click)="setComparisonFilter('Increased')">
+                      <i class="fa fa-arrow-up me-1"></i>Increased ({{ totalIncreasedCount }})
+                    </button>
+                    <button type="button" class="btn btn-sm shadow-sm"
+                      [ngClass]="comparisonFilter === 'Decreased' ? 'btn-danger' : 'btn-outline-danger'"
+                      (click)="setComparisonFilter('Decreased')">
+                      <i class="fa fa-arrow-down me-1"></i>Decreased ({{ totalDecreasedCount }})
+                    </button>
+                    <button type="button" class="btn btn-sm shadow-sm"
+                      [ngClass]="comparisonFilter === 'Unchanged' ? 'btn-secondary' : 'btn-outline-secondary'"
+                      (click)="setComparisonFilter('Unchanged')">
+                      Unchanged ({{ totalUnchangedCount }})
+                    </button>
+                    <button type="button" class="btn btn-sm btn-success d-flex align-items-center shadow-sm"
+                      (click)="exportComparisonExcel()">
+                      <i class="fa fa-file-excel me-1"></i> Download Comparison Sheet
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Comparison Table (1 Row per Employee) -->
+              <div class="table-responsive rounded border shadow-sm" style="max-height: 480px; overflow-y: auto;">
+                <table class="table table-bordered table-sm table-hover mb-0 align-middle custom-comp-table">
+                  <thead class="sticky-top bg-white">
+                    <tr>
+                      <th style="width: 50px;" class="bg-white text-dark">Sr.</th>
+                      <th class="text-nowrap bg-white text-dark">Emp Code</th>
+                      <th class="text-nowrap bg-white text-dark">Employee Name</th>
+                      <th class="text-nowrap bg-white text-dark">Location</th>
+                      <th class="text-nowrap bg-white text-dark">Department</th>
+                      <th *ngFor="let head of comparisonHeadKeys" class="text-end text-nowrap bg-white text-dark">{{ head }}</th>
+                      <th class="text-end text-nowrap bg-white text-dark">Rate Total</th>
+                      <th class="text-center text-nowrap bg-white text-dark">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngIf="filteredComparisonData.length === 0">
+                      <td [attr.colspan]="comparisonHeadKeys.length + 7" class="text-center text-muted py-3">No matching employee comparison records found</td>
+                    </tr>
+                    <tr *ngFor="let item of filteredComparisonData | paginate: { id: 'salaryOtherHeadCompPagination', itemsPerPage: pageSizeComparison, currentPage: pageIndexComparison }; let i = index">
+                      <td>{{ (pageIndexComparison - 1) * pageSizeComparison + i + 1 }}</td>
+                      <td class="fw-semibold text-primary text-nowrap">{{ item.empCode }}</td>
+                      <td class="text-nowrap">{{ item.empName }}</td>
+                      <td class="text-nowrap text-muted">{{ item.location || '—' }}</td>
+                      <td class="text-nowrap text-muted">{{ item.department || '—' }}</td>
+                      <td *ngFor="let head of comparisonHeadKeys" class="text-end text-nowrap align-middle">
+                        <ng-container *ngIf="item.heads[head]; else emptyHead">
+                          <span class="d-block fw-semibold text-dark">₹ {{ item.heads[head].new | number:'1.2-2' }}</span>
+                          <small *ngIf="item.heads[head].diff > 0" class="text-success fw-bold d-block" style="font-size: 11px; line-height: 1.2;">
+                            <i class="fa fa-arrow-up me-1"></i>+₹{{ item.heads[head].diff | number:'1.2-2' }}
+                          </small>
+                          <small *ngIf="item.heads[head].diff < 0" class="text-danger fw-bold d-block" style="font-size: 11px; line-height: 1.2;">
+                            <i class="fa fa-arrow-down me-1"></i>-₹{{ (-item.heads[head].diff) | number:'1.2-2' }}
+                          </small>
+                        </ng-container>
+                        <ng-template #emptyHead>
+                          <span class="text-muted">—</span>
+                        </ng-template>
+                      </td>
+                      <td class="text-end text-nowrap align-middle">
+                        <span class="d-block fw-semibold text-dark">₹ {{ item.totalNew | number:'1.2-2' }}</span>
+                        <small *ngIf="item.netDiff > 0" class="text-success fw-bold d-block" style="font-size: 11px; line-height: 1.2;">
+                          <i class="fa fa-arrow-up me-1"></i>+₹{{ item.netDiff | number:'1.2-2' }}
+                        </small>
+                        <small *ngIf="item.netDiff < 0" class="text-danger fw-bold d-block" style="font-size: 11px; line-height: 1.2;">
+                          <i class="fa fa-arrow-down me-1"></i>-₹{{ (-item.netDiff) | number:'1.2-2' }}
+                        </small>
+                      </td>
+                      <td class="text-center text-nowrap">
+                        <span *ngIf="item.status === 'Increased'" class="badge rounded-pill badge-subtle-success px-2 py-1 fw-semibold">
+                          <i class="fa fa-arrow-trend-up me-1"></i> Increased
+                        </span>
+                        <span *ngIf="item.status === 'Decreased'" class="badge rounded-pill badge-subtle-danger px-2 py-1 fw-semibold">
+                          <i class="fa fa-arrow-trend-down me-1"></i> Decreased
+                        </span>
+                        <span *ngIf="item.status === 'New'" class="badge rounded-pill badge-subtle-info px-2 py-1 fw-semibold">
+                          <i class="fa fa-plus me-1"></i> New Rate
+                        </span>
+                        <span *ngIf="item.status === 'Changed'" class="badge rounded-pill badge-subtle-warning px-2 py-1 fw-semibold">
+                          <i class="fa fa-pen me-1"></i> Changed
+                        </span>
+                        <span *ngIf="item.status === 'Unchanged'" class="badge rounded-pill badge-subtle-neutral px-2 py-1 fw-normal">
+                          <i class="fa fa-minus me-1"></i> Unchanged
+                        </span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Comparison Pagination -->
+              <div class="d-flex justify-content-end mt-2" *ngIf="filteredComparisonData.length > pageSizeComparison">
+                <pagination-controls id="salaryOtherHeadCompPagination" (pageChange)="pageIndexComparison = $event"></pagination-controls>
+              </div>
+            </div>
+
+            <!-- TAB 2: Raw Imported Data View -->
+            <div *ngIf="activeImportTab === 'raw'">
+              <div class="row align-items-center mb-3 g-2">
+                <!-- Search Box -->
+                <div class="col-12 col-md-4">
+                  <input type="text" class="form-control form-control-sm" [formControl]="searchImportControl" placeholder="Search imported rows..." />
+                </div>
+
+                <!-- Filter Buttons -->
+                <div class="col-12 col-md-8">
+                  <div class="d-flex flex-wrap gap-2 justify-content-start justify-content-md-end">
+                    <button type="button" class="btn btn-sm d-flex align-items-center shadow-sm"
+                      [ngClass]="currentImportFilter === 'All' ? 'btn-primary' : 'btn-outline-primary'" (click)="setImportFilter('All')">
+                      <span>All Data</span>
+                      <span class="bg-white rounded px-1 ms-2 fw-bold text-primary" style="font-size:11px;">
+                        {{ importedData.length }}
+                      </span>
+                    </button>
+
+                    <button type="button" class="btn btn-sm d-flex align-items-center shadow-sm"
+                      [ngClass]="currentImportFilter === 'Uploaded' ? 'btn-success' : 'btn-outline-success'"
+                      (click)="setImportFilter('Uploaded')">
+                      <span>Uploaded</span>
+                      <span class="bg-white rounded px-1 ms-2 fw-bold text-success" style="font-size:11px;">
+                        {{ uploadedCount }}
+                      </span>
+                    </button>
+
+                    <button type="button" class="btn btn-sm d-flex align-items-center shadow-sm"
+                      [ngClass]="currentImportFilter === 'Not Uploaded' ? 'btn-danger' : 'btn-outline-danger'"
+                      (click)="setImportFilter('Not Uploaded')">
+                      <span>Not Uploaded</span>
+                      <span class="bg-white rounded px-1 ms-2 fw-bold text-danger" style="font-size:11px;">
+                        {{ notUploadedCount }}
+                      </span>
+                    </button>
+
+                    <button type="button" class="btn btn-sm btn-outline-primary d-flex align-items-center" (click)="exportImportedListExcel()">
+                      <i class="fa fa-download me-1"></i> Export List
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Imported Rows Table -->
+              <div class="table-responsive rounded border shadow-sm" style="max-height: 400px; overflow-y: auto;">
+                <table class="table table-bordered table-sm table-hover mb-0 custom-comp-table">
+                  <thead class="sticky-top bg-white">
+                    <tr>
+                      <th class="bg-white text-dark">Sr.</th>
+                      <th class="bg-white text-dark">Status</th>
+                      <th class="bg-white text-dark">Reason / Remarks</th>
+                      <th *ngFor="let header of importedHeaders" class="bg-white text-dark">{{ header }}</th>
+                      <th *ngIf="importedHeaders.length === 0" class="bg-white text-dark">Details</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngIf="filteredImportedData.length === 0">
+                      <td [attr.colspan]="importedHeaders.length + 3" class="text-center text-muted py-3">No matching imported records found</td>
+                    </tr>
+                    <tr *ngFor="let row of filteredImportedData; let i = index">
+                      <td>{{ i + 1 }}</td>
+                      <td>
+                        <span class="badge rounded-pill fw-semibold" [ngClass]="(row.status === 'Updated' || row.status === 'Uploaded' || row.status === 'Success') ? 'badge-subtle-success' : 'badge-subtle-danger'">
+                          <i [class]="(row.status === 'Updated' || row.status === 'Uploaded' || row.status === 'Success') ? 'fa fa-check me-1' : 'fa fa-xmark me-1'"></i>
+                          {{ row.status || 'Updated' }}
+                        </span>
+                      </td>
+                      <td>
+                        <span [ngClass]="(row.status === 'Updated' || row.status === 'Uploaded' || row.status === 'Success') ? 'text-success' : 'text-danger fw-semibold'">
+                          {{ row.remarks || row.reason || (row.status === 'Updated' || row.status === 'Uploaded' || row.status === 'Success' ? 'Imported successfully' : (errormessag || 'Import failed')) }}
+                        </span>
+                      </td>
+                      <td *ngFor="let header of importedHeaders">
+                        {{ row[header] !== undefined && row[header] !== null ? row[header] : '' }}
+                      </td>
+                      <td *ngIf="importedHeaders.length === 0">
+                        {{ row.remarks || row.message || row.empcode || '' }}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Right Side: Fact Box Sidebar -->
+  <app-fact-box [ngClass]="isFactBoxOpen ? 'col-sm-12 col-md-4 col-lg-3' : ''"
+    [title]="'Fact Box'"
+    [files]="factBoxFiles"
+    [isLoading]="isLoadingFactBox"
+    [isOpen]="isFactBoxOpen"
+    [totalItems]="totalUploadedFiles"
+    [currentPage]="pageIndexFactBox"
+    [itemsPerPage]="pageSizeFactBox"
+    (onToggle)="toggleFactBox()"
+    (onPageChange)="onFactBoxPageChange($event)"
+    (onDownload)="downloadFactBoxFile($event)">
+  </app-fact-box>
+</div>

@@ -1,0 +1,183 @@
+<div class="row">
+    <div class="col-12">
+      <div class="card">
+
+
+
+        <!-- <div class="card-header bg-primary">
+          <div class="row w-100">
+            <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-between">
+              <h4>Employee Search</h4>
+            </div>
+            <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+             
+            </div>
+          </div>
+        </div> -->
+
+
+        
+      <!-- main header  -->
+
+<div class="card-header bg-primary py-lg-2 mt-0">
+  <div class="col-sm-12 col-md-12 col-lg-3 col-12">
+
+      <div class="row w-100">
+          <div class="col-sm-12 col-md-12 col-lg-12 ">
+            <h4>Employee Search</h4> 
+          </div>
+      </div>
+
+  </div>
+
+  <div class="col-sm-12 col-md-12 col-lg-7 col-12">
+      <div class="row w-100">
+          <div class="col-sm-12 col-md-12 col-lg-12">
+              <app-common-search></app-common-search>
+          </div>
+      </div>
+  </div>
+
+ 
+
+</div>
+
+<!-- main header close -->
+
+
+
+
+
+        <div class="card-body">
+          <form [formGroup]="ApprovalForm"  >
+            
+            <div class="row row-cols-1 row-cols-3">
+              <div class="col">
+                <div class="form-group">
+                  <label for="financialYear">Financial Year:</label>
+                  <ng-select [items]="FinancialYear"  bindLabel="name" bindValue="value" formControlName="financialYear"></ng-select>
+                </div>
+              </div> 
+              <div class="col d-flex align-items-center justify-content-start">
+                <button type="submit" class="btn btn-primary mx-1" (click)="search()">Search</button>
+                  <button type="submit" class="btn btn-outline-dark mx-1" (click)="clearFilters()">Clear</button>
+               
+              </div>
+            </div> 
+          </form>
+  
+         
+          <div class="page-seperator bg-primary mx-2 rounded-1">
+            <p class="text-white ms-4 p-1">List Of Pending Tax Rebate</p>
+          </div>
+  
+          <div class="row mx-1">
+            <div class="col-12">
+                <div class="table-responsive">
+                    <table class="table  table-bordered">
+                      <thead class="text-white">
+                        <tr>
+                          <th>Sr&nbsp;No.</th>
+                          <th>Bill Date</th>
+                          <th>Section</th>
+                          <th>Sub Section</th>
+                          <th>Amount</th>
+                          <th>Empcode</th>
+                          <th>Emp Name</th>
+                          <th>Branch</th>
+                          <th>File</th>
+                          <th>View</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let employee of approvalSectionDocListPending; let i = index">
+                          <td>{{ i + 1 }}</td>
+                          <td>{{ employee.billDate | date: 'dd MMM yyyy' }}</td>
+                          <td>{{ employee.sectionDes }}</td>
+                          <td>{{ employee.subSectionDes }}</td>
+                          <td>{{ employee.docsub_Amt }}</td>
+                          <td>{{ employee.empcode }}</td>
+                          <td>{{ employee.empname }}</td>
+                          <td>{{ employee.locname }}</td>
+                          <!-- <td><a [href]="employee.filename" target="_blank">Download</a></td> -->
+                         <!-- <button class="btn btn-sm btn-primary" (click)="downloadPdf(employee.filename)">Download</button> -->
+
+                         <td (click)="employee.filename ?downloadPdf(employee.filename) : null" style="cursor: pointer; text-align: center;">
+                <i *ngIf="employee.filename" class="fas fa-file-pdf text-danger" aria-hidden="true" title="View/Download file"></i>
+              </td>
+                          
+                          <td>
+                            <button
+                              class="btn"
+                              [routerLink]="['/dash/payroll/payrolldashboard/Approval-Section-Doc_list']"
+                              [state]="employee"
+                            >
+                              View
+                            </button>
+                          </td>
+                          <!-- <td><button class="btn" routerLink="/dash/payroll/payrolldashboard/Approval-Section-Doc-list">View</button></td> -->
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+            </div>
+          </div>
+  
+          <div class="page-seperator bg-primary mx-2 rounded-1">
+            <p class="text-white ms-4 p-1">List Of Approved Tax Rebate</p>
+          </div>
+  
+          <div class="row mx-1">
+            <div class="col-12">
+              <div class="table-responsive">
+                <table class="table table-bordered">
+                  <thead class="text-white">
+                    <tr>
+                      <th>Sr&nbsp;No.</th>
+                      <th>Bill Date</th>
+                      <th>Section</th>
+                      <th>Sub Section</th>
+                      <th>Amount</th>
+                      <th>Empcode</th>
+                      <th>Emp Name</th>
+                      <th>Branch</th>
+                      <th>File</th>
+                      <th>View</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let employee of approvalSectionDocListApproved; let i = index">
+                      <td>{{ i + 1 }}</td>
+                      <td>{{ employee.billDate | date: 'dd MMM yyyy' }}</td>
+                      <td>{{ employee.sectionDes }}</td>
+                      <td>{{ employee.subSectionDes }}</td>
+                      <td>{{ employee.docsub_Amt }}</td>
+                      <td>{{ employee.empcode }}</td>
+                      <td>{{ employee.empname }}</td>
+                      <td>{{ employee.locname }}</td>
+                      <!-- <td><a [href]="employee.filename" target="_blank">Download</a></td> -->
+                          <td (click)="employee.filename ?downloadPdf(employee.filename) : null" style="cursor: pointer; text-align: center;">
+                <i *ngIf="employee.filename" class="fas fa-file-pdf text-danger" aria-hidden="true" title="View/Download file"></i>
+              </td>
+                      <td>
+                        <button
+                          class="btn"
+                          [routerLink]="['/dash/payroll/payrolldashboard/Approval-Section-Doc_list']"
+                          [state]="employee"
+                        >
+                          View
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+                
+              </div>
+            </div>
+          </div>
+  
+        </div>
+      </div>
+    </div>
+  </div>
+  

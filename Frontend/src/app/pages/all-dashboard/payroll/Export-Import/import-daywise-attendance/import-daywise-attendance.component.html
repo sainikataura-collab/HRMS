@@ -1,0 +1,607 @@
+<div class="row">
+  <div [ngClass]="isFactBoxOpen ? 'col-sm-12 col-md-8 col-lg-9' : 'col-12'">
+    <div class="card">
+      <!--  -->
+      <div class="card-header bg-primary py-lg-1 mt-0">
+        <div class="row w-100 align-items-center">
+          <!-- Title Section -->
+          <div class="col-12 col-md-3">
+            <h4>Import Day Wise Attendance</h4>
+          </div>
+
+          <!-- Search Section -->
+          <div class="col-12 col-md-6 mt-2 mt-md-0">
+            <app-common-search (filtersChanged)="handleFilters($event)"></app-common-search>
+          </div>
+
+          <!-- Fact Box toggle button -->
+          <div class="col-12 col-md-3 d-flex justify-content-end align-items-center">
+            <button *ngIf="!isFactBoxOpen" class="btn btn-outline-light btn-sm d-flex align-items-center"
+              (click)="toggleFactBox()" title="Open Fact Box">
+              <i class="bi bi-info-circle me-1"></i> Fact Box
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="card-body mt-4">
+        <form [formGroup]="EmportDailyAttendaceForm" (ngSubmit)="onSubmit()">
+          <div class="row row-cols-1 row-cols-md-4">
+            <div class="col">
+              <label>Month</label>
+
+              <div class="form-group">
+                <ng-select id="year" [items]="months" bindLabel="name" bindValue="value"
+                  (change)="onMonthOrYearChange()" formControlName="FkMonthId" placeholder="--Select --"
+                  class="w-100"></ng-select>
+                <span *ngIf="showError && EmportDailyAttendaceForm.controls['FkMonthId'].invalid"
+                  class="text-danger mt-1" style="font-size: 12px;">
+                  Please enter Month.
+                </span>
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Year</label>
+
+              <div class="form-group">
+                <ng-select id="year
+                             " [items]="years" bindLabel="name" bindValue="value" (change)="onMonthOrYearChange()"
+                  formControlName="FkYearId" placeholder="--Select --" class="w-100"></ng-select>
+                <span *ngIf="showError && EmportDailyAttendaceForm.controls['FkYearId'].invalid"
+                  class="text-danger mt-1" style="font-size: 12px;">
+                  Please enter Year.
+                </span>
+              </div>
+            </div>
+            <div class="col" *ngIf="isContractApplicable">
+              <label>Contractor Name</label>
+
+              <div class="form-group">
+                <ng-select [items]="CostCenter" bindLabel="name" bindValue="value" [multiple]="true"
+                  [closeOnSelect]="false" formControlName="fk_costcentreid" placeholder="--Select --" class="w-100"
+                  (clear)="clearCostCenters()">
+                  <!-- Display Selected CostCenters -->
+                  <ng-template ng-multi-label-tmp>
+                    <span>{{ getCostCenterDisplayText() || '--Select --' }}</span>
+                  </ng-template>
+
+                  <!-- Custom Checkbox for Select All -->
+                  <ng-template ng-option-tmp let-item="item" let-index="index">
+                    <div *ngIf="item.value === '__select_all__'">
+                      <input type="checkbox" (change)="toggleSelectAllCostCenters($event)"
+                        [checked]="isAllCostCentersSelected()" class="form-check-input fs-6 mx-1" />
+                      <strong>Select All</strong>
+                    </div>
+
+                    <!-- Normal location rows -->
+                    <div *ngIf="item.value !== '__select_all__'">
+                      <input type="checkbox" [checked]="selectedCostCenters.includes(item.value)"
+                        (change)="toggleCostCenter(item.value)" class="form-check-input fs-6 mx-1" />
+                      {{ item.name }}
+                    </div>
+                  </ng-template>
+                </ng-select>
+              </div>
+            </div>
+
+            <div class="col align-content-center">
+              <button type="submit" class="btn btn-primary mx-1" [disabled]="isViewLoading">
+
+                <i *ngIf="isViewLoading" class="fa fa-spinner fa-spin me-2">
+                </i>
+
+                {{ isViewLoading ? 'Loading...' : 'View' }}</button>
+              <button type="reset" class="btn btn-outline-dark mx-1">Reset</button>
+            </div>
+
+
+
+          </div>
+
+
+
+
+
+        </form>
+
+        <div class="row">
+          <div class="col-12">
+            <div class="col d-flex align-items-end justify-content-end">
+
+              <button class="btn btn-primary px-3 mx-1" (click)="toggleImportView()">Import Excel</button>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container"
+          *ngIf="attendanceList?.attendancemarked?.length > 0 || attendanceList?.attendanceNotmarked?.length > 0">
+
+
+          <!-- <div class="row">
+
+          
+
+            <div class="col-12 col-md-4">
+              <div class="card"
+                style="height: 40px; border: 1px solid #ffc107; box-shadow: none; border-left: 5px solid #ffc107;">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                  <div>
+                    <p class="card-title">Processed Attendance: &nbsp;<b>{{ this.AttendanceMarkedCount }}</b></p>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-12 col-md-4">
+              <div class="card"
+                style="height: 40px; border: 1px solid green; box-shadow: none; border-left: 5px solid #28a745;">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                  <div>
+                    <p class="card-title">Locked Attendance :&nbsp;<b>{{ this.NotMarkedorLockAttendanceCount }}</b></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div> -->
+        </div>
+      </div>
+      <!-- List of Employee -->
+      <div class="container"
+        *ngIf="!showImportView && (attendanceList?.attendancemarked?.length > 0 || attendanceList?.attendanceNotmarked?.length > 0)">
+
+        <div class="row align-items-center mt-4 mb-2 gy-2">
+          <div class="col-sm-12 col-md-6">
+            <p class="text-primary m-0">List of Employee (Processed Attendance)</p>
+          </div>
+          <div
+            class="col-sm-12 col-md-6 d-flex align-items-center justify-content-md-end justify-content-start flex-wrap gap-2">
+
+            <div *ngIf="attendanceList?.attendancemarked?.length > 0" class="dropdown">
+              <button class="btn btn-primary px-3 d-flex align-items-center dropdown-toggle text-nowrap" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false" [disabled]="isExporting">
+                <i *ngIf="!isExporting" class="fa fa-download me-2"></i>
+                <i *ngIf="isExporting" class="fa fa-spinner fa-spin me-2"></i>
+                {{ isExporting ? 'Wait...' : 'Export Excel' }}
+              </button>
+              <div class="dropdown-menu shadow" style="min-width: max-content;">
+                <button class="dropdown-item d-flex align-items-center py-0 px-3 small  text-nowrap" type="button"
+                  (click)="exportTemplate(1)">
+                  <i class="fa-solid fa-file-excel text-success me-2"></i>
+                  Month: {{ getSelectedMonthName() }}
+                </button>
+                <button class="  dropdown-item d-flex align-items-center py-0 px-3 small text-nowrap" type="button"
+                  (click)="exportTemplate(2)">
+                  <i class="fa-solid fa-file-excel text-success me-2"></i>
+                  Month: {{ getPreviousMonthName() }} - {{ getSelectedMonthName() }}
+                </button>
+              </div>
+            </div>
+            <input type="text" class="form-control w-auto" placeholder="Search employee..."
+              [(ngModel)]="searchTextAttendanceMarked" (input)="filterAttendance('Marked')" />
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <!-- <th>Sr.</th>
+              
+                <th>Code</th>
+                <th>Name</th>
+                <th>Location</th>
+                <th>Department</th> -->
+
+
+                <!-- <th>A1</th>
+                <th>A2</th>
+                <th>A3</th>
+                <th>A4</th>
+                
+                <th>A5</th>
+                <th>A6</th>
+                <th>A7</th>
+                <th>A8</th>
+                <th>A9</th>
+                <th>A10</th>
+                <th>A11</th>
+                <th>A12</th>
+                 <th>A13</th>
+                  <th>A14</th>
+                   <th>A15</th>
+                    <th>A16</th>
+                     <th>A17</th>
+                      <th>A18</th>
+                       <th>A19</th>
+                        <th>A20</th>
+                         <th>A21</th>
+                          <th>A22</th>
+                           <th>A23</th>
+                            <th>A24</th>
+                             <th>A25</th>
+                              <th>A26</th>
+                               <th>A27</th>
+                                <th>A28</th>
+                                 <th>A29</th>
+                                  <th>A30</th>
+                                   <th>A31</th> -->
+                <!-- <th *ngFor="let day of dayHeaders">{{ day }}</th>
+                <th>Paid Days</th> -->
+                <th *ngFor="let col of markedColumns">{{ col }}</th>
+
+
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngIf="filteredAttendanceMarkedList?.length === 0">
+                <td colspan="19" class="text-center">No records found</td> <!-- Updated colspan to 19 -->
+              </tr>
+              <tr
+                *ngFor="let emp of filteredAttendanceMarkedList | paginate: { id: 'Marked', itemsPerPage: pageSize1, currentPage: pageIndex1, totalItems: AttendanceMarkedCount }; let i = index">
+                <td *ngFor="let col of markedColumns">{{ emp[col] }}</td>
+
+
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Pagination -->
+          <pagination-controls *ngIf="AttendanceMarkedCount > 0" id="Marked" (pageChange)="onMarkedPageChange($event)"
+            totalItems="AttendanceMarkedCount" itemsPerPage="pageSize1">
+          </pagination-controls>
+        </div>
+        <!-- Not Marked Attendance -->
+
+        <div class=" mt-4 mb-2 d-flex justify-content-between align-items-center">
+          <p class="text-primary m-0">List of Employee (Locked Attendance)</p>
+
+          <input type="text" class="form-control w-auto ms-3" placeholder="Search employee..."
+            [(ngModel)]="searchTextAttendanceNotMarked" (input)="filterAttendance('NotMarked')" />
+
+
+        </div>
+        <div class="table-responsive" style="overflow-x: auto;">
+          <table class="table  table-bordered table-sm min-width-table">
+            <thead class="">
+              <tr>
+                <th>Sr.</th>
+                <th>Code</th>
+                <th>Name</th>
+                <th>Location</th>
+                <th>Department</th>
+                <!-- <th>Designation</th> -->
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngIf="filteredAttendaceNotMarkedList?.length === 0">
+                <td colspan="14" class="text-center">No records found</td>
+              </tr>
+              <tr
+                *ngFor="let emp of filteredAttendaceNotMarkedList | paginate: { id:'Notmarked',itemsPerPage: pageSize2, currentPage: pageIndex2, totalItems:NotMarkedorLockAttendanceCount }; let i = index">
+                <td>{{ (pageIndex2 - 1) * pageSize2 + i + 1 }}</td>
+                <td>{{ emp.empcode }}</td>
+
+                <td>{{ emp.empname }}</td>
+                <td>{{ emp.location }}</td>
+                <td>{{ emp.department }}</td>
+                <!-- <td>{{ emp.designation }}</td> -->
+              </tr>
+            </tbody>
+          </table>
+
+          <pagination-controls *ngIf="NotMarkedorLockAttendanceCount > 0" id="Notmarked"
+            (pageChange)="onNotMarkedPageChange($event)" totalItems="NotMarkedorLockAttendanceCount"
+            itemsPerPage="pageSize2">
+          </pagination-controls>
+        </div>
+
+
+      </div>
+
+      <!-- export data  -->
+      <div *ngIf="showImportView">
+        <div class="card-body">
+
+          <form [formGroup]="EmportDailyAttendaceForm" (ngSubmit)="Import()" class="row g-2 align-items-end mb-4">
+
+            <!-- File Input on the left -->
+            <div class="col-md-5">
+              <label class="form-label">Select File</label>
+              <input type="file" class="form-control" formControlName="file" (change)="onFileChange($event)" #fileInput
+                id="fileInput">
+              <div
+                *ngIf="EmportDailyAttendaceForm.get('file')?.hasError('required') && EmportDailyAttendaceForm.get('file')?.touched"
+                class="text-danger" style="font-size: 12px;">
+                File is required.
+              </div>
+
+              <!-- Validation message for invalid file type -->
+              <div
+                *ngIf="EmportDailyAttendaceForm.get('file')?.hasError('pattern') && EmportDailyAttendaceForm.get('file')?.touched"
+                class="text-danger" style="font-size: 12px;">
+                Please upload a valid file (only .xlsx files allowed).
+              </div>
+
+              <!-- Excel Head Count Indicator -->
+              <div *ngIf="selectedFileHeadCount > 0" class="text-primary fw-semibold mt-1" style="font-size: 12px;">
+                <i class="fa-solid fa-users me-1"></i>Excel Head Count: <strong>{{ selectedFileHeadCount }}</strong>
+                employee record(s) detected
+              </div>
+            </div>
+
+
+            <!-- Right-aligned Buttons -->
+            <div class="col d-flex align-items-center justify-content-end  gap-2">
+
+              <button type="submit" class="btn btn-primary d-flex align-items-center" [disabled]="isImporting || !selectedFile">
+                <i *ngIf="!isImporting" class="fa fa-upload me-2"></i>
+                <span *ngIf="isImporting" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                {{ isImporting ? 'Importing...' : 'Import' }}
+              </button>
+              <button type="reset" class="btn btn-outline-dark" (click)="resetFile()" [disabled]="isImporting">Reset</button>
+              <button class="btn btn-outline-danger d-flex align-items-center justify-content-center p-2"
+                (click)="toggleImportView()" [disabled]="isImporting"><i class="fa-solid fa-xmark fs-6 fw-semibold"></i></button>
+
+
+            </div>
+          </form>
+
+          <!-- Success message -->
+          <!-- <div *ngIf="messag" class="alert text-success" role="alert">
+            {{ messag }}
+          </div> -->
+
+          <!-- Error message -->
+          <!-- <div *ngIf="errormessag" class="alert text-danger" role="alert">
+            {{ errormessag }}
+          </div> -->
+
+          <!-- Inline Spinner in List when Importing -->
+          <div class="row my-4" *ngIf="isImporting">
+            <div class="col-12 text-center py-5 border rounded bg-light shadow-sm">
+              <div class="spinner-border text-primary" role="status" style="width: 2.75rem; height: 2.75rem;">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+              <h6 class="mt-3 text-primary fw-semibold">Importing and processing data...</h6>
+              <p class="text-muted small mb-0">Please wait while the file is uploaded, validated, and response is prepared.</p>
+            </div>
+          </div>
+
+          <!-- Import Result Summary -->
+          <div *ngIf="!isImporting && (successCount > 0 || errorCount > 0)">
+
+            <!-- Top Bar -->
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+
+              <!-- Search -->
+
+              <input type="text" class="form-control w-25" placeholder="Search..." [(ngModel)]="searchImportText"
+                (input)="filterImportData()">
+
+              <!-- Counters -->
+
+              <div class="d-flex flex-wrap gap-2">
+
+                <button class="btn" [ngClass]="activeTab === 'all' ? 'btn-primary'
+          : 'btn-outline-primary'" (click)="activeTab='all'">
+                  <!-- All Data
+          <span class="badge bg-light text-primary ms-1">
+            {{ totalCount }}
+          </span> -->
+                  <span>
+                    All Data ({{ totalCount }})
+                  </span>
+                </button>
+
+                <button class="btn" [ngClass]="activeTab==='success'
+          ? 'btn-success'
+          : 'btn-outline-success'" (click)="activeTab='success'">
+
+
+
+                  <span>
+                    Uploaded {{ successCount }}
+                  </span>
+
+                </button>
+
+                <button class="btn" [ngClass]="activeTab==='error'
+          ? 'btn-danger'
+          : 'btn-outline-danger'" (click)="activeTab='error'">
+
+
+
+                  <span>
+                    Not Uploaded {{ errorCount }}
+                  </span>
+
+                </button>
+
+                <button class="btn btn-primary" (click)="exportImportResult()">
+
+                  <i class="fa fa-download me-2"></i>
+                  Export List
+
+                </button>
+
+              </div>
+
+            </div>
+
+            <!-- Dynamic Grid -->
+
+            <!-- <div class="table-responsive table-bordered" style="max-height: 300px;">
+
+    <table class="table table-bordered table-hover">
+
+      <thead class="sticky-top bg-white" style="top:-2px;">
+
+        <tr>
+
+          <th *ngFor="let col of currentHeaders">
+            {{ col }}
+          </th>
+
+        </tr>
+
+      </thead>
+
+      <tbody>
+
+        <tr *ngIf="currentData.length === 0">
+          <td
+            [attr.colspan]="currentHeaders.length"
+            class="text-center">
+
+            No Records Found
+
+          </td>
+        </tr>
+
+        <tr *ngFor="let row of currentData">
+
+          <td *ngFor="let col of currentHeaders">
+
+            <span
+              [ngClass]="{
+                'text-danger':
+                col.toLowerCase() === 'status'
+                && row[col] === 'Error',
+
+                'text-success':
+                col.toLowerCase() === 'status'
+                && row[col] === 'Success'
+              }">
+
+              {{ row[col] }}
+
+            </span>
+
+          </td>
+
+        </tr>
+
+      </tbody>
+
+    </table>
+
+  </div> -->
+
+            <!-- Tab buttons - no change needed, they use the setter automatically -->
+
+            <!-- Replace the table-responsive div with this: -->
+            <div class="table-responsive table-bordered" style="max-height: 300px; position: relative;">
+
+              <!-- Tab switch loader overlay -->
+              <div *ngIf="isTabLoading" style="position: absolute; inset: 0; background: rgba(255,255,255,0.75); 
+           z-index: 10; display: flex; align-items: center; justify-content: center;">
+                <div class="d-flex flex-column align-items-center gap-2">
+                  <div class="spinner-border text-primary" role="status" style="width: 2rem; height: 2rem;">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+                  <small class="text-muted fw-semibold">Loading records...</small>
+                </div>
+              </div>
+
+              <table class="table table-bordered table-hover">
+                <thead class="sticky-top bg-white" style="top:-2px;">
+                  <tr>
+                    <th *ngFor="let col of currentHeaders">{{ col }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngIf="!isTabLoading && currentData.length === 0">
+                    <td [attr.colspan]="currentHeaders.length" class="text-center">No Records Found</td>
+                  </tr>
+                  <tr *ngFor="let row of currentData">
+                    <td *ngFor="let col of currentHeaders">
+                      <span [ngClass]="{
+            'text-danger': col.toLowerCase() === 'status' && row[col] === 'Error',
+            'text-success': col.toLowerCase() === 'status' && row[col] === 'Success'
+          }">
+                        {{ row[col] }}
+                      </span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <!--added by pp-->
+
+        </div>
+
+      </div>
+
+
+    </div>
+
+  </div>
+
+  <!-- Right Side: Fact Box Sidebar -->
+  <!-- <app-fact-box [ngClass]="isFactBoxOpen ? 'col-sm-12 col-md-4 col-lg-3' : ''" [title]="'Fact Box'"
+    [files]="factBoxFiles" [isLoading]="isLoadingFactBox" [isOpen]="isFactBoxOpen" [totalItems]="totalUploadedFiles"
+    [currentPage]="pageIndexFactBox" [itemsPerPage]="pageSizeFactBox" (onToggle)="toggleFactBox()"
+    (onPageChange)="onFactBoxPageChange($event)" (onDownload)="downloadFactBoxFile($event)">
+  </app-fact-box> -->
+
+
+
+  <!-- </div> -->
+
+  <!-- Right Side (30%): Fact Box with Process Navigation at Top and Upload History at Bottom -->
+  <div class="col-sm-12 col-md-4 col-lg-3" *ngIf="isFactBoxOpen">
+    <div class="factbox-section-container w-100">
+      <app-fact-box class="w-100 h-100 d-block" [title]="'Fact Box'" [files]="factBoxFiles"
+        [isLoading]="isLoadingFactBox" [isOpen]="isFactBoxOpen" [totalItems]="totalUploadedFiles"
+        [currentPage]="pageIndexFactBox" [itemsPerPage]="pageSizeFactBox" (onToggle)="toggleFactBox()"
+        (onPageChange)="onFactBoxPageChange($event)" (onDownload)="downloadFactBoxFile($event)">
+
+        <!-- Quick Navigation Buttons directly INSIDE Fact Box above the file list -->
+        <div top class="factbox-quick-actions d-flex flex-wrap gap-2 mb-2">
+          <button *ngIf="workflowNav.hasAccess(workflowNav.ROUTES.MONTHLY_ATTENDANCE, 'Monthly Attendance')"
+            type="button" class="btn action-btn action-btn-green d-inline-flex align-items-center gap-2"
+            (click)="goToMonthlyAttendance()" title="Monthly Attendance">
+            <i class="bi bi-calendar-check flex-shrink-0"></i>
+            <span class="btn-text">Monthly Attendance</span>
+            <i class="bi bi-arrow-right animated-arrow flex-shrink-0 fw-bold" style="font-size: 11px;"></i>
+          </button>
+          <button *ngIf="workflowNav.hasAccess(workflowNav.ROUTES.ATTENDANCE_ADJUSTMENT, 'Attendance Adjustment')"
+            type="button" class="btn action-btn action-btn-blue d-inline-flex align-items-center gap-2"
+            (click)="goToAttendanceAdjustment()" title="Attendance Adjustment">
+            <i class="bi bi-sliders flex-shrink-0"></i>
+            <span class="btn-text">Attendance Adjustment</span>
+            <i class="bi bi-arrow-right animated-arrow flex-shrink-0 fw-bold" style="font-size: 11px;"></i>
+          </button>
+          <button *ngIf="workflowNav.hasAccess(workflowNav.ROUTES.ATTENDANCE_REPORT, 'Attendance Report', 'attendance')"
+            type="button" class="btn action-btn action-btn-amber d-inline-flex align-items-center gap-2"
+            (click)="goToAttendanceReport()" title="Attendance Report">
+            <i class="bi bi-file-earmark-text flex-shrink-0"></i>
+            <span class="btn-text">Attendance Report</span>
+            <i class="bi bi-arrow-right animated-arrow flex-shrink-0 fw-bold" style="font-size: 11px;"></i>
+          </button>
+          <button *ngIf="workflowNav.hasAccess(workflowNav.ROUTES.LEAVE_REPORT, 'Leave Report', 'leave')" type="button"
+            class="btn action-btn action-btn-purple d-inline-flex align-items-center gap-2" (click)="goToLeaveReport()"
+            title="Leave Report">
+            <i class="bi bi-airplane flex-shrink-0"></i>
+            <span class="btn-text">Leave Report</span>
+            <i class="bi bi-arrow-right animated-arrow flex-shrink-0 fw-bold" style="font-size: 11px;"></i>
+          </button>
+        </div>
+
+      </app-fact-box>
+    </div>
+  </div>
+</div>
+
+<!-- Floating Open Button (Bottom-right, when closed) -->
+<button class="btn btn-primary btn-float-fact" type="button" *ngIf="!isFactBoxOpen" (click)="toggleFactBox()"
+  title="Open Fact Box">
+  <i class="fa fa-sitemap"></i>
+</button>

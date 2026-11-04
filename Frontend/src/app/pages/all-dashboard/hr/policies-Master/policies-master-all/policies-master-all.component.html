@@ -1,0 +1,60 @@
+<div class="row">
+    <div class="col-12">
+      <div class="card">
+        <!--  -->
+        <div class="card-header bg-primary">
+            <div class="row w-100">
+              <!-- Title Section -->
+              <div class="col-sm-6 col-md-6 col-lg-6 d-flex align-items-center justify-content-start"> 
+                <h4 class="text-white">All Policies Master List</h4>
+              </div>
+           
+
+
+              <!-- Back Button -->
+              <div class="col-sm-6 col-md-6 col-lg-6 d-flex align-items-center justify-content-end ms-auto gap-2">
+                <button class="btn btn-light" routerLink="/dash/hr/hrdashboard/Company-Policy">
+                    <i class="fa fa-square-plus"></i>Add
+                  </button>
+              </div>
+            </div>
+          </div>
+
+        
+        <!--  -->
+        <div class="card-body">
+          <div class="table-responsive table-invoice">
+            <table Id="exportTable"  class="table">
+              <thead>
+                <tr>
+                    <th>Sr.</th>
+                    <th>Company Policy</th>
+                    <th>Active</th>
+                    <th>Edit</th>
+                    <th>Delete</th>
+                    </tr>
+              </thead>
+             
+                <tbody>
+                    <tr *ngFor="let item of ProgramDetails | paginate: { itemsPerPage: pageSize, currentPage: page }">
+                        <td>{{ item.srNo }}</td>
+                        <td>{{ item.cp }}</td>
+                        <td>{{ item.active ? 'Yes' : 'No' }}</td>
+                        <td><button class="btn fs-5"><i class="fa-regular fa-pen-to-square"></i></button></td>
+                        <td><button class="btn fs-5"> <i class="fa-solid fa-trash"></i></button></td>
+                        </tr>
+                </tbody>
+            
+            </table>
+  
+            <!-- Pagination controls -->
+            <pagination-controls
+              (pageChange)="onPageChange($event)"
+              totalItems="totalItems"
+              itemsPerPage="pageSize">
+            </pagination-controls>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

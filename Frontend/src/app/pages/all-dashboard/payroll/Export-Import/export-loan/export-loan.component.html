@@ -1,0 +1,132 @@
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+            <div class="card-header bg-primary py-lg-1 mt-0">
+                <div class="row w-100 align-items-center">
+
+                    <!-- Title Section -->
+                    <div class="col-12 col-md-3">
+                        <h4>Loan Report</h4>
+                    </div>
+                    <!-- Search Section -->
+                    <div class="col-12 col-md-7 mt-2 mt-md-0">
+                        <app-common-search (filtersChanged)="handleFilters($event)"></app-common-search>
+                    </div>
+
+                </div>
+            </div>
+            <div class="card-body mt-4">
+                <form [formGroup]="ExportExcel" (ngSubmit)="OnVeiw()">
+                    <div class="row row-cols-1 row-cols-md-4">
+                        <!-- <div class="col">
+                            <label>Month</label>
+                            <div class="form-group">
+                                <ng-select id="fk_monthId" [items]="months" bindLabel="name" bindValue="value"
+                                    formControlName="fk_monthId" class="w-100" placeholder="--Select Month --"></ng-select>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <label>Year</label>
+                            <div class="form-group">
+                                <ng-select id="fk_yearId" [items]="years" bindLabel="name" bindValue="value"
+                                    formControlName="fk_yearId" placeholder="--Select Year --" class="w-100"></ng-select>
+                            </div>
+                        </div> -->
+
+                        <div class="col">
+                            <label>From Date <span class="text-danger font-bold">*</span></label>
+                            <input type="date" formControlName="fromdate" class="form-control">
+                            <span *ngIf="showError && ExportExcel.controls['fromdate'].invalid" class="text-danger mt-1"
+                                style="font-size: 12px;">
+                                Please select From Date
+                            </span>
+                        </div>
+                        <div class="col">
+                            <label>To Date <span class="text-danger font-bold">*</span></label>
+                            <div class="form-group">
+                                <input type="date" formControlName="todate" class="form-control">
+                                <span *ngIf="showError && ExportExcel.controls['todate'].invalid"
+                                    class="text-danger mt-1" style="font-size: 12px;">
+                                    Please select ToDate
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <label>Loan Type</label>
+                            <ng-select id="leavetype" [items]="loanddl" bindLabel="name" bindValue="value"
+                                formControlName="fk_loanid" placeholder="--Select leavetype --"
+                                class="w-100"></ng-select>
+                            <!-- <span *ngIf="showError && ExportExcel.controls['fk_leaveid'].invalid"
+                                class="text-danger mt-1" style="font-size: 12px;">
+                                Please enter LeaveType.
+                            </span> -->
+                        </div>
+                        <div class="col" *ngIf="isContractApplicable">
+                            <label>Contractor Name</label>
+
+                            <div class="form-group">
+                                <ng-select id="year" [items]="CostCenter" bindLabel="name" bindValue="value" formControlName="fk_costcentreid"
+                                    placeholder="--Select --" class="w-100"></ng-select>
+
+                            </div>
+                        </div>
+                        <div class="col">
+                            <label>Export Type <span class="text-danger font-bold">*</span></label>
+                            <div class="form-group">
+                                <ng-select id="ExportType" [items]="ExportTypelist" bindLabel="name" bindValue="value"
+                                    formControlName="ExportType" placeholder="--Select --" class="w-100"></ng-select>
+                                <span *ngIf="showError && ExportExcel.controls['ExportType'].invalid"
+                                    class="text-danger mt-1" style="font-size: 12px;">
+                                    Please enter ExportType.
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-lg-12 d-flex align-items-center justify-content-end">
+                            <button type="submit" class="btn btn-primary mx-1">View</button>
+                            <button type="reset" class="btn btn-outline-dark mx-1" (click)="restfrom()">Reset</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <!-- List of Employee -->
+            <div *ngIf="showEmployeeList">
+                <div class="row row-cols-1 row-cols-md-2 p-2">
+                    <div class="col">
+                        <p class="text-dark m-0 d  ps-3 text-primary ">List of Loan Details</p>
+                    </div>
+
+                    <div class="col d-flex align-items-center justify-content-end">
+                        <!-- <button type="submit" class="btn btn-primary mx-1" (click)="downloadExcel()">Export</button> -->
+                        <button class="btn btn-primary mx-1" (click)="downloadExcel()" [disabled]="isExporting">
+                            <!-- <i class="fa fa-download me-2"></i> Export Excel -->
+                              <i *ngIf="!isExporting" class="fa fa-download me-2"></i>
+                            <i *ngIf="isExporting" class="fa fa-spinner fa-spin me-2"></i>
+                            {{ isExporting ? 'Wait...' : 'Export Excel' }}
+                        
+                        </button>
+                        <input type="text" class="form-control w-50" placeholder="Search employee..."
+                            placeholder="Search..." [(ngModel)]="searchText" />
+                    </div>
+
+                </div>
+
+
+                <div class="table-responsive table-invoice" [ngClass]="{ 'scroll-active': EmployeeList.length > 10 }">
+                    <table class="table table-bordered" id="exportTable">
+                        <thead>
+                            <tr>
+                                <th *ngFor="let col of tableHeaders">{{ col }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let item of filteredData(); let i = index">
+                                <td *ngFor="let col of tableHeaders">{{ item[col] }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

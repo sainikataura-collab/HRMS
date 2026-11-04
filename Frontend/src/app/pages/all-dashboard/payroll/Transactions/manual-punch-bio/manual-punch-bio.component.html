@@ -1,0 +1,325 @@
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card">
+      <div class="card-header bg-primary py-lg-2 mt-0">
+        <div class="row w-100 align-items-center">
+          @if(this.Isedit){
+          <!-- Title Section -->
+          <div class="col-12 col-md-3">
+            <h4>In / Out Time Detail</h4>
+          </div>
+
+          }
+          @else{
+          <!-- Title Section -->
+          <div class="col-12 col-md-3">
+            <h4>Attendance Punch</h4>
+          </div>
+          <!-- Search Section -->
+          <div class="col-12 col-md-7 mt-2 mt-md-0">
+            <app-common-search (filtersChanged)="handleFilters($event)"></app-common-search>
+          </div>
+          }
+        </div>
+      </div>
+      <div class="card-body mt-4">
+        <form [formGroup]="manualpunchForm">
+          <div class="row row-cols-1 row-cols-md-4" *ngIf="!this.Isedit">
+            <div class="col">
+              <label>Month<span class="text-danger font-bold">*</span></label>
+              <div class="form-group">
+                <ng-select id="month" [items]="months" bindLabel="name" bindValue="value" formControlName="month"
+                  class="w-100"  placeholder="--Select --"></ng-select>
+                <span *ngIf="showError && manualpunchForm.controls['month'].invalid" class="text-danger mt-1"
+                  style="font-size: 12px;">
+                  Please enter Month.
+                </span>
+              </div>  
+            </div>
+            <div class="col">
+              <label>Year<span class="text-danger font-bold">*</span></label>
+              <div class="form-group">
+                <ng-select id="year" [items]="years" bindLabel="name" bindValue="value" formControlName="year"
+                  placeholder="--Select --" class="w-100"></ng-select>
+                <span *ngIf="showError && manualpunchForm.controls['year'].invalid" class="text-danger mt-1"
+                  style="font-size: 12px;">
+                  Please enter Year.
+                </span>
+              </div>
+            </div>
+            <div class="col">
+              <label>Employee Code<span class="text-danger font-bold">*</span></label>
+              <div class="form-group">
+                <ng-select id="EmployeeCode" [items]="employees" bindLabel="name" bindValue="value"
+                  formControlName="EmployeeCode" placeholder="--Select --" class="w-100"></ng-select>
+                <span *ngIf="showError && manualpunchForm.controls['EmployeeCode'].invalid" class="text-danger mt-1"
+                  style="font-size: 12px;">
+                  Please enter empCode.
+                </span>
+              </div>
+            </div>
+            <div class="col d-flex align-items-center justify-content-start">
+              <button type="submit" class="btn btn-primary mx-1" (click)="onSubmit()">View</button>
+              <button class="btn btn-outline-dark mx-1" (click)="resetForm()">Reset</button>
+
+            </div>
+          </div>
+          @if(this.Isedit) {
+          <div class="row row-cols-1 row-cols-md-3">
+            <div class="col">
+              <label for="" class="">Employee Code<span class="text-danger font-bold">*</span></label>
+              <input type="text" class="form-control" formControlName="EmployeeCode" id="empcode" [disabled]="true">
+            </div>
+            <div class="col">
+              <label for="" class="">Employee Name<span class="text-danger font-bold">*</span></label>
+              <input type="text" class="form-control" formControlName="empname" id="empname" [disabled]="true">
+            </div>
+            <div class="col">
+              <label for="" class="">Dated<span class="text-danger font-bold">*</span></label>
+              <input type="text" class="form-control" formControlName="dated" id="dated" [disabled]="true">
+            </div>
+            <div class="col">
+              <label for="" class="">Day status<span class="text-danger font-bold">*</span></label>
+              <input type="text" class="form-control" formControlName="daystatus" id="daystatus">
+              <span *ngIf="showError &&manualpunchForm.controls['daystatus'].invalid" class="text-danger mt-1"
+                style="font-size: 12px;">
+                Please enter daystatus.
+              </span>
+            </div>
+            <div class="col">
+              <label for="" class="">InDate</label>
+              <input type="text" class="form-control" formControlName="inDate" id="inDate" >
+              <div class="ngx-timepicker-field-example" >
+                <ngx-timepicker-field [defaultTime]="'00:00 am'"></ngx-timepicker-field>
+              </div>
+            </div>
+            <div class="col">
+              <label for="" class="">OutDate</label>
+              <input type="text" class="form-control" formControlName="outDate" id="outDate">
+              <div class=" timepicker-no-border">
+                <ngx-timepicker-field [defaultTime]="'00:00 am'"></ngx-timepicker-field>
+              </div>
+            </div>
+           
+              <!-- Buttons -->
+         <div class="col-sm-12 col-md-12 col-lg-12 modal-footer d-flex align-items-center justify-content-end">
+          <button type="submit" class="btn btn-primary mx-1" (click)="onSubmit()">
+            Update
+          </button>
+      
+        </div>
+          </div>
+
+          }
+        </form>
+        <!--  -->
+        <div class="container my-3" *ngIf="!this.Isedit">
+          <!-- Work Hours Summary -->
+          <div class="row text-center g-3">
+            <div class="col-6 col-md-3">
+              <small class="text-success">🟢 Working Hours</small>
+              <p class="fw-bold mb-0 text-success">{{totalWorkHoursFormatted}}</p>
+            </div>
+            <div class="col-6 col-md-3">
+              <small class="text-danger">🔴 Break Hours</small>
+              <p class="fw-bold text-danger mb-0">00m 00s</p>
+            </div>
+            <div class="col-6 col-md-3">
+              <small class="text-warning">🟡 Productive Hours</small>
+              <p class="fw-bold text-warning mb-0">{{totalWorkHoursFormatted}}</p>
+            </div>
+            <div class="col-6 col-md-3">
+              <small class="text-primary">🔵 Overtime</small>
+              <p class="fw-bold text-primary mb-0">{{totalOTHoursFormatted}}</p>
+            </div>
+          </div>
+          <!-- Progress Bar for Time Blocks -->
+          <div class="row mt-3">
+            <div class="col-12">
+              <div class="progress bg-light shadow-sm" style="height: 15px; border-radius: 10px;">
+                <div class="progress-bar bg-success" style="width: 25%;" title="Working Hours"></div>
+                <div class="progress-bar bg-danger" style="width: 25%;" title="Productive Hours"></div>
+                <div class="progress-bar bg-warning" style="width: 25%;" title="Break Hours"></div>
+                <div class="progress-bar bg-primary" style="width: 25%;" title="Overtime"></div>
+              </div>
+            </div>
+          </div>
+          <!-- Time Labels -->
+          <!-- <div class="row mt-2">
+            <div class="col-12 d-flex justify-content-around text-muted px-2 small">
+              <span>06:00</span>
+              <span>07:00</span>
+              <span>08:00</span>
+              <span>09:00</span>
+
+            </div>
+          </div> -->
+        </div>
+        <div class="container mt-4" *ngIf="!this.Isedit">
+          <!-- Row for cards -->
+          <div class="row row-col-1 row-cols-md-6">
+            <!-- Card 1 -->
+            <div class="col mb-3">
+              <div class="card"
+                style="height: 50px; border: none; box-shadow: none; border-left: 5px solid #007bff; border-top:1px solid #007bff; border-bottom:1px solid #007bff; border-right:1px solid #007bff">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                  <div>
+                    <p class="card-title text-center lh-base"><span class="fw-semibold">Present: </span> <br><span
+                        class="fw-bold text-primary">{{ presentCount }}</span></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Card 2 -->
+            <div class="col mb-3">
+              <div class="card"
+                style="height: 50px; border: none; box-shadow: none; border-left: 5px solid #28a745; border-top:1px solid #28a745; border-bottom:1px solid #28a745; border-right:1px solid #28a745">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                  <div>
+                    <p class="card-title text-center lh-base"><span class="fw-semibold">Leaves: </span> <br> <span
+                        class="fw-bold text-success">{{totalLeave}}</span></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Card 3 -->
+            <div class="col mb-3">
+              <div class="card"
+                style="height: 50px; border: none; box-shadow: none; border-left: 5px solid #ffc107; border-top:1px solid #ffc107; border-bottom:1px solid #ffc107; border-right:1px solid #ffc107">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                  <div>
+                    <p class="card-title text-center lh-base"><span class="fw-semibold"> Week&nbsp;Off: </span> <br>
+                      <span class="fw-bold text-warning">{{ woCount}}</span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Card 4 -->
+            <div class="col mb-3">
+              <div class="card"
+                style="height: 50px; border: none; box-shadow: none; border-left: 5px solid #dc3545; border-top:1px solid #dc3545; border-bottom:1px solid #dc3545; border-right:1px solid #dc3545">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                  <div>
+                    <p class="card-title text-center lh-base"><span class="fw-semibold">Absent : </span> <br> <span
+                        class="fw-bold text-danger">{{ absentCount }}</span></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Card 5 -->
+            <div class="col mb-3">
+              <div class="card"
+                style="height: 50px; border: none; box-shadow: none; border-left: 5px solid #17a2b8; border-top:1px solid #17a2b8; border-bottom:1px solid #17a2b8; border-right:1px solid #17a2b8">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                  <div>
+                    <p class="card-title text-center lh-base"><span class="fw-semibold">Holiday : </span> <br><span
+                        class="fw-bold text-info">{{ hdCount }}</span></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Card 6 -->
+            <div class="col mb-3">
+              <div class="card"
+                style="height: 50px; border: none; box-shadow: none; border-left: 5px solid #6f42c1; border-top:1px solid #6f42c1; border-bottom:1px solid #6f42c1; border-right:1px solid #6f42c1">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                  <div>
+                    <p class="card-title text-center lh-base"><span class="fw-semibold">Miss&nbsp;Punch :
+                      </span><br><span class="fw-bold" style="color:#6f42c1;">{{ mpCount }}</span></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+        <!-- ---SELECTED MONTH & YEAR ATTENDANCE DETAILS -->
+        <div *ngIf="showAttendanceList && !this.Isedit">
+          <div class="card-header">
+            <div class="row w-100 ">
+              <div class="col-sm-12 col-md-6 col-lg-6 ">
+                <h4>SELECTED MONTH & YEAR ATTENDANCE DETAILS</h4>
+              </div>
+            </div>
+          </div>
+        
+            <div class="table-responsive table-invoice " [ngClass]="{ 'scroll-active': manualList.length > 10 }">
+              <table class="table table-bordered">
+                <thead class="sticky-top table-secondary" style="background-color: rgb(250, 251, 251);">
+                  <tr class="sticky-top">
+                    <th>Sr.No.</th>
+                    <th>Dated</th>
+                    <th>test</th>
+                    <th>In Time [HH:MM:SS]</th>
+                    <th>Intime Photo</th>
+                    <th>Out Time [HH:MM:SS]</th>
+                    <th>Out Time Photo</th>
+                    <th>Work Hours [HH:MM]</th>
+                    <th>OT Hours [HH:MM]</th>
+                    <th>Day Status</th>
+                    <th>Late Coming</th>
+                    <th>Short Attendance</th>
+                    <th>Day Description</th>
+                    <th>Shift Name</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody *ngFor="let item of manualList; let i = index" class=" overflow-y-auto">
+                  <tr>
+                    <td>{{ i + 1 }}</td>
+                    <td>{{ item.dated }}</td>
+                    <td>{{ item.pk_inoutid }}</td>
+                    <td>{{item.intime}}</td>
+                    <!-- <td>
+                      <img [src]="item.pk_inoutid1" alt="Preview" width="50" height="50" />
+
+                    </td> -->
+                    <!--  Thumbnail Image -->
+<td>
+  <img
+    [src]="item.pk_inoutid1"
+    alt="Preview"
+    width="50"
+    height="50"
+    (click)="openImage(item.pk_inoutid1)"
+    style="cursor: pointer;"
+  />
+</td>
+
+<!-- Image Modal -->
+<!-- <div
+  class="image-modal"
+  *ngIf="showModal"
+  (click)="closeModal()"
+>
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <img [src]="selectedImage" alt="Full Image" />
+    <span class="close-btn" (click)="closeModal()">×</span>
+  </div>
+</div> -->
+
+                     <!-- --> 
+                    <td>{{item.outtime }}</td>
+                    <td>
+                      <img [src]="item.pk_inoutid2" alt="Preview" width="50" height="50" />
+                    </td>
+                    <td>{{ item.workhour }}</td>
+                    <td>{{ item.oThour }}</td>
+                    <td>{{ item.daystatus }}</td>
+                    <td>{{ item.lateComing }}</td>
+                    <td>{{ item.short }}</td>
+                    <td>{{ item.latecount }}</td>
+                    <td>{{ item.shiftName }}</td>
+                    <td><button class="btn btn-sm btn-outline" (click)="isUpdate(item.pk_inoutid)"><i
+                          class="fa-regular fa-pen-to-square"></i></button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

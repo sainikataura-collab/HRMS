@@ -1,0 +1,132 @@
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <!--  -->
+      <div class="card-header bg-primary">
+        <div class="row w-100">
+
+
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-between">
+            <h4>All Trainging Planning List</h4>
+
+          </div>
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-center">
+            <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText" />
+          </div>
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-md-end">
+            <button class="btn btnheader" routerLink="/dash/training/trainingdashboard/TrainingPlanning">
+              Add
+            </button>
+
+            <button class="btn btn-light mx-1" (click)="exportToExcel()">
+              Download
+            </button>
+
+            <!-- Calendar Redirect Button -->
+            <button class="btn btn-info mx-1" routerLink="/dash/training/trainingdashboard/Calendar">
+              <i class="fa fa-calendar"></i> See Calendar
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+
+      <!--  -->
+      <div class="card-body">
+        <div class="table-responsive table-invoice">
+          <table Id="exportTable" class="table table-bordered">
+            <thead>
+
+              <tr>
+                <th>Sr.</th>
+                <!-- <th>Employee</th> -->
+                <th>program</th>
+                <th>subprogram</th>
+                <th>Trainer</th>
+                <th>location</th>
+                <th>AudienceType</th>
+                <th>Action</th>
+              </tr>
+
+            </thead>
+
+            <tbody>
+              <tr
+                *ngFor="let item of  filteredData() | paginate: { itemsPerPage: pageSize, currentPage: pageIndex ,totalItems:totalItems};let i = index">
+                <td>{{(pageIndex-1)* pageSize+i+1}}</td>
+                <!-- <td>{{ item.employeeNames }}</td> -->
+                <td>{{ item.programName }}</td>
+                <td>{{ item.subProgramName }}</td>
+                <td>{{ item.trainer}}</td>
+                <td>{{ item.location ? item.location : 'N/A' }}</td>
+
+                <td>{{ item.targetAudienceType}}</td>
+
+                <td>
+                  <!-- Edit and Delete buttons (only when NOT approved) -->
+                  <button *ngIf="!item.approval" class="btn btn-sm btn-outline" (click)="isUpdate(item.pk_planningId)">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                  </button>
+
+                  <button *ngIf="!item.approval" class="btn btn-sm btn-danger"
+                    (click)="deleteplanning(item.pk_planningId)">
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+
+
+
+                  <!-- Schedule button with Yes icon -->
+                  <button *ngIf="item.approval && (item.tniStatus === 'PL' || item.tniStatus === 'Completed')"
+                    class="btn btn-sm">
+                    <i class="fa-solid fa-circle-check text-primary p-1 fw-bold"></i>
+                  </button>
+
+
+                  <!-- View all Employees Button -->
+
+                  <button *ngIf="item.tniStatusArray.includes('PL') || item.tniStatusArray.includes('Completed')" class="btn btn-sm" (click)="viewemployee(item)">
+                    <i class="fa fa-eye text-primary"></i>
+                  </button>
+
+
+
+                  <!-- ❌ Cancelled -->
+                  <button *ngIf="item.tniStatus === 'C'" class="btn btn-sm btn-danger" disabled>
+                    <i class="fa-solid fa-ban"></i> Cancelled
+                  </button>
+
+                  <!-- 🔄 Rescheduled -->
+                  <button *ngIf="item.tniStatus === 'R'" class="btn btn-sm btn-warning"
+                    (click)="RescheduleTraining(item)">
+                    <i class="fa-solid fa-arrows-rotate"></i> Rescheduled
+                  </button>
+
+              </tr>
+
+              <tr *ngIf="filteredData().length === 0">
+                <td colspan="6" class="text-center text-muted">No data found</td>
+              </tr>
+
+          </table>
+
+          <!-- Pagination controls -->
+          <pagination-controls (pageChange)="onPageChange($event)">
+          </pagination-controls>
+        </div>
+      </div>
+      <!-- 🔹 Calendar Section -->
+      <!-- <div class="card-body mt-4" >
+        <div class="card">
+          <div class="card-header bg-primary text-white">
+            <h4>Training Calendar</h4>
+          </div>
+          <div class="card-body">
+            <full-calendar [options]="calendarOptions"></full-calendar>
+          </div>
+        </div>
+      </div> -->
+
+    </div>
+  </div>
+</div>

@@ -1,0 +1,185 @@
+
+
+
+
+
+
+<div class="card">
+  <!-- main header -->
+  <div class="card-header bg-primary py-lg-2 mt-0">
+    <div class="row w-100 align-items-center">
+
+      <!-- Title Section -->
+      <div class="col-12 col-md-3">
+        <h4>{{isEdit ? 'Edit Clearance Department' : 'Clearance Department User'}}</h4>
+      </div>
+
+      <!-- Search Section -->
+      <div class="col-12 col-md-7 mt-2 mt-md-0">
+        <app-common-search (filtersChanged)="handleFilters($event)"></app-common-search>
+      </div>
+
+      <!-- Button Section -->
+      <div class="col-12 col-md-2 mt-2 mt-md-0 d-flex justify-content-center justify-content-md-end">
+        <button class="btn btnheader" routerLink="/dash/exit/exitdashboard/Due_Clearence_User_list">
+          Back
+        </button>
+      </div>
+    </div>
+  </div>
+  <!-- main header close -->
+
+  <!-- Card Body -->
+  <div class="card-body">
+    <form [formGroup]="ClearanceUserForm">
+
+      <!-- Clearance Department Section -->
+      <div class="g-4 row row-cols-1 row-cols-md-3">
+
+        <!-- Employee Code -->
+        <div class="col">
+          <label for="empCode">Employee Code<span class="text-danger font-bold">*</span></label>
+          <ng-select id="empCode" [items]="employees" bindLabel="name" bindValue="id" formControlName="fk_empid"
+            class="w-100" placeholder="-- Select Employee --">
+          </ng-select>
+          <!-- ✅ UPDATED - Show validation message when main form is submitted -->
+          <span
+            *ngIf="mainFormSubmitted && ClearanceUserForm.get('fk_empid')?.invalid"
+            class="text-danger mt-1" style="font-size: 12px;">
+            Please select an Employee.
+          </span>
+        </div>
+
+        <!-- Department -->
+        <div class="col">
+          <label for="department" class="">Department<span style="color: red;">*</span></label>
+          <ng-select id="department" [items]="Department" bindLabel="name" bindValue="value" formControlName="clearDept"
+            placeholder="--Select Department--" class="w-100 small">
+          </ng-select>
+          <!-- ✅ UPDATED - Show validation message when main form is submitted -->
+          <span
+            *ngIf="mainFormSubmitted && ClearanceUserForm.get('clearDept')?.invalid"
+            class="text-danger mt-1" style="font-size: 12px;">
+            Please select a Department.
+          </span>
+        </div>
+
+        <!-- Remarks -->
+        <div class="col">
+          <label for="remarks">Remarks</label>
+          <textarea id="remarks" class="form-control" formControlName="remarks"></textarea>
+        </div>
+
+        <!-- Is Active Checkbox -->
+        <div class="col d-flex align-items-center">
+          <div class="form-check mt-4">
+            <input id="IsActive" class="me-2" type="checkbox" formControlName="isActive">
+            <label for="IsActive">Is Active</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Parameter Details Section -->
+      <div class="bg-primary rounded-1 mt-4 page-seperator">
+        <p class="p-1 text-white ms-4">Parameters Details</p>
+      </div>
+
+      <div class="g-4 row row-cols-1 row-cols-md-3">
+
+        <!-- Parameter -->
+        <div class="col">
+          <label for="parameter">Parameter<span class="text-danger font-bold">*</span></label>
+          <ng-select id="parameter" [items]="parameters" bindLabel="name" bindValue="id" formControlName="parameter"
+            class="w-100" placeholder="-- Select Parameter --">
+          </ng-select>
+          <!-- ✅ UPDATED - Show validation message when parameter is submitted -->
+          <span *ngIf="parameterSubmitted && ClearanceUserForm.get('parameter')?.invalid" 
+                class="text-danger mt-1" style="font-size: 12px;">
+           Please Select Parameter
+          </span>
+        </div>
+
+        <!-- Parameter Remarks -->
+        <div class="col">
+          <label for="paramRemarks">Remarks</label>
+          <input id="paramRemarks" type="text" class="form-control" formControlName="paramRemarks">
+        </div>
+
+        <!-- Parameter Is Active Checkbox -->
+        <div class="col d-flex align-items-center">
+          <div class="form-check mt-4">
+            <input id="paramIsActive" type="checkbox" class="me-2" formControlName="paramIsActive">
+            <label for="paramIsActive">Is Active</label>
+          </div>
+        </div>
+
+        <!-- Add Parameter Button -->
+        <!-- <div class="col d-flex align-items-center">
+          <button type="button" class="btn btn-primary mt-4" (click)="addParameter()">
+            {{ editIndex !== null ? 'Update Parameter' : 'Add Parameter' }}
+          </button>
+        </div>
+      </div> -->
+
+       <div class="col-md-12 d-flex align-items-end justify-content-end">
+              <!-- ✅ Dynamic button text based on editing state -->
+              <button type="button" class="btn btn-primary me-2 " (click)="addParameter()">
+            {{ editIndex !== null ? 'Update Parameter' : 'Add Parameter' }}
+
+              </button>
+              </div>
+              </div>
+
+      <!-- Parameters List Section -->
+      <div *ngIf="parametersList.length > 0" class="mt-4">
+        <div class="bg-primary rounded-1 page-seperator">
+          <p class="p-1 text-white ms-4">List of Parameters</p>
+        </div>
+
+        <div class="table-responsive mt-3">
+          <table class="table ">
+            <thead class="table-primary">
+              <tr>
+                <th>S.No.</th>
+                <th>Parameter</th>
+                <th>Remarks</th>
+                <th>Is Active</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let param of parametersList; let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>{{ param.parameterName }}</td>
+                <td>{{ param.remarks || '-' }}</td>
+                <td>
+                  <span class="badge" [ngClass]="param.isActive ? 'bg-success' : 'bg-danger'">
+                    {{ param.isActive ? 'Active' : 'Inactive' }}
+                  </span>
+                </td>
+                <td>
+                  <button class="btn btn-sm btn-outline" (click)="updateParameter(i)">
+                    <i class="fa-regular fa-pen-to-square" ></i>
+                  </button>
+                  <button class="btn btn-sm btn-outline" (click)="removeParameter(i)">
+                    <i class="fa fa-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Submit/Reset -->
+      <div class="modal-footer mt-4">
+        <button type="button" class="btn btn-primary mx-1" (click)="submitForm()">
+          {{ isEdit ? 'Update' : 'Save' }}
+        </button>
+        <button type="button" class="btn btn-outline-dark mx-1" (click)="resetForm()">
+          Reset
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

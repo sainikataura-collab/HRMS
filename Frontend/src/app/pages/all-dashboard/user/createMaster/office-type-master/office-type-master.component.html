@@ -1,0 +1,93 @@
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+      <div class="card">
+   
+    <!--  -->
+    <div class="card-header bg-blue ">
+      <div class="row w-100 ">
+    <div class="col-sm-12 col-md-6 col-lg-6 col-9 "> 
+        <h4 class="">{{Isedit? 'Update Office Type Master' : 'Office Type Master' }}</h4></div>
+        <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 col-3 d-flex align-items-center justify-content-md-end">
+            <button class="btn btnheader" routerLink="/dash/user/userdashboard/officeTypeMaster_list">Back
+              </button>
+          </div>
+
+</div>
+
+</div>
+     
+    <!--  -->
+
+    <div class="card-body mt-4">
+      <form [formGroup]="OfficeTypeMaster"class="row row-cols-1 row-cols-md-3">
+       
+       
+            <div class="col"><label>Code <span style="color: red;">*</span></label>
+                <div class="form-group">
+                    <input  type="text" class="form-control flex-grow-1" formControlName="code" (blur)="checkDuplicate(OfficeTypeMaster.get('code')?.value)"/>
+                    <span *ngIf="showError && OfficeTypeMaster.controls['code'].invalid && !OfficeTypeMaster.get('code')?.errors?.['duplicate']" class="text-danger mt-1 lh-base" style="font-size: 12px;">
+                      Please enter Code
+                    </span>
+                    <div *ngIf="OfficeTypeMaster.get('code')?.errors?.['duplicate']" 
+                    class="text-danger lh-base" style="font-size:10px;">
+                    {{ OfficeTypeMaster.get('code')?.errors?.['duplicate'] }}
+                </div>
+
+
+                </div>                
+            </div>
+
+            <div class="col"><label>Office Name <span style="color: red;">*</span></label>
+                <div class="form-group">
+                    <input  type="text" class="form-control flex-grow-1" formControlName="description" (blur)="checkDuplicateOfficeName(OfficeTypeMaster.get('description')?.value)">
+                    <span *ngIf="showError && OfficeTypeMaster.controls['description'].invalid && !OfficeTypeMaster.get('description')?.errors?.['duplicate']" class="text-danger mt-1" style="font-size: 12px;">
+                      Please enter Office Name
+                    </span>
+
+                      <div *ngIf="OfficeTypeMaster.get('description')?.errors?.['duplicate']" 
+                      class="text-danger lh-base" style="font-size:10px;">
+                      {{ OfficeTypeMaster.get('description')?.errors?.['duplicate'] }}
+                  </div>
+
+
+                </div>                
+            </div>  
+            
+            <div class="col"><label>Zonal Head Email</label>
+                <div class="form-group">
+                    <input  type="text" class="form-control flex-grow-1" formControlName="emailhod">
+                   
+                </div>                
+            </div> 
+            
+            
+            <div class="col"><label>Zonal HR Email</label>
+                <div class="form-group">
+                    <input  type="text" class="form-control flex-grow-1" formControlName="emailhr">
+                  
+                </div>                
+            </div>  
+
+            <div class="col"></div>
+
+            <div class="col-12 d-flex align-items-center justify-content-end ">
+       
+               
+                <button type="button" class="btn btn-primary  mx-1"(click)="onSubmit()">{{ Isedit? 'Update' : 'Save' }}</button>  
+                <button type="button" class="btn btn-outline-dark mx-1"(click)="resetForm()">Reset</button>                 
+            </div>
+         
+
+      </form>
+      <div class="row">
+       
+    </div>
+    </div>
+
+    
+
+
+      
+</div>
+</div>
+</div>

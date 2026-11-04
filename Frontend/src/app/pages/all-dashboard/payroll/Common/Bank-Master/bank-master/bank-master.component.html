@@ -1,0 +1,167 @@
+
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+      <div class="card">
+       <!--  -->
+        <div class="card-header bg-primary">
+            <div class="row w-100">
+            <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-between">
+                <h4> {{pk_BankId? 'Update  Bank Master' : 'Add  Bank Master' }}</h4>
+            </div>
+            <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+                <button class="btn btnheader" (click)="redirectToPage()">
+                Back
+                </button>
+            </div>
+            </div>
+        </div>
+
+
+
+     
+    <!--  -->
+
+    <div class="card-body mt-4">
+        <form [formGroup]="BankDetail" class="row row-cols-1 row-cols-md-3 g-4">
+
+            <div class="col">
+                <label>Bank Name<span style="color: red;">*</span></label>
+                <div class="form-group">
+                    <input type="text"class="form-control"formControlName="bankName" maxlength="255"(blur)="checkDuplicate(BankDetail.get('bankName')?.value)">
+                    <span *ngIf="showError && BankDetail.controls['bankName'].invalid && !BankDetail.get('bankName')?.errors?.['duplicate'] && !BankDetail.get('bankName')?.errors?.['minlength']" class="text-danger mt-1" style="font-size: 12px;">
+                        Please enter Bank Name.
+                      </span>
+                      <span *ngIf="showError && BankDetail.get('bankName')?.errors?.['minlength']" 
+                      class="text-danger mt-1" style="font-size: 12px;">
+                      Bank Name must be at least 3 characters long.
+                  </span>
+                      <div *ngIf="BankDetail.get('bankName')?.errors?.['duplicate']" 
+                      class="text-danger" style="font-size:10px;">
+                      {{ BankDetail.get('bankName')?.errors?.['duplicate'] }}
+                  </div>
+                </div>    
+            </div>
+              <div class="col">
+                <label>Bank Account Length(Min.)<span style="color: red;">*</span></label>
+                <div class="form-group">
+                    <input type="number"class="form-control" formControlName="BankAccount_Min">
+                    <span *ngIf="showError && BankDetail.controls['BankAccount_Min'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                        Please enter Min length.
+                      </span>
+                     
+                </div> 
+            </div>
+              <div class="col">
+                <label>Bank Account Length(Max.)<span style="color: red;">*</span></label>
+                <div class="form-group">
+                    <input type="number"class="form-control" formControlName="BankAccount_Max">
+                    <span *ngIf="showError && BankDetail.controls['BankAccount_Max'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                        Please enter Max length.
+                      </span>
+                     
+                </div> 
+            </div>
+              <div class="col">
+                <label>IFSC Prefix<span style="color: red;">*</span></label>
+                <div class="form-group">
+                    <input type="text"class="form-control" formControlName="IFSC_Prefix">
+                     <span *ngIf="showError && BankDetail.controls['IFSC_Prefix'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                        Please enter IFSC Prefix.
+                      </span> 
+                     
+                </div> 
+            </div>
+             <div class="col">
+                <label>Bank Code</label>
+                <div class="form-group">
+                    <input type="text"class="form-control" formControlName="accountNo" maxlength="25">
+                    <!-- <span *ngIf="showError && BankDetail.controls['accountNo'].invalid && !BankDetail.get('accountNo')?.errors?.['minlength']" class="text-danger mt-1" style="font-size: 12px;">
+                        Please enter Bank Code.
+                      </span> -->
+                      <!-- <span *ngIf="showError && BankDetail.get('accountNo')?.errors?.['minlength']" 
+                      class="text-danger mt-1" style="font-size: 12px;">
+                      Bank Code must be at least 9 digits .
+                  </span> -->
+                </div> 
+            </div>
+
+            <div class="col">
+                <label>MICR Code </label>
+                                <div class="form-group">
+                    <input type="text"class="form-control"formControlName="micrCode"maxlength="25">
+                  
+                </div>    
+            </div>
+            <div class="col">
+                <label class="ps-2">First Contact Person</label>
+                <div class="form-group">
+                    <input type="text"class="form-control"formControlName="contactPerson1"maxlength="255">
+                    
+                </div> 
+            </div>
+            <div class="col">
+                <label>First Contact Number</label>
+                <div class="form-group">
+                    <input type="text"class="form-control"formControlName="contactNo1"maxlength="10"(keypress)="validateNumber($event)">
+                    <div *ngIf="submitted && BankDetail.get('contactNo1')?.errors?.['max']" class="text-white">
+                        Mobile No. 10 units
+                      </div>
+                </div>    
+            </div>
+            <div class="col">
+                <label>Second Contact Person</label>
+                <div class="form-group">
+                    <input type="text"class="form-control"formControlName="contactPerson2"maxlength="255">
+                </div> 
+            </div>
+            <div class="col">
+                <label>Second Contact Number</label>
+                <div class="form-group">
+                    <input type="text"class="form-control"formControlName="contactNo2"maxlength="10"(keypress)="validateNumber($event)">
+                </div>    
+            </div>
+            <div class="col">
+                <label>Address</label>
+                <div class="form-group">
+                    <textarea class="form-control"formControlName="address"maxlength="255"></textarea>
+                    
+                </div>  
+            </div>
+            <div class="col">
+                <label>Remarks</label>
+                <div class="form-group">
+                    <textarea class="form-control"formControlName="remarks"maxlength="255"></textarea>
+                </div>    
+            </div>
+       
+
+          
+     </form>
+
+
+
+         <!-- Footer buttons -->
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary mx-1" (click)="onSubmit()">{{pk_BankId? 'Update' : 'Save' }}</button>
+          <button type="reset" class="btn btn-outline-dark mx-1" (click)="resetForm()">Reset</button>
+        </div>
+
+
+    <!-- <div class="row">
+        <div class="col d-flex align-items-end justify-content-end pt-4 pb-3">
+            <button type="submit" class="btn btn-primary  mx-1"(click)="onSubmit()">{{ pk_BankId? 'Update' : 'Save' }}</button>                                     
+                                              
+
+            <button type="submit" class="btn btn-outline-dark mx-1"(click)="resetForm()">Reset</button>
+        </div>
+    </div> -->
+    </div>
+
+
+
+
+      
+</div>
+</div>
+</div> 
+

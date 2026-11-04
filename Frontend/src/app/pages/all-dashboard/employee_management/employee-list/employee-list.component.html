@@ -1,0 +1,333 @@
+<div class="row mx-0">
+  <div class="col-12 px-0">
+    <div class="card">
+
+      <div class="card-header bg-blue py-lg-1 mt-0">
+        <div class="col-sm-12 col-md-12 col-lg-3 col-12">
+
+          <div class="row w-100">
+            <div class="col-sm-12 col-md-12 col-lg-12 ">
+              <h4 class="">List Employee Master</h4>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="col-sm-12 col-md-12 col-lg-6 col-12">
+          <div class="row w-100">
+            <div class="col-sm-12 col-md-8 col-lg-8">
+              <app-common-search (filtersChanged)="handleFilters($event)"></app-common-search>
+            </div>
+            <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-center">
+              <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText"
+                (ngModelChange)="onSearchTextChanged()" />
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-12 col-md-12 col-lg-3 col-12">
+          <div class="col-sm-12 col-md-12 col-lg-12 d-flex align-items-center justify-content-md-end gap-1">
+            <button class="btn btnheader"
+              routerLink="/dash/adminEmployeeManagement/adminEmployeeManagementdashboard/EmployeeMst">
+              <i class="fa fa-plus me-1"></i>Add
+            </button>
+            <button class="btn btn-light"
+              routerLink="/dash/adminEmployeeManagement/adminEmployeeManagementdashboard/importEmployee">
+              <i class="fa fa-upload me-1"></i>Import
+            </button>
+            <button class="btn btn-light" (click)="exportToExcel()">
+              <i class="fa fa-download me-1"></i>Download
+            </button>
+          </div>
+        </div>
+      </div>
+      <!--  -->
+
+
+      <!-- Contractor Name Dropdown - shown only when contract is applicable -->
+      <div class="card-body pb-0" *ngIf="isContractApplicable">
+        <div class="row g-3 align-items-center">
+          <div class="col-xl-3 col-lg-4 col-md-12">
+            <label class="mb-1">Contractor Name</label>
+            <div class="form-group mb-0">
+              <ng-select id="year" [items]="CostCenter" bindLabel="name" bindValue="value" [(ngModel)]="fk_costcentreid"
+                (change)="onContractorChange($event)" placeholder="--Select --" class="w-100 shadow-sm"></ng-select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stat Cards - always visible regardless of contract setting -->
+      <div class="card-body" *ngIf="stats">
+        <div class="row g-3 align-items-center mb-3">
+          <!-- Stat Cards -->
+          <div class="col-xl-12 col-lg-12 col-md-12">
+            <div class="d-flex flex-wrap justify-content-xl-end justify-content-around gap-2 ">
+
+              <!-- Total Active Employee Card -->
+              <div
+                class="stat-card shadow-sm rounded-3 bg-white border stat-card-hover d-flex flex-column align-items-center p-1"
+                style="min-width: 95px; cursor: pointer;" [class.border-primary]="employeeFilters.statFilter === ''"
+                (click)="setStatFilter('')">
+                <div class="text-primary mb-1 mt-1">
+                  <i class="fa-solid fa-users fs-5"></i>
+                </div>
+                <div class="fw-bold text-dark text-uppercase mb-1" style="font-size: 0.65rem;">Total Active</div>
+                <div class="mt-auto w-100 px-1 pb-1">
+                  <span class="badge rounded-pill w-100 py-1" style="font-size: 0.8rem;"
+                    [class.bg-primary]="employeeFilters.statFilter === ''"
+                    [class.text-white]="employeeFilters.statFilter === ''"
+                    [class.bg-light]="employeeFilters.statFilter !== ''"
+                    [class.text-dark]="employeeFilters.statFilter !== ''"
+                    [class.border]="employeeFilters.statFilter !== ''">
+                    {{ stats?.totalCount ?? stats?.TotalCount ?? totalItems }}
+                  </span>
+                </div>
+              </div>
+
+              <!-- Bank Card -->
+              <div
+                class="stat-card shadow-sm rounded-3 bg-white border stat-card-hover d-flex flex-column align-items-center p-1"
+                style="min-width: 95px;">
+                <div class="mb-1 mt-1">
+                  <i class="fa-solid fa-building-columns fs-5 text-primary"></i>
+                </div>
+                <div class="fw-bold text-dark text-uppercase mb-1" style="font-size: 0.65rem;">Bank</div>
+                <div class="d-flex mt-auto w-100 btn-group btn-group-sm shadow-sm">
+                  <button type="button" class="btn border-secondary px-1 py-0 fw-bold w-100 text-nowrap" title="Filled"
+                    style="font-size: 0.75rem;" [class.btn-success]="employeeFilters.statFilter === 'BankFilled'"
+                    [class.text-white]="employeeFilters.statFilter === 'BankFilled'"
+                    [class.text-success]="employeeFilters.statFilter !== 'BankFilled'"
+                    (click)="setStatFilter('BankFilled')">{{stats?.bankFilled ?? stats?.BankFilled ?? 0}}</button>
+                  <button type="button" class="btn border-secondary px-1 py-0 fw-bold w-100 text-nowrap"
+                    title="Not Filled" style="font-size: 0.75rem;"
+                    [class.btn-danger]="employeeFilters.statFilter === 'BankNotFilled'"
+                    [class.text-white]="employeeFilters.statFilter === 'BankNotFilled'"
+                    [class.text-danger]="employeeFilters.statFilter !== 'BankNotFilled'"
+                    (click)="setStatFilter('BankNotFilled')">{{stats?.bankNotFilled ?? stats?.BankNotFilled ??
+                    0}}</button>
+                </div>
+              </div>
+
+              <!-- PAN Card -->
+              <div
+                class="stat-card shadow-sm rounded-3 bg-white border stat-card-hover d-flex flex-column align-items-center p-1"
+                style="min-width: 95px;">
+                <div class="mb-1 mt-1">
+                  <i class="fa-solid fa-id-card fs-5 text-primary"></i>
+                </div>
+                <div class="fw-bold text-dark text-uppercase mb-1" style="font-size: 0.65rem;">PAN</div>
+                <div class="d-flex mt-auto w-100 btn-group btn-group-sm shadow-sm">
+                  <button type="button" class="btn border-secondary px-1 py-0 fw-bold w-100 text-nowrap" title="Filled"
+                    style="font-size: 0.75rem;" [class.btn-success]="employeeFilters.statFilter === 'PANFilled'"
+                    [class.text-white]="employeeFilters.statFilter === 'PANFilled'"
+                    [class.text-success]="employeeFilters.statFilter !== 'PANFilled'"
+                    (click)="setStatFilter('PANFilled')">{{stats?.panFilled ?? stats?.PANFilled ?? 0}}</button>
+                  <button type="button" class="btn border-secondary px-1 py-0 fw-bold w-100 text-nowrap"
+                    title="Not Filled" style="font-size: 0.75rem;"
+                    [class.btn-danger]="employeeFilters.statFilter === 'PANNotFilled'"
+                    [class.text-white]="employeeFilters.statFilter === 'PANNotFilled'"
+                    [class.text-danger]="employeeFilters.statFilter !== 'PANNotFilled'"
+                    (click)="setStatFilter('PANNotFilled')">{{stats?.panNotFilled ?? stats?.PANNotFilled ?? 0}}</button>
+                </div>
+              </div>
+
+              <!-- Aadhar Card -->
+              <div
+                class="stat-card shadow-sm rounded-3 bg-white border stat-card-hover d-flex flex-column align-items-center p-1"
+                style="min-width: 95px;">
+                <div class="mb-1 mt-1">
+                  <i class="fa-solid fa-fingerprint fs-5 text-primary"></i>
+                </div>
+                <div class="fw-bold text-dark text-uppercase mb-1" style="font-size: 0.65rem;">Aadhar</div>
+                <div class="d-flex mt-auto w-100 btn-group btn-group-sm shadow-sm">
+                  <button type="button" class="btn border-secondary px-1 py-0 fw-bold w-100 text-nowrap" title="Filled"
+                    style="font-size: 0.75rem;" [class.btn-success]="employeeFilters.statFilter === 'AadharFilled'"
+                    [class.text-white]="employeeFilters.statFilter === 'AadharFilled'"
+                    [class.text-success]="employeeFilters.statFilter !== 'AadharFilled'"
+                    (click)="setStatFilter('AadharFilled')">{{stats?.aadharFilled ?? stats?.AadharFilled ?? 0}}</button>
+                  <button type="button" class="btn border-secondary px-1 py-0 fw-bold w-100 text-nowrap"
+                    title="Not Filled" style="font-size: 0.75rem;"
+                    [class.btn-danger]="employeeFilters.statFilter === 'AadharNotFilled'"
+                    [class.text-white]="employeeFilters.statFilter === 'AadharNotFilled'"
+                    [class.text-danger]="employeeFilters.statFilter !== 'AadharNotFilled'"
+                    (click)="setStatFilter('AadharNotFilled')">{{stats?.aadharNotFilled ?? stats?.AadharNotFilled ??
+                    0}}</button>
+                </div>
+              </div>
+
+              <!-- Mobile Card -->
+              <div
+                class="stat-card shadow-sm rounded-3 bg-white border stat-card-hover d-flex flex-column align-items-center p-1"
+                style="min-width: 95px;">
+                <div class="mb-1 mt-1">
+                  <i class="fa-solid fa-mobile-screen fs-5 text-primary"></i>
+                </div>
+                <div class="fw-bold text-dark text-uppercase mb-1" style="font-size: 0.65rem;">Mobile</div>
+                <div class="d-flex mt-auto w-100 btn-group btn-group-sm shadow-sm">
+                  <button type="button" class="btn border-secondary px-1 py-0 fw-bold w-100 text-nowrap" title="Filled"
+                    style="font-size: 0.75rem;" [class.btn-success]="employeeFilters.statFilter === 'MobFilled'"
+                    [class.text-white]="employeeFilters.statFilter === 'MobFilled'"
+                    [class.text-success]="employeeFilters.statFilter !== 'MobFilled'"
+                    (click)="setStatFilter('MobFilled')">{{stats?.mobFilled ?? stats?.MobFilled ?? 0}}</button>
+                  <button type="button" class="btn border-secondary px-1 py-0 fw-bold w-100 text-nowrap"
+                    title="Not Filled" style="font-size: 0.75rem;"
+                    [class.btn-danger]="employeeFilters.statFilter === 'MobNotFilled'"
+                    [class.text-white]="employeeFilters.statFilter === 'MobNotFilled'"
+                    [class.text-danger]="employeeFilters.statFilter !== 'MobNotFilled'"
+                    (click)="setStatFilter('MobNotFilled')">{{stats?.mobNotFilled ?? stats?.MobNotFilled ?? 0}}</button>
+                </div>
+              </div>
+
+              <!-- UAN Card -->
+              <div
+                class="stat-card shadow-sm rounded-3 bg-white border stat-card-hover d-flex flex-column align-items-center p-1"
+                style="min-width: 95px;">
+                <div class="mb-1 mt-1">
+                  <i class="fa-solid fa-piggy-bank fs-5 text-primary"></i>
+                </div>
+                <div class="fw-bold text-dark text-uppercase mb-1" style="font-size: 0.65rem;">UAN</div>
+                <div class="d-flex mt-auto w-100 btn-group btn-group-sm shadow-sm">
+                  <button type="button" class="btn border-secondary px-1 py-0 fw-bold w-100 text-nowrap" title="Filled"
+                    style="font-size: 0.75rem;" [class.btn-success]="employeeFilters.statFilter === 'UANFilled'"
+                    [class.text-white]="employeeFilters.statFilter === 'UANFilled'"
+                    [class.text-success]="employeeFilters.statFilter !== 'UANFilled'"
+                    (click)="setStatFilter('UANFilled')">{{stats?.uanFilled ?? stats?.UANFilled ?? 0}}</button>
+                  <button type="button" class="btn border-secondary px-1 py-0 fw-bold w-100 text-nowrap"
+                    title="Not Filled" style="font-size: 0.75rem;"
+                    [class.btn-danger]="employeeFilters.statFilter === 'UANNotFilled'"
+                    [class.text-white]="employeeFilters.statFilter === 'UANNotFilled'"
+                    [class.text-danger]="employeeFilters.statFilter !== 'UANNotFilled'"
+                    (click)="setStatFilter('UANNotFilled')">{{stats?.uanNotFilled ?? stats?.UANNotFilled ?? 0}}</button>
+                </div>
+              </div>
+
+              <!-- ESI Card -->
+              <div
+                class="stat-card shadow-sm rounded-3 bg-white border stat-card-hover d-flex flex-column align-items-center p-1"
+                style="min-width: 95px;">
+                <div class="mb-1 mt-1">
+                  <i class="fa-solid fa-notes-medical fs-5 text-primary"></i>
+                </div>
+                <div class="fw-bold text-dark text-uppercase mb-1" style="font-size: 0.65rem;">ESI No</div>
+                <div class="d-flex mt-auto w-100 btn-group btn-group-sm shadow-sm">
+                  <button type="button" class="btn border-secondary px-1 py-0 fw-bold w-100 text-nowrap" title="Filled"
+                    style="font-size: 0.75rem;" [class.btn-success]="employeeFilters.statFilter === 'ESIFilled'"
+                    [class.text-white]="employeeFilters.statFilter === 'ESIFilled'"
+                    [class.text-success]="employeeFilters.statFilter !== 'ESIFilled'"
+                    (click)="setStatFilter('ESIFilled')">{{stats?.esiFilled ?? stats?.ESIFilled ?? 0}}</button>
+                  <button type="button" class="btn border-secondary px-1 py-0 fw-bold w-100 text-nowrap"
+                    title="Not Filled" style="font-size: 0.75rem;"
+                    [class.btn-danger]="employeeFilters.statFilter === 'ESINotFilled'"
+                    [class.text-white]="employeeFilters.statFilter === 'ESINotFilled'"
+                    [class.text-danger]="employeeFilters.statFilter !== 'ESINotFilled'"
+                    (click)="setStatFilter('ESINotFilled')">{{stats?.esiNotFilled ?? stats?.ESINotFilled ?? 0}}</button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+
+
+
+      <div class="card-body position-relative">
+
+        <!-- Spinner Overlay -->
+        <div *ngIf="isSpinnerLoading" class="position-absolute w-100 h-100 d-flex justify-content-center pt-5"
+          style="background: rgba(255,255,255,0.7); z-index: 10; top: 0; left: 0;">
+          <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+
+        <div class="table-responsive table-invoice">
+          <table Id="exportTable" class="table text-nowrap">
+            <thead>
+              <tr>
+                <th>Sr.No.</th>
+                <th>Action</th>
+                <th>Code</th>
+                <th>Name</th>
+                <th>Location</th>
+                <th>Client</th>
+                <th>Vendor</th>
+                <th>Designation</th>
+                <th>Department</th>
+                <th>Bank&nbsp;Name</th>
+                <th>IFSC&nbsp;Code</th>
+                <th>A/C&nbsp;No</th>
+                <th>PAN</th>
+                <th>AAdhar</th>
+                <th>Mobile&nbsp;No</th>
+                <th>UAN&nbsp;No</th>
+                <th>ESI&nbsp;No</th>
+                <th>Email</th>
+
+              </tr>
+            </thead>
+            <tbody>
+
+              <tr
+                *ngFor="let item of filteredData() | paginate: { itemsPerPage: pageSize, currentPage: pageIndex ,totalItems:totalItems};let i = index">
+
+                <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+                <td>
+                  <div class="d-flex gap-1">
+                    <button class="btn btn-sm btn-outline-primary"
+                      (click)="isUpdate(encryptionService.encryptText(item.pk_empid).toString())" title="Edit Employee">
+                      <i class="fa-regular fa-pen-to-square"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-info" data-bs-toggle="modal"
+                      data-bs-target="#employeeProfileModal" (click)="selectedEmpIdForModal = item.pk_empid"
+                      title="View Profile">
+                      <i class="bi bi-eye"></i>
+                    </button>
+                  </div>
+                </td>
+                <td>{{ item.empcode }}</td>
+                <td>{{ item.empname }}</td>
+                <td>{{ item.locationName || '--' }}</td>
+                <td>{{ item.clientName || '--' }}</td>
+                <td>{{ item.vendorName || '--' }}</td>
+                <td>{{ item.desig}}</td>
+                <td>{{ item.depart}}</td>
+                <td>{{ item.bankName || '--' }}</td>
+                <td>{{ item.ifsccode || '--' }}</td>
+                <td>{{ item.bankaccountno || '--' }}</td>
+                <td>{{ item.panno || '--' }}</td>
+                <td>{{ item.adhaarNo || '--' }}</td>
+                <td>{{ item.mobileNo || '--' }}</td>
+                <td>{{ item.uanNo || '--' }}</td>
+                <td>{{ item.esiNo || '--' }}</td>
+                <td>{{ item.email || '--' }}</td>
+
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Pagination controls -->
+          <pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Employee Profile Modal -->
+<div class="modal fade" id="employeeProfileModal" tabindex="-1" aria-labelledby="employeeProfileModalLabel"
+  aria-hidden="true" data-bs-backdrop="static">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-header bg-blue py-2">
+        <h5 class="modal-title text-white fs-6 m-0"><i class="bi bi-person-lines-fill me-2"></i>Employee Profile</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-0 bg-light">
+        <app-employee-profile *ngIf="selectedEmpIdForModal" [inputEmpId]="selectedEmpIdForModal"></app-employee-profile>
+      </div>
+    </div>
+  </div>
+</div>

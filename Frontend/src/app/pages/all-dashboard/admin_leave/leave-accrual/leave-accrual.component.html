@@ -1,0 +1,204 @@
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card">
+      <!--  -->
+      <div class="card-header bg-blue py-lg-1 mt-0">
+        <div class="row w-100 align-items-center">
+
+          <!-- Title Section -->
+          <div class="col-12 col-md-3">
+            <h4 class="text-white text-center text-md-start">
+              <h4>Leave Accrual</h4>
+            </h4>
+          </div>
+
+          <!-- Search Section -->
+          <div class="col-12 col-md-7 mt-2 mt-md-0">
+            <app-common-search (filtersChanged)="handleFilters($event)"></app-common-search>
+          </div>
+
+
+
+        </div>
+      </div>
+      <div class="card-body mt-4">
+        <form [formGroup]="EmployeeForm">
+
+          <div class="row row-cols-1 row-cols-md-3">
+
+
+            <div class="col">
+              <label>Month<span style="color: red;">*</span></label>
+
+              <div class="form-group">
+                <ng-select id="year" [items]="Month" bindLabel="name" bindValue="value" formControlName="fk_monthId"
+                  placeholder="--Select --" class="w-100"></ng-select>
+                <span *ngIf="showError &&EmployeeForm.controls['fk_monthId'].invalid" class="text-danger mt-1"
+                  style="font-size: 12px;">
+                  Please enter Month.
+                </span>
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Year<span style="color: red;">*</span></label>
+              <div class="form-group">
+                <ng-select id="Year" [items]="Year" bindLabel="name" bindValue="value" formControlName="fk_yearId"
+                  placeholder="--Select --" class="w-100"></ng-select>
+                <span *ngIf="showError &&EmployeeForm.controls['fk_yearId'].invalid" class="text-danger mt-1"
+                  style="font-size: 12px;">
+                  Please enter Year.
+                </span>
+              </div>
+            </div>
+
+            <div class="col" *ngIf="isContractApplicable">
+              <label>Contractor Name</label>
+
+              <div class="form-group">
+                <ng-select id="year
+                  " [items]="CostCenter" bindLabel="name" bindValue="value" formControlName="fk_costcentreid"
+                  placeholder="--Select --" class="w-100 "></ng-select>
+
+              </div>
+            </div>
+
+            <div class="col"></div>
+            <div class="col"></div>
+
+            <div class="col d-flex align-items-center justify-content-end pt-4 pb-3">
+              <button type="button" class="btn btn-primary mx-1" (click)="toggleEmployeeList()"
+                (click)="getList()">View</button>
+              <button type="button" class="btn btn-outline-dark mx-1" (click)="resetForm()">Reset</button>
+            </div>
+
+          </div>
+
+
+        </form>
+
+
+
+
+
+
+      </div>
+
+      <!-- List of Employee not  processed -->
+      <div class="card-body" *ngIf="filterUnprocessedData.length>0  || filterProcessedData.length>0">
+        <div>
+
+
+          <div class="d-flex justify-content-between align-items-center mt-4 mb-2">
+            <p class="text-primary m-0 fw-bold ">List of Employee (Leave Accrual Not Processed )</p>
+            <input type="text" class="form-control w-auto" placeholder="Search employee..." [(ngModel)]="searchText" />
+          </div>
+
+          <!-- <div class="bg-primary rounded-1 mt-2 page-seperator">
+            <p class="p-1 text-white ms-4">List of Employee (Salary Processed)</p>
+          </div> -->
+
+
+          <div class="table-responsive table-invoice scrollable-table">
+            <table class="table table-bordered">
+              <thead class="sticky-top table-secondary" style="background-color: rgb(250, 251, 251);top:-2">
+                <tr class="sticky-top">
+                  <th> <input type="checkbox" [(ngModel)]="masterSelected" (change)="selectAll()"
+                      class="rounded-checkbox " /> &nbsp; All
+                  </th>
+                  <th>Sr.</th>
+                  <th>Code</th>
+                  <th>Name</th>
+                  <th>Leave Type</th>
+                  <th>Accrual Days</th>
+                  <th>Current Leaves</th>
+                  <th>Accrual Leaves</th>
+                  <th>Total Leave</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  *ngFor="let emp of filterUnprocessedData | paginate: { id: 'list1', itemsPerPage: pageSize1, currentPage: pageIndex1 + 1, totalItems: totalCount1 }; let i = index">
+                  <!-- <td><input type="checkbox" /></td> -->
+                  <td><input type="checkbox" [(ngModel)]="emp.isSelected" class="rounded-checkbox" /></td>
+                  <!-- <td>{{ i + 1 }}</td> -->
+                  <td>{{ pageIndex1 * pageSize1 + i + 1 }}</td>
+                  <td>{{ emp.empcode }}</td>
+                  <td>{{ emp.empname }}</td>
+                  <td>{{ emp.leaveType }}</td>
+                  <td>{{ emp.attdays }}</td>
+                  <td>{{ emp.currentyearleaves }}</td>
+                  <td>{{ emp.accrualleaves }}</td>
+                  <td>{{ emp.totalbalance }}</td>
+                </tr>
+              </tbody>
+
+            </table>
+            <pagination-controls id="list1" (pageChange)="onPageChange1($event - 1)" totalItems="totalCount1"
+              itemsPerPage="pageSize1">
+            </pagination-controls>
+          </div>
+
+
+          <!-- List of   processed-->
+
+
+          <div class="d-flex justify-content-between align-items-center mt-4 mb-2">
+            <p class="text-primary m-0 fw-bold">List of Employee (Leave Accrual Processed )</p>
+            <input type="text" class="form-control w-auto" placeholder="Search employee..." [(ngModel)]="searchText1" />
+          </div>
+
+          <div class="table-responsive table-invoice scrollable-table">
+            <table class="table table-bordered">
+              <thead class="sticky-top table-secondary" style="background-color: rgb(250, 251, 251);top:-2">
+                <tr class="sticky-top">
+                  <th><input type="checkbox" [(ngModel)]="Selected" (change)="AllSelectprocessed()" /> &nbsp;All</th>
+
+                  <th>Sr.</th>
+                  <th>Code</th>
+                  <th>Name</th>
+                  <th>Location</th>
+                  <th>Department</th>
+                  <th>Designation</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  *ngFor="let emp of filterProcessedData| paginate: { id: 'list2', itemsPerPage: pageSize2, currentPage: pageIndex2 + 1, totalItems: totalCount2 }; let i = index">
+                  <td><input type="checkbox" [(ngModel)]="emp.isSelected" /></td>
+                  <!-- <td>{{ i + 1 }}</td> -->
+                  <td>{{ pageIndex2 * pageSize2 + i + 1 }}</td>
+                  <td>{{ emp.empcode }}</td>
+                  <td>{{ emp.empname }}</td>
+                  <td>{{ emp.locname }}</td>
+                  <td>{{ emp.department }}</td>
+                  <td>{{ emp.designation }}</td>
+
+                </tr>
+              </tbody>
+            </table>
+            <pagination-controls id="list2" (pageChange)="onPageChange2($event - 1)" totalItems="totalCount2"
+              itemsPerPage="pageSize2">
+            </pagination-controls>
+
+          </div>
+
+
+
+
+
+          <div class="modal-footer">
+
+            <button type="submit" class="btn btn-primary mx-1" (click)="Processed() ">Processed </button>
+            <button type="submit" class="btn btn-danger mx-1" (click)="Unprocessed()">Un-Processed</button>
+
+
+          </div>
+
+        </div>
+      </div>
+
+
+    </div>
+  </div>
+</div>

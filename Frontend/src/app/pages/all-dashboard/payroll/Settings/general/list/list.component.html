@@ -1,0 +1,79 @@
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header bg-primary">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-between">
+            <h4 class="text-white">{{ codeType }} List</h4>
+          </div>
+
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-center">
+            <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText" (ngModelChange)="applyFilter()" />
+          </div>
+
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-md-end">
+            <button class="btn btnheader mx-1" [routerLink]="['/dash/user/userdashboard/insert']"
+              [queryParams]="{ codeTypeId: CodeTypeId, codeType: codeType, isCodeRequired: isCodeRequired }">
+              Add
+            </button>
+            <button class="btn btnheader mx-1" routerLink="/dash/user/userdashboard/general">
+              Back
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <div class="table-responsive table-invoice">
+          <table id="exportTable" class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Sr.</th>
+                <th>Name</th>
+                <th>Code</th>
+                <th>Description</th>
+                <th>Active</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody *ngIf="filteredDataList.length > 0; else noData">
+              <tr *ngFor="let item of filteredDataList | paginate: { itemsPerPage: pageSize, currentPage: pageIndex, totalItems: totalItems }; let i = index">
+                <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+                <td>{{ item.name }}</td>
+                <td>{{ item.code }}</td>
+                <td>{{ item.codeDescription }}</td>
+                <td>
+                  <span class="badge" [ngClass]="item.active === 'Yes' ? 'text-success' : 'text-danger'">
+                    {{ item.active }}
+                  </span>
+                </td>
+                <td>
+                  <button class="btn btn-sm btn-outline" [routerLink]="['/dash/user/userdashboard/insert', item.codeId]"
+                    [queryParams]="{ codeTypeId: item.codeTypeId, codeType: codeType, isCodeRequired: item.isCodeRequired }">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                  </button>
+
+                  <button class="btn btn-sm btn-outline mx-1" (click)="viewDetails(item.codeId, item.codeTypeId)">
+                    <i class="fa-solid fa-eye" style="color:#3c8dbc;"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+            <ng-template #noData>
+              <tr>
+                <td colspan="6" class="text-center text-muted">No records found</td>
+              </tr>
+            </ng-template>
+          </table>
+
+          <!-- Pagination controls -->
+          <pagination-controls
+            (pageChange)="onPageChange($event)"
+            totalItems="totalItems"
+            itemsPerPage="pageSize">
+          </pagination-controls>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,88 @@
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+      <div class="card">
+  
+        <!-- Card Header -->
+        <div class="card-header bg-primary">
+          <div class="row w-100">
+            <div class="col-sm-12 col-md-6 col-lg-6">
+              <h4 class="">Qualification Master</h4>
+            </div>
+            <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+              <button class="btn btnheader" routerLink="/dash/recruitment/recruitmentdashboard/qualification-master_list">
+                Back
+              </button>
+            </div>
+          </div>
+        </div>
+  
+        <!-- Card Body -->
+        <div class="card-body mt-4">
+          <form [formGroup]="qualificationForm" class="row row-cols-1 row-cols-md-3 gx-3 gy-1">
+  
+            <div class="col">
+              <div class="form-group">
+                <label>Type<span class="text-danger">*</span></label>
+                <ng-select id="type" 
+                  [items]="selects"
+                  bindLabel="name"
+                  bindValue="value"
+                  formControlName="type"
+                  placeholder="--Select--"
+                  class="w-100">
+                </ng-select>
+                <span class="text-danger mt-1" style="font-size: 12px;"
+                  *ngIf="showerror && qualificationForm.controls['type'].invalid">
+                  Please enter type of qualification.
+                </span>
+              </div>
+            </div>
+  
+            <div class="col">
+              <div class="form-group">
+                <label>Qualification<span class="text-danger">*</span></label>
+                <input type="text" class="form-control flex-grow-1" formControlName="qualification">
+                <div *ngIf="qualificationForm.get('qualification')?.errors?.['duplicate']" class="text-danger"
+                  style="font-size:10px;">
+                  {{ qualificationForm.get('qualification')?.errors?.['duplicate'] }}
+                </div>
+                <span class="text-danger mt-1" style="font-size: 12px;"
+                  *ngIf="showerror && qualificationForm.controls['qualification'].invalid">
+                  Please enter qualification.
+                </span>
+              </div>
+            </div>
+  
+            <div class="col">
+              <div class="form-group ps-lg-2">
+                <label>Is Active</label><br>
+                <input type="checkbox" class="" formControlName="active">
+              </div>
+            </div>
+  
+            <div class="col">
+              <div class="form-group">
+                <label>Description<span class="text-danger">*</span></label>
+                <textarea class="form-control flex-grow-1" formControlName="description"></textarea>
+                <span class="text-danger mt-1" style="font-size: 12px;"
+                  *ngIf="showerror && qualificationForm.controls['description'].invalid">
+                  Please enter description.
+                </span>
+              </div>
+            </div>
+  
+            <div class="col"></div>
+  
+            <div class="col d-flex align-items-center justify-content-end">
+              <button type="submit" class="btn btn-primary btn-sm mx-1 px-2" (click)="onSubmit()">
+                {{ id ? 'Update' : 'Save' }}
+              </button>
+              <button type="button" class="btn btn-outline-dark btn-sm mx-1 px-2" (click)="resetForm()">Reset</button>
+            </div>
+  
+          </form>
+        </div>
+  
+      </div>
+    </div>
+  </div>

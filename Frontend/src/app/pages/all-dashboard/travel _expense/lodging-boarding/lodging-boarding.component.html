@@ -1,0 +1,115 @@
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card">
+
+      <!-- Card Header -->
+      <div class="card-header bg-blue">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-6 col-lg-6">
+            <h4>   {{ isEditMode ? 'Update Lodging Boarding Master' : 'Lodging Boarding Master' }}</h4>
+          </div>
+          <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+            <button class="btn btnheader" routerLink="/dash/travel_expense/travel_expensedashboard/lodging_Boarding_list">
+              Back
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card Body -->
+      <div class="card-body mt-4">
+        <form [formGroup]="lodgingBoardingform" class="row row-cols-1 row-cols-md-3 g-4">
+
+          <div class="col">
+            <div class="form-group">
+              <label>Grade<span style="color: red;">*</span></label>
+              <ng-select [items]="GradeList" bindLabel="name" bindValue="value"
+                formControlName="fk_classid" placeholder="--Select --" class="w-100">
+              </ng-select>
+              <div *ngIf="submitted && lodgingBoardingform.get('fk_classid')?.invalid"
+                class="text-danger mt-1" style="font-size: 12px;">
+                 please choose Grade.
+              </div>
+            </div>
+          </div>
+
+             <div class="col">
+            <div class="form-group">
+              <label>Class<span style="color: red;">*</span></label>
+              <ng-select [items]="ClassList" bindLabel="name" bindValue="value"
+                formControlName="fk_classTvlId" placeholder="--Select --" class="w-100">
+              </ng-select>
+              <div *ngIf="submitted && lodgingBoardingform.get('fk_classTvlId')?.invalid"
+                class="text-danger mt-1" style="font-size: 12px;">
+                please choose Class.
+              </div>
+            </div>
+          </div>
+               <div class="col">
+            <div class="form-group">
+              <label>Effective Date<span style="color: red;">*</span></label>
+              <input type="date" class="form-control" formControlName="effectivedate">
+              <div *ngIf="submitted && lodgingBoardingform.get('effectivedate')?.invalid"
+                class="text-danger mt-1" style="font-size: 12px;">
+                please enter Date .
+              </div>
+            </div>
+          </div>
+
+          <div class="col">
+            <div class="form-group">
+              <label>LodgingBoarding<span style="color: red;">*</span></label>
+              <input type="number" class="form-control" formControlName="lodgingboarding">
+              <div *ngIf="submitted && lodgingBoardingform.get('lodgingboarding')?.invalid"
+                class="text-danger mt-1" style="font-size: 12px;">
+                please enter LodgingBoarding.
+              </div>
+            </div>
+          </div>
+
+        
+             <div class="col">
+            <div class="form-group">
+              <label>Fixed FDA<span style="color: red;">*</span></label>
+              <input type="number" class="form-control" formControlName="fixedFda">
+              <div *ngIf="submitted && lodgingBoardingform.get('fixedFda')?.invalid"
+                class="text-danger mt-1" style="font-size: 12px;">
+                please enter Fixed FDA.
+              </div>
+            </div>
+          </div>
+
+              <div class="col">
+            <div class="form-group">
+              <label>Fixed LTA<span style="color: red;">*</span></label>
+              <input type="number" class="form-control" formControlName="fixedLta">
+              <div *ngIf="submitted && lodgingBoardingform.get('fixedLta')?.invalid"
+                class="text-danger mt-1" style="font-size: 12px;">
+                please enter Fixed LTA.
+              </div>
+            </div>
+          </div>
+         <div class="col">
+                            <label for="isactive" >Active</label>
+                            <div class="form-group">
+                                <input type="checkbox" id="isactive" formControlName="isActive" class="form-check-input" />
+
+                            </div>
+                        </div>
+        </form>
+
+        <div class="row">
+          <div class="col d-flex align-items-end justify-content-end pt-4 pb-3">
+            <button type="submit" class="btn btn-primary btn-sm mx-1 px-2" (click)="submit()">
+             {{ isEditMode ? 'Update' : 'Save' }}   
+            </button>
+            <button type="button" class="btn btn-outline-dark btn-sm mx-1 px-2" (click)="resetForm()">
+              Reset
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

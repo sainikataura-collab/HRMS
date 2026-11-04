@@ -1,0 +1,476 @@
+/* -----------------------------------
+   Tab Styling
+----------------------------------- */
+.custom-pills .nav-link {
+  padding: 5px 12px;
+  margin-right: 6px;
+  border-radius: 5px;
+  color: #3080e8;
+  transition: all 0.3s ease;
+  background-color: transparent;
+  font-size: 13px;
+  // border: 1px solid rgb(199, 205, 211);
+}
+
+.custom-pills .nav-link.active {
+  background-color: #3080e8;
+  color: #fff;
+  border-color: #3080e8;
+}
+
+
+.nav-link {
+  background-color: transparent;
+  border: 1px solid rgb(199, 205, 211) ;
+  font-size: 13px;
+}
+
+/* Responsive Scroll for Tabs */
+@media (max-width: 576px) {
+  .custom-pills {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+
+  .custom-pills::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* -----------------------------------
+   Org Box Title Image Styling
+----------------------------------- */
+.org-title-img {
+  position: absolute;
+  top: -35px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 3px solid #3080e8;
+  overflow: hidden;
+  background-color: #fff;
+  z-index: 1;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+
+.org-title-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.org-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* -----------------------------------
+   Org Chart Styling
+----------------------------------- */
+.org-box {
+  background: linear-gradient(to right, #eaf2ff, #d4e8ff);
+  // border: 1px solid #3080e8;
+  border-radius: 5px;
+  padding: 10px 6px;
+  font-weight: 500;
+  color: #2b2e41;
+  margin: 8px auto;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(158, 151, 151, 0.05);
+  position: relative;
+  font-size: 13px;
+  transition: all 0.3s ease-in-out;
+  // animation: fadeInUp 0.4s ease both;
+}
+
+.org-box:hover {
+  transform: translateY(1.5s);
+  box-shadow: 0 4px 10px rgba(48, 128, 232, 0.2);
+  // border: 1px solid #3080e8 !important;
+  transform: scale(1.5);
+}
+
+
+.org-box i {
+  
+  font-size: 14px;
+  margin-right: 5px;
+}
+
+
+/* Arrow Pointer Below Box */
+.org-box::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  margin-top: 6px;
+  transform: translateX(-50%);
+  // border-left: 6px solid transparent;
+  // border-right: 6px solid transparent;
+  // border-top: 8px solid #3080e8;
+  opacity: 0.8;
+}
+
+.child-group .org-box:last-child::after {
+  content: none;
+}
+
+/* -----------------------------------
+   Group/Branch Structure
+----------------------------------- */
+.child-group {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 30px;
+  position: relative;
+  padding-top: 20px;
+
+}
+
+
+.child-group::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 10%;
+  right: 10%;
+  height: 2px;
+  background-color: #3080e8;
+  opacity: 0.5;
+}
+
+.child-group > .org-box::before,
+.child-group > .child-branch::before {
+  content: '';
+  position: absolute;
+  top: -18px;
+  left: 50%;
+  height: 18px;
+  width: 2px;
+  background-color: #3080e8;
+  transform: translateX(-50%);
+  /* opacity: 0.3; / / Optional line */
+}
+
+.child-branch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+/* -----------------------------------
+   Card Styling
+----------------------------------- */
+.card-header {
+  font-size: 1.1rem;
+  font-weight: 400;
+  color: #3080e8;
+  // border-bottom: 1px solid #d6eaff;
+
+  background-color: #f8fbff;
+}
+
+.card-body {
+  padding: 1.5rem;
+}
+
+/* -----------------------------------
+   Responsive Adjustments
+----------------------------------- */
+@media (max-width: 768px) {
+  .org-box {
+    font-size: 12px;
+    padding: 8px;
+  }
+
+  .child-group {
+    gap: 20px;
+  }
+
+  .card-header {
+    font-size: 1rem;
+  }
+}
+
+/* -----------------------------------
+   Animation
+----------------------------------- */
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+.org-img-wrapper {
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 3px solid #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  background: #fff;
+  overflow: hidden;
+  z-index: 2;
+}
+
+
+
+.org-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Glass Effect Card */
+.glass-card {
+  background: linear-gradient(to right, #eaf2ff, #d4e8ff);
+
+  // border: 1px solid #e0e0e0;
+  border-radius: 1rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(10px);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+
+
+.glass-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+  transform: scale(1.3);
+}
+
+/* Optional fade-in animation */
+.child-branch {
+  animation: fadeInUp 0.6s ease-in-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* Smaller Image Wrapper */
+.org-img-wrapper-sm {
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  background: linear-gradient(to right, #eaf2ff, #d4e8ff);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  z-index: 2;
+}
+
+
+
+.org-img-sm {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+
+/* Compact Glass Card */
+.glass-card.smart-box {
+  background: rgba(255, 255, 255, 0.9);
+  background: linear-gradient(to right, #eaf2ff, #d4e8ff);
+  // border: 1px solid #d4e8ff;
+  border: 1px solid rgb(199, 205, 211);
+  border-radius: 5px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  backdrop-filter: blur(6px);
+  font-size: 0.9rem;
+  padding: 0.6rem 0.8rem;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+
+}
+
+.glass-card.smart-box:hover {
+  box-shadow: 0 4px 12px rgba(48, 128, 232, 0.15);
+  transform: translateY(-2px);
+  transform: scale(1.01) !important;
+  border: 1px solid #3080e8;
+}
+
+/* Font Sizes */
+.small-text {
+  font-size: 13px;
+}
+
+
+.xsmall-text {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* Animation */
+.child-branch {
+  animation: fadeInSmart 0.4s ease;
+}
+
+@keyframes fadeInSmart {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// 
+.subordinate-scroll {
+  display: flex;
+  flex-wrap: nowrap;
+
+  gap: 10px;
+  padding-bottom: 6px;
+}
+
+.more-box {
+  cursor: pointer;
+  background-color: #f0f0f0;
+  font-weight: 500;
+  color: #3080e8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 80px;
+  // transition: background 0.3s;
+}
+
+.more-box:hover {
+  background-color: #e0e0e0;
+}
+
+
+.subordinate-scroll {
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 10px;
+  padding-bottom: 6px;
+}
+
+.org-box {
+  min-width: max-content;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.more-box {
+  cursor: pointer;
+  background-color: #f0f0f0;
+  font-weight: 500;
+  color: #3080e8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  // transition: background 0.3s;
+}
+
+.more-box:hover {
+  background-color: #e0e0e0;
+}
+
+
+.more-box::after {
+  content: '';
+  margin-left: 6px;
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+}
+
+.more-box:contains('Show Less')::after {
+  content: '\f106'; /* Font Awesome up arrow */
+
+
+}
+
+.more-box:contains('+')::after {
+  content: '\f107'; /* Font Awesome down arrow */
+}
+
+.more-box,
+.less-box {
+  cursor: pointer;
+  font-weight: 500;
+  
+  border-radius: 8px;
+  padding: 4px 10px;
+  margin-left: 5px;
+  // transition: all 0.3s ease;
+}
+
+.more-box:hover {
+  background-color: #28a745 !important; /* light green */
+  border-color: #28a745;
+}
+
+.less-box:hover {
+  background-color: #dc3545 !important; /* light red */
+  border-color: #dc3545;
+}
+
+.vertical-line {
+  height: 12px;
+  width: 2px;
+  background-color: #3080e8;
+  margin-top: -5px;
+    
+}
+
+
+
+.form-select{
+  font-size: 13px;
+  font-weight: 500;
+
+}
+
+option{
+  font-size: 13px;
+  font-weight: 400;
+
+}

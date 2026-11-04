@@ -1,0 +1,517 @@
+.text-danger:hover {
+  color: #fff !important;
+}
+
+
+
+// @media screen and (max-width: 767.98px) {
+  
+//   /* 1. Hide Table Header */
+//   #exportTable thead {
+//     display: none;
+//   }
+
+//   /* 2. Card Container (The Box) */
+//   #exportTable tbody tr {
+//     display: block;
+//     margin: 1rem 0.5rem;
+//     background: #ffffff;
+//     border: 1px dashed #87dabc;
+//     border-left: 5px solid #10b981; 
+//     border-radius: 6px;
+//     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+//     position: relative;
+//     padding-bottom: 10px;
+//     overflow: hidden;
+//   }
+
+//   /* Blue border for even rows */
+//   #exportTable tbody tr:nth-child(even) {
+//     border-left: 5px solid #3080e8;
+//   }
+
+//   /* 3. Global Cell Reset */
+//   #exportTable tbody td {
+//     display: block;
+//     border: none;
+//     padding: 0;
+//     margin: 0;
+//     width: 100%;
+//   }
+
+//   /* Hide the default data-labels to clean up the look */
+//   #exportTable tbody td::before {
+//     display: none !important;
+//   }
+
+//   /* Hide columns we don't need in mobile view */
+//   #exportTable tbody td[data-label="S.No. : "],
+//   #exportTable tbody td[data-label="Total Hours: "] {
+//     display: none;
+//   }
+
+//   /* =========================================
+//      HEADER SECTION: Comp Off Date & Status
+//      ========================================= */
+
+//   /* 4. Comp Off Date (The Green Header Bar) - FIRST */
+//   #exportTable tbody td[data-label="compoffdate"] {
+//     background-color: #e6f4ed;
+//     padding: 10px 15px;
+//     font-weight: 700;
+//     color: #2b2e41;
+//     font-size: 0.9rem;
+//     border-bottom: 1px solid #f0f0f0;
+//     width: 100%;
+//     text-align: start;
+//     display: block;
+//     position: relative;
+//     padding-right: 80px;
+//   }
+
+//   /* Add Calendar Icon */
+//   #exportTable tbody td[data-label="compoffdate"]::before {
+//     content: '📅 ';
+//     display: inline-block !important;
+//     margin-right: 8px;
+//   }
+
+//   /* 5. Status Badge (Absolute Position Top Right) */
+//   #exportTable tbody td[data-label="requeststatus"] {
+//     position: absolute;
+//     top: 8px;
+//     right: 10px;
+//     width: auto;
+//     background: transparent !important;
+//     display: inline-block !important;
+//     font-size: 0.6rem;
+//     font-weight: 700;
+//     text-transform: uppercase;
+//     padding: 4px 12px !important;
+//     border-radius: 20px;
+//     color: white !important;
+//     line-height: 1.2;
+//     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+//     height: auto;
+//     margin: 0;
+//   }
+
+//   /* Status Badge Colors */
+//   #exportTable tbody td[data-label="requeststatus"].text-warning {
+//     background-color: #f59e0b !important;
+//   }
+//   #exportTable tbody td[data-label="requeststatus"].text-success {
+//     background-color: #10b981 !important;
+//   }
+//   #exportTable tbody td[data-label="requeststatus"].text-danger {
+//     background-color: #ef4444 !important;
+//   }
+
+//   /* =========================================
+//      BODY SECTION: Employee & Time Details
+//      ========================================= */
+
+//   /* Employee Code - Line 1 */
+//   #exportTable tbody td[data-label="RequestEmpcode"] {
+//     display: inline-block !important;
+//     width: auto;
+//     margin-top: 10px;
+//     padding-left: 8px !important;
+//     font-size: 0.7rem;
+//     font-weight: 600;
+//     color: #333;
+//   }
+
+//   #exportTable tbody td[data-label="RequestEmpcode"]::before {
+//     content: '' !important;
+//     display: inline !important;
+//     font-size: 0.6rem;
+//     margin-right: 4px;
+//     color: #666;
+//   }
+
+
+
+//   /* Employee Name - Line 1 (same line as code) */
+//   #exportTable tbody td[data-label="RequestEmpName"] {
+//     display: inline-block !important;
+//     width: auto;
+//     margin-top: 10px;
+//     padding-left: 15px !important;
+//     font-size: 0.7rem;
+//     font-weight: 600;
+//     color: #333;
+//   }
+
+
+
+//   /* Time From - Line 2 */
+//   #exportTable tbody td[data-label="requestfromtime"] {
+//     display: inline-block !important;
+//     width: auto;
+//     margin-top: 10px;
+//     padding-left: 8px !important;
+//     font-size: 0.7rem;
+//     font-weight: 600;
+//     color: #333;
+//   }
+
+//   #exportTable tbody td[data-label="requestfromtime"]::before {
+//     content: '🕒 ' !important;
+//     display: inline !important;
+//     font-size: 0.8rem;
+//     margin-right: 4px;
+//     color: #666;
+//   }
+
+//   /* Time To - Line 2 (same line as from time) */
+//   #exportTable tbody td[data-label="requesttotime"] {
+//     display: inline-block !important;
+//     width: auto;
+//     margin-top: 10px;
+//     font-size: 0.7rem;
+//     font-weight: 600;
+//     color: #333;
+//   }
+
+//   #exportTable tbody td[data-label="requesttotime"]::before {
+//     content: '⟶ ' !important;
+//     display: inline !important;
+//     margin: 0 8px;
+//     color: #888;
+//     font-weight: 300;
+//   }
+
+//   /* Comp Off Days - Bottom Right Badge */
+//   #exportTable tbody td[data-label="requestdate"] {
+//     position: absolute;
+//     right: 15px;
+//     bottom: 5px;
+//     display: inline-block !important;
+//     width: auto;
+//     padding: 0px 10px !important;
+//     border-radius: 4px;
+//     font-size: 0.75rem;
+//     font-weight: 700;
+//     color: #f9ca2f !important;
+//     margin: 0;
+//   }
+
+//   #exportTable tbody td[data-label="requestdate"]::before {
+//     content: 'Days : ' !important;
+//     display: inline !important;
+//     margin-right: 4px;
+//   }
+
+//   /* =========================================
+//      FOOTER SECTION: Action Button
+//      ========================================= */
+
+//   /* Action Column */
+//   #exportTable tbody td:last-child {
+//     margin-top: 15px;
+//     padding-top: 10px !important;
+//     border-top: 1px dashed #eee;
+//     display: flex !important;
+//     justify-content: flex-start;
+//     align-items: center;
+//     width: 100%;
+//     padding-left: 15px !important;
+//     padding-right: 100px;
+//   }
+
+//   /* Style the button */
+//   #exportTable tbody td:last-child button {
+//     width: auto;
+//     min-width: 80px;
+//     margin: 0;
+//     border: 1px solid #449cef;
+//     color: #449cef;
+//     font-weight: 600;
+//     border-radius: 4px;
+//     padding: 5px 10px;
+//   }
+  
+//   /* Add text to the button */
+//   #exportTable tbody td:last-child button::after {
+//     content: " view";
+//     font-size: 0.7rem;
+//     margin-left: 5px;
+//     padding: 0;
+//   }
+// }
+
+
+
+@media screen and (max-width: 767.98px) {
+  
+  /* 1. Hide Table Header */
+  #exportTable thead {
+    display: none;
+  }
+
+  /* 2. Card Container (The Box) */
+  #exportTable tbody tr {
+    display: block;
+    margin: 1rem 0.5rem;
+    background: #ffffff;
+    border: 1px dashed #87dabc;
+    /* Default Green Border */
+    border-left: 5px solid #10b981; 
+    border-radius: 6px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    position: relative; /* Essential for absolute positioning of Status */
+    padding-bottom: 0px;
+  }
+
+  /* Blue border for even rows */
+  #exportTable tbody tr:nth-child(even) {
+    border-left: 5px solid #3080e8;
+  }
+
+  /* 3. Global Cell Reset */
+  #exportTable tbody td {
+    display: block;
+    border: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  /* Hide the default data-labels to clean up the look */
+  #exportTable tbody td::before {
+    display: none !important;
+  }
+
+  /* Hide columns we don't need in mobile view to reduce clutter */
+  #exportTable tbody td[data-label^="S.No. : "] {
+    display: none;
+  }
+
+  /* =========================================
+     HEADER SECTION: Date & Status
+     ========================================= */
+
+  /* 4. Attendance Date (The Green Header Bar) */
+  #exportTable tbody td[data-label^="compoffdate"] {
+    background-color: #e6f4ed; /* Light green background */
+    padding: 10px 15px;
+    font-weight: 700;
+    color: #2b2e41;
+    font-size: 0.75rem;
+    border-bottom: 1px solid #f0f0f0;
+    width: 100%;
+    text-align: start;
+  }
+
+  /* Add Calendar Icon */
+  #exportTable tbody td[data-label^="compoffdate"]::before {
+    content: '📅 ';
+    display: inline-block !important;
+    margin-right: 8px;
+  }
+
+  /* 5. Status Badge (Absolute Position Top Right) */
+  #exportTable tbody td[data-label^="requeststatus"] {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    width: auto;
+    background: transparent !important; /* Remove cell background */
+    padding: 0;
+  }
+
+  /* Style the text inside the status cell to look like a Pill */
+  #exportTable tbody td[data-label^="requeststatus"] {
+    font-size: 0.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 20px;
+    color: white !important;
+    line-height: 1.2;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    height: 20px;
+  }
+
+  /* Manually force colors if bootstrap classes aren't working perfectly */
+  #exportTable tbody td[data-label^="requeststatus"].text-warning {
+    background-color: #f59e0b !important; /* Orange for Pending */
+  }
+  #exportTable tbody td[data-label^="requeststatus"].text-success {
+    background-color: #10b981 !important; /* Green for Approved */
+  }
+  #exportTable tbody td[data-label^="requeststatus"].text-danger {
+    background-color: #ef4444 !important; /* Red for Disapproved */
+  }
+
+  /* =========================================
+     BODY SECTION: Time & Type
+     ========================================= */
+
+  /* 6. Time Row Container */
+
+
+  #exportTable tbody td[data-label^="RequestEmpcode"] {
+    display: inline-flex;
+    align-items: center;
+    margin-top: 0px;
+    padding-left: 8px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: #333;
+    width: 55%;
+    text-align: center;
+  }
+
+  #exportTable tbody td[data-label^="RequestEmpcode"]::before {
+    content: 'Employee  : ( ' !important; /* Clock Icon */
+    display: inline-block !important;
+    font-size: 0.6rem;
+    margin-right: 8px;
+    color: #666;
+  }
+  #exportTable tbody td[data-label^="RequestEmpcode"]::after {
+    content: ' ‎ )' !important; /* Clock Icon */
+    display: inline-block !important;
+    font-size: 0.6rem;
+    margin-right: 8px;
+    color: #666;
+    font-weight: 700;
+  }
+
+
+   #exportTable tbody td[data-label^="RequestEmpName"] {
+    display: inline-flex;
+    align-items: center;
+    margin-top: 0px;
+    padding-left: 8px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #333;
+    width: 40%;
+  }
+
+ 
+
+   
+  
+
+
+
+  /* We use In Time as the anchor for the row */
+  #exportTable tbody td[data-label^="requestfromtime"] {
+    display: inline-flex;
+    align-items: center;
+    margin-top: 0px;
+    padding-left: 8px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #333;
+    width: auto;
+  }
+
+  #exportTable tbody td[data-label^="requestfromtime"]::before {
+    content: '🕒' !important; /* Clock Icon */
+    display: inline-flex !important;
+    font-size: 0.8rem;
+    margin-right: 8px;
+    color: #666;
+  }
+
+  /* 7. Out Time (Sit next to In Time) */
+  #exportTable tbody td[data-label^="requesttotime"] {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #333;
+    margin-top: 0px;
+  }
+
+  /* The Arrow between times */
+  #exportTable tbody td[data-label^="requesttotime"]::before {
+    content: '⟶' !important;
+    display: inline-block !important;
+    margin: 0 10px;
+    color: #888;
+    font-weight: 300;
+  }
+
+  /* 8. The "Type" (e.g., Late Coming) - Position to the right */
+  #exportTable tbody td[data-label^="requestdays"] {
+    position: absolute;
+    right: 15px;
+    bottom: -1px; /* Aligned with button */
+    // background-color: #f8fafc;
+    padding: 0px 10px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #3080e8 !important;
+   
+    margin: 0;
+  }
+
+  /* 8b. Apply Date - Position above Type */
+  #exportTable tbody td[data-label^="Total Hours: "] {
+    position: absolute;
+    right: 15px;
+    bottom: 37px; /* Above the Type badge */
+    // background-color: #fef3c7;
+    // padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #92400e;
+    // border: 1px solid #fde68a;
+    width: auto;
+    margin: 0;
+    padding-top: 6px;
+  }
+
+  #exportTable tbody td[data-label^="Total Hours: "]::before {
+    // content: '📝' !important;
+    content: 'Hrs : ' !important;
+    display: inline-block !important;
+    margin-right: 4px;
+  }
+
+ 
+
+  /* =========================================
+     FOOTER SECTION: Action Button
+     ========================================= */
+
+  /* 9. Action Column - Adjusted for right-side badges */
+  #exportTable tbody td:last-child {
+    margin-top: 0px;
+    padding-top: 0px;
+    border-top: 1px dashed #eee;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+    padding-left: 15px;
+    padding-right: 150px; /* Make room for Apply Date and Type */
+  }
+
+  /* Style the button itself to be cleaner */
+  #exportTable tbody td:last-child button {
+    width: auto;
+    min-width: 80px;
+    margin: 0;
+  
+    color: #449cef;
+    font-weight: 600;
+ 
+    padding: 0px 10px;
+  }
+  
+  /* Add text to the button for clarity */
+  #exportTable tbody td:last-child button::after {
+    content: "view";
+    font-size: 0.7rem;
+    margin-left: 5px;
+    padding: 0;
+  }
+}

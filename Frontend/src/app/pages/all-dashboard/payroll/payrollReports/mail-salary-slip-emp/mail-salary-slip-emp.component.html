@@ -1,0 +1,80 @@
+
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+         <!--  -->
+    <div class="card-header bg-blue ">
+        <div class="row w-100 ">
+      <div class="col-sm-12 col-md-6 col-lg-6 ">                    
+        <h4>Salary Slip Mail Send</h4>   
+      </div>
+     
+  </div>
+  
+      
+      </div>
+      <div class="card-body mt-4">
+        <form [formGroup]="EmployeeForm">
+          <div class="row">
+            <app-common-search ></app-common-search>
+          </div>
+          
+        <div class="row row-cols-1 row-cols-md-3">
+            <div class="col">
+              <label>Office Type</label>
+         
+              <div class="form-group">
+                <ng-select id="year" [items]="selects" bindLabel="name" bindValue="value"
+                formControlName="officeType" placeholder="--Select --"
+                class="w-100"></ng-select>
+              </div>  
+          </div>
+        
+            <div class="col">
+              <label>Salary Transfer Status</label>         
+              <div class="form-group">
+                <ng-select id="year" [items]="selects" bindLabel="name" bindValue="value"
+                formControlName="salaryTransferStatus" placeholder="--Select --"
+                class="w-100"></ng-select>
+              </div> 
+            </div>
+            <div class="col">
+                <label>Month</label>         
+                <div class="form-group">
+                  <ng-select id="year" [items]="months" bindLabel="name" bindValue="value"
+                  formControlName="month" placeholder="--Select --"
+                  class="w-100"></ng-select>
+                  <span *ngIf="showError &&EmployeeForm.controls['month'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                    Please enter Month.
+                  </span>
+                </div> 
+            </div>
+            <div class="col">
+                <label>Year</label>
+                <div class="form-group">
+                    <ng-select id="year" [items]="years" bindLabel="name" bindValue="value"
+                    formControlName="year" placeholder="--Select --"
+                    class="w-100"></ng-select>
+                    <span *ngIf="showError &&EmployeeForm.controls['year'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                      Please enter Year.
+                    </span>
+                  </div> 
+            </div>
+             
+           </div>
+            
+           
+           
+            <div class="modal-footer"> 
+                <button type="submit" class="btn btn-outline-dark mx-1"(click)="resetForm()">Reset</button>
+                 <button type="submit" class="btn btn-primary mx-1"(click)="OnVeiw()">Veiw</button>
+           
+              </div>
+        </form>
+      </div>
+
+      
+  </div>
+</div>    
+
+</div>

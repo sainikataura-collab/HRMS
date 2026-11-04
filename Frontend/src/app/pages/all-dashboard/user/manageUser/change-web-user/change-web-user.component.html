@@ -1,0 +1,111 @@
+<div class="row mt-2">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+
+            <!-- card Header Start -->
+            <div class="card-header bg-blue">
+                <div class="row w-100">
+                    <div class="col-sm-12 col-md-12 col-lg-12">
+                        <h4 class="">Employee Search</h4>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Card Header end -->
+            <div class="card-body mt-1">
+
+
+                <form class="row row-cols-1 row-cols-md-3 g-4" [formGroup]="ChangeWebUser" (ngSubmit)="submitSearchForm()">
+
+                    <div class="col">
+                        <label for="code" class="form-label">Code</label>
+                        <input type="text" class="form-control " id="" placeholder="Enter Code"
+                            formControlName="Code">
+
+                    </div>
+
+
+
+                    <div class="col">
+                        <label for="name" class="form-label">Name</label>
+                        <input type="name" class="form-control " id="name" placeholder="Enter  Name"
+                            formControlName="Name">
+                    </div>
+
+                    <div class="col pt-2">
+                        <label>Location</label>
+                        <ng-select [items]="Location" bindLabel="name" bindValue="value" [multiple]="true"
+                            [closeOnSelect]="false" placeholder="--Select Locations--" class="w-100 small"
+                            formControlName="selectedLocations">
+                        </ng-select>
+                    </div>
+
+                    <div class="col">
+                        <label>Department</label>
+                        <ng-select [items]="Department" bindLabel="name" bindValue="value" [multiple]="true"
+                            [closeOnSelect]="false" placeholder="--Select Department" class="w-100 small"
+                            formControlName="selectedDepartment">
+                        </ng-select>
+                    </div>
+
+                    <div class="col">
+                        <label>Status</label>
+                        <ng-select [items]="Status" bindLabel="name" bindValue="value"
+                            [closeOnSelect]="false" placeholder="--Select Status" class="w-100 small"
+                            formControlName="selectstatus">
+                        </ng-select>
+                    </div>
+
+                   
+
+
+
+                    <div class="row">
+                        <div class="col d-flex align-items-end justify-content-end align-content-center">
+
+                            <button type="reset" class="btn btn-outline-dark btn-sm mx-1 px-2">Clear</button>
+                            <button type="submit" class="btn btn-primary btn-sm mx-1 px-2" (click)="submitSearchForm()">Search</button>
+
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="row pt-2 pt-lg-4">
+                <div class="col-sm-12 col-md-12 col-lg-12">
+
+                    <div class="page-seperator mx-2 rounded-1">
+                        <p class="text-white ms-4 p-1">Change Web User Password</p>
+                    </div>
+                    <div class="card-body mt-1">
+                        <form  class="row row-cols-1 row-cols-md-3 g-4" [formGroup]="ChangeWebUser" (ngSubmit)="restePassword()">
+
+
+                            <div class="col">
+                                <label>Employee Code</label>
+                                <ng-select [items]="empcode" bindLabel="name" bindValue="value"
+                                  placeholder="--Employee Code" class="w-100 small pt-lg-2"
+                                    formControlName="selectempcode">
+                                </ng-select>
+                            </div>
+
+                            <div class="col">
+                                <label for="name" class="form-label">Password</label>
+                                <input type="password" class="form-control " id="password" placeholder="Password"
+                                    formControlName="password" >
+                            </div>
+
+                            <div class="col d-flex align-items-end justify-content-end align-content-center">
+                                <button type="reset" class="btn btn-outline-dark btn-sm mx-1 px-2">Reset</button>
+                                <button type="submit" class="btn btn-primary btn-sm mx-1 px-2">Reset Password</button>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

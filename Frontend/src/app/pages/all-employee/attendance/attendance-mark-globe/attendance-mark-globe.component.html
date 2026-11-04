@@ -1,0 +1,204 @@
+<!-- 🔁 Wrap the entire UI in *ngIf="!cameraMode" -->
+<div *ngIf="!cameraMode">
+
+  <div *ngIf="!IsOnMobile" class="mobile-only">
+  <svg width="50" height="50" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <!-- Laptop base -->
+  <rect x="8" y="16" width="48" height="32" rx="2" ry="2" fill="#ccc" stroke="#444" stroke-width="2" />
+  <!-- Laptop keyboard base -->
+  <rect x="4" y="48" width="56" height="6" rx="1" ry="1" fill="#999" />
+  
+  <!-- Prohibition symbol inside screen -->
+  <circle cx="32" cy="32" r="10" fill="none" stroke="red" stroke-width="3" />
+  <line x1="26" y1="26" x2="38" y2="38" stroke="red" stroke-width="3" />
+</svg>
+ Please use a mobile device to mark attendance.
+  </div>
+
+
+
+
+  <section>
+    <div class="container-fluid">  
+
+      <!-- map row section -->
+      <div class="row hide-desktop-map">
+        <div class="col-sm-12 col-md-12 col-lg-12 px-1">
+          <div class="card rounded">
+            <div id="map" style="height: 170px; width: 100%;"></div>
+          </div>
+
+        </div>
+      </div>
+
+
+    
+
+  
+
+
+      <!-- Loader message show before show message  -->
+
+      <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-12" *ngIf="IsOnMobile && isLoading" class="loading-screen">
+          <p class="small"> ⏳ Preparing your attendance screen...</p>
+        </div>
+      </div>
+
+
+      <!-- top show distance location and time -->
+      <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-12 p-0" *ngIf="IsOnMobile && !isLoading && isMobileAllowed">
+          <div class="div">
+            <!-- <p class="fw-semibold py-3 text-center text-primary small">📍 Attendance Marking</p> -->
+            <p class="small text-center pt-3"><span class="fw-semibold">Distance from office: </span> <span>{{
+                distanceFromOffice | number:'1.0-2' }}</span></p>
+            <p class="small text-center lh-sm"><span class="fw-semibold"
+                [ngClass]="insideGeofence ? 'inside' : 'outside'">{{ insideGeofence ? '🟢 Inside Office' : '🔴 Outside
+                Office' }}</span></p>
+            <p class="d-flex alig-items-center justify-content-around my-0  lh-sm"><span
+                class="fw-semibold fs-6">{{currentTime}}</span> <span class="small"><span class="pe-1"><i
+                    class="fa-solid fa-wifi"></i></span> <span>{{currentDate}}</span></span></p>
+          </div>
+
+          <!-- your Location -->
+
+
+          <div class="card card-custom rounded shadow-none border mt-3" style="border-top:2px soild #3080e8;">
+            <div class="card-body py-1 px-3">
+
+              <!-- <p class="text-center text-primary fw-semibold">📍 Attendance Marking</p> -->
+              <p class="d-flex alig-items-center justify-content-start my-0 py-1"><span
+                  class="fw-semibold small text-primary">Your Location</span> <span class="small"></span></p>
+              <p class="lh-sm my-0"><span class="small lh-sm">{{ currentLocationAddress || 'Fetching current location
+                  address...' }}</span></p>
+
+            </div>
+          </div>
+
+          <!-- office Location -->
+
+          <div class="card card-custom2 rounded shadow-none border my-3">
+            <div class="card-body py-1 px-3">
+
+              <!-- <p class="text-center text-primary fw-semibold">📍 Attendance Marking</p> -->
+              <p class="d-flex alig-items-center justify-content-start my-0 py-1"><span
+                  class="fw-semibold small text-primary">Office Location</span> <span></span></p>
+              <p class="lh-sm my-0"><span class="small lh-sm">{{ officeLocationAddress || 'Fetching office location
+                  address...' }}</span></p>
+            </div>
+          </div>
+
+
+          <!-- check in and check out button -->
+
+
+          <div class="col-sm-12 col-md-12 col-lg-12 d-flex align-items-center justify-content-around pt-2">
+            <button class="btn px-4"
+              [ngClass]="{ 'btn-success': punchType === 'in', 'btn-outline-success': punchType !== 'in' }"
+              [disabled]="attendanceConfig.isGeoFenceMandatory && !insideGeofence" (click)="startCameraFullScreenPrompt('in')">
+              Punch In
+            </button>
+
+            <button class="btn px-4"
+              [ngClass]="{ 'btn-danger': punchType === 'out', 'btn-outline-danger': punchType !== 'out' }"
+              [disabled]="attendanceConfig.isGeoFenceMandatory && !insideGeofence" (click)="startCameraFullScreenPrompt('out')">
+              Punch Out
+            </button>
+          </div>
+
+
+
+        </div>
+      </div>
+      <!--  -->
+  <!-- camera privew -->
+
+
+      <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-12 px-1 m-0">
+          <div class="card rounded pt-1 pb-3 preview-card" *ngIf="annotatedPhotoUrl && attendanceConfig.photoMode !== 1">
+            <div class="div p-3">
+            <p class=" fw-semibold text-center text-primary"><i class="fa-solid fa-eye"></i> Preview</p>
+            <img [src]="annotatedPhotoUrl" alt="Captured attendance photo" class="object-fit-cover rounded" height="400px" width="100%" />
+            </div>
+            <div class="d-flex align-items-center justify-content-around">
+                      <button class="btn btn-outline-primary" (click)="startCameraFullScreen(punchType)">🔁 Retake</button>
+        <!-- ✅ New Submit Button -->
+        <button class="btn btn-success submit-button text-white" (click)="submitAttendance()">✅ Submit Attendance</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <!--  -->
+
+
+    </div>
+  </section>
+
+
+
+
+
+
+</div> 
+
+
+<section>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-12 col-md-12 col-lg-12" *ngIf="cameraStarted && !annotatedPhotoUrl && attendanceConfig.photoMode !== 1" class="camera-preview-fullscreen">
+ <div id="cameraPreview" class="camera-preview-full"></div>
+   <div class="capture-status">
+    <p class="small lh-sm">{{ captureStatus }}</p></div>
+   <button class="capture-button btn btn-primary" (click)="captureAndSubmit()" [disabled]="!faceDetected">
+    📸 Capture
+  </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+
+
+
+<!-- ✅ Full-Screen Camera Preview stays outside so it shows when cameraMode is true -->
+<!-- <div *ngIf="cameraStarted && !annotatedPhotoUrl" class="camera-preview-fullscreen">
+  <div id="cameraPreview" class="camera-preview-full"></div>
+  <div class="capture-status">{{ captureStatus }}</div>
+  <button class="capture-button btn btn-primary" (click)="captureAndSubmit()" [disabled]="!faceDetected">
+    📸 Capture
+  </button>
+</div> -->
+
+
+
+
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+  aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class=" modal-dialog modal-dialog-centered p-0 pt-5">
+    <div class="modal-content" style="margin-left: 3rem; margin-right: 3rem;">
+      <div class="modal-header py-1 m-0 px-3">
+        <p class="modal-title px-0 py-0 m-0 small fw-semibold" id="staticBackdropLabel">Office Location</p>
+        <button type="button" height="20px" width="20px" class="btn-close" data-bs-dismiss="modal"
+          aria-label="Close"></button>
+      </div>
+ 
+      <div class="modal-body py-1 px-2">
+
+
+        <p class="lh-sm my-0"><span class="small lh-sm">{{ officeLocationAddress || 'Fetching office location
+            address...' }}</span></p>
+      </div>
+
+    </div>
+  </div>
+</div>

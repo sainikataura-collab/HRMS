@@ -1,0 +1,73 @@
+<div class="row mt-2">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+            <!-- Heading -->
+            <div class="card-header bg-blue">
+                <div class="row w-100">
+                    <div class="col-sm-12 col-md-12 col-lg-12">
+                        <h4 class="">Employee Tax Challan</h4>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-md-6 col-lg-6 d-flex align-items-center justify-content-end ms-auto gap-2">
+                    <button class="btn btn-light"><i class=""></i> Goto List</button>
+                </div>
+            </div>
+            <!-- form Start -->
+            <div class="card-body mt-4">
+                <div class="row">
+                    <app-common-search></app-common-search>
+                  </div>
+                <form [formGroup]="monthlytaxchallanForm" (ngSubmit)="onSubmit()">
+                    <div class="row mt-2">
+                        <div class="col-md-4">
+                            <label for="LeaveNatureType" class="">Office Type</label>
+                            <ng-select id="LeaveNatureType" [items]="OfficeType" bindLabel="name" bindValue="value"
+                                formControlName="OfficeType" placeholder="--Select Office Type--"
+                                class="w-100"></ng-select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="LeaveNatureType" class="">Posting City</label>
+                            <ng-select id="LeaveNatureType" [items]="PostingCity" bindLabel="name" bindValue="value"
+                                formControlName="PostingCity" placeholder="--Select Year--"
+                                class="w-100"></ng-select>
+                        </div>
+                       
+                        <div class="col-md-4">
+                            <label for="LeaveNatureType" class="">Nature Type</label>
+                            <ng-select id="LeaveNatureType" [items]="NatureType" bindLabel="name" bindValue="value"
+                                formControlName="NatureType" placeholder="--Select Nature Type--"
+                                class="w-100"></ng-select>
+                        </div>
+                        
+                    </div>
+
+                    <div class="row mt-2">
+                        <div class="col-md-4">
+                            <label for="LeaveNatureType" class="">Month</label>
+                            <ng-select id="LeaveNatureType" [items]="Month" bindLabel="name" bindValue="value"
+                                formControlName="Month" placeholder="--Select Month--"
+                                class="w-100"></ng-select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="LeaveNatureType" class="">Year</label>
+                            <ng-select id="LeaveNatureType" [items]="Year" bindLabel="name" bindValue="value"
+                                formControlName="Year" placeholder="--Select Year--"
+                                class="w-100"></ng-select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="LeaveNatureType" class="">Quarter Number</label>
+                            <ng-select id="ReportType" [items]="QuarterNumber" bindLabel="name" bindValue="value"
+                                formControlName="QuarterNumber" placeholder="--Select Quarter Number--"
+                                class="w-100"></ng-select>
+                        </div>
+                    </div>
+                    <div class="modal-footer mt-2">
+                        <button type="submit" class="btn btn-outline-dark mx-1">Save</button>
+                        <button type="button" class="btn btn-primary mx-1">Resets</button>
+                      </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

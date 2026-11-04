@@ -1,0 +1,85 @@
+
+<div class="row">
+   <div class="col-12">
+      <div class="card">
+           <div class="card-header">  
+            <div class="row w-100">
+              <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-between">
+                <h4>Lists of Lodging Boarding</h4>
+               
+              </div>
+              
+              <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-center">
+                <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText" />
+              </div>
+              <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-md-end">
+                <button class="btn btnheader"  routerLink="/dash/travel_expense/travel_expensedashboard/lodging_Boarding">
+                     Add                             
+                  </button>
+                  <button class="btn btn-light mx-1" (click)="exportToExcel()">
+                    Download
+                  </button>
+              </div>
+              
+            </div>
+        </div> 
+          <div class="card-body">
+              <div class="table-responsive table-invoice">
+                  <table class="table table-bordered">
+                      <thead>
+                        <tr>
+                          <th>S. No.</th>
+                          <th>Grade</th>
+                          <th>Class</th>
+                          <th>LodgingBoarding</th>
+                          <th>Fixed FDA</th>
+                          <th>Fixed LTA</th>
+                           <th>Effective Date</th>
+                           <th>Is Active</th>
+                           <th>Action</th>
+                      							
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor=" let item of filteredData() 
+                        | paginate : { itemsPerPage: pageSize, currentPage: pageIndex ,totalItems: totalItems };let i = index">
+                    
+                             <td>{{(pageIndex-1)* pageSize+i+1}}</td>
+                          <td>{{item.grade}}</td>
+                          <td>{{item.classname}}</td>
+                          <td>{{item.lodgingboarding}}</td>
+                          <td>{{item.fixedFda}}</td>
+                          <td>{{item.fixedLta}}</td>
+                          <td>{{item.effectivedate}}</td>
+                          <td>{{item.isActive}}</td>
+                          <td>
+                            <button class="btn btn-sm btn-outline" (click)="isUpdate(item.pk_lodgingboardingId)">
+                              <i class="fa-regular fa-pen-to-square"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline" (click)="delete(item.pk_lodgingboardingId)">
+                              <i class="fa fa-trash"></i>
+                            </button>
+                            
+                          </td>
+                        </tr> 
+                      </tbody>
+                    </table>
+                 <!--for pagination-->
+                 <pagination-controls
+                 (pageChange)="onPageChange($event)"
+                 [responsive]="true">
+               </pagination-controls>
+             
+                     <ng-template #noData>
+                       <tr>
+                         <td colspan="4" class="text-center">No data available</td>
+                       </tr>
+                     </ng-template>
+                </div>
+          </div>
+
+        
+      </div>
+  </div>
+  </div>
+

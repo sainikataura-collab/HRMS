@@ -1,0 +1,94 @@
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <!--  -->
+
+      <div class="card-header py-1 bg-primary">
+        <div class="row w-100">
+          <div
+            class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-between"
+          >
+            <h4>Behavioral Master Details</h4>
+          </div>
+          <div
+            class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-center"
+          >
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Search..."
+              [(ngModel)]="searchText"
+            />
+          </div>
+
+          <div
+            class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-md-end"
+          >
+            <button
+              class="btn btnheader"
+              routerLink="/dash/appraisal/appraisaldashboard/behavioral-area-master"
+            >
+              Add
+            </button>
+            <button class="btn btnheader mx-1" (click)="exportToExcel()" >Download</button>
+          </div>
+        </div>
+      </div>
+
+      <!--  -->
+      <div class="card-body">
+        <div class="table-responsive table-invoice">
+          <table Id="exportTable" class="table">
+            <thead>
+              <tr>
+                <th>Sr.No.</th>
+                <th>Description</th>
+                <th>Weightage</th>
+                <th>Display Order</th>
+                <th>Active</th>
+
+                <th>Action</th>
+              </tr>
+            </thead>
+
+            <tbody>
+                <tr *ngFor="let item of  filteredData() | paginate: { itemsPerPage: pageSize, currentPage: pageIndex ,totalItems:totalItems};let i = index">
+
+                <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+                <td>{{ item.description }}</td>
+                <td>{{ item.weightage }}</td>
+                <td>{{ item.orderby }}</td>
+                <td>{{ item.active }}</td>
+
+                <td>
+                  <button class="btn btn-sm btn-outline px-1 mx-1">
+                  <i class="fa-regular fa-pen-to-square fw-semibold" (click)="isUpdate(encryptionService.encryptText( item.pk_behaveid.toString()))"></i>
+                  </button>
+                  <button class="btn btn-sm btn-outline px-1 mx-1">
+                    <i
+                      class="fa fa-trash text-dark"
+                      (click)="deleteBehavioralAreaMaster(item.pk_behaveid)"
+                    ></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Pagination controls -->
+
+           <pagination-controls (pageChange)="onPageChange($event)" >
+          </pagination-controls>
+
+          <!-- <ng-template #noData>
+            <tr>
+              <td colspan="4" class="text-center">No data available</td>
+            </tr>
+          </ng-template> -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- message modal -->

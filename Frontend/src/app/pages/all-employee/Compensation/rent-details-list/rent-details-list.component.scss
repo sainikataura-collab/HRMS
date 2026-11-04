@@ -1,0 +1,208 @@
+
+@media screen and (max-width: 767.98px) {
+  
+  #exportTable thead {
+    display: none;
+  }
+
+  /* ===== HIDE UNWANTED COLUMNS ===== */
+  #exportTable tbody td[data-label="Sr.no."] ,
+  #exportTable tbody td[data-label="file"] {
+    display: none !important;
+  }
+
+  /* ===== CARD CONTAINER ===== */
+
+  #exportTable tbody tr {
+    display: block;
+    margin: 1rem 0.2rem;
+    padding: 0rem;
+    background: #ffffff;
+    border: 1px dashed #87dabc;
+    border-left: 4px solid #10b981;
+    border-radius: 0.3rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    position: relative;
+  }
+  
+
+   #exportTable tbody tr:nth-child(even) {
+    border-left-color: #10b981;
+    border-left: 4px solid #3080e8;
+  }
+
+  /* ===== RESET TD ===== */
+  #exportTable tbody td {
+    display: block;
+    padding: 0;
+    // padding-bottom: 10px;
+    margin: 0;
+    border: none;
+    background: transparent;
+    height: auto;
+  }
+
+  #exportTable tbody td::before {
+    display: none !important;
+  }  
+  
+  /* ===== DATE HEADER ===== */
+  #exportTable tbody td[data-label="Request Date"] {
+    display: block;
+    font-size: 0.65rem;
+    font-weight: 600;   
+    color: #2b2e41 !important;
+    padding: 0.3rem 0.5rem;
+    background: #bed9c95c;
+    text-align: start !important;
+  }
+
+  #exportTable tbody td[data-label="Request Date"]::before {
+    // content: '📅' !important;
+    content: 'Bill Date :-' !important;
+    display: inline-block !important;
+    font-size: .65rem;
+    margin-right: 0.5rem;
+    text-align: start !important;
+  }
+
+  /* ===== STATUS BADGE (Top Right) ===== */
+
+  
+  #exportTable tbody td[data-label="Status"] {
+    position: absolute;
+    top: 0.4rem;
+    right: 1rem;
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 40px;
+    font-size: 0.55rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #ffffff !important;
+    line-height: 1.4;
+  }
+
+  
+  #exportTable tbody td[data-label^="Status"].text-warning {
+    background-color: #f59e0b !important; 
+  }
+  #exportTable tbody td[data-label^="Status"].text-success {
+    background-color: #10b981 !important; 
+  }
+  #exportTable tbody td[data-label^="Status"].text-danger {
+    background-color: #ef4444 !important; 
+  }
+
+
+
+  /* ===== TIME ROW ===== */
+  #exportTable tbody td[data-label="Financial Year"] {
+    display: inline-flex;
+    align-items: center;
+    padding: 0 0.5rem;
+    font-size: 0.65rem;
+    color: #1f2937;
+    font-weight: 500;
+    width: 100%;
+    text-align: start;
+     line-height: 1.4;  
+  }
+
+
+
+
+  #exportTable tbody td[data-label="Total Amount"] {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.65rem;
+    color: #1f2937;
+    font-weight: 500;
+  
+    padding-top: 0.5rem;
+    padding: 0 0.5rem;
+    border-top:1px solid  #f1565643 !important; 
+    border-bottom: 1px solid #0eeaa032 !important;
+    width: 100%;
+    text-align: start;
+    line-height: 1.4;
+  }
+
+  #exportTable tbody td[data-label="Total Amount"]::before {
+    // content: '→' !important;
+    content: 'Total Amount:-';
+    display: inline-block !important;
+    color: #2b2e41;
+    // margin: 0 0.75rem;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding-right: 5px;
+  }
+
+    #exportTable tbody td[data-label="file"] {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.65rem;
+    color: #1f2937;
+    font-weight: 500;
+  
+    padding-top: 0.5rem;
+    padding: 0 0.5rem;
+
+    border-bottom: 1px solid #0eeaa032 !important;
+    position: relative;
+    width: 100%;
+    text-align: start;
+    line-height: 1.4;
+  }
+
+  #exportTable tbody td[data-label="file"]::before {
+    // content: '→' !important;
+    content: 'File:-';
+    display: inline-block !important;
+    color: #2b2e41;
+    // margin: 0 0.75rem;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding-right: 5px;
+  }
+
+    #exportTable tbody td[data-label="Action"] {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.65rem;
+    color: #1f2937;
+    font-weight: 500;
+  
+    padding-top: 0.5rem;
+    padding: 0 0.5rem;
+
+    border-bottom: 1px solid #0eeaa032 !important;
+    position: relative;
+    width: 50%;
+    text-align: start;
+    line-height: 1.4;
+  }
+
+ 
+
+   
+ 
+
+  /* ===== EMPTY STATE ===== */
+  #exportTable tbody tr td[colspan] {
+    display: block;
+    padding: 2rem 1rem;
+    text-align: center;
+    color: #94a3b8;
+    font-size: 0.65rem;
+    position: static;
+  }
+
+  #exportTable tbody tr td[colspan]::before,
+  #exportTable tbody tr td[colspan]::after {
+    content: none !important;
+  }
+}

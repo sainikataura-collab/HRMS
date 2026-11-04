@@ -1,0 +1,47 @@
+
+#pdf-content {
+
+  position: relative;
+
+  border:1px solid #2b2e41 dashed !important;
+
+   width:98% !important;
+   margin:auto;
+  }
+
+
+  .small{
+  font-size: 12px;
+}
+
+.status-pending-rm {
+  background-color: #fff3cd;
+  color: #856404;
+  padding: 4px 8px;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.status-pending-hod {
+  background-color: #cce5ff;
+  color: #004085;
+  padding: 4px 8px;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.status-pending-self {
+  background-color: #cce5ff;
+  color: #008566;
+  padding: 4px 8px;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.status-approved {
+  background-color: #d4edda;
+  color: #155724;
+  padding: 4px 8px;
+  border-radius: 4px;
+  display: inline-block;
+}

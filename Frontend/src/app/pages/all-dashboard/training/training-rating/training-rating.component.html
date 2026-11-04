@@ -1,0 +1,72 @@
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-primary">
+                <div class="row w-100">
+                    <div
+                        class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-between">
+                        <h4>{{ Isedit ? 'Update Training Rating' : 'Training Rating Master' }}</h4>
+                    </div>
+                    
+
+                    <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+                        <button class="btn btnheader" routerLink="/dash/training/trainingdashboard/TrainingRating_list">
+                            Back
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body mt-4">
+                <form [formGroup]="TrainingForm">
+                    <div class="row row-cols-1 row-cols-md-3 g-4">
+                        <!-- Description -->
+                        <div class="col">
+                            <label for="description">Description <span class="text-danger">*</span></label>
+                            <div class="form-group">
+                                <input id="description" type="text" class="form-control" formControlName="description"
+                                    (blur)="checkDescriptionAvailability(TrainingForm.get('description')?.value)" />
+                                <!-- Validation -->
+                                <span
+                                    *ngIf="showError && TrainingForm.controls['description'].invalid && !TrainingForm.get('description')?.errors?.['duplicate']"
+                                    class="text-danger mt-1" style="font-size: 12px">
+                                    Please enter Description
+                                </span>
+
+                                <!-- API validation error -->
+                                <div *ngIf="TrainingForm.get('description')?.errors?.['duplicate']" class="text-danger"
+                                    style="font-size: 10px">
+                                    {{ TrainingForm.get('description')?.errors?.['duplicate'] }}
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Remarks -->
+                        <div class="col">
+                            <label for="remarks">Remarks</label>
+                            <div class="form-group">
+                                <input type="text" id="remarks" class="form-control" formControlName="remarks" />
+                            </div>
+                        </div>
+                         <!-- Active -->
+                        <div class="col">
+                            <label for="active">Active</label>
+                            <div class="form-group">
+                                <input type="checkbox" id="active" class="form-check-input" formControlName="active" />
+                            </div>
+                        </div>
+
+                        <!-- Footer Buttons -->
+                        <div class="col"></div>
+                        <div class="col"></div>
+                        <div class="col d-flex align-items-center justify-content-md-end">
+                            <button type="submit" class="btn btn-primary mx-1" (click)="submitForm()">
+                                {{ Isedit ? 'Update' : 'Save' }}
+                            </button>
+                            <button type="reset" class="btn btn-outline-dark mx-1">Reset</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

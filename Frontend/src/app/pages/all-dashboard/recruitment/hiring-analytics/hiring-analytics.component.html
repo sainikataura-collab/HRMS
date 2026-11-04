@@ -1,0 +1,331 @@
+<div class="ats-analytics-page p-2 px-3">
+  <!-- Top Header Strip -->
+  <div class="header-strip d-flex flex-wrap justify-content-between align-items-center mb-2 p-2 px-3 bg-white rounded border">
+    <div class="d-flex align-items-center gap-2">
+      <a routerLink="/dash/recruitment/recruitmentdashboard" class="btn-back rounded d-flex align-items-center justify-content-center text-dark text-decoration-none" title="Back to Dashboard">
+        <i class="bi bi-arrow-left"></i>
+      </a>
+      <div class="d-flex align-items-center gap-2">
+        <span class="page-title text-dark fw-bold" style="font-size: 13px;">Hiring Analytics & Executive Insights</span>
+        <span class="badge-chip bg-primary-subtle text-primary">Live BI Dashboard</span>
+        <span class="badge-chip bg-success-subtle text-success">
+          <i class="bi bi-lightning-charge-fill me-1"></i> Real-Time Sync
+        </span>
+      </div>
+    </div>
+
+    <!-- Filters & Actions -->
+    <div class="d-flex align-items-center gap-2 mt-1 mt-md-0">
+      <div class="d-flex align-items-center bg-white border rounded px-2" style="height: 26px;">
+        <i class="bi bi-calendar3 text-muted me-1" style="font-size: 10px;"></i>
+        <select class="form-select form-select-sm border-0 p-0 text-dark fw-semibold" [(ngModel)]="selectedTimeframe" (change)="onTimeframeChange()" style="font-size: 10.5px; width: 110px; cursor: pointer; background: transparent;">
+          <option value="Last 30 Days">Last 30 Days</option>
+          <option value="Last Quarter">Last Quarter</option>
+          <option value="Year to Date">Year to Date</option>
+          <option value="Custom Range">Custom Range</option>
+        </select>
+      </div>
+
+      <button class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1" (click)="loadAnalytics()" style="font-size: 10.5px; padding: 2px 8px; height: 26px;">
+        <i class="bi bi-arrow-repeat"></i> Refresh
+      </button>
+
+      <button class="btn btn-primary-action btn-sm fw-semibold shadow-sm d-flex align-items-center gap-1" (click)="exportReport()" style="font-size: 10.5px; padding: 2px 10px; height: 26px;">
+        <i class="bi bi-download"></i> Export BI
+      </button>
+    </div>
+  </div>
+
+  <!-- Summary KPI Bento Grid (4 Core Metric Cards) -->
+  <div class="row g-2 mb-2">
+    <!-- Card 1: Time to Hire -->
+    <div class="col-6 col-md-3">
+      <div class="kpi-card p-2 px-3 bg-white rounded border h-100 d-flex flex-column justify-content-between">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+          <div class="kpi-icon-box bg-primary-subtle text-primary">
+            <i class="bi bi-stopwatch"></i>
+          </div>
+          <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size: 8.5px; padding: 1px 5px;">
+            <i class="bi bi-arrow-down-short"></i> -15% vs Last Mo
+          </span>
+        </div>
+        <div>
+          <span class="kpi-label">TIME TO HIRE</span>
+          <div class="d-flex align-items-baseline gap-1 mt-1">
+            <h3 class="kpi-value text-dark mb-0">{{ analytics?.averageTimeToHireDays || 24.5 }}</h3>
+            <span class="text-muted" style="font-size: 10px;">days avg</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 2: Offer Accept Rate -->
+    <div class="col-6 col-md-3">
+      <div class="kpi-card p-2 px-3 bg-white rounded border h-100 d-flex flex-column justify-content-between">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+          <div class="kpi-icon-box bg-success-subtle text-success">
+            <i class="bi bi-graph-up-arrow"></i>
+          </div>
+          <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size: 8.5px; padding: 1px 5px;">
+            <i class="bi bi-arrow-up-short"></i> +12% Acceptance
+          </span>
+        </div>
+        <div>
+          <span class="kpi-label">OFFER ACCEPT RATE</span>
+          <div class="d-flex align-items-baseline gap-1 mt-1">
+            <h3 class="kpi-value text-primary mb-0">{{ analytics?.offerAcceptanceRatePercent || 88.2 }}%</h3>
+            <span class="text-muted" style="font-size: 10px;">11 of 12 accepted</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 3: Total Hires -->
+    <div class="col-6 col-md-3">
+      <div class="kpi-card p-2 px-3 bg-white rounded border h-100 d-flex flex-column justify-content-between">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+          <div class="kpi-icon-box bg-info-subtle text-info">
+            <i class="bi bi-person-check"></i>
+          </div>
+          <span class="badge bg-primary-subtle text-primary border border-primary-subtle" style="font-size: 8.5px; padding: 1px 5px;">
+            {{ analytics?.totalActiveJobs || 42 }} Active Reqs
+          </span>
+        </div>
+        <div>
+          <span class="kpi-label">TOTAL HIRED</span>
+          <div class="d-flex align-items-baseline gap-1 mt-1">
+            <h3 class="kpi-value text-dark mb-0">{{ analytics?.totalHiredThisMonth || 142 }}</h3>
+            <span class="text-muted" style="font-size: 10px;">candidates placed</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 4: Cost per Hire -->
+    <div class="col-6 col-md-3">
+      <div class="kpi-card p-2 px-3 bg-white rounded border h-100 d-flex flex-column justify-content-between">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+          <div class="kpi-icon-box bg-warning-subtle text-warning">
+            <i class="bi bi-wallet2"></i>
+          </div>
+          <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size: 8.5px; padding: 1px 5px;">
+            <i class="bi bi-arrow-down-short"></i> -8% Sourcing Cost
+          </span>
+        </div>
+        <div>
+          <span class="kpi-label">COST PER HIRE</span>
+          <div class="d-flex align-items-baseline gap-1 mt-1">
+            <h3 class="kpi-value text-dark mb-0">₹32.4k</h3>
+            <span class="text-muted" style="font-size: 10px;">avg per placement</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bento Section 1: Time to Hire Trend & Source Quality -->
+  <div class="row g-2 mb-2">
+    <!-- Main Interactive Chart: Time to Hire Trend -->
+    <div class="col-12 col-lg-8">
+      <div class="bento-card p-3 bg-white rounded border shadow-sm h-100">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div>
+            <h6 class="fw-bold text-dark mb-0" style="font-size: 12.5px;">Time to Hire & Velocity Trend</h6>
+            <small class="text-muted" style="font-size: 10px;">Average days to fill requisitions across departments (6-Month Performance)</small>
+          </div>
+          <div class="d-flex align-items-center gap-3">
+            <span class="d-flex align-items-center gap-1 text-primary fw-semibold" style="font-size: 10px;">
+              <span class="legend-dot bg-primary"></span> FY 2026
+            </span>
+            <span class="d-flex align-items-center gap-1 text-muted" style="font-size: 10px;">
+              <span class="legend-dot bg-secondary-subtle"></span> Target (20d)
+            </span>
+          </div>
+        </div>
+
+        <!-- Trend Bar Chart Visualization -->
+        <div class="chart-container d-flex align-items-end justify-content-between px-3 pt-4 pb-2 position-relative" style="height: 180px;">
+          <!-- Horizontal Grid Lines -->
+          <div class="grid-lines-overlay position-absolute w-100 h-100 start-0 top-0 d-flex flex-column justify-content-between pointer-events-none px-3" style="z-index: 1;">
+            <div class="grid-line"></div>
+            <div class="grid-line"></div>
+            <div class="grid-line"></div>
+            <div class="grid-line"></div>
+          </div>
+
+          <!-- Monthly Interactive Bars -->
+          <div class="trend-column d-flex flex-column align-items-center gap-1 flex-grow-1" *ngFor="let point of monthlyTrend" style="z-index: 2;">
+            <div class="bar-track w-100 d-flex flex-column align-items-center justify-content-end" style="height: 130px;">
+              <div class="bar-fill position-relative" [style.height]="point.heightPercent + '%'">
+                <div class="bar-tooltip">{{ point.days }}d ({{ point.hires }} hires)</div>
+              </div>
+            </div>
+            <span class="month-label">{{ point.month }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Side Card: Source Quality & Channel Attribution -->
+    <div class="col-12 col-lg-4">
+      <div class="bento-card p-3 bg-white rounded border shadow-sm h-100 d-flex flex-column justify-content-between">
+        <div>
+          <h6 class="fw-bold text-dark mb-0" style="font-size: 12.5px;">Channel Quality & Attribution</h6>
+          <small class="text-muted d-block mb-3" style="font-size: 10px;">Highest converting candidate channels</small>
+
+          <div class="channel-progress-list d-flex flex-column gap-3" *ngIf="analytics?.sourcingChannels">
+            <div class="channel-item" *ngFor="let ch of getTopSourcingChannels()">
+              <div class="d-flex justify-content-between align-items-center mb-1" style="font-size: 10.5px;">
+                <span class="text-dark fw-semibold">
+                  <i class="bi bi-diagram-3-fill text-primary me-1"></i> {{ ch.channelName }} ({{ ch.totalCandidates }} Sourced)
+                </span>
+                <span class="fw-bold text-primary">{{ ch.successRatePercent }}% Yield</span>
+              </div>
+              <div class="progress" style="height: 6px; background-color: #f1f5f9;">
+                <div class="progress-bar" [style.width]="(ch.successRatePercent > 0 ? ch.successRatePercent * 4 : 15) + '%'" style="background-color: #0051d5; border-radius: 4px;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="pt-2 mt-2 border-top d-flex justify-content-between align-items-center">
+          <span class="text-muted" style="font-size: 9.5px;">Top Performer: <strong>LinkedIn (42%)</strong></span>
+          <a routerLink="/dash/recruitment/recruitmentdashboard/job-boards" class="text-primary fw-semibold text-decoration-none" style="font-size: 10px;">
+            Manage Channels <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bento Section 2: Diversity & Inclusion & Recent Hires Table -->
+  <div class="row g-2">
+    <!-- Bottom Left: Diversity Metrics & Inclusion -->
+    <div class="col-12 col-lg-4">
+      <div class="bento-card p-3 bg-white rounded border shadow-sm h-100 d-flex flex-column justify-content-between">
+        <div>
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <h6 class="fw-bold text-dark mb-0" style="font-size: 12.5px;">Diversity & Inclusion Metrics</h6>
+            <span class="badge bg-light text-dark border" style="font-size: 9px;">DE&I Compliance</span>
+          </div>
+
+          <div class="d-flex align-items-center gap-3 my-2">
+            <!-- Circular SVG Ring Gauge -->
+            <div class="position-relative d-flex align-items-center justify-content-center" style="width: 90px; height: 90px;">
+              <svg class="w-100 h-100" style="transform: rotate(-90deg);" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="42" fill="transparent" stroke="#f1f5f9" stroke-width="9"></circle>
+                <circle cx="50" cy="50" r="42" fill="transparent" stroke="#0051d5" stroke-dasharray="264" stroke-dashoffset="65" stroke-width="9" stroke-linecap="round"></circle>
+                <circle cx="50" cy="50" r="42" fill="transparent" stroke="#06b6d4" stroke-dasharray="264" stroke-dashoffset="180" stroke-width="9" stroke-linecap="round"></circle>
+              </svg>
+              <div class="position-absolute text-center">
+                <span class="fw-bold text-dark d-block" style="font-size: 15px; line-height: 1;">8.4</span>
+                <span class="text-muted" style="font-size: 8px; text-transform: uppercase; font-weight: 700;">DE&I Score</span>
+              </div>
+            </div>
+
+            <!-- Breakdown Meters -->
+            <div class="flex-grow-1 d-flex flex-column gap-2">
+              <div>
+                <div class="d-flex justify-content-between" style="font-size: 10px;">
+                  <span class="text-muted">Gender Ratio:</span>
+                  <span class="fw-bold text-dark">48% Female</span>
+                </div>
+                <div class="progress mt-1" style="height: 4px; background-color: #f1f5f9;">
+                  <div class="progress-bar bg-primary" style="width: 48%;"></div>
+                </div>
+              </div>
+              <div>
+                <div class="d-flex justify-content-between" style="font-size: 10px;">
+                  <span class="text-muted">Ethnic Diversity:</span>
+                  <span class="fw-bold text-dark">36% Repr.</span>
+                </div>
+                <div class="progress mt-1" style="height: 4px; background-color: #f1f5f9;">
+                  <div class="progress-bar bg-info" style="width: 36%;"></div>
+                </div>
+              </div>
+              <div>
+                <div class="d-flex justify-content-between" style="font-size: 10px;">
+                  <span class="text-muted">Veteran & Regional:</span>
+                  <span class="fw-bold text-dark">16% Enrolled</span>
+                </div>
+                <div class="progress mt-1" style="height: 4px; background-color: #f1f5f9;">
+                  <div class="progress-bar bg-success" style="width: 16%;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="p-2 bg-light rounded border mt-2 d-flex align-items-center gap-2" style="font-size: 9.5px;">
+          <i class="bi bi-shield-check text-success" style="font-size: 14px;"></i>
+          <span class="text-muted">Equal opportunity hiring compliant with ESG corporate standards.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Right: Detailed Recent Hires Performance Table -->
+    <div class="col-12 col-lg-8">
+      <div class="bento-card p-3 bg-white rounded border shadow-sm h-100 d-flex flex-column justify-content-between">
+        <div>
+          <div class="d-flex justify-content-between align-items-center mb-2 pb-1 border-bottom">
+            <div>
+              <h6 class="fw-bold text-dark mb-0" style="font-size: 12.5px;">Recent Placements & Candidate Performance</h6>
+              <small class="text-muted" style="font-size: 10px;">Verified onboarding records and candidate interview scores</small>
+            </div>
+            <a routerLink="/dash/recruitment/recruitmentdashboard/pipeline" class="text-primary text-decoration-none fw-semibold" style="font-size: 10.5px;">
+              View Pipeline <i class="bi bi-arrow-right"></i>
+            </a>
+          </div>
+
+          <div class="table-responsive custom-scrollbar" style="max-height: 180px;">
+            <table class="table table-hover align-middle mb-0" style="font-size: 10.5px;">
+              <thead class="table-light">
+                <tr>
+                  <th class="py-1 px-2 text-muted fw-bold" style="font-size: 9.5px;">CANDIDATE</th>
+                  <th class="py-1 px-2 text-muted fw-bold" style="font-size: 9.5px;">ROLE / DEPARTMENT</th>
+                  <th class="py-1 px-2 text-muted fw-bold" style="font-size: 9.5px;">EVALUATION</th>
+                  <th class="py-1 px-2 text-muted fw-bold" style="font-size: 9.5px;">SOURCE</th>
+                  <th class="py-1 px-2 text-muted fw-bold text-end" style="font-size: 9.5px;">HIRED DATE</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let hire of recentHires">
+                  <td class="py-1 px-2">
+                    <div class="d-flex align-items-center gap-2">
+                      <div class="avatar-circle rounded-circle d-flex align-items-center justify-content-center text-primary fw-bold" style="width: 24px; height: 24px; font-size: 9px; background-color: #eff6ff; border: 1px solid #bfdbfe;">
+                        {{ hire.avatarInitials }}
+                      </div>
+                      <span class="fw-bold text-dark">{{ hire.name }}</span>
+                    </div>
+                  </td>
+                  <td class="py-1 px-2">
+                    <div class="text-dark fw-semibold">{{ hire.role }}</div>
+                    <small class="text-muted d-block" style="font-size: 9px;">{{ hire.department }}</small>
+                  </td>
+                  <td class="py-1 px-2">
+                    <div class="text-warning" style="font-size: 9px;">
+                      <i class="bi bi-star-fill me-0.5" *ngFor="let s of [1,2,3,4,5]" [ngClass]="{'text-warning': s <= hire.rating, 'text-muted opacity-25': s > hire.rating}"></i>
+                    </div>
+                  </td>
+                  <td class="py-1 px-2">
+                    <span class="badge bg-light text-dark border" style="font-size: 8.5px; padding: 1px 5px;">
+                      {{ hire.source }}
+                    </span>
+                  </td>
+                  <td class="py-1 px-2 text-end text-muted">
+                    {{ hire.hiredDate }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="pt-2 border-top d-flex justify-content-between align-items-center" style="font-size: 9.5px;">
+          <span class="text-muted">Showing 5 most recent verified placements</span>
+          <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size: 9px;">100% Onboarding Compliance</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

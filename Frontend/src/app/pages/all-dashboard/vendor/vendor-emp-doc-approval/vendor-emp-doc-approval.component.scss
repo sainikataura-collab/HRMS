@@ -1,0 +1,17 @@
+#previewModalInApproval {
+  z-index: 1065 !important;
+}
+
+#rejectReasonModal {
+  z-index: 1075 !important;
+}
+
+.modal-backdrop + .modal-backdrop {
+  z-index: 1060 !important;
+}
+
+.table-invoice {
+  th {
+    white-space: nowrap;
+  }
+}

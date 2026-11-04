@@ -1,0 +1,74 @@
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <!--  -->
+      <div class="card-header bg-primary">
+          <div class="row w-100">
+
+
+            <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-between">
+              <h4>Active Program List</h4>
+             
+            </div>
+            <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-center">
+              <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText"/>
+            </div>
+            <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-md-end">
+              <button class="btn btnheader" routerLink="/dash/training/trainingdashboard/program_master">
+                   Add
+              </button>
+
+              <button class="btn btn-light mx-1" (click)="exportToExcel()">
+                Download
+              </button>
+            </div>
+          
+          </div>
+        </div>
+
+      
+      <!--  -->
+      <div class="card-body">
+        <div class="table-responsive table-invoice">
+          <table Id="exportTable"  class="table table-bordered">
+            <thead>
+              
+              <tr>
+                  <th>Sr.</th>
+                  <th>Program</th>
+                  <th>Active</th>
+                  <th>Action</th>
+                 
+              </tr>
+              
+            </thead>
+           
+              <tbody>
+                  <tr *ngFor="let item of  filteredData() | paginate: { itemsPerPage: pageSize, currentPage: pageIndex ,totalItems:totalItems};let i = index">
+                      <td>{{(pageIndex-1)* pageSize+i+1}}</td>
+                      <td>{{ item.description }}</td>
+          
+                      <td>{{ item.isactive}}</td>
+                      <td>
+                       
+                        <button class="btn btn-sm btn-outline"(click)="isUpdate(item.pk_programId)"><i class="fa-solid fa-pen-to-square" ></i></button>
+                        <button class="btn" (click)="delete(item.pk_programId)"> <i class="fa-solid fa-trash"></i></button>
+                      </td>
+                      </tr>
+
+                       <tr *ngIf="filteredData().length === 0">
+                          <td colspan="10" class="text-center text-muted">No data found</td>
+                        </tr>
+          
+          </table>
+
+          <!-- Pagination controls -->
+          <pagination-controls (pageChange)="onPageChange($event)" >
+          </pagination-controls>
+
+          
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

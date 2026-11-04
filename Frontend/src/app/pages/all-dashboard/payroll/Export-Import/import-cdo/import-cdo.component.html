@@ -1,0 +1,306 @@
+
+
+
+
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card">
+
+     
+
+
+ <div class="card-header bg-blue">
+                <div class="row w-100">
+
+                  <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-between">
+                    <h4>CDO Report</h4>  
+                  </div>
+                  <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-center">
+                  <app-common-search (filtersChanged)="handleFilters($event)"></app-common-search>
+                  </div>
+                  
+                  <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-md-end">
+                   <button class="btn bg-white text-primary d-flex align-items-center px-3 ms-auto" (click)="exportTemplate()">
+                  <i class="fa fa-download me-2"></i> Export Blank Excel
+                </button>
+                  </div>
+              
+                  
+                </div>
+            </div>
+
+      <!-- Filters -->
+      <div class="card-body mt-4">
+        <form [formGroup]="cdoForm" (ngSubmit)="onView()">
+          <div class="row row-cols-1 row-cols-md-3">
+
+            <!-- Month -->
+            <div class="col">
+              <label>Month <span class="text-danger">*</span></label>
+              <div class="form-group">
+                <ng-select
+                  [items]="months"
+                  bindLabel="name"
+                  bindValue="value"
+                  formControlName="fk_monthId"
+                  class="w-100"
+                  placeholder="-- Select Month --">
+                </ng-select>
+                <span *ngIf="showError && cdoForm.controls['fk_monthId'].invalid"
+                  class="text-danger mt-1" style="font-size: 12px;">
+                  Please select Month.
+                </span>
+              </div>
+            </div>
+
+            <!-- Year -->
+            <div class="col">
+              <label>Year <span class="text-danger">*</span></label>
+              <div class="form-group">
+                <ng-select
+                  [items]="years"
+                  bindLabel="name"
+                  bindValue="value"
+                  formControlName="fk_yearId"
+                  class="w-100"
+                  placeholder="-- Select Year --">
+                </ng-select>
+                <span *ngIf="showError && cdoForm.controls['fk_yearId'].invalid"
+                  class="text-danger mt-1" style="font-size: 12px;">
+                  Please select Year.
+                </span>
+              </div>
+            </div>
+
+            <!-- Contractor (conditional) -->
+            <!-- <div class="col" *ngIf="isContractApplicable">
+              <label>Contractor Name</label>
+              <div class="form-group">
+                <ng-select
+                  [items]="costCenterList"
+                  bindLabel="name"
+                  bindValue="value"
+                  formControlName="fk_costcentreid"
+                  class="w-100"
+                  placeholder="-- Select --">
+                </ng-select>
+              </div>
+            </div> -->
+
+            <!-- Buttons -->
+            <div class="col">
+              <div class="col d-flex align-items-end justify-content-end pt-4 pb-3">
+                <button type="submit" class="btn btn-primary mx-1">View</button>
+                <button type="reset" class="btn btn-outline-dark mx-1" (click)="resetForm()">Reset</button>
+              </div>
+            </div>
+
+          </div>
+        </form>
+      </div>
+
+      <!-- Result Table -->
+      <div class="container mt-2" *ngIf="showList && !showImportView">
+
+        <!-- Table Header Row -->
+        <div class="row mt-2 mb-2">
+          <div class="col-sm-12 col-md-6">
+            <p class="text-primary m-0 fw-semibold">
+              List of Employees &nbsp;
+              <span class="badge bg-secondary">{{ totalCount }} Records</span>
+            </p>
+          </div>
+          <div class="col-sm-12 col-md-6 d-flex align-items-center justify-content-end gap-2 flex-wrap">
+
+            <!-- Import Excel Button (same as Import Attendance) -->
+            <button class="btn btn-primary px-3 mx-1" (click)="toggleImportView()">
+              Import Excel
+            </button>
+
+            <!-- Export Excel -->
+            <button class="btn btn-primary mx-1" (click)="downloadExcel()" [disabled]="isExporting">
+              <i *ngIf="!isExporting" class="fa fa-download me-2"></i>
+              <i *ngIf="isExporting" class="fa fa-spinner fa-spin me-2"></i>
+              {{ isExporting ? 'Exporting...' : 'Export Excel' }}
+            </button>
+
+            <!-- Search -->
+            <input
+              type="text"
+              class="form-control w-auto"
+              placeholder="Search employee..."
+              [(ngModel)]="searchText"
+              [ngModelOptions]="{ standalone: true }"
+              (input)="applySearch()" />
+          </div>
+        </div>
+
+        <!-- Table -->
+        <div class="table-responsive">
+          <table class="table table-bordered table-sm" id="cdoExportTable">
+            <thead >
+              <tr>
+                <th>Sr.</th>
+                <th>Employee Code</th>
+                <th>Employee Name</th>
+                <th>Month</th>
+                <th>Year</th>
+                <th>Total Hours</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngIf="filteredList.length === 0">
+                <td colspan="6" class="text-center text-muted py-3">No records found.</td>
+              </tr>
+              <tr *ngFor="let item of filteredList | paginate: {
+                    id: 'cdo',
+                    itemsPerPage: pageSize,
+                    currentPage: pageIndex,
+                    totalItems: totalCount
+                  }; let i = index">
+                <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+                <td>{{ item.EmpCode }}</td>
+                <td>{{ item.EmpName }}</td>
+                <td>{{ item.MonthName }}</td>
+                <td>{{ item.YearName }}</td>
+                <td>{{ item.TotalHours }}</td>
+              </tr>
+            </tbody>
+            <tfoot *ngIf="filteredList.length > 0">
+              <tr class="fw-bold table-light">
+                <td colspan="5" class="text-end">Total Hours:</td>
+                <td>{{ getTotalHours() }}</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <!-- Pagination (same as Import Attendance) -->
+        <!-- <pagination-controls
+          *ngIf="totalCount > 0"
+          id="cdo"
+          (pageChange)="onPageChange($event)"
+          [totalItems]="totalCount"
+          [itemsPerPage]="pageSize">
+        </pagination-controls> -->
+<pagination-controls
+  *ngIf="totalCount > 0"
+  id="cdo"
+  (pageChange)="onPageChange($event)">
+</pagination-controls>
+
+      </div>
+
+      <!-- Import Excel Section (same as Import Attendance toggleImportView) -->
+      <div *ngIf="showImportView">
+        <div class="card-body">
+
+          <form [formGroup]="cdoForm" (ngSubmit)="importCDO()" class="row g-2 align-items-end mb-4">
+
+            <!-- File Input -->
+            <div class="col-md-4">
+              <label class="form-label">Select File</label>
+              <input
+                type="file"
+                class="form-control"
+                formControlName="file"
+                (change)="onFileChange($event)" />
+              <div *ngIf="cdoForm.get('file')?.hasError('required') && cdoForm.get('file')?.touched"
+                class="text-danger" style="font-size: 12px;">
+                File is required.
+              </div>
+              <div *ngIf="cdoForm.get('file')?.hasError('pattern') && cdoForm.get('file')?.touched"
+                class="text-danger" style="font-size: 12px;">
+                Please upload a valid file (only .xlsx files allowed).
+              </div>
+            </div>
+
+            <!-- Buttons -->
+            <div class="col d-flex align-items-center justify-content-end gap-2">
+              <button type="submit" class="btn btn-primary">Import</button>
+              <button type="reset" class="btn btn-outline-dark">Reset</button>
+              <!-- Close button (same as Import Attendance) -->
+              <button
+                type="button"
+                class="btn btn-outline-danger d-flex align-items-center justify-content-center p-2"
+                (click)="toggleImportView()">
+                <i class="fa-solid fa-xmark fs-6 fw-semibold"></i>
+              </button>
+            </div>
+
+          </form>
+
+          <!-- Success message -->
+          <div *ngIf="successMessage" class="alert text-success" role="alert">
+            {{ successMessage }}
+          </div>
+
+          <!-- Error message -->
+          <div *ngIf="errorMessage" class="alert text-danger" role="alert">
+            {{ errorMessage }}
+          </div>
+
+          <!-- Import Result Detail Table -->
+<div *ngIf="showImportResult && importResultDetails.length > 0" class="mt-3">
+
+  <!-- Summary badges -->
+  <div class="d-flex gap-3 mb-2 flex-wrap" *ngIf="importSummary">
+    <span class="badge bg-success fs-8">
+      Inserted: {{ importSummary.rowsInserted }}
+    </span>
+    <span class="badge bg-warning text-dark fs-8">
+      Updated: {{ importSummary.rowsUpdated }}
+    </span>
+    <span class="badge bg-danger fs-8">
+      Invalid: {{ importSummary.invalidCount }}
+    </span>
+    <span class="badge bg-secondary fs-8">
+      Total Affected: {{ importSummary.rowsAffected }}
+    </span>
+  </div>
+
+  <!-- Detail Table -->
+  <div class="table-responsive">
+    <table class="table table-bordered table-sm">
+      <thead >
+        <tr>
+          <th>Sr No</th>
+          <th>Emp Code</th>
+          <th>Emp Name</th>
+          <th>Hours</th>
+          <th>Status</th>
+           <th>Reason</th>  
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let row of importResultDetails; let i = index"
+           
+            >
+          <td>{{ i + 1 }}</td>
+          <td>{{ row.empCode }}</td>
+          <td>{{ row.empName ?? '—' }}</td>
+          <td>{{ row.hours ?? '—' }}</td>
+          <td>
+            <span class="badge"
+              [ngClass]="{
+                'bg-success': row.recordStatus === 'Inserted',
+                'bg-warning text-dark': row.recordStatus === 'Updated',
+                'bg-danger' : row.recordStatus === 'Invalid'
+              }">
+              {{ row.recordStatus }}
+            </span>
+          </td>
+           <td class="text-danger" style="font-size:12px;">
+      {{ row.invalidReason ?? '' }}  <!--  new -->
+    </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

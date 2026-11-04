@@ -1,0 +1,107 @@
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+            <!-- Header with title and back button -->
+            <div class="card-header bg-blue py-lg-1 mt-0">
+                <div class="row w-100">
+                    <div class="col-sm-12 col-md-12 col-lg-10">
+                        <h4 class="m-0">Flexi Head Bills Detail</h4>
+                    </div>
+                    <div class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-md-end">
+                        <button class="btn btnheader"
+                            routerLink="/dash/reimbursement/reimbursementdashboard/FlexiHeadBillsList">
+                            Back
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Body -->
+            <div class="card-body mt-4">
+                <form [formGroup]="flexiForm">
+                    <div class="row">
+                        <!-- Bill Date -->
+                        <div class="col-md-4">
+                            <label>Bill Date <span class="text-danger">*</span></label>
+                            <div class="form-group">
+                                <input type="date" class="form-control" formControlName="billDate"
+                                    (change)="validateBillAmount();" />
+                                <div *ngIf="submitted && flexiForm.get('billDate')?.invalid" class="text-danger"
+                                    style="font-size: 12px;">
+                                    Bill Date is required!
+                                </div>
+                                <div *ngIf="duplicateDateWarning" class="text-warning" style="font-size: 12px;">
+                                    This Bill Date already exists. Please select a different date.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Head Name -->
+                        <div class="col-md-4">
+                            <label>Head Name <span class="text-danger">*</span></label>
+                            <div class="form-group">
+                                <ng-select [items]="flexiHeadList" bindLabel="shortdesc" bindValue="pk_headid"
+                                    placeholder="-- Select Head --" formControlName="fk_headid" class="w-100"
+                                    (change)="validateBillAmount()"></ng-select>
+                                <div *ngIf="submitted && flexiForm.get('fk_headid')?.invalid" class="text-danger"
+                                    style="font-size: 12px;">
+                                    Head Name is required!
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Balance Amount -->
+                        <div class="col-md-4">
+                            <label>Balance Amount</label>
+                            <input type="text" class="form-control" formControlName="balanceAmount" readonly />
+                        </div>
+                    </div>
+
+                    <!-- Row 2 -->
+                    <div class="row mt-3">
+                        <div class="col-md-4">
+                            <label>Bill Amount <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" formControlName="amount"
+                                (keydown)="preventNegativeInput($event)" min="0" />
+                            <div *ngIf="submitted && flexiForm.get('billAmt')?.hasError('required')" class="text-danger"
+                                style="font-size: 12px;">
+                                Bill Amount is required!
+                            </div>
+                            <div *ngIf="flexiForm.get('amount')?.touched && flexiForm.get('amount')?.hasError('exceedsBalance')"
+                                class="text-danger" style="font-size: 12px;">
+                                Bill Amount cannot exceed Balance Amount!
+                            </div>
+                        </div>
+
+
+                        <!-- Remarks -->
+                        <div class="col-md-4">
+                            <label>Remarks</label>
+                            <input type="text" class="form-control" formControlName="remarks" />
+                        </div>
+
+                        <!-- File Upload -->
+                        <div class="col-md-4">
+                            <label>File Name</label>
+                            <div class="form-group d-flex align-items-center">
+                                <input type="file" class="form-control me-2" (change)="onFileChange($event)" />
+                                <a *ngIf="ImageUrl && !selectedFile" [href]="ImageUrl" target="_blank"
+                                    class="btn btn-primary">
+                                    View
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="modal-footer mt-3">
+                        <button type="submit" class="btn btn-primary mx-1" (click)="onSubmit()">
+                            {{ isEditMode ? 'Update' : 'Save' }}
+                        </button>
+                        <button type="button" class="btn btn-outline-dark mx-1" (click)="resetForm()">Reset</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,134 @@
+<section>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+          <div class="card-header bg-blue">
+            <div class="row w-100">
+              <div class="col-sm-12 col-md-6 col-lg-6">
+                <h4>Ayushman Card Verification</h4>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-body mt-2">
+            <!-- ====================== VIEW MODE ====================== -->
+            <div *ngIf="isViewMode && ayushmanData">
+              <div class="row">
+                <div class="col-md-4">
+                  <label class="text-muted">PM-JAY ID:</label>
+                  <p class="fs-5">
+                    <strong>{{ ayushmanData.ayushman_PMJAY_ID }}</strong>
+                  </p>
+                </div>
+
+                <div class="col-md-6" *ngIf="ayushmanData.ayushman_Photo_url">
+                  <label class="fw-semibold">Ayushman Card Document / Photo</label><br />
+                  <img
+                    [src]="ayushmanData.ayushman_Photo_url"
+                    alt="Ayushman Card"
+                    class="img-thumbnail my-2"
+                    style="
+                      max-width: 320px;
+                      max-height: 200px;
+                      object-fit: contain;
+                      cursor: pointer;
+                    "
+                  />
+                </div>
+
+                <div class="col-12 mt-3">
+                  <button type="button" class="btn btn-warning" (click)="editAyushman()">
+                    <i class="fas fa-edit me-1"></i> Edit Ayushman Card
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- ====================== FORM MODE ====================== -->
+            <form *ngIf="!isViewMode" [formGroup]="ayushmanForm" (ngSubmit)="onSubmit()">
+              <div class="row">
+                <!-- PM-JAY ID -->
+                <div class="col-sm-12 col-md-6 col-lg-4">
+                  <label>PM-JAY ID <span class="text-danger">*</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text">
+                      <i class="fas fa-id-card"></i>
+                    </span>
+                    <input
+                      type="text"
+                      class="form-control text-uppercase"
+                      formControlName="ayushman_PMJAY_ID"
+                      placeholder="Enter PM-JAY ID"
+                      maxlength="30"
+                      (blur)="checkAyushmanDuplicate()"
+                    />
+                  </div>
+                  <div
+                    *ngIf="(submitted || validate['ayushman_PMJAY_ID'].touched) && validate['ayushman_PMJAY_ID'].errors"
+                    class="text-danger mt-1 small"
+                  >
+                    <div *ngIf="validate['ayushman_PMJAY_ID'].errors['required']">
+                      PM-JAY ID is required.
+                    </div>
+                    <div *ngIf="validate['ayushman_PMJAY_ID'].errors['pattern']">
+                      Please enter a valid PM-JAY ID.
+                    </div>
+                    <div *ngIf="validate['ayushman_PMJAY_ID'].errors['duplicate']">
+                      {{ validate['ayushman_PMJAY_ID'].errors['duplicate'] }}
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Ayushman Photo Upload -->
+                <div class="col-sm-12 col-md-6 col-lg-5">
+                  <label>
+                    Upload Ayushman Card Photo
+                    <span class="text-danger" *ngIf="!ayushmanData?.ayushman_Photo">*</span>
+                  </label>
+                  <div class="input-group">
+                    <input
+                      type="file"
+                      class="form-control"
+                      (change)="onFileSelected($event, 'ayushmanPhotoFile')"
+                      accept="image/jpeg,image/png,image/jpg,application/pdf"
+                    />
+                  </div>
+                  <small class="text-muted">Allowed: JPG, PNG, PDF (Max 5MB)</small>
+                  <div
+                    *ngIf="submitted && validate['ayushmanPhotoFile'].errors && !ayushmanData?.ayushman_Photo"
+                    class="text-danger mt-1 small"
+                  >
+                    Please upload Ayushman card photo.
+                  </div>
+
+                  <!-- Image Preview -->
+                  <div *ngIf="previewImage" class="mt-2">
+                    <img
+                      [src]="previewImage"
+                      alt="Ayushman Preview"
+                      class="img-thumbnail"
+                      style="max-width: 250px; max-height: 160px; object-fit: contain;"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Submit Buttons -->
+              <div class="row mt-4">
+                <div class="col-12">
+                  <button type="submit" class="btn btn-primary me-2">
+                    <i class="fas fa-save me-1"></i> Save & Continue
+                  </button>
+                  <button type="button" class="btn btn-secondary" (click)="reset()">
+                    Reset
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

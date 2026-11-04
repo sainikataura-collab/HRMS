@@ -1,0 +1,115 @@
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+            <!-- Header -->
+            <div class="card-header bg-blue">
+                <div class="row w-100">
+                    <div class="col-md-8 ">
+                        <h4>Approved Flexi Head Bill</h4>
+                    </div>
+                    <div class="col-md-4 d-flex justify-content-md-end align-items-center">
+                        <button class="btn btnheader"
+                            routerLink="/dash/payroll/payrolldashboard/Flexi-bill-Approval-list">
+                            Back
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Body -->
+            <div class="card-body mt-4">
+                <form [formGroup]="EmployeeForm">
+                    <div class="row row-cols-1 row-cols-md-3 g-3">
+                        <div class="col">
+                            <label>Approval Status <span class="text-danger">*</span></label>
+                            <div class="form-group">
+                                <select class="form-select " formControlName="approvalStatus">
+                                    <option value="">Select Approval Status</option>
+                                    <option value="3">Approved</option>
+                                    <option value="4">Disapproved</option>
+                                </select>
+                                <span *ngIf="submitted && EmployeeForm.controls['approvalStatus'].invalid"
+                                    class="text-danger mt-1" style="font-size: 12px;">
+                                    Please select Approval Status
+                                </span>
+                            </div>
+                        </div>
+                        <!-- Remarks -->
+                        <div class="col">
+                            <label>Remarks <span class="text-danger">*</span></label>
+                            <div class="form-group">
+                                <textarea class="form-control" formControlName="remarks" rows="1"></textarea>
+                                <span *ngIf="submitted && EmployeeForm.controls['remarks'].invalid"
+                                    class="text-danger mt-1" style="font-size: 12px;">
+                                    Please Enter Remarks
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col  d-flex align-items-center justify-content-end ">
+                            <button type="submit" class="btn btn-primary mx-1" (click)="onSubmit()">Submit</button>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-12 col-md-12 col-lg-12 px-0">
+                            <div class="card bg-transparent">
+                                <div class="card-header" style="border-top:2px solid #3080e8">
+                                    <h4 class="text-primary">Flexi Head Bill Details</h4>
+                                </div>
+
+                                <div class="card-body px-2 m-0">
+                                    <div class="row row-cols-1 row-cols-md-3 g-3">
+
+                                        <!-- Bill Date -->
+                                        <div class="col">
+                                            <label>Bill Date</label>
+                                            <input type="date" class="form-control" formControlName="billDate"
+                                                [disabled]="true" />
+                                        </div>
+
+                                        <!-- Head Name -->
+                                        <div class="col">
+                                            <label>Head Name</label>
+                                            <input type="text" class="form-control" formControlName="description"
+                                                [disabled]="true" />
+
+                                         
+                                        </div>
+
+                                        <!-- Balance Amount -->
+                                        <div class="col">
+                                            <label>Balance Amount</label>
+                                            <input type="text" class="form-control" formControlName="balanceAmount"
+                                                [disabled]="true" />
+                                        </div>
+
+                                        <!-- Bill Amount -->
+                                        <div class="col">
+                                            <label>Bill Amount</label>
+                                            <input type="number" class="form-control" formControlName="amount"
+                                                [disabled]="true" />
+                                        </div>
+
+                                        <!-- Remarks -->
+                                        <div class="col">
+                                            <label>Remarks</label>
+                                            <input type="text" class="form-control" formControlName="Remarks"
+                                                [disabled]="true" />
+                                        </div>
+
+                                       
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </form>
+
+
+            </div>
+        </div>
+    </div>
+</div>

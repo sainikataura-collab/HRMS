@@ -1,0 +1,353 @@
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+            <!-- Card Header -->
+            <div class="card-header bg-primary">
+                <div class="row w-100">
+                    <div class="col-sm-6 col-md-6 col-lg-6">
+                        <h4 class="">State Master</h4>
+                    </div>
+                    <div class="col-sm-6 col-md-6 col-lg-6 d-flex align-items-center justify-content-end">
+                        <button class="btn btnheader" (click)="view()">
+                            Back
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card Body -->
+            <div class="card-body mt-4">
+                <form [formGroup]="StatemasterForm" (ngSubmit)="onSubmit()"
+                    class="row row-cols-1 row-cols-md-4 g-4 state-master-from">
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="Code">State<span class="text-danger">*</span></label>
+                            <input id="Code" type="text" class="form-control flex-grow-1" formControlName="description">
+                            <div *ngIf="StatemasterForm.get('description')?.errors?.['duplicate']" class="text-danger"
+                                style="font-size:10px;">
+                                {{ StatemasterForm.get('description')?.errors?.['duplicate'] }}
+                            </div>
+                            <span
+                                *ngIf="showError && StatemasterForm.controls['description'].invalid && !StatemasterForm.get('description')?.errors?.['duplicate']"
+                                class="text-danger mt-1" style="font-size: 12px;">
+                                Please enter state description.
+                            </span>
+                            <span *ngIf="StatemasterForm.get('description')?.hasError('maxlength')"
+                                class="text-danger mt-1" style="font-size: 12px;">
+                                Maximum 100 characters allowed.
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        <div class="form-group pt-md-4 mt-2">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="lwf_applicable"
+                                    formControlName="lwf_applicable">
+                                <label class="form-check-label" for="lwf_applicable">LWF Applicable</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        <div class="form-group pt-md-4 mt-2">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="pt_applicable"
+                                    formControlName="pt_applicable">
+                                <label class="form-check-label" for="pt_applicable">PT Applicable</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="pt_number">PT Number</label>
+                            <input id="pt_number" type="text" class="form-control flex-grow-1"
+                                formControlName="pt_number">
+
+
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="lwf_number">LWF Number</label>
+                            <input id="lwf_number" type="text" class="form-control flex-grow-1"
+                                formControlName="lwf_number">
+
+
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="esi_number">ESI Number</label>
+                            <input id="esi_number" type="text" class="form-control flex-grow-1"
+                                formControlName="esi_number">
+
+
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="pf_number">PF Number</label>
+                            <input id="pf_number" type="text" class="form-control flex-grow-1"
+                                formControlName="pf_number">
+
+
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group pt-md-4 mt-2">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="is_minimum_wages"
+                                    formControlName="is_minimum_wages">
+                                <label class="form-check-label" for="is_minimum_wages">Is Minimum Wages</label>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Category-wise Minimum Wages & Earning Heads Accordion (Inspired by CTC Detail design) -->
+                    <div class="col-12 w-100" *ngIf="StatemasterForm.get('is_minimum_wages')?.value">
+                        <div class="card border mb-3 shadow-none">
+                            <div class="card-header bg-primary py-1 px-3 d-flex align-items-center justify-content-between flex-wrap gap-1"
+                                style="min-height: 28px;">
+                                <div class="d-flex align-items-center">
+                                    <span class="text-white fw-semibold"
+                                        style="font-size: 11.5px; letter-spacing: 0.2px;">Category-wise Minimum Wages &
+                                        Breakdown</span>
+                                </div>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span
+                                        class="badge bg-light text-dark px-2 py-0 fw-semibold d-inline-flex align-items-center"
+                                        style="font-size: 10px; height: 20px;">
+                                        Configured: {{ getConfiguredCategoriesCount() }} / {{ getValidCategoriesCount()
+                                        }}
+                                    </span>
+                                    <button type="button"
+                                        class="btn btnheader btn-sm py-0 px-2 d-inline-flex align-items-center"
+                                        style="font-size: 10px; height: 21px;" (click)="toggleAllCategories()">
+                                        <i class="fa me-1" [ngClass]="allExpanded ? 'fa-compress' : 'fa-expand'"
+                                            style="font-size: 9px;"></i>
+                                        {{ allExpanded ? 'Collapse All' : 'Expand All' }}
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="card-body px-2 py-2">
+                                <!-- Accordion items for each category -->
+                                <div class="accordion" id="categoryMinWageAccordion">
+                                    <div *ngFor="let cat of filteredCategories(); let i = index"
+                                        class="accordion-item mb-1 border rounded shadow-none">
+
+                                        <!-- Accordion Header Button -->
+                                        <div class="accordion-header py-0 px-0">
+                                            <button type="button" class="accordion-button py-1 px-2 px-md-3"
+                                                [class.collapsed]="!cat.expanded"
+                                                (click)="cat.expanded = !cat.expanded">
+
+                                                <div class="d-flex align-items-center flex-wrap gap-2 w-100">
+                                                    <!-- Initials Avatar Badge (Small) -->
+                                                    <div class="rounded-circle text-white d-flex align-items-center justify-content-center fw-bold flex-shrink-0"
+                                                        [ngClass]="['bg-primary','bg-success','bg-warning','bg-danger','bg-info'][i % 5]"
+                                                        style="width: 26px; height: 26px; font-size: 10px;">
+                                                        {{ getInitials(cat.category_name) }}
+                                                    </div>
+
+                                                    <!-- Category Name (Small font) -->
+                                                    <div class="text-start d-flex align-items-center gap-1">
+                                                        <span class="fw-semibold text-dark"
+                                                            style="font-size: 12.5px;">{{ cat.category_name }}</span>
+                                                    </div>
+
+                                                    <!-- Right Side Summary Badges (Small font & compact padding) -->
+                                                    <div class="d-flex align-items-center gap-1 gap-md-2 ms-auto me-2"
+                                                        (click)="$event.stopPropagation()">
+                                                        <!-- Configured Status Badge -->
+                                                        <span *ngIf="isCategoryConfigured(cat)"
+                                                            class="badge bg-success-subtle text-success border border-success px-2 py-1"
+                                                            style="font-size: 10px; line-height: 1.2;">
+                                                            <i class="fa fa-check-circle me-1"></i>Configured
+                                                        </span>
+
+                                                        <!-- Minimum Wage Badge -->
+                                                        <span class="badge bg-info-subtle text-dark px-2 py-1"
+                                                            style="font-size: 10.5px; line-height: 1.2;">
+                                                            Min Wage: ₹ {{ (cat.minimum_wages || 0) | number:'1.2-2' }}
+                                                        </span>
+
+                                                        <!-- Total Heads Sum Badge -->
+                                                        <span class="badge bg-warning-subtle text-dark px-2 py-1"
+                                                            style="font-size: 10.5px; line-height: 1.2;">
+                                                            Heads Sum: ₹ {{ getCategoryHeadsTotal(cat) | number:'1.2-2'
+                                                            }}
+                                                        </span>
+
+                                                        <!-- Balance Indicator Badge -->
+                                                        <span
+                                                            *ngIf="isCategoryConfigured(cat) && getCategoryHeadsTotal(cat) === (cat.minimum_wages || 0)"
+                                                            class="badge bg-success text-white px-2 py-1"
+                                                            style="font-size: 10px; line-height: 1.2;"
+                                                            title="Sum of heads matches Minimum Wage">
+                                                            <i class="fa fa-check"></i> Balanced
+                                                        </span>
+                                                        <span
+                                                            *ngIf="isCategoryConfigured(cat) && getCategoryHeadsTotal(cat) !== (cat.minimum_wages || 0)"
+                                                            class="badge bg-danger text-white px-2 py-1"
+                                                            style="font-size: 10px; line-height: 1.2;"
+                                                            title="Sum of heads does not match Minimum Wage">
+                                                            <i class="fa fa-exclamation-triangle"></i> Mismatch
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </button>
+                                        </div>
+
+                                        <!-- Accordion Body (Expanded details) -->
+                                        <div class="accordion-collapse collapse" [class.show]="cat.expanded">
+                                            <div class="accordion-body p-2 px-3 bg-white">
+
+                                                <!-- Compact Eye-Catching Minimum Wage Bar (Subtle Warning Theme) -->
+                                                <div
+                                                    class="min-wage-bar bg-warning-subtle d-flex flex-wrap align-items-center justify-content-between mb-2 rounded border border-warning-subtle">
+                                                    <!-- Left: Label & Inline Input -->
+                                                    <div class="d-flex align-items-center gap-2 flex-grow-1"
+                                                        style="max-width: 400px;">
+                                                        <span
+                                                            class="min-wage-label text-nowrap d-flex align-items-center gap-1 mb-0">
+                                                            <i class="fa fa-money-bill-wave text-warning"
+                                                                style="font-size: 11px;"></i>
+                                                            Minimum Wage for {{ cat.category_name }}: <span
+                                                                class="text-danger">*</span>
+                                                        </span>
+                                                        <div class="input-group input-group-sm flex-nowrap"
+                                                            style="width: 130px;">
+                                                            <span class="input-group-text border-0 fw-bold">₹</span>
+                                                            <input id="min_wage_{{i}}" type="number"
+                                                                class="form-control form-control-sm fw-semibold text-end"
+                                                                [(ngModel)]="cat.minimum_wages"
+                                                                [ngModelOptions]="{standalone: true}" placeholder="0.00"
+                                                                min="0">
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Right: Metrics & Status Pills -->
+                                                    <div
+                                                        class="d-flex align-items-center gap-1 gap-md-2 mt-1 mt-sm-0 ms-auto">
+                                                        <!-- Total Heads Pill -->
+                                                        <div
+                                                            class="d-flex align-items-center bg-white border rounded-pill pill-badge shadow-sm">
+                                                            <span class="text-muted me-1" style="font-size: 10px;">Total
+                                                                Heads:</span>
+                                                            <span class="fw-bold" [ngClass]="{
+                                                                    'text-success': isCategoryConfigured(cat) && getCategoryHeadsTotal(cat) === (cat.minimum_wages || 0),
+                                                                    'text-danger': isCategoryConfigured(cat) && getCategoryHeadsTotal(cat) !== (cat.minimum_wages || 0),
+                                                                    'text-dark': !isCategoryConfigured(cat)
+                                                                }" style="font-size: 11px;">
+                                                                ₹ {{ getCategoryHeadsTotal(cat) | number:'1.2-2' }}
+                                                            </span>
+                                                        </div>
+
+                                                        <!-- Balanced / Difference Pill -->
+                                                        <span
+                                                            *ngIf="isCategoryConfigured(cat) && getCategoryHeadsTotal(cat) === (cat.minimum_wages || 0)"
+                                                            class="badge bg-success-subtle text-success border border-success rounded-pill pill-badge fw-medium">
+                                                            <i class="fa fa-check-circle me-1"></i> Balanced
+                                                        </span>
+                                                        <span
+                                                            *ngIf="isCategoryConfigured(cat) && getCategoryHeadsTotal(cat) !== (cat.minimum_wages || 0)"
+                                                            class="badge bg-danger-subtle text-danger border border-danger rounded-pill pill-badge fw-medium"
+                                                            title="Difference between Minimum Wage and Sum of Heads">
+                                                            <i class="fa fa-exclamation-triangle me-1"></i> Diff: ₹ {{
+                                                            ((cat.minimum_wages || 0) - getCategoryHeadsTotal(cat)) |
+                                                            number:'1.2-2' }}
+                                                        </span>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Earning Heads Breakdown Table -->
+                                                <div class="table-responsive"
+                                                    [ngStyle]="cat.earning_heads.length > 5 ? {'max-height': '280px', 'overflow-y': 'auto'} : {}">
+                                                    <table class="table table-bordered table-hover align-middle mb-0">
+                                                        <thead>
+                                                            <tr>
+                                                                <th scope="col" class="text-center col-1">#</th>
+                                                                <th scope="col" class="text-start">Earning Head</th>
+                                                                <th scope="col" class="text-end col-3 pe-3">Amount (₹)
+                                                                </th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr *ngFor="let head of cat.earning_heads; let hIndex = index"
+                                                                [class.bg-light]="hIndex % 2 === 1">
+                                                                <td class="text-center fw-medium">{{ hIndex + 1 }}</td>
+                                                                <td class="text-start">
+                                                                    <span class="fw-medium">{{ head.description
+                                                                        }}</span>
+                                                                    <span
+                                                                        *ngIf="head.shortdesc && head.shortdesc !== head.description"
+                                                                        class="text-muted small ms-1">
+                                                                        ({{ head.shortdesc }})
+                                                                    </span>
+                                                                </td>
+                                                                <td class="text-end pe-3">
+                                                                    <input id="head_{{i}}_{{hIndex}}" type="number"
+                                                                        class="form-control form-control-sm text-end"
+                                                                        [(ngModel)]="head.amount"
+                                                                        [ngModelOptions]="{standalone: true}"
+                                                                        placeholder="0.00" min="0">
+                                                                </td>
+                                                            </tr>
+                                                            <tr *ngIf="cat.earning_heads.length === 0">
+                                                                <td colspan="3"
+                                                                    class="text-center text-muted small py-3">
+                                                                    No earning heads found for this company.
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                        <tfoot *ngIf="cat.earning_heads.length > 0">
+                                                            <tr>
+                                                                <th colspan="2"
+                                                                    class="text-end align-middle fw-semibold pe-3"
+                                                                    style="font-size: 13px;">
+                                                                    Total Heads for {{ cat.category_name }}:
+                                                                </th>
+                                                                <th class="text-end align-middle fw-bold pe-3"
+                                                                    [ngClass]="{
+                                                                        'text-success': isCategoryConfigured(cat) && getCategoryHeadsTotal(cat) === (cat.minimum_wages || 0),
+                                                                        'text-danger': isCategoryConfigured(cat) && getCategoryHeadsTotal(cat) !== (cat.minimum_wages || 0)
+                                                                    }" style="font-size: 13px;">
+                                                                    ₹ {{ getCategoryHeadsTotal(cat) | number:'1.2-2' }}
+                                                                </th>
+                                                            </tr>
+                                                        </tfoot>
+                                                    </table>
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                    <div *ngIf="categoriesWithHeads.length === 0" class="text-center text-muted py-4">
+                                        <i class="fa fa-spinner fa-spin fa-2x mb-2 d-block"></i>
+                                        Loading categories...
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row w-100">
+                        <div class="col d-flex align-items-center justify-content-end pt-4 pb-3">
+                            <button type="button" class="btn btn-outline-dark btn-sm mx-1 px-3"
+                                (click)="resetForm()">Reset</button>
+                            <button type="submit" class="btn btn-primary btn-sm mx-1 px-3">
+                                {{ isEditMode ? 'Update' : 'Save' }}
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

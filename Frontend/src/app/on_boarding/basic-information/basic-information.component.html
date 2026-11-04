@@ -1,0 +1,316 @@
+<section>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+          <div class="card-header bg-primary mx-0 pe-0">
+            <div class="row w-100">
+              <div
+                class="col-sm-12 col-md-12 col-lg-12 d-flex align-items-center justify-content-between"
+              >
+                <h4 class="">Basic Information</h4>
+                <button
+                  type="button"
+                  class="btn btnheader btn-sm"
+                  (click)="enableEditMode()"
+                >
+                  <i class="fas fa-edit"></i> Edit
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-body">
+            <!-- View Mode -->
+            <div *ngIf="isViewMode && basicInfoData">
+              <div class="row pt-2">
+                <!-- Profile Image -->
+                <div class="col-md-12" *ngIf="basicInfoData.photo">
+                  <label class="ps-lg-1">Profile Image:</label><br />
+                  <img
+                    [src]="basicInfoData.photo"
+                    alt="Profile Image"
+                    class="img-thumbnail mb-2"
+                    style="
+                      width: 150px;
+                      height: 150px;
+                      object-fit: cover;
+                      cursor: pointer;
+                      border-radius: 5%;
+                    "
+                    (click)="downloadImage(basicInfoData.photo)"
+                    title="Click to view/download"
+                  />
+                </div>
+
+                <div class="col-md-4">
+                  <label>State:</label>
+                  <p>
+                    <strong>{{ basicInfoData.stateName || "N/A" }}</strong>
+                  </p>
+                </div>
+
+                <div class="col-md-4">
+                  <label>City:</label>
+                  <p>
+                    <strong>{{ basicInfoData.cityName || "N/A" }}</strong>
+                  </p>
+                </div>
+
+                <div class="col-md-4">
+                  <label>Pincode:</label>
+                  <p>
+                    <strong>{{ basicInfoData.pincode || "N/A" }}</strong>
+                  </p>
+                </div>
+
+                <div class="col-md-12">
+                  <label>Address:</label>
+                  <p>
+                    <strong>{{ basicInfoData.address || "N/A" }}</strong>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Edit/Create Form -->
+            <form
+              *ngIf="!isViewMode"
+              [formGroup]="basicInfoForm"
+              (ngSubmit)="OnSubmit()"
+            >
+              <div class="row pt-2">
+                <div
+                  class="col-12 d-flex justify-content-between align-items-center"
+                >
+                  <!-- Back button only shown when editing existing data -->
+                  <button
+                    type="button"
+                    class="btn btn-secondary btn-sm"
+                    (click)="goBack()"
+                    *ngIf="isExistingRecord"
+                  >
+                    <i class="fas fa-arrow-left"></i> Back
+                  </button>
+                </div>
+
+                <!-- Profile Image Upload -->
+                <div class="col-sm-12 col-md-6 col-lg-4 col-xxl-4">
+                  <label>Profile Image</label>
+                  <div class="form-group">
+                    <div class="input-group">
+                      <span class="input-group-text">
+                        <i class="fas fa-image fa-lg"></i>
+                      </span>
+                      <input
+                        type="file"
+                        #profileFileInput
+                        (change)="onFileSelected($event, 'ProfileImageFile')"
+                        class="d-none"
+                        accept="image/jpeg,image/jpg,image/png"
+                      />
+                      <input
+                        type="text"
+                        class="form-control"
+                        [value]="fileName['ProfileImageFile'] || ''"
+                        readonly
+                        placeholder="Choose profile image"
+                      />
+                      <button
+                        class="browse btn btn-primary px-4"
+                        type="button"
+                        (click)="profileFileInput.click()"
+                      >
+                        <i class="fas fa-image"></i>
+                      </button>
+                    </div>
+                    <small class="text-muted"
+                      >Accepted formats: JPG, PNG (Max 5MB)</small
+                    >
+                  </div>
+
+                  <!-- Image Preview - Shows either new upload or existing image -->
+                  <div
+                    *ngIf="basicInfoData?.profileImageUrl || originalPhotoUrl"
+                    class="mt-2"
+                  >
+                    <label class="d-block mb-2">
+                      {{
+                        fileName["ProfileImageFile"]
+                          ? "New Image Preview:"
+                          : "Current Image:"
+                      }}
+                    </label>
+                    <img
+                      [src]="basicInfoData?.profileImageUrl || originalPhotoUrl"
+                      alt="Profile Preview"
+                      class="img-thumbnail"
+                      style="
+                        width: 150px;
+                        height: 150px;
+                        object-fit: contain;
+                        border-radius: 8px;
+                      "
+                    />
+                    <div *ngIf="fileName['ProfileImageFile']" class="mt-1">
+                      <small class="text-success">
+                        <i class="fas fa-check-circle"></i> New image selected
+                      </small>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- State Dropdown -->
+                <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4">
+                  <label>State <span class="text-danger">*</span></label>
+                  <div class="form-group">
+                    <ng-select
+                      id="state"
+                      class="custom-ng-select"
+                      placeholder="Select State"
+                      formControlName="StateId"
+                      [clearable]="true"
+                      (change)="onStateChange($event)"
+                    >
+                      <ng-option
+                        *ngFor="let state of statList"
+                        [value]="state.value"
+                      >
+                        {{ state.name }}
+                      </ng-option>
+                    </ng-select>
+                    <div
+                      *ngIf="submitted && validate['StateId'].errors"
+                      class="text-danger"
+                    >
+                      <div *ngIf="validate['StateId'].errors['required']">
+                        State is required.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- City Dropdown -->
+                <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4">
+                  <label>City</label>
+                  <div class="form-group">
+                    <ng-select
+                      id="CityId"
+                      class="custom-ng-select"
+                      placeholder="Select City"
+                      formControlName="CityId"
+                      [clearable]="true"
+                    >
+                      <ng-option
+                        *ngFor="let city of cityList"
+                        [value]="city.value"
+                      >
+                        {{ city.name }}
+                      </ng-option>
+                    </ng-select>
+                    <div
+                      *ngIf="submitted && validate['CityId'].errors"
+                      class="text-danger"
+                    >
+                      <div *ngIf="validate['CityId'].errors['required']">
+                        City is required.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Pincode -->
+                <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4">
+                  <label>PinCode <span class="text-danger">*</span></label>
+                  <div class="form-group">
+                    <div class="input-group">
+                      <span class="input-group-text"
+                        ><i class="fa-solid fa-map-pin"></i
+                      ></span>
+                      <input
+                        type="text"
+                        class="form-control"
+                        formControlName="Pincode"
+                        maxlength="6"
+                        placeholder="Enter 6-digit pincode"
+                        (keypress)="restrictNonNumeric($event)"
+                      />
+                    </div>
+                    <div
+                      *ngIf="submitted && validate['Pincode'].errors"
+                      class="text-danger"
+                    >
+                      <div *ngIf="validate['Pincode'].errors['required']">
+                        Pincode is required.
+                      </div>
+                      <div *ngIf="validate['Pincode'].errors['maxlength']">
+                        Pincode cannot exceed 6 digits.
+                      </div>
+                      <div *ngIf="validate['Pincode'].errors['minlength']">
+                        Please enter 6 digits.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Address -->
+                <div class="col-sm-12 col-md-8 col-lg-8 col-xxl-8">
+                  <label>Address <span class="text-danger">*</span></label>
+                  <div class="form-group">
+                    <div class="input-group">
+                      <span class="input-group-text"
+                        ><i class="fas fa-map-marker-alt"></i
+                      ></span>
+                      <input
+                        type="text"
+                        class="form-control"
+                        formControlName="Address"
+                        placeholder="Enter full address"
+                      />
+                    </div>
+                    <div
+                      *ngIf="submitted && validate['Address'].errors"
+                      class="text-danger"
+                    >
+                      <div *ngIf="validate['Address'].errors['required']">
+                        Address is required.
+                      </div>
+                      <div *ngIf="validate['Address'].errors['minlength']">
+                        Address must be at least 5 characters long.
+                      </div>
+                      <div *ngIf="validate['Address'].errors['maxlength']">
+                        Address cannot exceed 300 characters.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Submit and Cancel Buttons -->
+              <div class="row">
+                <div class="col-sm-0 col-md-8 col-lg-8"></div>
+                <div class="col-sm-12 col-md-4 col-lg-4">
+                  <div
+                    class="form-group shadow-none d-flex gap-2 justify-content-end"
+                  >
+                    <button
+                      type="button"
+                      class="btn btn-secondary mt-2 px-4"
+                      (click)="cancelEdit()"
+                      *ngIf="basicInfoData"
+                    >
+                      Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary mt-2 px-5">
+                      Save
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

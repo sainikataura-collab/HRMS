@@ -1,0 +1,14 @@
+.l-bg-green-dark1{background-color: #FFE4BD;}
+  .font1{font-size: 11px; text-align: center;color:#2b2e41;}
+  .font2{font-size: 15px; text-align: center;color:#fff; padding-left: 8px;}
+  .margin-6{margin-left: 4px; margin-right: 4px; padding: 0px;}
+
+
+
+  h1,h2,h3,h4,h5,h6,p,ul,li,a,button,table,tr,td,th,span,label,textarea,select,option,::placeholder{
+    font-family: "Work Sans", sans-serif !important;
+    font-style:normal !important;
+
+
+    
+}

@@ -1,0 +1,59 @@
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+            <!-- Heading -->
+            <div class="card-header bg-blue">
+                <div class="row w-100">
+                    <div class="col-sm-12 col-md-12 col-lg-12">
+                        <h4>{{ isEditMode ? 'Edit Account' : 'Add New Account' }}</h4>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-md-6 col-lg-6 d-flex align-items-center justify-content-end ms-auto gap-2">
+                    <button class="btn btn-light" (click)="view()">
+                        Back
+                    </button>
+                </div>
+            </div>
+
+            <!-- form  -->
+            <div class="card-body mt-4">
+
+
+                <form class="row row-cols-1 row-cols-md-3" [formGroup]="departmentForm" (ngSubmit)="onSubmit()">
+
+                    <div class="col">
+                        <label for="" class="">code</label>
+                        <input type="text" class="form-control" formControlName="code" id="inputPassword">
+                        <span *ngIf="showError &&departmentForm.controls['code'].invalid" class="text-danger mt-1"
+                            style="font-size: 12px;">
+                            Please enter code.
+                        </span>
+                    </div>
+
+                    <div class="col">
+                        <label for="" class="">Name of Accout<span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" formControlName="name" id="inputPassword">
+                        <div *ngIf="departmentForm.get('name')?.errors?.['duplicate']" class="text-danger"
+                            style="font-size:10px;">
+                            {{ departmentForm.get('name')?.errors?.['duplicate'] }}
+                        </div>
+                        <span
+                            *ngIf="showError &&departmentForm.controls['name'].invalid && !departmentForm.get('name')?.errors?.['duplicate']"
+                            class="text-danger mt-1" style="font-size: 12px;">
+                            Please enter Name of Accout.
+                        </span>
+                    </div>
+                    <div class="row w-100">
+                        <div class="col d-flex align-items-end justify-content-end pt-4 pb-3">
+                            <button type="submit" class="btn btn-outline-dark btn-sm mx-1 px-2">
+                                {{ isEditMode ? 'Update' : 'Save' }}
+                            </button>
+                            <button type="button" class="btn btn-primary btn-sm mx-1 px-2"
+                                (click)="resetForm()">Reset</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

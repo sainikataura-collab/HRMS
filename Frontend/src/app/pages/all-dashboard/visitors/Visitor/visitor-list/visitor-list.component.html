@@ -1,0 +1,131 @@
+
+
+
+<!-- ------------------------------------------------------ -->
+
+<div class="row">
+    <div class="col-12">
+      <div class="card">
+        <!--  -->
+
+
+
+      <div class="card-header py-1">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-between">
+            <h4>Visitor List</h4>
+           
+          </div>
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-center">
+            <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText"
+              (ngModelChange)="searchText = $event" />
+          </div>
+          
+          <!-- <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-md-end">
+            <button class="btn btnheader" routerLink="/dash/payroll/payrolldashboard/FunctionalMaster">
+                Add
+              </button>
+              <button class="btn btnheader mx-1" (click)="exportToExcel()">
+                Download
+              </button>
+          </div> -->
+          
+        </div>
+    </div>
+        
+        <!--  -->
+        <div class="card-body">
+          <div class="table-responsive table-invoice">
+            <table Id="exportTable"  class="table">
+              <thead>
+                
+                    <tr>
+                       <th>Sr.No.</th>
+                         <th>Approved</th>
+                <th>visitorName</th>
+                <th>visitorMobileNo</th>
+                <th>visitorEmail</th>
+                <th>visitorAddress</th>
+                <th>whomtoMeet</th>
+                <th>whomtoMeetCode</th>
+                <th>visitPurpose</th>
+                <th>carriedItems</th>
+                <th>photoName</th>
+                <th>signature</th>
+                <th>entryBy</th>
+                <th>entryDate</th>
+                <th>approvalRemarks</th>
+                <th>approvalBy</th>
+                <th>approvalDate</th>
+              
+                     </tr>
+              </thead>
+             
+                <tbody>
+                    <tr *ngFor="
+                  let data of filteredData()
+                    | paginate
+                      : {
+                          itemsPerPage: pageSize,
+                          currentPage: pageIndex,
+                          totalItems: totalItems
+                        };
+                  let i = index
+                ">
+                        <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+                          <td data-label="Status:" [ngClass]="{
+                    'text-success btn-success': data.isApproved === true,
+                    'text-warning btn-warning': data.isApproved === false
+                  }">
+                  {{ data.isApproved ? "Approved" : "Pending" }}
+                </td>
+                <td>{{ data.visitorName }}</td>
+                <td>{{ data.visitorMobileNo }}</td>
+                <td>{{ data.visitorEmail }}</td>
+                <td>{{ data.visitorAddress }}</td>
+                <td>{{ data.whomtoMeet }}</td>
+                <td>{{ data.whomtoMeetCode }}</td>
+                <td>{{ data.visitPurpose }}</td>
+                <td>{{ data.carriedItems }}</td>
+                <td>{{ data.photoName }}</td>
+                <td>{{ data.signature }}</td>
+                <td>{{ data.entryBy }}</td>
+                <td>{{ data.entryDate | date : "dd-MMM-yyyy hh:mm a" }}</td>
+                <td>{{ data.approvalRemarks }}</td>
+                <td>{{ data.approvalBy }}</td>
+                <td>{{ data.approvalDate | date : "dd-MMM-yyyy hh:mm a" }}</td>
+              
+                        
+
+                      
+
+                      </tr>
+                </tbody>
+                   
+            
+            </table>
+  
+            <!-- Pagination controls -->
+            <pagination-controls
+              (pageChange)="onPageChange($event)"
+              totalItems="totalItems"
+              itemsPerPage="pageSize">
+            </pagination-controls>
+
+            <ng-template #noData>
+              <tr>
+                <td colspan="4" class="text-center">No data available</td>
+              </tr>
+            </ng-template>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- message modal -->
+
+  
+
+

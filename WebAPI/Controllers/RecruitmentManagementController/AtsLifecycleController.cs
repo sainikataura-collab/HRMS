@@ -213,7 +213,14 @@ namespace HRMSWebAPI.Controllers.RecruitmentManagementController
                     foreach (var v in dto.LockedVendorEmails)
                     {
                         if (!string.IsNullOrWhiteSpace(v.Email) && v.Email.Contains('@'))
-                            allRecipients.Add(v.Email.Trim());
+                        {
+                            foreach (var sub in v.Email.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries))
+                            {
+                                var clean = sub.Trim();
+                                if (!string.IsNullOrWhiteSpace(clean) && clean.Contains('@'))
+                                    allRecipients.Add(clean);
+                            }
+                        }
                     }
                 }
 
@@ -222,7 +229,14 @@ namespace HRMSWebAPI.Controllers.RecruitmentManagementController
                     foreach (var e in dto.AdditionalEmails)
                     {
                         if (!string.IsNullOrWhiteSpace(e) && e.Contains('@'))
-                            allRecipients.Add(e.Trim());
+                        {
+                            foreach (var sub in e.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries))
+                            {
+                                var clean = sub.Trim();
+                                if (!string.IsNullOrWhiteSpace(clean) && clean.Contains('@'))
+                                    allRecipients.Add(clean);
+                            }
+                        }
                     }
                 }
 
@@ -274,34 +288,10 @@ namespace HRMSWebAPI.Controllers.RecruitmentManagementController
                     </div>";
                 }
 
-                using var smtp = new SmtpClient("smtp.gmail.com", 587)
-                {
-                    EnableSsl = true,
-                    Credentials = new NetworkCredential("ofctesting62@gmail.com", "owzxcappjvuvaxzh")
-                };
-
+                var emailSvc = new EmailService(_configuration, dto.CompanyId);
                 foreach (var recipient in allRecipients)
                 {
-                    try
-                    {
-                        var mail = new MailMessage
-                        {
-                            From = new MailAddress("ofctesting62@gmail.com", "CJ DARCL Talent Acquisition"),
-                            Subject = subject,
-                            Body = body,
-                            IsBodyHtml = true
-                        };
-                        mail.To.Add(recipient);
-
-                        await smtp.SendMailAsync(mail);
-
-                        // Audit Log into SAL_Email_Log via Repository
-                        await _repository.LogEmailAuditAsync(recipient, subject, body, 1, string.Empty);
-                    }
-                    catch (Exception exRecipient)
-                    {
-                        await _repository.LogEmailAuditAsync(recipient, subject, body, 0, exRecipient.Message);
-                    }
+                    await emailSvc.SendEmailAsync(recipient, subject, body, dto.CompanyId);
                 }
             }
             catch (Exception ex)
@@ -1286,7 +1276,7 @@ p {{ color: #64748b; font-size: 13px; line-height: 1.6; margin: 8px 0; }}
                     {
                         await emailSvc.SendEmailWithAttachmentAsync(
                             offerData.CandidateEmail, emailSubject, emailBodyCandidate,
-                            pdfBytes, pdfFileName);
+                            pdfBytes, pdfFileName, scopedCompanyId, relativePdfPath);
                         sentTo.Add(offerData.CandidateEmail);
                     }
 
@@ -1295,7 +1285,7 @@ p {{ color: #64748b; font-size: 13px; line-height: 1.6; margin: 8px 0; }}
                         string vendorSubject = $"Offer Issued — {offerData.CandidateName} for {offerData.Designation} | {companyName}";
                         await emailSvc.SendEmailWithAttachmentAsync(
                             offerData.VendorEmail, vendorSubject, emailBodyVendor,
-                            pdfBytes, pdfFileName);
+                            pdfBytes, pdfFileName, scopedCompanyId, relativePdfPath);
                         sentTo.Add(offerData.VendorEmail);
                     }
 
@@ -1524,6 +1514,7 @@ p {{ color: #64748b; font-size: 13px; line-height: 1.6; margin: 8px 0; }}
 
                     // Collect PDF attachments for all candidates in this vendor group
                     var attachments = new List<(byte[] Bytes, string FileName)>();
+                    var attachedPaths = new List<string>();
                     foreach (var c in groupCandidates)
                     {
                         string? relPath = (string?)c.offerPdfPath;
@@ -1535,6 +1526,7 @@ p {{ color: #64748b; font-size: 13px; line-height: 1.6; margin: 8px 0; }}
                                 byte[] bytes = await System.IO.File.ReadAllBytesAsync(localPath);
                                 string fileName = Path.GetFileName(localPath);
                                 attachments.Add((bytes, fileName));
+                                attachedPaths.Add(relPath);
                             }
                         }
                     }
@@ -1550,9 +1542,10 @@ p {{ color: #64748b; font-size: 13px; line-height: 1.6; margin: 8px 0; }}
                     // Build single consolidated email body
                     string subject = $"Selected Candidates — Official Offer Letters ({groupCandidates.Count}) | {companyName}";
                     string htmlBody = BuildConsolidatedVendorOfferEmailBody(vendorName, companyName, groupCandidates);
+                    string allDocPaths = string.Join(";", attachedPaths.Count > 0 ? attachedPaths : attachments.ConvertAll(a => a.FileName));
 
                     // Send ONE email to this vendor with ALL candidate offer PDFs attached
-                    bool sent = await emailSvc.SendEmailWithMultipleAttachmentsAsync(vendorEmail, subject, htmlBody, attachments);
+                    bool sent = await emailSvc.SendEmailWithMultipleAttachmentsAsync(vendorEmail, subject, htmlBody, attachments, scopedCompanyId, allDocPaths);
                     if (sent)
                     {
                         await _repository.UpdateCandidateOfferEmailStatusBatchAsync(groupAppIds, vendorEmail, dto.SentBy ?? "HR Team");

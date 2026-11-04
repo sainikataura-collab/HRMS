@@ -1,0 +1,91 @@
+
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+         <!--  -->
+    <div class="card-header bg-blue ">
+        <div class="row w-100 ">
+      <div class="col-sm-12 col-md-6 col-lg-6 ">                    
+        <h4>Update Employee Mobile No</h4>   
+      </div>
+     
+  </div>
+  
+      
+      </div>
+      <div class="card-body mt-4">
+        <form [formGroup]="UpdateEmployeeForm">
+          <div class="row">
+
+            <app-common-search ></app-common-search>
+        </div>
+          <div class="row row-cols-1 row-cols-md-3 g-4">
+              <div class="col">
+                  <label>Office Type</label>
+             
+                  <div class="form-group">
+                      
+  
+                        <ng-select id="year" [items]="selects" bindLabel="name" bindValue="value"
+                          formControlName="OfficeType" placeholder="--Select --"
+                          class="w-100"></ng-select>
+                  </div>  
+              </div>
+            </div>
+          </form>
+          <div class="row">
+            <div class="col d-flex align-items-end justify-content-end pt-4 pb-3">
+           
+                <button type="button" class="btn btn-outline-dark mx-1"(click)="resetForm()">Reset</button>
+                <button type="submit" class="btn btn-primary mx-1"(click)="toggleEmployeeList()">Veiw</button>
+              </div>
+        </div>      </div>
+
+      <!-- List of Employee -->
+       <div *ngIf="showEmployeeList">
+      <div class="card-header">
+        <div class="row w-100 ">
+      <div class="col-sm-12 col-md-6 col-lg-6 ">                    
+        <h4>List of Employee(s)</h4>   
+      </div>
+    </div>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive table-invoice">
+            <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>Sr.</th>
+                    <th>Code</th>
+                    <th>Name</th>
+                    <th>Department</th>
+                    <th>Personal Mobile No</th>
+                    <th>Official Mobile No</th>
+                    
+                  </tr>
+                </thead>
+                <tbody>
+                   <tr>
+                    <td> 1</td>
+                    <td>2024</td>
+                    <td>Delhi</td>
+                    <td>sunday</td>
+                    <td><input type="text"class="form-control"formControlName="PersonalMobileNo"></td>
+                    <td><input type="text"class="form-control"formControlName="OfficialMobileNo"></td>
+                   
+                  </tr> 
+                </tbody>
+              </table>
+    
+              <div class="modal-footer">
+
+                 <button type="submit" class="btn btn-primary mx-1">Update</button>
+           
+              </div>
+          </div>
+    </div>
+</div>
+  </div>
+</div>    
+
+</div>

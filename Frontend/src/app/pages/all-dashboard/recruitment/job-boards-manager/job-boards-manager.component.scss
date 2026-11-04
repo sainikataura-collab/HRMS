@@ -1,0 +1,266 @@
+.ats-boards-page {
+  font-family: "Work Sans", sans-serif !important;
+  background-color: #eef2f6 !important;
+  min-height: 100vh;
+  font-size: 11.5px !important;
+
+  .header-strip {
+    border-color: #cbd5e1 !important;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+
+    .page-title {
+      font-size: 13px;
+    }
+
+    .btn-back {
+      width: 24px;
+      height: 24px;
+      background-color: #f1f5f9;
+      font-size: 11px;
+      transition: all 0.15s;
+      &:hover {
+        background-color: #e2e8f0;
+      }
+    }
+  }
+
+  .badge-chip {
+    font-size: 9.5px;
+    font-weight: 600;
+    padding: 1px 6px;
+    border-radius: 3px;
+  }
+
+  // Key Metrics Grid
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+
+    @media (max-width: 992px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    @media (max-width: 576px) {
+      grid-template-columns: 1fr;
+    }
+
+    .metric-card {
+      background-color: #ffffff !important;
+      border: 1px solid #cbd5e1 !important;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      .metric-label {
+        font-size: 9.5px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+      }
+
+      .metric-value {
+        font-size: 15px;
+      }
+
+      .metric-icon-box {
+        width: 30px;
+        height: 30px;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+      }
+    }
+  }
+
+  // Filter & Search Strip
+  .filter-strip {
+    border-color: #cbd5e1 !important;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+
+    .cat-filter-pill {
+      border: 1px solid #cbd5e1;
+      background-color: #f8fafc;
+      color: #475569;
+      font-size: 10px;
+      font-weight: 600;
+      border-radius: 12px;
+      padding: 2px 9px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+
+      &:hover {
+        background-color: #e2e8f0;
+        color: #1e293b;
+      }
+
+      &.active {
+        background-color: #3080e8;
+        border-color: #3080e8;
+        color: #ffffff;
+      }
+    }
+  }
+
+  // Primary Corporate Action Button
+  .btn-primary-action {
+    font-size: 11px !important;
+    padding: 3px 10px !important;
+    background-color: #3080e8 !important;
+    color: #ffffff !important;
+    border: 1px solid #3080e8 !important;
+    border-radius: 4px !important;
+    box-shadow: 0 2px 6px #acb5f6 !important;
+    transition: background-color 0.15s;
+    &:hover {
+      background-color: #2b2b41 !important;
+      border-color: #2b2b41 !important;
+      color: #ffffff !important;
+    }
+  }
+
+  // DISTINCT BOARDS GRID (Clear 16px division, cards never touch)
+  .boards-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px; // Explicit, guaranteed separation between all cards
+
+    @media (max-width: 1300px) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    @media (max-width: 992px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    @media (max-width: 600px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  // Individual Board Card with Strong Visual Boundaries
+  .board-card {
+    background-color: #ffffff !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 8px !important;
+    padding: 12px !important;
+    box-shadow: 0 1px 4px rgba(15, 23, 42, 0.08), 0 1px 2px rgba(15, 23, 42, 0.04) !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+
+    &:hover {
+      border-color: #0051d5 !important;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 14px -2px rgba(15, 23, 42, 0.12), 0 3px 6px -2px rgba(15, 23, 42, 0.08) !important;
+    }
+
+    &.card-active {
+      border-color: #93c5fd !important;
+      border-top: 3px solid #3080e8 !important; // Prominent top indicator
+      box-shadow: 0 2px 6px rgba(0, 81, 213, 0.1) !important;
+    }
+
+    &.card-inactive {
+      opacity: 0.85;
+      background-color: #fafbfc !important;
+      border-color: #e2e8f0 !important;
+    }
+
+    .card-body-content {
+      flex: 1 1 auto;
+    }
+
+    .card-footer-strip {
+      border-top: 1px solid #e2e8f0 !important;
+      margin-top: 4px;
+    }
+  }
+
+  .toggle-pill-btn {
+    border: 1px solid #cbd5e1;
+    background-color: #f1f5f9;
+    color: #64748b;
+    border-radius: 12px;
+    padding: 2px 7px;
+    font-size: 9px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    line-height: 1;
+
+    .toggle-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background-color: #94a3b8;
+      transition: all 0.15s ease;
+    }
+
+    &.active {
+      background-color: #3080e8 !important;
+      border-color: #3080e8 !important;
+      color: #ffffff !important;
+
+      .toggle-dot {
+        background-color: #ffffff;
+        box-shadow: 0 0 3px rgba(255, 255, 255, 0.9);
+      }
+    }
+
+    &:hover {
+      opacity: 0.95;
+      transform: scale(1.04);
+    }
+  }
+
+  // Sharp High-Contrast Category Pill
+  .badge-category-pill {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 600;
+    padding: 1px 7px;
+    border-radius: 4px;
+    background-color: #f1f5f9;
+    color: #1e293b !important;
+    border: 1px solid #cbd5e1;
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  // High-Contrast Details Block
+  .board-info-block {
+    background-color: #f8fafc !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 6px !important;
+    font-size: 10.5px;
+
+    .label-txt {
+      color: #475569 !important;
+      font-weight: 500;
+    }
+
+    .value-txt {
+      font-weight: 600;
+      font-size: 11px;
+    }
+  }
+
+  .form-control,
+  .form-select {
+    background-color: #ffffff !important;
+    color: #1e293b !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 4px !important;
+    font-size: 11px !important;
+  }
+}

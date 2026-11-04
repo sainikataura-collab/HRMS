@@ -1,0 +1,155 @@
+<div class="row position-relative">
+  <!-- Left Side: Main Upload Content -->
+  <div [ngClass]="isFactBoxOpen ? 'col-sm-12 col-md-8 col-lg-9' : 'col-sm-12 col-md-12 col-lg-12'">
+    <div class="card">
+
+      <!-- Header with Export Blank Excel Button -->
+      <div class="card-header bg-primary">
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-2 w-100 align-items-center">
+          <!-- Title Section -->
+          <div class="col">
+            <h4 class="text-white mb-0">Export/Import Vendor FHRID Mapping</h4>
+          </div>
+
+          <!-- Export Blank Template Button -->
+          <div class="col d-flex align-items-center justify-content-end">
+            <button class="btn bg-white text-primary" (click)="exportTemplate()">
+              <i class="fa fa-download me-2"></i>Export Blank Excel
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Body with Inline Import UI -->
+      <div class="card-body">
+
+        <form [formGroup]="uploadForm" (ngSubmit)="onSubmit()" class="row g-2 align-items-end mb-4">
+          <!-- File Input -->
+          <div class="col-12 col-sm-12 col-md-6 col-lg-4">
+            <label class="form-label font-weight-bold">Select Vendor Excel File (.xlsx)</label>
+            <input type="file" class="form-control" (change)="onFileChange($event)" #fileInput accept=".xlsx, .xls">
+
+            <div *ngIf="headerError" class="text-danger mt-1 small">
+              {{ headerError }}
+            </div>
+            <div *ngIf="uploadForm.get('file')?.hasError('required') && uploadForm.get('file')?.touched"
+              class="text-danger mt-1 small">
+              File is required.
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="col d-flex justify-content-end ms-auto gap-2">
+            <button type="submit" class="btn btn-primary" [disabled]="isUploading">
+              <i class="fa fa-upload me-1"></i> Import
+            </button>
+            <button type="button" class="btn btn-outline-dark" (click)="resetForm()">
+              <i class="fa fa-refresh me-1"></i> Reset
+            </button>
+          </div>
+        </form>
+
+
+
+        <!-- Search and Filter Section -->
+        <div class="row mb-2" *ngIf="importedData.length > 0">
+          <!-- Search Input -->
+          <div class="col-12 col-md-4 mb-2 mb-md-0">
+            <input type="text" class="form-control" [formControl]="searchControl"
+              placeholder="Search imported records..." />
+          </div>
+
+          <!-- Filter Counter Badges & Export Button -->
+          <div class="col-12 col-md-8">
+            <div class="d-flex flex-wrap gap-2 justify-content-start justify-content-md-end">
+
+              <button class="btn d-flex align-items-center shadow-sm"
+                [ngClass]="currentFilter === 'All' ? 'btn-primary' : 'btn-outline-primary'" (click)="setFilter('All')">
+                <span>All Data</span>
+                <span class="bg-white rounded px-1 ms-2 fw-bold text-primary small">
+                  {{ importedData.length }}
+                </span>
+              </button>
+
+              <button class="btn d-flex align-items-center shadow-sm"
+                [ngClass]="currentFilter === 'Uploaded' ? 'btn-success' : 'btn-outline-success'"
+                (click)="setFilter('Uploaded')">
+                <span>Uploaded</span>
+                <span class="bg-white rounded px-1 ms-2 fw-bold text-success small">
+                  {{ uploadedCount }}
+                </span>
+              </button>
+
+              <button class="btn d-flex align-items-center shadow-sm"
+                [ngClass]="currentFilter === 'Not Uploaded' ? 'btn-danger' : 'btn-outline-danger'"
+                (click)="setFilter('Not Uploaded')">
+                <span>Not Uploaded</span>
+                <span class="bg-white rounded px-1 ms-2 fw-bold text-danger small">
+                  {{ notUploadedCount }}
+                </span>
+              </button>
+
+              <button class="btn btn-primary d-flex align-items-center" (click)="exportResults()">
+                <i class="fa fa-download me-2"></i> Export List
+              </button>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- Table View of Uploaded Records -->
+        <div class="table-responsive mt-4" *ngIf="importedData.length > 0"
+          [ngClass]="{ 'overflow-y-auto': importedData.length > 10 }" style="max-height: 400px;">
+          <table class="table table-bordered table-striped align-middle">
+            <thead class="sticky-top bg-white">
+              <tr>
+                <th>Status / Remarks</th>
+                <th>Vendor Code</th>
+                <th>Vendor Name</th>
+                <th>Client</th>
+                <th>Model</th>
+                <th>FHR ID</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of filteredData">
+                <td class="text-nowrap">
+                  <!-- Uploaded (Inserted / Updated) -->
+                  <span *ngIf="row.status === 'Inserted' || row.status === 'Updated' || row.status === 'Uploaded' || row.status === 'Success'" class="text-success fw-bold">
+                    Uploaded
+                  </span>
+
+                  <!-- Already Exists -->
+                  <span *ngIf="row.status === 'Already Exists' || row.status === 'Skipped'" class="text-warning fw-bold">
+                    Already Exists
+                  </span>
+
+                  <!-- Failed with Generalized Reason -->
+                  <span *ngIf="row.status === 'Failed' || row.status === 'Error'" class="text-danger fw-bold">
+                    Failed - <span class="fw-normal small">{{ row.message || row.Message || 'Validation error' }}</span>
+                  </span>
+                </td>
+                <td>{{ row.vendorCode || row.VendorCode || '' }}</td>
+                <td>{{ row.vendorName || row.VendorName || '' }}</td>
+                <td>{{ row.client || row.Client || '' }}</td>
+                <td>{{ row.model || row.Model || '' }}</td>
+                <td>{{ row.fhrid || row.fhrId || row.FHRID || '' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <app-fact-box [ngClass]="isFactBoxOpen ? 'col-sm-12 col-md-4 col-lg-3' : ''" 
+  [title]="'Fact Box'"
+  [files]="uploadedFiles" 
+  [isLoading]="isLoadingFiles" 
+  [isOpen]="isFactBoxOpen" 
+  (onToggle)="toggleFactBox()" 
+  (onDownload)="downloadUploadedFile($event)">
+</app-fact-box>
+</div>

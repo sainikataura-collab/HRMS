@@ -1,0 +1,148 @@
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card">
+
+      <!-- Header -->
+      <div class="card-header bg-blue">
+        <div class="row w-100">
+          <div class="col-md-6">
+            <h4>
+              {{ Isedit ? 'Update Branch Master' : 'Branch Master' }}
+            </h4>
+          </div>
+
+          <div class="col-md-6 d-flex justify-content-md-end align-items-center">
+            <button class="btn btnheader"
+              routerLink="/dash/user/userdashboard/BranchMaster_list">
+              Back
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Body -->
+      <div class="card-body mt-4">
+
+        <form [formGroup]="BranchForm" class="row row-cols-1 row-cols-md-3">
+
+          <!-- Branch Name -->
+          <div class="col">
+            <label>Branch Name <span class="text-danger">*</span></label>
+            <div class="form-group">
+              <input type="text" class="form-control"
+                formControlName="BranchName" (blur)="checkAvailability(BranchForm.get('BranchName')?.value)">
+
+              <span *ngIf="submitted && BranchForm.get('BranchName')?.invalid"
+                class="text-danger mt-1" style="font-size:12px;">
+                Please enter Branch Name
+              </span>
+               <!-- Show validation error message from API only if it exists -->
+                  <div *ngIf="BranchForm.get('BranchName')?.errors?.['duplicate']" 
+                      class="text-danger" style="font-size:10px;">
+                      {{ BranchForm.get('BranchName')?.errors?.['duplicate'] }}
+                  </div>
+            </div>
+          </div>
+
+
+          <!-- added new -->
+             <div class="col">
+            <label>Branch Head <span class="text-danger">*</span></label>
+            <div class="form-group">
+              <ng-select [items]="BranchHeadList" bindLabel="name" bindValue="value"
+                formControlName="fk_branchhead_empid" placeholder="--Select--">
+              </ng-select>
+
+              <span *ngIf="submitted && BranchForm.get('fk_branchhead_empid')?.invalid"
+                class="text-danger mt-1" style="font-size:12px;">
+                Please select Branch Head 
+              </span>
+            </div>
+          </div>
+
+          <!-- Phone Number -->
+          <div class="col">
+            <label>Phone Number</label>
+            <div class="form-group">
+              <input type="text" class="form-control"
+                formControlName="PhoneNumber" maxlength="12"  (keypress)="validateNumber($event)">
+            </div>
+          </div>
+
+          <!-- City -->
+          <div class="col">
+            <label>City <span class="text-danger">*</span></label>
+            <div class="form-group">
+              <ng-select [items]="cityList" bindLabel="name" bindValue="value"
+                formControlName="fk_cityid" placeholder="--Select--">
+              </ng-select>
+
+              <span *ngIf="submitted && BranchForm.get('fk_cityid')?.invalid"
+                class="text-danger mt-1" style="font-size:12px;">
+                Please select City
+              </span>
+            </div>
+          </div>
+
+          <!-- State -->
+          <div class="col">
+            <label>State <span class="text-danger">*</span></label>
+            <div class="form-group">
+              <ng-select [items]="stateList" bindLabel="name" bindValue="value"
+                formControlName="fk_stateid" placeholder="--Select--">
+              </ng-select>
+
+              <span *ngIf="submitted && BranchForm.get('fk_stateid')?.invalid"
+                class="text-danger mt-1" style="font-size:12px;">
+                Please select State
+              </span>
+            </div>
+          </div>
+
+          <!-- Zone / Region -->
+          <div class="col">
+            <label>Region <span class="text-danger">*</span></label>
+            <div class="form-group">
+              <ng-select [items]="regionList" bindLabel="name" bindValue="value"
+                formControlName="fk_zoneId" placeholder="--Select--">
+              </ng-select>
+
+              <span *ngIf="submitted && BranchForm.get('fk_zoneId')?.invalid"
+                class="text-danger mt-1" style="font-size:12px;">
+                Please select Region
+              </span>
+            </div>
+          </div>
+
+          <!-- Address -->
+          <div class="col">
+            <label>Address</label>
+            <div class="form-group">
+              <textarea class="form-control"
+                formControlName="Address"></textarea>
+            </div>
+          </div>
+
+        </form>
+
+        <!-- Buttons -->
+        <div class="row">
+          <div class="col d-flex justify-content-end pt-4 pb-3">
+
+            <button type="button" class="btn btn-primary mx-1"
+              (click)="onSubmit()">
+              {{ Isedit ? 'Update' : 'Save' }}
+            </button>
+
+            <button type="reset" class="btn btn-outline-dark mx-1"
+              (click)="onReset()">
+              Reset
+            </button>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

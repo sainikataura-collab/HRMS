@@ -1,0 +1,627 @@
+<nav class="navbar navbar-expand-lg main-navbar sticky-top">
+  <div class="form-inline me-auto">
+    <ul class="navbar-nav mr-3">
+      <li>
+        <a
+          (click)="onToggleBodyClass()"
+          data-bs-toggle="sidebar"
+          class="nav-link-lg nav-link collapse-btn"
+        >
+          <!-- <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            class="feather feather-align-justify">
+            <line x1="21" y1="10" x2="3" y2="10"></line>
+            <line x1="21" y1="6" x2="3" y2="6"></line>
+            <line x1="21" y1="14" x2="3" y2="14"></line>
+            <line x1="21" y1="18" x2="3" y2="18"></line>
+          </svg> -->
+          <i class="bi bi-text-left text-dark fs-4 fw-bold p-0"></i>
+        </a>
+      </li>
+
+      <li class="mobile-logo">
+        <a routerLink="/dash/employee-dashboard">
+          <img src="/assets/Image/logo.png" class="app-logo" alt="logo" />
+        </a>
+      </li>
+
+      <li class="mobile-view-full-screen">
+        <a
+          href="javascript:void(0)"
+          class="nav-link nav-link-lg fullscreen-btn"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            data-feather="maximize"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="feather feather-maximize"
+          >
+            <path
+              d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"
+            ></path>
+          </svg>
+        </a>
+      </li>
+
+      <!-- added new 1 sep 2025-->
+
+      <!-- <li *ngIf="usertype == 'User'">
+        <form class="form-inline me-auto">
+
+          <div class="search-element d-inline-flex">
+            <input class="form-control" type="search" placeholder="Search menu" aria-label="Search"
+              [value]="searchQuery" (input)="onSearch($event)">
+            <button class="btn" type="button">
+              <i class="fas fa-search text-light-emphasis"></i>
+            </button>
+          </div>
+        </form>
+        <div *ngIf="suggestions.length > 0" class="search-suggestions">
+          <ul>
+            <li *ngFor="let suggestion of suggestions" (click)="onSelectSuggestion(suggestion)">
+              {{ suggestion.menucaption }}
+            </li>
+          </ul>
+        
+        </div>
+
+
+        <div *ngIf="suggestions.length === 0 && searchQuery.length > 0" class="search-suggestions">
+          <ul>
+            <li>
+              No suggestions found for "{{ searchQuery }}"
+            </li>
+
+
+          </ul>
+
+        </div>
+
+      </li> -->
+
+      <!-- <li *ngIf="usertype == 'User'" class="search-wrapper">
+        <form class="form-inline me-auto w-100">
+          <div class="search-box position-relative">
+        
+            <div class="input-group mb-0">
+              <span class="input-group-text my-0" id="basic-addon1"
+                ><i class="fa-solid fa-search"></i
+              ></span>
+              <input
+                class="form-control search-input rounded-1"
+                type="search"
+                placeholder="Search menu..."
+                [value]="searchQuery"
+                (input)="onSearch($event)"
+              />
+            </div>
+
+        
+            <div *ngIf="searchQuery.length > 0" class="search-dropdown shadow">
+              <div class="result-count" *ngIf="suggestions.length > 0">
+                {{ suggestions.length }} Results Found
+              </div>
+
+              <ul *ngIf="suggestions.length > 0" class="list-unstyled mb-0">
+                <li
+                  *ngFor="let suggestion of suggestions"
+                  (click)="onSelectSuggestion(suggestion)"
+                  class="p-2 border-bottom cursor-pointer"
+                >
+                
+                  <div class="d-flex align-items-center">
+                    <i class="fas fa-folder-open me-2 text-primary"></i>
+                    <span class="fw-semibold small">
+                      {{ suggestion.menucaption }}
+                    </span>
+                  </div>
+
+               
+                </li>
+              </ul>
+
+        
+              <div *ngIf="suggestions.length === 0" class="no-result-wrapper">
+                <div class="no-result-card">
+                  <div class="icon-box">
+                    <i class="fas fa-search"></i>
+                  </div>
+
+                  <h5>No Results Found</h5>
+
+                  <p>
+                    We couldn't find anything matching
+                    <span>"{{ searchQuery }}"</span>
+                  </p>
+
+                  <small>
+                    Try using different keywords or check your spelling
+                  </small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </li> -->
+
+
+      <li *ngIf="usertype == 'User' && !isVendor" class="search-wrapper">
+
+        <form class="form-inline me-auto w-100">
+
+          <div class="search-box position-relative">
+
+            <!-- LEFT ICON -->
+
+
+            <!-- INPUT -->
+
+
+
+            <div class="input-group mb-0 ">
+              <span class="input-group-text my-0 " id="basic-addon1"><i class="fa-solid fa-search"></i></span>
+              <input class="form-control search-input rounded-1" type="search" placeholder="Search menu..."
+                [value]="searchQuery" (input)="onSearch($event)">
+            </div>
+
+            <!-- DROPDOWN -->
+            <div *ngIf="searchQuery.length > 0" class="search-dropdown shadow-0 p-1">
+
+              <div class="result-count" *ngIf="suggestions.length > 0">
+                {{ suggestions.length }} Results Found
+              </div>
+
+              
+
+
+              <ul *ngIf="suggestions.length > 0" class="list-unstyled mb-0">
+
+                <li *ngFor="let suggestion of suggestions" (click)="onSelectSuggestion(suggestion)"
+                  class="p-2 border-bottom border-muted cursor-pointer">
+
+                  <!-- TOP -->
+                  <div class="d-flex align-items-center">
+                    <i class="fas  me-3 text-primary pt-1" [ngClass]="suggestion.icon ? suggestion.icon : 'fa-folder-open'"></i>
+                    <span class="fw-semibold small">
+                      {{ suggestion.menucaption }}
+                    </span>
+                  </div>
+
+
+
+                  <!-- BOTTOM DESCRIPTION -->
+                  <div class="ms-4 ps-2  x-small ">
+      {{ suggestion.pagepath || 'No description available' }}
+    </div> 
+
+                </li>
+
+              </ul>
+
+              <!-- NO RESULT -->
+              <div *ngIf="suggestions.length === 0" class="no-result-wrapper">
+                <div class="no-result-card">
+
+                  <div class="icon-box-search">
+                    <i class="fas fa-search"></i>
+                  </div>
+
+                  <h5>No Results Found</h5>
+
+                  <p>
+                    We couldn't find anything matching
+                    <span>"{{ searchQuery }}"</span>
+                  </p>
+
+                  <small>
+                    Try using different keywords or check your spelling
+                  </small>
+
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+        </form>
+
+      </li>
+
+
+
+
+
+
+
+
+
+
+      <li class="search-mobile-view d-none">
+        <a
+          href="#"
+          class="text-dark"
+          data-bs-toggle="collapse"
+          data-bs-target="#searchBox"
+        >
+          <i class="fa-solid fa-search ps-2"></i>
+        </a>
+      </li>
+    </ul>
+
+    <!-- mobile view search icons start -->
+
+    <!-- <div class="collapse search-box search-mobile-view" id="searchBox">
+             
+         <input class="form-control rounded-pill" style="border:1px solid #ccc"
+          type="search" placeholder="Search, Ex.- create order" 
+          aria-label="Search" 
+          [value]="searchQuery"
+          (input)="onSearch($event)">
+     
+    
+ 
+     
+     <div *ngIf="suggestions.length > 0" class="search-suggestions">
+       <ul>
+         <li *ngFor="let suggestion of suggestions" (click)="onSelectSuggestion(suggestion)">
+           {{ suggestion }}
+         </li>
+       </ul>
+     </div>
+
+     <div *ngIf="suggestions.length === 0 && searchQuery.length > 0" class="search-suggestions">
+       <ul>
+         <li>
+           No suggestions found for "{{ searchQuery }}"
+         </li>
+ 
+ 
+       </ul>
+      
+     </div>
+     
+       
+      </div> -->
+
+    <!-- mobile view search icons end -->
+  </div>
+  <ul class="navbar-nav navbar-right">
+    <li class="company-wrapper me-4">
+      <div class="company-bar">
+        <!-- ICON -->
+        <!-- <div class="company-icon">
+      <i class="fas fa-building"></i>
+    </div> -->
+
+        <!-- DETAILS -->
+        <div class="company-details">
+          <div class="bottom-line pb-1">
+            <span class="company-name"
+              >{{ companyName }}</span
+            >
+          </div>
+
+          <div class="top-line">
+            <span class="text-dark">
+              <i class="fas fa-user me-1 small"></i> {{ UserName }}</span
+            >
+            <span class="divider">|</span>
+            <span class="fy">{{ financialYear }}</span>
+          </div>
+        </div>
+      </div>
+    </li>
+
+    <li class="dropdown dropdown-list-toggle pt-1" *ngIf="userRoute">
+      <a
+        data-bs-toggle="dropdown"
+        class="nav-link nav-link-lg message-toggle"
+        [routerLink]="userRoute"
+      >
+        <i class="fa-solid fa-users text-primary fs-5"></i>
+      </a>
+    </li>
+
+    <li class="dropdown dropdown-list-toggle pt-1">
+      <button class="btn" routerLink="attendance/attendancedashboard/chatboat">
+        <i class="fa fa-comments text-primary fs-5"></i>
+      </button>
+    </li>
+
+    <li class="dropdown dropdown-list-toggle pt-1">
+      <a data-bs-toggle="dropdown" class="nav-link nav-link-lg message-toggle"
+        ><svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="feather feather-mail"
+        >
+          <path
+            d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"
+          ></path>
+          <polyline points="22,6 12,13 2,6"></polyline>
+        </svg>
+        <span class="badge headerBadge1">0 </span>
+      </a>
+
+      <ul
+        class="dropdown-menu dropdown-menu-end dropdown-menu-message shadow px-2"
+      >
+        <li class="dropdown-header py-0 m-0 fw-semibold">Message</li>
+        <li>
+          <hr class="dropdown-divider" />
+        </li>
+        <li>
+          <a class="dropdown-item" href="#">🔔 New candidate applied for job</a>
+        </li>
+        <li>
+          <a class="dropdown-item" href="#">📩 You received a new message</a>
+        </li>
+        <li>
+          <a class="dropdown-item" href="#">✅ Timesheet submitted by John</a>
+        </li>
+        <li>
+          <hr class="dropdown-divider" />
+        </li>
+        <li>
+          <a class="dropdown-item text-center text-primary" href="#"
+            >View all notifications</a
+          >
+        </li>
+      </ul>
+    </li>
+
+    <li class="dropdown dropdown-list-toggle pt-1">
+      <a
+        data-bs-toggle="dropdown"
+        class="nav-link notification-toggle nav-link-lg"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="feather feather-bell"
+        >
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+        </svg>
+        <span class="badge headerBadge2">{{ unreadCount }}</span>
+      </a>
+
+      <ul class="dropdown-menu dropdown-menu-end shadow p-2 pb-0">
+        <li class="dropdown-header py-0 m-0 fw-semibold">Notifications</li>
+        <li>
+          <hr class="dropdown-divider" />
+        </li>
+        <!-- <li><a class="dropdown-item" href="#">🔔 New candidate applied for job</a></li>
+        <li><a class="dropdown-item" href="#">📩 You received a new message</a></li>
+        <li><a class="dropdown-item" href="#">✅ Timesheet submitted by John</a></li> -->
+        <li *ngFor="let msg of recentMessages">
+          <a
+            class="dropdown-item d-flex align-items-center"
+            href="javascript:void(0)"
+            (click)="
+              openChat(msg.senderId, msg.notificationType, msg.senderRole)
+            "
+          >
+            <!-- <a class="dropdown-item d-flex align-items-center" href="javascript:void(0)"
+                  (click)="openChat(msg.chatId)"> -->
+            <div class="dropdown-item-avatar me-2">
+              <img
+                src="assets/Image/profile_images.png"
+                class="rounded-circle"
+                width="30"
+              />
+            </div>
+            <div class="dropdown-item-desc">
+              <b class="text-primary">{{ msg.senderName }}</b>
+              <p class="mb-0 text-truncate" style="max-width: 200px">
+                {{ msg.message }}
+              </p>
+              <small class="text-muted">{{
+                msg.time | date: "shortTime"
+              }}</small>
+            </div>
+          </a>
+        </li>
+
+        <li
+          *ngIf="recentMessages.length === 0"
+          class="text-center p-3 text-muted small"
+        >
+          No new messages
+        </li>
+        <li>
+          <hr class="dropdown-divider" />
+        </li>
+
+        <li class="view-all">
+          <a class="dropdown-item text-center text-primary" href="#"
+            >View all notifications</a
+          >
+        </li>
+      </ul>
+    </li>
+
+    <li class="px-2 pt-1">
+      <!-- <label>{{UserName}}</label> -->
+    </li>
+
+    <li class="dropdown">
+      <a
+        data-bs-toggle="dropdown"
+        class="nav-link dropdown-toggle nav-link-lg nav-link-user"
+      >
+        <img
+          src="assets/Image/profile_images.png"
+          class="user-img-radious-style" />
+        <span class="d-sm-none d-lg-inline-block"></span
+      ></a>
+      <div class="dropdown-menu dropdown-menu-right pullDown profile-dropdown">
+        <div class="dropdown-title">
+          Hello <span style="color: #3080e8">{{ UserName }}</span>
+        </div>
+
+        <a
+          *ngIf="usertype !== 'User'"
+          routerLink="/dash/setting/profile"
+          class="dropdown-item has-icon"
+        >
+          <i class="far fa-user"></i> Profile
+        </a>
+        <a
+          *ngIf="false"
+          routerLink="/dash/setting/kyc"
+          class="dropdown-item has-icon"
+        >
+          <i class="far fa-user"></i> kyc
+        </a>
+        <a
+          routerLink="/dash/setting/resetpassword"
+          class="dropdown-item has-icon"
+        >
+          <i class="fas fa-cog text-light-emphasis"></i>
+          Reset Password
+        </a>
+        <a
+          *ngIf="showAdminSwitch && usertype === 'Employee'"
+          class="dropdown-item has-icon"
+          (click)="switchToAdmin()"
+          style="cursor: pointer"
+        >
+          <i class="fa fa-user-shield"></i>
+          Switch to Admin
+        </a>
+
+        <a
+          *ngIf="showAdminSwitch && usertype === 'User'"
+          class="dropdown-item has-icon"
+          (click)="switchToEmployee()"
+        >
+          <i class="fa fa-user"></i>
+          Switch to Employee
+        </a>
+
+        <!-- <div class="dropdown-divider"></div> -->
+        <a
+          href="#"
+          (click)="onLogout()"
+          class="dropdown-item has-icon text-danger"
+        >
+          <i class="fas fa-sign-out-alt text-light-emphasis"></i>
+          Logout
+        </a>
+      </div>
+    </li>
+
+    <li *ngIf="usertype == 'User'">
+      <button
+        class="btn btn-outline-primary rounded-circle"
+        type="button"
+        data-bs-toggle="offcanvas"
+        data-bs-target="#offcanvasWithBothOptions"
+        aria-controls="offcanvasWithBothOptions"
+        data-bs-backdrop="false"
+        data-bs-scroll="true"
+        title="Help"
+      >
+        <i class="fas fa-question"></i>
+      </button>
+    </li>
+  </ul>
+</nav>
+
+<div
+  class="offcanvas offcanvas-end shadow"
+  data-bs-backdrop="static"
+  tabindex="-1"
+  id="offcanvasWithBothOptions"
+  aria-labelledby="offcanvasLabel"
+  style="font-size: 13px"
+>
+  <div class="offcanvas-header border-bottom">
+    <p class="offcanvas-title fw-bold text-primary mb-0" id="offcanvasLabel">
+      HRMS Help Center
+      <i class="fas fa-question-circle ms-2" style="font-size: 1rem"></i>
+    </p>
+    <button
+      type="button"
+      class="btn-close text-reset"
+      data-bs-dismiss="offcanvas"
+      aria-label="Close"
+    ></button>
+  </div>
+
+  <div class="offcanvas-body">
+    <div class="container">
+      <p class="text-dark fw-semibold mb-3">Ongoing HRMS Process</p>
+
+      <div
+        *ngFor="let item of userSteps; let i = index"
+        class="mb-4 p-3 rounded-3 shadow border-start border-3 border-primary"
+      >
+        <!-- Title and Progress % -->
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <span class="fw-semibold text-dark">{{ item.title }}</span>
+          <small class="text-muted">{{ item.progress }}%</small>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="progress" style="height: 6px">
+          <div
+            class="progress-bar bg-success"
+            role="progressbar"
+            [style.width.%]="item.progress"
+            [attr.aria-valuenow]="item.progress"
+            aria-valuemin="0"
+            aria-valuemax="100"
+          ></div>
+        </div>
+
+        <!-- Description -->
+        <p class="mt-2 mb-2 text-muted">{{ item.description }}</p>
+
+        <!-- Controls -->
+        <div class="d-flex justify-content-end gap-2">
+          <button
+            class="btn btn-sm btn-outline-primary rounded-pill px-3 py-1"
+            [routerLink]="item.link"
+            data-bs-dismiss="offcanvas"
+          >
+            Help ?
+          </button>
+
+          <!-- <button 
+            class="btn btn-sm btn-outline-danger rounded-pill px-3 py-1"
+            (click)="decreaseProgress(i)" 
+            [disabled]="item.progress === 0">-</button>
+
+          <button 
+            class="btn btn-sm btn-primary rounded-pill px-3 py-1"
+            (click)="increaseProgress(i)" 
+            [disabled]="item.progress === 100">+</button> -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

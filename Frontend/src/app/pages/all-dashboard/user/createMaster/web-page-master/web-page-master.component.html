@@ -1,0 +1,130 @@
+ <div class="row">
+          <div class="col-sm-12 col-md-12 col-lg-12">
+            <div class="card">
+         
+          <!-- header -->
+          <div class="card-header bg-primary">
+            <div class="row w-100">
+              <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-between">
+                <h4>Menu/Web page Master:</h4>
+              </div>
+              <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+                <button class="btn btnheader" routerLink="/dash/user/userdashboard/web-page-master-list">
+                  goTolist
+                </button>
+              </div>
+            </div>
+        </div>
+  <!--  -->
+
+  <div class="card-body mt-4">
+
+    <form class="row row-cols-1 row-cols-md-3" [formGroup]="WebpageDetails">
+          <div class="col"><label>Menu Caption<span style="color: red;">*</span></label>
+              <div class="form-group">
+                  <input  type="text" class="form-control flex-grow-1" formControlName="Menucaption">
+                  <span class="text-danger mt-1" style="font-size: 12px;" *ngIf="showError && WebpageDetails.controls['Menucaption'].invalid">
+                    Please enter Menu Caption.
+                  </span>
+              </div>                
+          </div>     
+          <div class="col"><label>Tool Tip</label>
+            <div class="form-group">
+                <input  type="text" class="form-control flex-grow-1" formControlName="Tooltip"> </div>                
+        </div> 
+        <div class="col">
+            <label>Parent Menu<span style="color: red;">*</span></label>
+          <div class="form-group">
+              <ng-select id="ParentMenu" [items]="selects" bindLabel="name" bindValue="value"
+              formControlName="ParentMenu"
+              placeholder="--Select --"
+              class="w-100"></ng-select>
+              <span class="text-danger mt-1" style="font-size: 12px;" *ngIf="showError && WebpageDetails.controls['ParentMenu'].invalid">
+                Please enter parent menu.
+              </span>
+            </div>  
+        </div>
+        <div class="col"><label>Want to set Navigate URL</label>
+            <div class="form-group">
+                <input  type="radio" name="NavigateUrl" formControlName="NavigateUrl"value="1">Yes
+                <input  type="radio" name="NavigateUrl" formControlName="NavigateUrl"value="2">No
+                
+            </div>                
+        </div>  
+        <div class="col"><label>Display Order</label>
+            <div class="form-group">
+                <input  type="text" class="form-control flex-grow-1" formControlName="DisplayOrder"> </div>                
+        </div>  
+        <div class="col"><label>Status</label>
+            <div class="form-group">
+                <input  type="checkbox" formControlName="isActive">Active
+               
+            </div>                
+        </div>   
+    </form></div>
+<!--second form-->
+
+<!--  -->
+
+  <div class="page-seperator bg-primary mx-2 rounded-1">
+    <p class="text-white ms-4 p-1"> Menu Navigate to web page Details</p>
+  </div>
+   
+  <!--  -->
+  
+  <div class="card-body mt-4">
+    <form class="row row-cols-1 row-cols-md-3" [formGroup]="WebpageDetails">  
+      <div class="col"><label>Web page path</label>
+          <div class="form-group">
+              <input  type="file" class="form-control flex-grow-1" formControlName="webpagepath"> </div>                
+      </div>  
+  
+          <div class="col"><label>Web Page Name</label>
+            <div class="form-group">
+                <input  type="text" class="form-control flex-grow-1" formControlName="Webpagename"> </div>                
+        </div> 
+        <div class="col">
+            <label>Belongs to Module<span style="color: red;">*</span></label>
+          <div class="form-group">
+              <ng-select id="ParentMenu" [items]="selects" bindLabel="name" bindValue="value"
+              placeholder="--Select --"
+              formControlName="BelongsModule"
+              class="w-100"></ng-select>
+              <span class="text-danger mt-1" style="font-size: 12px;" *ngIf="showError && WebpageDetails.controls['BelongsModule'].invalid">
+                Please enter Module.
+              </span>
+            </div>  
+        </div>
+        <div class="col">
+          <label>Type of page<span style="color: red;">*</span></label>
+        <div class="form-group">
+            <ng-select id="ParentMenu" [items]="selects" bindLabel="name" bindValue="value"
+            placeholder="--Select --"
+            formControlName="TypeOfpage"
+            class="w-100"></ng-select>
+            <span class="text-danger mt-1" style="font-size: 12px;" *ngIf="showError && WebpageDetails.controls['TypeOfpage'].invalid">
+              Please enter type of page.
+            </span>
+          </div>  
+      </div>
+      <div class="col">
+          <label>Remarks</label>
+        <div class="form-group">
+           <textarea class="form-control flex-grow-1" formControlName="Remarks"></textarea>
+          </div>  
+      </div>
+      
+  </form>
+  <div class="row">
+    <div class="col d-flex align-items-end justify-content-end pt-4 pb-3">
+   
+        <button type="button" class="btn btn-outline-dark mx-1" (click)="resetForm()">Reset</button>
+        <button type="button" class="btn btn-primary  mx-1" (click)="onSubmit()">{{ id ? 'Update' : 'Save' }}</button>                   
+    </div>
+</div>
+  </div>
+  
+  <!--end-->
+</div>
+</div>
+</div> 

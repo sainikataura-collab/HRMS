@@ -1,0 +1,228 @@
+<div class="row">
+  <div [ngClass]="isFactBoxOpen ? 'col-sm-12 col-md-8 col-lg-9' : 'col-12'">
+    <div class="card">
+      <div class="card-header bg-primary">
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-2 w-100 ">
+          <!-- Title Section -->
+          <div class="col">
+            <h4 class="text-white">Export/Import Employee</h4>
+          </div>
+
+          <div class="col d-flex align-items-center justify-content-end gap-2">
+            <button class="btn bg-white text-primary " (click)="exportTemplate()">
+              <i class="fa fa-download me-2"></i>&nbsp;Export&nbsp;Blank&nbsp;Excel
+            </button>
+            <button *ngIf="!isFactBoxOpen" class="btn btn-outline-light btn-sm d-flex align-items-center"
+              (click)="toggleFactBox()" title="Open Fact Box">
+              <i class="bi bi-info-circle me-1"></i> Fact Box
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+
+
+
+
+
+      <!-- Body with inline import UI -->
+      <div class="card-body">
+
+        <form [formGroup]="EmployeeEmport" (ngSubmit)="onSubmit()" class="row g-2 align-items-end mb-4">
+          <!-- File Input on the left -->
+          <div class="col-12 col-sm-12 col-md-6 col-lg-4">
+            <label class="form-label">Select File</label>
+            <input type="file" class="form-control" formControlName="file" (change)="onFileChange($event)">
+            <div *ngIf="EmployeeEmport.get('file')?.hasError('required') && EmployeeEmport.get('file')?.touched"
+              class="text-danger" style="font-size: 12px;">
+              File is required.
+            </div>
+
+            <!-- Validation message for invalid file type -->
+            <div *ngIf="EmployeeEmport.get('file')?.hasError('pattern') && EmployeeEmport.get('file')?.touched"
+              class="text-danger" style="font-size: 12px;">
+              Please upload a valid file (only .xlsx files allowed).
+            </div>
+          </div>
+
+
+
+
+          <!-- Right-aligned Buttons -->
+          <div class="col d-flex justify-content-end ms-auto gap-2">
+
+            <button type="submit" class="btn btn-primary">Import</button>
+            <button type="reset" class="btn btn-outline-dark">Reset</button>
+
+          </div>
+        </form>
+
+
+        <hr>
+
+        <div class="row mb-2" *ngIf="importedData.length > 0">
+
+          <!-- Search Box -->
+          <div class="col-12 col-md-4 mb-2 mb-md-0">
+            <input type="text" class="form-control" [formControl]="searchControl" placeholder="Search..." />
+          </div>
+
+          <!-- Buttons -->
+          <div class="col-12 col-md-8">
+            <div class="d-flex flex-wrap gap-2 justify-content-start justify-content-md-end">
+
+              <button class="btn d-flex align-items-center shadow-sm"
+                [ngClass]="currentFilter === 'All' ? 'btn-primary' : 'btn-outline-primary'" (click)="setFilter('All')">
+
+                <span>All Data</span>
+
+                <span class="bg-white rounded px-1 ms-2 fw-bold text-primary" style="font-size:11px;">
+                  {{ importedData.length }}
+                </span>
+
+              </button>
+
+              <button class="btn d-flex align-items-center shadow-sm"
+                [ngClass]="currentFilter === 'Uploaded' ? 'btn-success' : 'btn-outline-success'"
+                (click)="setFilter('Uploaded')">
+
+                <span>Uploaded</span>
+
+                <span class="bg-white rounded px-1 ms-2 fw-bold text-success" style="font-size:11px;">
+                  {{ uploadedCount }}
+                </span>
+
+              </button>
+
+              <button class="btn d-flex align-items-center shadow-sm"
+                [ngClass]="currentFilter === 'Not Uploaded' ? 'btn-danger' : 'btn-outline-danger'"
+                (click)="setFilter('Not Uploaded')">
+
+                <span>Not Uploaded</span>
+
+                <span class="bg-white rounded px-1 ms-2 fw-bold text-danger" style="font-size:11px;">
+                  {{ notUploadedCount }}
+                </span>
+
+              </button>
+
+              <button class="btn btn-primary d-flex align-items-center" (click)="downloadExcel()">
+
+                <i class="fa fa-download me-2"></i>
+                Export List
+
+              </button>
+
+            </div>
+          </div>
+
+        </div>
+        <div class="table-responsive mt-4" *ngIf="importedData.length >0"  [ngClass]="{ 'scroll-active': importedData.length > 10 }" style="max-height: 400px;">
+
+          <table class="table" >
+            <thead class="sticky-top bg-white">
+              <tr>
+                <th>Status</th>
+                <th>Empcode</th>
+                <th>EmpName</th>
+                <th>FatherName</th>
+                <th>City</th>
+                <th>LocationCode</th>
+                <th>Location</th>
+                <th>Department</th>
+                <th>Designation</th>
+                <th>Nature</th>
+                <th>Grade</th>
+                <th>ReportingManager</th>
+                <th>HOD</th>
+                <th>Bank</th>
+                <th>AccountNo</th>
+                <th>Ifsccode</th>
+                <th>DOB</th>
+                <th>DOJ</th>
+
+                <th>PFApp</th>
+                <th>ESIApp</th>
+                <th>PensionApp</th>
+                <th>VOLPFApp</th>
+                <th>ProfTaxApp</th>
+                <th>PANNo</th>
+                <th>Email</th>
+                <th>MobileNo</th>
+                <th>Gender</th>
+                <th>Religion</th>
+                <th>Category</th>
+                <th>Paymode</th>
+                <th>AdharcardNo</th>
+                <th>Contractor/Client&nbsp;Name</th>
+                <th>Vendor Code</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of filteredData">
+
+                <td [ngClass]="{
+                      'text-success': row.status === 'Updated',
+                      'text-danger': row.status !== 'Updated'
+                    }" style="white-space: nowrap;">
+                  {{ row.status }}
+                </td>
+                <td>{{ row.empcode }}</td>
+                <td>{{ row.empName }}</td>
+                <td>{{ row.fatherName }}</td>
+                <td>{{ row.city }}</td>
+                <td>{{ row.locationCode }}</td>
+                <td>{{ row.location }}</td>
+                <td>{{ row.department }}</td>
+                <td>{{ row.designation }}</td>
+                <td>{{ row.nature }}</td>
+                <td>{{ row.grade }}</td>
+                <td>{{ row.reportingManager }}</td>
+                <td>{{ row.hod }}</td>
+                <td>{{ row.bank }}</td>
+                <td>{{ row.accountNo }}</td>
+                <td>{{ row.ifsccode }}</td>
+                <td>{{ row.dobString }}</td>
+                <td>{{ row.dojString }}</td>
+
+                <td>{{ row.pfApp }}</td>
+                <td>{{ row.esiApp }}</td>
+                <td>{{ row.pensionApp }}</td>
+                <td>{{ row.volpfApp }}</td>
+                <td>{{ row.profTaxApp }}</td>
+                <td>{{ row.panNo }}</td>
+                <td>{{ row.email }}</td>
+                 <td>{{ row.mobileNo }}</td>
+                <td>{{ row.gender }}</td>
+                <td>{{ row.religion }}</td>
+                <td>{{ row.category }}</td>
+                <td>{{ row.paymode }}</td>
+                <td>{{ row.adharcardNo }}</td>
+                <td>{{ row.contractorName }}</td>
+                  <td>{{ row.vendorCode }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Right Side: Fact Box Sidebar -->
+  <app-fact-box [ngClass]="isFactBoxOpen ? 'col-sm-12 col-md-4 col-lg-3' : ''"
+    [title]="'Fact Box'"
+    [files]="factBoxFiles"
+    [isLoading]="isLoadingFactBox"
+    [isOpen]="isFactBoxOpen"
+    [totalItems]="totalUploadedFiles"
+    [currentPage]="pageIndexFactBox"
+    [itemsPerPage]="pageSizeFactBox"
+    (onToggle)="toggleFactBox()"
+    (onPageChange)="onFactBoxPageChange($event)"
+    (onDownload)="downloadFactBoxFile($event)">
+  </app-fact-box>
+</div>

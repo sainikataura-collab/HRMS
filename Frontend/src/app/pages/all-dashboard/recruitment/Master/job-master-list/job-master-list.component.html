@@ -1,0 +1,115 @@
+<div class="row mb-3">
+  <!-- Total Jobs Card -->
+  <div class="col-12 col-md-4">
+    <div class="card">
+      <div class="card-body text-center p-3">
+        <h6 class="text-muted text-uppercase mb-1">Total Jobs</h6>
+        <h4 class="mb-0 text-primary">{{ totalJobsCount }}</h4>
+      </div>
+    </div>
+  </div>
+
+  <!-- Open Jobs Card -->
+  <div class="col-12 col-md-4 mt-2 mt-md-0">
+    <div class="card">
+      <div class="card-body text-center p-3">
+        <h6 class="text-muted text-uppercase mb-1">Open Jobs</h6>
+        <h4 class="mb-0 text-success">{{ openJobsCount }}</h4>
+      </div>
+    </div>
+  </div>
+
+  <!-- Closed Jobs Card -->
+  <div class="col-12 col-md-4 mt-2 mt-md-0">
+    <div class="card">
+      <div class="card-body text-center p-3">
+        <h6 class="text-muted text-uppercase mb-1">Closed Jobs</h6>
+        <h4 class="mb-0 text-danger">{{ closedJobsCount }}</h4>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <!-- Heading -->
+      <div class="card-header bg-primary">
+        <div class="row w-100">
+          <!-- Title Section -->
+          <div class="col-sm-12 col-md-6 col-lg-4 d-flex align-items-center justify-content-start">
+            <h4 class="text-white">List of Jobs</h4>
+          </div>
+          <!-- Search Section -->
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-center">
+              <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText"/>
+
+          </div>
+          <!-- Buttons Section -->
+          <div class="col-sm-12 col-md-6 col-lg-4 d-flex align-items-center justify-content-end ms-auto gap-2">
+            <button class="btn btn-light" routerLink="/dash/recruitment/recruitmentdashboard/jobMaster">
+              Add
+            </button>
+            <button class="btn btn-light">
+              Download
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-body">
+              <div class="table-responsive table-invoice">
+                     <table id="exportTable" class="table table-bordered">
+                  <thead>
+                    <tr>
+                      <th>Sr.</th>
+                      <th>Job Title</th>
+                      <th>Designation</th>
+                      <th>No Of Post</th>
+                      <th>Opening Date</th>
+                      <th>Closing Date</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr
+                      *ngFor="let data of filteredData()| paginate : { itemsPerPage: pageSize, currentPage: pageIndex, totalItems: totalItems }; let i = index">
+                      <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+                      <td>{{ data.job_title }}</td>
+                      <td>{{ data.designation }}</td>
+                      <td>{{ data.no_of_post }}</td>
+                      <td>{{ data.job_opening_date }}</td>
+                      <td>{{ data.job_closing_date }}</td>
+                      <td>
+                        <button class="btn" [routerLink]="['/dash/recruitment/recruitmentdashboard/external-candidates-list', data.pk_JobId]" title="View External Candidates">
+                          <i class="fa fa-users"></i>
+                        </button>
+                        <button class="btn" (click)="edit(data.pk_JobId)">
+                          <i class="fa-solid fa-pen-to-square"></i>
+                        </button>
+                        <button class="btn" (click)="delete(data.pk_JobId)">
+                          <i class="fa fa-trash"></i>
+                        </button>
+                      </td>
+                    </tr>
+                    
+                  </tbody>
+                </table>
+                 <!--for pagination-->
+                 <pagination-controls
+                 (pageChange)="onPageChange($event)"
+                 [responsive]="true">
+               </pagination-controls>
+             
+                     <ng-template #noData>
+                       <tr>
+                         <td colspan="4" class="text-center">No data available</td>
+                       </tr>
+                     </ng-template>
+                </div>
+          </div>
+
+     
+    </div>
+  </div>
+</div>

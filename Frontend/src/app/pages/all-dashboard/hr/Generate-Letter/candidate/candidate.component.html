@@ -1,0 +1,178 @@
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+      <div class="card">
+        <!--  -->
+    
+  
+    
+  
+        <div class="card-header bg-primary">
+            <div class="row w-100">
+              <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-between">
+                <h4> {{Isedit? 'Candidate Master' : 'Candidate Master'}}</h4>
+              </div>
+              <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+                <button class="btn btnheader" routerLink="/dash/hr/hrdashboard/Candidate_list">
+                    Back
+                 </button>
+              </div>
+
+            </div>
+        </div>
+        <div class="card-body mt-4">
+          <form [formGroup]="CandidateForm">
+            <div class="row">
+              <div class="col-md-4">
+                <label>Employee Code<span style="color: red;">*</span></label>
+                 <div class="form-group">
+                   <ng-select id="year" [items]="EmployeeList" bindLabel="name" bindValue="value" formControlName="fk_empid"
+                    placeholder="--Select --" class="w-100"></ng-select>
+                  <div *ngIf="submitted   && CandidateForm.get('fk_empid')?.invalid" class="text-danger mt-1" style="font-size: 12px;">
+                    Please choose Employee code
+                  </div>
+                </div>
+               
+              </div>
+  
+              <div class="col-md-4">
+                <label>Name <span style="color: red;">*</span></label>
+                <div class="form-group">
+                    <input type="text" class="form-control" formControlName="name">
+
+                    <div *ngIf="submitted   && CandidateForm.get('name')?.invalid" class="text-danger mt-1" style="font-size: 12px;">
+                        Please enter name
+                      </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <label>Last Name <span style="color: red;">*</span></label>
+                <div class="form-group">
+                    <input type="text" class="form-control" formControlName="nname">
+
+                    <div *ngIf="submitted   && CandidateForm.get('nname')?.invalid" class="text-danger mt-1" style="font-size: 12px;">
+                        Please enter last name
+                      </div>
+                </div>
+            </div>
+  
+            <div class="col-md-4">
+                <label>Location<span style="color: red;">*</span></label>
+                 <div class="form-group">
+                   <ng-select id="year" [items]="locationList" bindLabel="name" bindValue="value" formControlName="fk_locid"
+                    placeholder="--Select --" class="w-100"></ng-select>
+                  <div *ngIf="submitted   && CandidateForm.get('fk_locid')?.invalid" class="text-danger mt-1" style="font-size: 12px;">
+                    Please choose Location
+                  </div>
+                </div>
+               
+              </div>
+              <div class="col-md-4">
+                <label>Department<span style="color: red;">*</span></label>
+                 <div class="form-group">
+                   <ng-select id="year" [items]="departmentList" bindLabel="name" bindValue="value" formControlName="fk_deptid"
+                    placeholder="--Select --" class="w-100"></ng-select>
+                  <div *ngIf="submitted   && CandidateForm.get('fk_deptid')?.invalid" class="text-danger mt-1" style="font-size: 12px;">
+                    Please choose department
+                  </div>
+                </div>
+               
+              </div>
+
+              <div class="col-md-4">
+                <label>Designation<span style="color: red;">*</span></label>
+                 <div class="form-group">
+                   <ng-select id="year" [items]="designationList" bindLabel="name" bindValue="value" formControlName="fk_desgid"
+                    placeholder="--Select --" class="w-100"></ng-select>
+                  <div *ngIf="submitted   && CandidateForm.get('fk_desgid')?.invalid" class="text-danger mt-1" style="font-size: 12px;">
+                    Please choose designation
+                  </div>
+                </div>
+               
+              </div>
+              <div class="col-md-4">
+                <label>City<span style="color: red;">*</span></label>
+                 <div class="form-group">
+                   <ng-select id="year" [items]="cityList" bindLabel="name" bindValue="value" formControlName="fk_cityid"
+                    placeholder="--Select --" class="w-100"></ng-select>
+                  <div *ngIf="submitted   && CandidateForm.get('fk_cityid')?.invalid" class="text-danger mt-1" style="font-size: 12px;">
+                    Please choose city
+                  </div>
+                </div>
+               
+              </div>
+              <div class="col-md-4">
+                <label>Pin no </label>
+                <div class="form-group">
+                    <input type="text" class="form-control" formControlName="pinno" (keypress)="validateNumber($event)" maxlength="6">
+
+                                    </div>
+            </div>
+            <div class="col-md-4">
+                <label>Joining date <span style="color: red;">*</span></label>
+                <div class="form-group">
+                    <input type="date" class="form-control" formControlName="joiningdate">
+
+                    <div *ngIf="submitted   && CandidateForm.get('joiningdate')?.invalid" class="text-danger mt-1" style="font-size: 12px;">
+                        Please enter date
+                      </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <label>CTC <span style="color: red;">*</span></label>
+                <div class="form-group">
+                    <input type="text" class="form-control" formControlName="ctc" (keypress)="validateNumber($event)" maxlength="10">
+
+                    <div *ngIf="submitted   && CandidateForm.get('ctc')?.invalid" class="text-danger mt-1" style="font-size: 12px;">
+                        Please enter ctc
+                      </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <label>Contact <span style="color: red;">*</span></label>
+                <div class="form-group">
+                    <input type="text" class="form-control" formControlName="contactno" (keypress)="validateNumber($event)" maxlength="10">
+
+                    <div *ngIf="submitted   && CandidateForm.get('contactno')?.invalid" class="text-danger mt-1" style="font-size: 12px;">
+                        Please enter contact no
+                      </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <label>HR Name<span style="color: red;">*</span></label>
+                 <div class="form-group">
+                   <ng-select id="year" [items]="HRList" bindLabel="name" bindValue="value" formControlName="fk_emphrid"
+                    placeholder="--Select --" class="w-100"></ng-select>
+                  <div *ngIf="submitted   && CandidateForm.get('fk_emphrid')?.invalid" class="text-danger mt-1" style="font-size: 12px;">
+                    Please choose HR name
+                  </div>
+                </div>
+               
+              </div>
+  
+            <div class="col-md-4">
+                <label>Address </label>
+                <div class="form-group">
+                    <input type="text" class="form-control" formControlName="address">
+
+                </div>
+            </div>
+
+            </div>
+  
+  
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-primary mx-1" (click)="submitForm()">{{Isedit? 'Update' : 'Save'}}</button>
+              <button type="reset" class="btn btn-outline-dark mx-1">Reset</button>
+              
+            </div>
+          </form>
+        </div>
+  
+  
+      </div>
+    </div>
+  
+  </div>

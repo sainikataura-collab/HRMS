@@ -1,0 +1,75 @@
+<nav class="navbar navbar-expand-lg main-navbar sticky-top">
+  <div class="form-inline me-auto">
+    <ul class="navbar-nav mr-3 d-flex align-items-center flex-row">
+      <li>
+        <a (click)="onToggleBodyClass()" data-bs-toggle="sidebar" class="nav-link-lg nav-link collapse-btn" style="cursor: pointer;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            class="feather feather-align-justify">
+            <line x1="21" y1="10" x2="3" y2="10"></line>
+            <line x1="21" y1="6" x2="3" y2="6"></line>
+            <line x1="21" y1="14" x2="3" y2="14"></line>
+            <line x1="21" y1="18" x2="3" y2="18"></line>
+          </svg>
+        </a>
+      </li>
+      <li class="d-flex align-items-center gap-2 ms-2 company-brand-section">
+        <!-- Company Logo -->
+        <img *ngIf="companyLogoUrl" [src]="companyLogoUrl" (error)="onLogoError($event)" alt="Company Logo" class="company-logo-img" />
+
+        <!-- Fallback Icon if logo url not yet present -->
+        <svg *ngIf="!companyLogoUrl" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0d6efd" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+          <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+          <line x1="10" y1="12" x2="14" y2="12"></line>
+        </svg>
+
+        <!-- Company Name -->
+        <span *ngIf="companyName" class="company-title-text" [title]="companyName">
+          {{ companyName }}
+        </span>
+
+        <!-- Divider between Company Name and Onboarding Heading -->
+        <div *ngIf="companyName" class="brand-divider"></div>
+
+        <!-- Onboarding Heading -->
+        <div class="d-flex align-items-center gap-1 onboarding-heading-badge">
+          <svg *ngIf="companyName" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0d6efd" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+            <line x1="10" y1="12" x2="14" y2="12"></line>
+          </svg>
+          <span class="text-primary fw-bold onboarding-heading-text">Onboarding verification</span>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <ul class="navbar-nav navbar-right d-flex align-items-center flex-row ms-auto mb-0" style="list-style: none;">
+    <!-- Last Opened -->
+    <li class="d-none d-md-flex flex-column text-end justify-content-center me-3" style="line-height: 1.2;">
+      <span style="font-size: 11px; color: #8c98a4; font-weight: 500;">Last opened</span>
+      <span style="font-size: 12px; font-weight: 600; color: #2b3674; white-space: nowrap;">{{ lastOpenedDate }}</span>
+    </li>
+
+    <!-- Divider 1 -->
+    <li class="d-none d-md-block" style="width: 1px; height: 26px; background-color: #e2e8f0; margin-right: 16px;"></li>
+
+    <!-- Current Date & Time -->
+    <li class="d-none d-sm-flex flex-column text-center justify-content-center me-3" style="line-height: 1.2;">
+      <span style="font-size: 12px; font-weight: 600; color: #2b3674; white-space: nowrap;">{{ currentDate }}</span>
+      <span style="font-size: 11px; color: #6c757d; font-weight: 500; white-space: nowrap;">{{ currentTime }}</span>
+    </li>
+
+    <!-- Divider 2 -->
+    <li class="d-none d-sm-block" style="width: 1px; height: 26px; background-color: #e2e8f0; margin-right: 16px;"></li>
+
+    <!-- Candidate Avatar & Name -->
+    <li class="d-flex align-items-center gap-2 me-2">
+      <div style="width: 32px; height: 32px; min-width: 32px; border-radius: 50%; background-color: #dbeafe; color: #1d4ed8; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; border: 1px solid #bfdbfe;">
+        {{ userInitials }}
+      </div>
+      <span style="font-size: 13.5px; font-weight: 600; color: #1f2937; white-space: nowrap;">{{ candidateName }}</span>
+    </li>
+  </ul>
+</nav>

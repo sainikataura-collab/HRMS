@@ -1,0 +1,134 @@
+<div class="card">
+
+    <!-- main header -->
+    <div class="card-header bg-primary py-lg-2 mt-0">
+        <div class="row w-100 align-items-center">
+            <div class="col-12 col-md-3 text-white">
+                Exit Form Authority
+            </div>
+
+            <div class="col-12 col-md-7 mt-2 mt-md-0">
+                <app-common-search (filtersChanged)="handleFilters($event)"></app-common-search>
+            </div>
+
+            <div class="col-12 col-md-2 mt-2 mt-md-0 d-flex justify-content-center justify-content-md-end">
+                <!-- <button class="btn btnheader" routerLink="">
+                    Back
+                </button> -->
+            </div>
+        </div>
+    </div>
+    <!-- main header close -->
+
+    <div class="card-body">
+        <form [formGroup]="AuthorityForm">
+
+            <div class="g-4 row row-cols-1 row-cols-md-3">
+
+                <div class="col">
+                    <label for="employeeCode">Employee Code<span class="text-danger">*</span></label>
+                    <ng-select id="employeeCode" [items]="employees" bindLabel="name" bindValue="value"
+                        formControlName="fk_empid" placeholder="--Select Employee--" class="text-danger"
+                        (change)="onEmployeeSelect($event)">
+                    </ng-select>
+                    <div *ngIf="AuthorityForm.controls['fk_empid'].touched && AuthorityForm.controls['fk_empid'].invalid"
+                        class="text-danger " style="font-size: 12px;">
+                        Please select an employee
+                    </div>
+                </div>
+
+                <div class="col">
+                    <label for="seniorCode">Senior Code<span class="text-danger">*</span></label>
+                    <ng-select id="seniorCode" [items]="employees" bindLabel="name" bindValue="value"
+                        formControlName="fk_approvedbyid" placeholder="--Select Senior Employee--" class="w-100"
+                        (change)="getSeniorEmployees($event)">
+                    </ng-select>
+                    <div *ngIf="AuthorityForm.controls['fk_approvedbyid'].touched && AuthorityForm.controls['fk_approvedbyid'].invalid"
+                        class="text-danger" style="font-size: 12px;">
+                        Please select a senior employee
+                    </div>
+                </div>
+
+                <div class="col">
+                    <label for="approveLevel">Approval Level<span class="text-danger">*</span></label>
+                    <ng-select id="approveLevel" [items]="selects" bindLabel="name" bindValue="value"
+                        formControlName="orderno" placeholder="--Select Approval Level--" class="w-100">
+                    </ng-select>
+                    <div *ngIf="AuthorityForm.controls['orderno'].touched && AuthorityForm.controls['orderno'].invalid"
+                        class="text-danger" style="font-size: 12px;">
+                        Please select Approval Level
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="modal-footer mt-3">
+                <button type="button" class="btn btn-primary mx-1" (click)="saveAuthority()">
+                    {{ isEdit ? 'Update' : 'Add' }}
+                </button>
+                <button type="button" class="btn btn-outline-dark mx-1" (click)="resetForm()">Reset</button>
+            </div>
+
+
+            <!-- Table Section -->
+            <div class="bg-primary rounded-1 mt-3 page-seperator">
+                <p class="p-1 text-white ms-4">List of Exit Form Authority</p>
+            </div>
+
+            <div class="row">
+                <div class="table-invoice table-responsive">
+                    <table class="table table-bordered" id="table1">
+                        <thead>
+                            <tr>
+                                <th>Sr.No</th>
+                                 <!-- <th>Employee Code</th>
+                                  <th>Employee Name</th>  -->
+                                <th>Senior Code</th>
+                                <th>Senior Name</th>
+                                <th>Approval Level</th>
+                                <th>Level Value</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let auth of authorityList; let i = index">
+                                <td>{{ i + 1 }}</td>
+                                 <!-- <td>{{ auth.code }}</td>
+                                    <td>{{ auth.name }}</td>  -->
+                                <td>{{ auth.seniorCode }}</td>
+                                <td>{{ auth.seniorName }}</td>
+                                <td>{{ auth.approvalLevelName }}</td>
+                                <td>{{ auth.approvalLevel }}</td>
+                                <td>
+                                    <button class="btn btn-outline btn-sm me-2" (click)="editAuthority(auth, i)">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                    </button>
+                                    <button class="btn btn-outline btn-sm" (click)="deleteAuthority(i)">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr *ngIf="authorityList.length === 0">
+                                <td colspan="8" class="text-center">No records found</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+               <!-- final button -->
+
+                    <div class="row">
+
+                        <div
+                            class="modal-footer col-sm-12 col-md-12 col-lg-12 d-flex align-items-center justify-content-end">
+                          
+                             <button type="submit" class="btn btn-primary mx-1" (click)="finalSubmit()">Save</button>
+                            <button type="reset" class="btn btn-outline-dark mx-1">Reset</button> 
+
+                        </div>
+
+                    </div>
+        </form>
+
+    </div>
+</div>

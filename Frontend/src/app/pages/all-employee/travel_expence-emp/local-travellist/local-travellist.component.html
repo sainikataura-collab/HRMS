@@ -1,0 +1,98 @@
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+
+      <!-- HEADER -->
+      <div class="card-header bg-primary text-white">
+        <div class="row w-100">
+
+          <div class="col-md-4 d-flex align-items-center">
+            <h4>Local Travel Requisition Master</h4>
+          </div>
+
+          <div class="col-md-4">
+            <input type="text"
+                   class="form-control"
+                   placeholder="Search..."
+                   [(ngModel)]="searchText"
+                   (ngModelChange)="onSearchTextChanged()" />
+          </div>
+
+          <div class="col-md-4 text-end">
+            <button class="btn btnheader"
+                    routerLink="/dash/travelexpence_emp/travelexpence_empdashboard/localtravel">
+              New Request
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- TABLE -->
+      <div class="table-responsive">
+        <table class="table table-bordered">
+
+          <thead>
+            <tr>
+              <th>S.No.</th>
+              <th>Dated</th>
+              <th>Amount</th>
+              <th>Travel Days</th>
+              <th>Status</th>
+              <th>View</th>
+              <th>Print</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <!-- <tr *ngFor="let item of filteredData()
+             | paginate: { itemsPerPage: pageSize, currentPage: page, totalItems: totalItems };
+             let i = index"> -->
+             <tr *ngFor="let item of filteredData()
+ | paginate: { itemsPerPage: pageSize, currentPage: page };
+ let i = index">
+
+
+              <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+              <td>{{ item.dated }}</td>
+              <td>{{ item.amount }}</td>
+              <td>{{ item.requestDays }}</td>
+              <td>{{ item.statusDes }}</td>
+
+              <!-- VIEW -->
+              <!-- <td style="cursor:pointer; text-align:center">
+                <i class="fa fa-pen"
+                   (click)="isEdit(item.pk_localtravelId)">
+                </i>
+              </td> -->
+              <!-- VIEW -->
+<td style="text-align:center">
+  <i 
+    *ngIf="item.statusDes === 'Draft' || item.statusDes === 'Rejected'||item.statusDes ==='Pending at your end' " 
+    class="fa fa-pen" 
+    style="cursor:pointer;"
+    (click)="isEdit(item.pk_localtravelId)">
+  </i>
+</td>
+
+              <!-- PRINT -->
+              <td style="cursor:pointer; text-align:center">
+                <i class="fa fa-print"
+                   (click)="downloadPdf(item.pk_localtravelId)">
+                </i>
+              </td>
+
+            </tr>
+          </tbody>
+
+        </table>
+
+        <pagination-controls
+          (pageChange)="onPageChange($event)">
+        </pagination-controls>
+
+      </div>
+
+    </div>
+  </div>
+</div>

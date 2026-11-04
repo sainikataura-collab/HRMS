@@ -1,0 +1,80 @@
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-primary">
+                <div class="row w-100">
+                  <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-between">
+                    <h4>Company Policy Details:</h4>
+                  </div>
+                  <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+                    <button class="btn btnheader" routerLink="/dash/hr/hrdashboard/Company-Policy-Detail-List">
+                      goTolist
+                    </button>
+                  </div>
+    
+                </div>
+            </div>
+
+            <div class="card-body mt-4">
+                <form [formGroup]="componyPoliciesForm" (ngSubmit)="OnSubmit()">
+                    <!-- Department Name -->
+                    <div class="row" class="row row-cols-1 row-cols-md-3 g-4">
+
+                        <div class="col">
+                            <label for="CompanyPolicy">Company Policy:</label>
+                            <div class="form-group">
+                                <ng-select [items]="companyPolicyList" id="CompanyPolicy" bindLabel="name" bindValue="value" formControlName="CompanyPolicy"  placeholder="-select code-"></ng-select>
+
+                            </div>
+      
+                        </div>
+
+                        <div class="col">
+                            <label for="Description" >Description:</label>
+                            <div class="form-group">
+                                <input id="Description" type="text" class="form-control" formControlName="Description" />
+                                    <!-- Validation message below input field -->
+                                    <span *ngIf="showError && componyPoliciesForm.controls['Description'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                                        Please enter HOD Code.
+                                    </span> 
+                            </div> 
+                        </div>
+
+                        <div class="col">
+                            <label for="filename" >File Name:</label>
+                            <div class="form-group">
+                                <input id="filename" type="file" class="form-control" formControlName="filename" />
+
+                            </div> 
+                        </div>
+                        <div class="col">
+                            <label for="Details" >Details:</label>
+                            <div class="form-group">
+                                <textarea id="Details" type="text" class="form-control" formControlName="Details"></textarea>
+                                    <!-- Validation message below input field -->
+                                    <span *ngIf="showError && componyPoliciesForm.controls['Description'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                                        Please enter HOD Code.
+                                    </span> 
+                            </div> 
+                        </div>
+                        <div class="col">
+                            <label for="isactive" >Active:</label>
+                            <div class="form-group">
+                                <input type="checkbox" id="isactive" formControlName="isActive" class="form-check-input" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Footer buttons -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-dark mx-1">Reset</button>
+                        <button type="submit"  class="btn btn-primary mx-1">Save</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+

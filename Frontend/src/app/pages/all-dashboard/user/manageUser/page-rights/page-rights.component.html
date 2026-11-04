@@ -1,0 +1,207 @@
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card">
+
+      <!-- Card Header -->
+      <div class="card-header bg-primary">
+        <div class="row w-100">
+          <!-- Title Section -->
+          <div class="col-sm-7 col-md-7 col-lg-5 d-flex align-items-center justify-content-start">
+            <h4 class="text-white">Assign Location & Webpage Rights To The User</h4>
+          </div>
+
+          <!-- Back Button -->
+          <div class="col-sm-6 col-md-6 col-lg-2 d-flex align-items-center justify-content-end ms-auto gap-2">
+            <!-- <button class="btn btnheader" routerLink="/dash/payroll/payrolldashboard/RestrictedMasterList">
+               Back
+            </button> -->
+          </div>
+        </div>
+      </div>
+
+      <div class="card-body mt-2 mb-2">
+        <form [formGroup]="Form">
+          <div class="row row-cols-1 row-cols-md-4 g-4 ">
+
+            <!-- User name -->
+            <div class="col">
+              <label>User Name<span style="color: red;">*</span></label>
+              <ng-select id="userId" [items]="Userlist" bindLabel="name" bindValue="value" placeholder="--Select --"
+                class="w-100" formControlName="fk_userId"></ng-select>
+              <span *ngIf="showError && Form.controls['fk_userId'].invalid" class="text-danger mt-1"
+                style="font-size: 12px;">
+                Please select user name.
+              </span>
+            </div>
+
+            <!-- Zone -->
+            <div class="col">
+              <label>Zone</label>
+              <ng-select id="fk_zoneId" [items]="Zone" bindLabel="name" bindValue="value" placeholder="--Select --"
+                class="w-100" formControlName="fk_zoneId"></ng-select>
+            </div>
+
+            <!-- Location -->
+            <div class="col">
+              <label>Location<span style="color: red;">*</span></label>
+              <ng-select [items]="filteredLocations" bindLabel="name" bindValue="value" [multiple]="true" [closeOnSelect]="false"
+                [loading]="isZoneLocationLoading" [searchable]="false" (open)="onLocationDropdownOpen()" (close)="locationSearchTerm = ''"
+                placeholder="--Select Locations--" class="w-100 small" formControlName="fk_locid">
+
+                <!-- Custom Template for Displaying Selected Items -->
+                <ng-template ng-multi-label-tmp>
+                  <div class="d-flex align-items-center text-truncate w-100">
+                    <!-- If all locations are selected -->
+                    <ng-container *ngIf="selectedCount === Location.length && Location.length > 0">
+                      <span class="badge bg-success me-1 px-2 py-1">All</span>
+                      <span class="text-truncate fw-semibold">All Selected ({{ Location.length }})</span>
+                    </ng-container>
+
+                    <!-- If only 1 location is selected -->
+                    <ng-container *ngIf="selectedCount === 1">
+                      <span class="badge bg-primary me-1 px-2 py-1">1</span>
+                      <span class="text-truncate">{{ getSingleSelectedName() }}</span>
+                    </ng-container>
+
+                    <!-- If multiple locations are selected -->
+                    <ng-container *ngIf="selectedCount > 1 && selectedCount < Location.length">
+                      <span class="badge bg-primary me-2 px-2 py-1">{{ selectedCount }} Selected</span>
+                      <span class="text-muted small text-truncate">({{ selectedCount }} of {{ Location.length }})</span>
+                    </ng-container>
+                  </div>
+                </ng-template>
+
+                <!-- Custom Header for Select All with Search Input below it -->
+                <ng-template ng-header-tmp>
+                  <div class="p-2 border-bottom bg-light">
+                    <!-- Select All Row -->
+                    <div class="d-flex align-items-center justify-content-between mb-2" (click)="toggleSelectAll()" style="cursor: pointer;">
+                      <div class="d-flex align-items-center">
+                        <input type="checkbox" [checked]="isAllSelected()" class="form-check-input fs-6 me-2" style="pointer-events: none;" />
+                        <strong>{{ locationSearchTerm ? 'Select All Filtered' : 'Select All' }}</strong>
+                      </div>
+                      <span class="badge bg-white text-primary border font-monospace px-2 py-1">
+                        {{ selectedCount }} / {{ Location.length }} selected
+                      </span>
+                    </div>
+
+                    <!-- Search Input Box (Allows searching without clearing previous selections) -->
+                    <div class="input-group input-group-sm" (click)="$event.stopPropagation()">
+                      <span class="input-group-text bg-white border-end-0 py-1 text-muted">
+                        <i class="bi bi-search"></i>
+                      </span>
+                      <input type="text" class="form-control border-start-0 py-1" 
+                             placeholder="Search & add more locations..." 
+                             [value]="locationSearchTerm"
+                             (input)="onSearchLocation($event)"
+                             (click)="$event.stopPropagation()"
+                             (keydown)="$event.stopPropagation()"
+                             (keyup)="$event.stopPropagation()"
+                             (keypress)="$event.stopPropagation()" />
+                      <button *ngIf="locationSearchTerm" class="btn btn-outline-secondary border-start-0 py-0" type="button" 
+                              (click)="clearSearch($event)">
+                        ✕
+                      </button>
+                    </div>
+                  </div>
+                </ng-template>
+
+                <!-- Custom Checkbox for Location Options -->
+                <ng-template ng-option-tmp let-item="item" let-item$="item$">
+                  <div class="d-flex align-items-center w-100">
+                    <input type="checkbox" [checked]="item$.selected || (Form.get('fk_locid')?.value || []).includes(item.value)"
+                      class="form-check-input fs-6 me-2" style="pointer-events: none;" />
+                    <span class="text-truncate">{{ item.name }}</span>
+                  </div>
+                </ng-template>
+
+              </ng-select>
+              <span *ngIf="showError && Form.controls['fk_locid'].invalid" class="text-danger mt-1"
+                style="font-size: 12px;">
+                Please select at least one Location.
+              </span>
+            </div>
+
+            <!-- Modules Name -->
+            <div class="col">
+              <label>Modules Name<span style="color: red;">*</span></label>
+              <ng-select id="moduleId" [items]="ModuleList" bindLabel="name" bindValue="value" placeholder="--Select Module--"
+                class="w-100" formControlName="fk_moduleId"></ng-select>
+              <span *ngIf="showError && Form.controls['fk_moduleId'].invalid" class="text-danger mt-1"
+                style="font-size: 12px;">
+                Please select any module.
+              </span>
+            </div>
+
+          </div>
+        </form>
+      </div>
+
+      <!-- Table Section -->
+      <div class="card-body" *ngIf="webpages.length > 0">
+        <div>
+          <!-- List of web page -->
+          <div class="d-flex justify-content-between align-items-center mt-4 mb-2">
+            <p class="text-primary m-0 fw-bold">Assign pages right to user</p>
+          </div>
+
+          <div class="table-responsive table-invoice scrollable-table">
+            <table class="table table-bordered">
+              <thead class="sticky-top table-secondary" style="background-color: rgb(250, 251, 251);top:-2">
+                <tr class="sticky-top">
+                  <th>Sr.</th>
+                  <th><input type="checkbox" [(ngModel)]="Selected" (change)="AllSelect()" /> &nbsp;All</th>
+                  <th>Menu Name</th>
+                  <th>Description</th>
+                  <th>Parent Menu</th>
+                    <ng-container *ngIf="isRecruitmentModule()">
+                          <th class="text-center" style="width: 100px;">L1 Approval</th>
+                          <th class="text-center" style="width: 100px;">L2 Approval</th>
+                          <th class="text-center" style="width: 100px;">L3 Approval</th>
+                        </ng-container>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let page of webpages; let i = index">
+                  <td>{{ i + 1 }}</td>
+                  <td><input type="checkbox" [(ngModel)]="page.isSelected" /></td>
+                  <td>{{ page.menucaption }}</td>
+                  <td>{{ page.pagedescription }}</td>
+                  <td>{{ page.ParentMenu }}</td>
+                   <ng-container *ngIf="isRecruitmentModule()">
+                          <!-- L1 Approval (Only for Approvals page) -->
+                          <td class="text-center">
+                            <input *ngIf="isApprovalPage(page)" type="checkbox" [(ngModel)]="page.L1_Access" (change)="onRightChange(page)" class="form-check-input" title="Grant Level 1 Operations Approval Access" />
+                            <span *ngIf="!isApprovalPage(page)" class="text-muted opacity-25">—</span>
+                          </td>
+
+                          <!-- L2 Approval (Only for Approvals page) -->
+                          <td class="text-center">
+                            <input *ngIf="isApprovalPage(page)" type="checkbox" [(ngModel)]="page.L2_Access" (change)="onRightChange(page)" class="form-check-input" title="Grant Level 2 Corporate HR Approval Access" />
+                            <span *ngIf="!isApprovalPage(page)" class="text-muted opacity-25">—</span>
+                          </td>
+
+                          <!-- L3 Approval (Only for Approvals page) -->
+                          <td class="text-center">
+                            <input *ngIf="isApprovalPage(page)" type="checkbox" [(ngModel)]="page.L3_Access" (change)="onRightChange(page)" class="form-check-input" title="Grant Level 3 HOD Final Approval Access" />
+                            <span *ngIf="!isApprovalPage(page)" class="text-muted opacity-25">—</span>
+                          </td>
+                        </ng-container>
+          
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Buttons -->
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary mx-1" (click)="submit()">Save</button>
+            <button type="button" class="btn btn-outline-dark mx-1" (click)="onReset()">Reset</button>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

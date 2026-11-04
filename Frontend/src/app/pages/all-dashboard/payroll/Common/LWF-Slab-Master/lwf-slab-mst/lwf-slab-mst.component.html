@@ -1,0 +1,123 @@
+<div class="row">
+  <div class="col-sm-12">
+    <div class="card">
+      <!-- Card Header -->
+      <div class="card-header bg-primary">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-between">
+            <h4>{{Isedit? 'Edit LWF':'LWF Master'}}</h4>
+            <!-- <h4>Lwf_Slab_Master</h4> -->
+          </div>
+          <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+            <button class="btn btnheader" routerLink="/dash/user/userdashboard/Lwf_Slab_Master_list">
+              Back
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card Body -->
+      <div class="card-body mt-3">
+        <form [formGroup]="lwdSlabForm" (ngSubmit)="submitForm()">
+
+          <div class="row" class="row row-cols-1 row-cols-md-3 g-4">
+            <!--State -->
+            <div class="col">
+              <label for="fk_stateid" class="form-label">State: <span class="text-danger">*</span></label>
+              <ng-select [items]="StateList" id="fk_stateid" bindLabel="name" bindValue="value"
+                formControlName="fk_stateid" placeholder="Select State"></ng-select>
+
+              <span *ngIf="showError && lwdSlabForm.controls['fk_stateid'].invalid" class="text-danger mt-1"
+                style="font-size: 12px;">
+                Please select State.
+              </span>
+            </div>
+
+            <div class="col">
+              <label for="Effective" class="form-label">Effective Type: <span class="text-danger">*</span></label>
+              <ng-select placeholder="Select Effect Type" [items]="EffectiveS" id="Effective" bindLabel="name"
+                bindValue="value" formControlName="effecttype"></ng-select>
+              <span *ngIf="showError && lwdSlabForm.controls['effecttype'].invalid" class="text-danger mt-1"
+                style="font-size: 12px;">
+                Please enter effecttype.
+              </span>
+            </div>
+
+            <div class="col"><label>Effective From: <span class="text-danger">*</span></label>
+              <input type="date" class="form-control" formControlName="effectivefrom">
+              <span *ngIf="showError && lwdSlabForm.controls['effectivefrom'].invalid" class="text-danger mt-1"
+                style="font-size: 12px;">
+                Please enter effectivefrom.
+              </span>
+            </div>
+            <!-- <div class="col"><label>Sequence: <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" formControlName="sno">
+              <span *ngIf="showError && lwdSlabForm.controls['sno'].invalid" class="text-danger mt-1"
+                style="font-size: 12px;">
+                Please enter Sequence No.
+              </span>
+            </div>
+
+            <div class="col"><label>Amount: <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" formControlName="amt">
+              <span *ngIf="showError && lwdSlabForm.controls['amt'].invalid" class="text-danger mt-1"
+                style="font-size: 12px;">
+                Please enter Amount.
+              </span>
+            </div>
+
+            <div class="col"><label> Employer Multiple: <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" formControlName="emrmultiple">
+              <span *ngIf="showError && lwdSlabForm.controls['emrmultiple'].invalid" class="text-danger mt-1"
+                style="font-size: 12px;">
+                Please enter emrmultiple.
+              </span>
+            </div> -->
+
+<div class="col"><label>Slab Order: <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" formControlName="sno">
+              <span *ngIf="showError && lwdSlabForm.controls['sno'].invalid" class="text-danger mt-1"
+                style="font-size: 12px;">
+                Please enter Slab Order.
+              </span>
+            </div>
+
+            <div class="col"><label>Employee Amount: <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" formControlName="amt">
+              <span *ngIf="showError && lwdSlabForm.controls['amt'].invalid" class="text-danger mt-1"
+                style="font-size: 12px;">
+                Please enter Amount.
+              </span>
+            </div>
+
+            <div class="col"><label> Employer Amount: <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" formControlName="emrmultiple">
+              <span *ngIf="showError && lwdSlabForm.controls['emrmultiple'].invalid" class="text-danger mt-1"
+                style="font-size: 12px;">
+                Please enter emrmultiple.
+              </span>
+            </div>
+
+        
+          <div class="col"><label>Slab Percent</label>
+            <input type="number" class="form-control" formControlName="SlabPercent">
+
+          </div>
+
+
+    
+    </div>
+    <!-- Footer buttons -->
+    <div class="modal-footer">
+      <button type="submit" class="btn btn-primary mx-1">
+        {{ Isedit ? 'Update' : 'Save' }}
+      </button>
+      <button type="button" class="btn btn-outline-dark mx-1">Reset</button>
+
+    </div>
+
+    </form>
+  </div>
+</div>
+</div>
+</div>

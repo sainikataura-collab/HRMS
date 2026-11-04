@@ -1,0 +1,102 @@
+<div>
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <!-- 🔹 Header -->
+        <div class="card-header bg-primary">
+          <div class="row w-100 align-items-center">
+            <div class="col d-flex align-items-center">
+              <h4 class="mb-0 text-white">
+                <i class="bi bi-people-fill me-2"></i>Planned Employees
+              </h4>
+            </div>
+            <div class="col-auto">
+              <button class="btn btn-light btnheader" routerLink="/training-planning">
+                <i class="bi bi-arrow-left me-2"></i>Back
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 🔹 Body -->
+        <div class="card-body" *ngIf="employeeList && employeeList.length > 0; else noData">
+          <form>
+            <!-- Program & SubProgram Info -->
+            <div class="row mb-2">
+
+              <div class="col-12">
+                <p><strong>Program Name :</strong> {{ programName }}</p>
+                <p><strong>SubProgram Name :</strong> {{ subProgramName }}</p>
+              </div>
+            </div>
+
+            <!-- Search + Total Count Row -->
+            <div class="row mb-3 align-items-center">
+              <!-- Search Box Left -->
+              <div class="col-md-3">
+                <div class="input-group">
+                  <span class="input-group-text bg-white border-end-0">
+                    <i class="bi bi-search text-muted"></i>
+                  </span>
+                  <input type="text" class="form-control border-start-0 ps-0"
+                    placeholder="Search by employee ID or name..." [(ngModel)]="searchText">
+                </div>
+              </div>
+              <div class="col-md-5"></div>
+
+              <!-- Total Count Right -->
+              <div class="col-md-4 text-end">
+                <label class="fw-bold">
+                  Total Employees: <span class="badge bg-primary">{{ filteredEmployees().length }}</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Employee Table -->
+            <div class="table-responsive">
+              <table class="table table-bordered table-hover align-middle">
+                <thead class="table-light">
+                  <tr>
+                    <th style="width: 10%;">#</th>
+                    <th style="width: 30%;">Employee ID</th>
+                    <th>Employee Name</th>
+                    <th>Check Attendance</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let emp of filteredEmployees(); let i = index">
+                    <td>{{ i + 1 }}</td>
+                    <td>{{ emp.fk_empId }}</td>
+                    <td>{{ emp.empName }}</td>
+                    <td>
+                      <button class="btn btn-sm" (click)="viewEmployee(emp)">
+                        <i class="fa fa-eye text-primary"></i>
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Footer -->
+            <div class="modal-footer mt-3">
+              <button class="btn btn-outline-dark mx-1" type="button" routerLink="/training-planning">
+                Close
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- 🔹 No Data -->
+        <ng-template #noData>
+          <div class="text-center py-5">
+            <i class="bi bi-inbox display-1 text-muted"></i>
+            <p class="text-muted mt-3">No Employees Found</p>
+            <!-- <p class="text-secondary">No employees have been planned yet for this Program/SubProgram.</p> -->
+          </div>
+        </ng-template>
+
+      </div>
+    </div>
+  </div>
+</div>

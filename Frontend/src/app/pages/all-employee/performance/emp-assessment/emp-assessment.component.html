@@ -1,0 +1,467 @@
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card">
+      <div class="card-header bg-primary">
+
+        <div class="row w-100 d-flex align-items-center justify-content-between">
+
+          <div class="col-sm-12 col-md-12 col-lg-8 col-xxl-8 col-8">
+            <h4 class="">Assessment by Self</h4>
+          </div>
+
+
+
+          <div class="col-sm-12 col-md-12 col-lg-4 col-xxl-4 col-4 d-flex align-items-center justify-content-end ">
+            <button class="btn btnheader"
+              routerLink="/dash/performance/performancedashboard/Empwise-self-Assessment-List">Back
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+
+      <div class="card-body  px-2 px-lg-4 " [formGroup]="EmpWiseForm">
+        <div class="row sticky-top bg-white p-0 m-0" id="stickyHeader">
+
+          <!-- <div class="col-lg-4 px-0">
+            <label class="form-label">Employee <span class="text-danger">*</span></label>
+            <ng-select [items]="employeeList" bindLabel="name" bindValue="value" placeholder="Select employee"
+              formControlName="fk_empid" (change)="onEmployeeSelect()">
+            </ng-select>
+          </div> -->
+
+
+
+          <div class="col-lg-4 px-0">
+            <label class="form-label">Period <span class="text-danger">*</span></label>
+            <ng-select [items]="PeriodData" bindLabel="name" bindValue="value" placeholder="Select Period"
+              formControlName="fk_kraperiodId" (change)="onPeriodSelect($event)"></ng-select>
+
+            <span *ngIf="showError && EmpWiseForm.controls['fk_kraperiodId'].invalid" class="text-danger mt-1"
+              style="font-size: 12px;">
+              Please select Period.
+            </span>
+
+          </div>
+
+
+        </div>
+
+        <div *ngIf="employeeSelected">
+
+          <div formArrayName="cards">
+            <div *ngFor="let card of cards.controls; let i = index" [formGroupName]="i"
+              class="card emp-assesment-card my-3 py-2 px-3 ">
+
+
+              <div class="row py-3   mb-3 gx-3 gy-2 small ">
+
+                <!-- KRA -->
+                <div class="col-12 col-md-12 d-flex">
+                  <div class="fw-semibold me-2">KRA:</div>
+                  <!-- <div>{{ card.value.kra }}</div> -->
+                  <div [innerHTML]="card.get('kra')?.value | safeHtml"></div>
+
+                  <!-- <div [innerHTML]="getSanitizedHtml(card.value.kra)"></div> -->
+                </div>
+
+
+
+                <!-- KPI -->
+                <div class="col-12 col-md-12 d-flex">
+                  <div class="fw-semibold me-2">KPI:</div>
+                  <!-- <div>{{ card.value.kpi }}</div> -->
+                  <div [innerHTML]="card.get('kpi')?.value | safeHtml"></div>
+
+                  <!-- <div [innerHTML]="getSanitizedHtml(card.value.kpi)"></div> -->
+                </div>
+
+                <div class="col-12 col-md-12 d-flex">
+                  <div class="fw-semibold me-2">KPA:</div>
+                  <!-- <div>{{ card.value.kpi }}</div> -->
+                  <div [innerHTML]="card.value.kpi | safeHtml"></div>
+                </div>
+
+                <!-- Target -->
+                <div class="col-12 col-md-12 d-flex">
+                  <div class="fw-semibold me-2">Target:</div>
+                  <!-- <div>{{ card.value.targetvalue }}</div> -->
+                  <div [innerHTML]="card.value.targetvalue | safeHtml"></div>
+
+                </div>
+
+                <!-- Weightage -->
+                <div class="col-12 col-md-6 d-flex">
+                  <div class="fw-semibold me-2">Weightage:</div>
+                  <div>{{ card.value.weightage }}</div>
+                  <!-- <div [innerHTML]="getSanitizedHtml(card.value.weightage)"></div> -->
+
+                </div>
+
+                <!-- File -->
+
+
+                <!-- <div class="col-12 col-md-6 d-flex">
+                  <div class="fw-semibold me-2">File:</div>
+                  <div>{{ card.value.attachmentPath }}</div>
+                </div>
+
+              </div> -->
+
+                <div class="col-12 col-md-6 d-flex align-items-center">
+                  <div class="fw-semibold me-2">File:</div>
+
+                  <ng-container *ngIf="card.value.attachmentPath; else noFile">
+                    <div class="d-flex align-items-center">
+                      <!-- Image thumbnail that triggers download on click -->
+                      <!-- <img *ngIf="imageMap[card.value.attachmentPath]" [src]="imageMap[card.value.attachmentPath]"
+                        width="50" height="50" style="object-fit: cover; border-radius: 4px; cursor: pointer;"
+                        (click)="download(card.value.attachmentPath)" title="Click to download image" /> -->
+
+                      <!-- Show spinner while loading -->
+                      <!-- <span *ngIf="!imageMap[card.value.attachmentPath]">
+                        <i class="fa fa-spinner fa-spin"></i>
+                      </span> -->
+                      <i class="fa fa-download" style="cursor: pointer;" (click)="download(card.value.attachmentPath)"
+                        title="Download again"></i>
+                    </div>
+                  </ng-container>
+
+                  <ng-template #noFile >
+                    <span id="noFile">No file uploaded</span>
+                  </ng-template>
+                </div>
+
+
+
+
+
+                <div class="card">
+
+                  <div class="card-header py-0 m-0 small text-white" style="background-color: rgb(40, 152, 244);">Self
+                    Assessment</div>
+                  <div class=" row gy-2 p-3 pt-2 gt-0">
+
+                    <div class="col-sm-12 col-md-3 col-lg-2 d-flex align-items-center justify-content-between">
+                      <label class="form-label">Self Assessment</label>
+                    </div>
+                    <div class="col-sm-12 col-md-9 col-lg-4">
+                      <input formControlName="selfAssessment" type="number" class="form-control"
+                        (input)="onAssessmentInput(i)" />
+                      <span class="text-danger small" *ngIf="exceedMessages[i]">
+                        Assessment cannot exceed Weightage ({{ card.value.weightage }}).
+                      </span>
+                    </div>
+
+
+                    <div class="col-sm-12 col-md-3 col-lg-2 d-flex align-items-center justify-content-between">
+                      <label [for]="'summernoteEditor2_' + i" class="form-label">Self Remark</label>
+                    </div>
+
+                    <div class="col-sm-12 col-md-9 col-lg-4">
+
+                      <textarea [id]="'summernoteEditor2_' + i" class="editor-box form-control"
+                        formControlName="selfRemark"></textarea>
+                    </div>
+
+
+                    <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4">
+                      <label class="form-label">Self File Upload</label>
+                      <div class="input-group">
+                        <input type="file" class="form-control" placeholder="Choose File" aria-label=""
+                          aria-describedby="basic-addon1" (change)="onFileSelect($event, i, 'FileBytes')"
+                          accept=".pdf,.doc,.docx,.jpg,.png" />
+
+                        <!-- <a *ngIf="picImageUrl && !FileBytes" [href]="picImageUrl" target="_blank"
+                        class="d-flex align-items-center justify-content-center btn btn-outline-primary p-2">
+                        <i class="fa-solid fa-eye" style="font-size: 0.9rem;"></i>
+                      </a> -->
+
+                        <span class="input-group-text" id="basic-addon1" style="cursor: pointer;"><i
+                            class="fa-solid fa-download text-primary fs-6"></i></span>
+                      </div>
+                    </div>
+
+
+
+                  </div>
+
+
+                </div>
+                <div class="text-end mt-3" *ngIf="!cards.at(i).get('status')?.value || cards.at(i).get('status')?.value == 0">
+                  <!-- <button class="btn btn-primary" (click)="onSubmit(i)">Update</button> -->
+                  <!-- <button class="btn btn-primary" (click)="onSubOne(i)" [disabled]="cards.at(i).get('status')?.value == 1">Update</button> -->
+               <!-- Inside each card -->
+                  <button class="btn btn-primary" (click)="onSubOne(i)">Update</button>
+
+              
+
+
+
+                </div>
+
+              </div>
+            </div>
+
+            <!-- <div class="text-end mt-3">
+              <button class="btn btn-primary" (click)="onSubAll()"   [disabled]="isAllSubmitted()">Submit All</button>
+           
+            </div> -->
+
+            <div class="text-end mt-3" *ngIf="!isAllSubmitted()">
+  <button class="btn btn-primary" (click)="onSubAll()">Submit All</button>
+</div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <!-- use form Multiple Stepper -->
+
+  <!-- <div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card">
+      <div class="card-header bg-primary">
+
+        <div class="row w-100 d-flex align-items-center justify-content-between">
+
+          <div class="col-sm-12 col-md-12 col-lg-8 col-xxl-8 col-8">
+            <h4 class="">Emmwise Draft KRA</h4>
+          </div>
+
+
+
+          <div class="col-sm-12 col-md-12 col-lg-4 col-xxl-4 col-4 d-flex align-items-center justify-content-end ">
+            <button class="btn btnheader"
+              routerLink="/dash/recruitment/recruitmentdashboard/Empwise-KRA-List">Back</button>
+          </div>
+
+        </div>
+      </div>
+
+
+      <div class="card-body  px-2 px-lg-4 " [formGroup]="EmpWiseForm">
+        <div class="row sticky-top bg-white p-0 m-0" id="stickyHeader">
+          <div class="col-lg-4 px-0">
+            <label class="form-label">Employee <span class="text-danger">*</span></label>
+            <ng-select [items]="employeeList" bindLabel="name" bindValue="id" placeholder="Select employee"
+              formControlName="fk_empid" (change)="onEmployeeSelect()">
+            </ng-select>
+          </div>
+        </div>
+
+        <div *ngIf="employeeSelected">
+          <div formArrayName="cards" *ngFor="let card of cards.controls; let i = index" [formGroupName]="i"
+            class="card emp-assesment-card my-3 py-2 px-3 ">
+
+         
+
+            <div class="row py-2">
+              <div class="col-sm-12 col-md-12 col-lg-9 col-xxl-9"><span class="small fw-semibold">KRA: </span> <span
+                  class="small ps-2 s-small">{{ card.value.KRA }}</span> </div>
+
+
+              <div class="col-sm-12 col-md-12 col-lg-3 col-xxl-3  d-flex align-items-center justify-content-start"><span
+                  class="small fw-semibold">Traget:</span> <span class="small ps-2 s-small">{{ card.value.KPI }}</span>
+              </div>
+
+              <div class="col-sm-12 col-md-12 col-lg-9 col-xxl-9 pt-1"><span class="small fw-semibold">KPI:</span> <span
+                  class="small ps-2 s-small">{{ card.value.KPI }}</span> </div>
+
+              <div class="col-sm-12 col-md-12 col-lg-3 col-xxl-3  d-flex align-items-center justify-content-start"><span
+                  class="small fw-semibold">Weightage:</span>
+                <span class="small ps-2 s-small">{{ card.value.Weightage }}%</span>
+              </div>
+
+            </div>
+
+
+
+            <div class="card pt-2" *ngIf="currentStep >= 1" style="border:1px dashed #3080e8">
+
+              <div class="row gy-2 p-3 pt-0 gt-0">
+
+                <div class="col-sm-12 col-md-3 col-lg-2 d-flex align-items-center justify-content-between">
+
+                  <label [for]="'summernoteEditor' + i" class="form-label">Self Assessment</label>
+                </div>
+                <div class="col-sm-12 col-md-9 col-lg-4">
+                  <textarea [id]="'summernoteEditor' + i" class="editor-box" formControlName="self_assesment"
+                    [readonly]="currentStep > 1"></textarea>
+                </div>
+
+
+                <div class="col-sm-12 col-md-3 col-lg-2 d-flex align-items-center justify-content-between">
+                  <label [for]="'summernoteEditor2_' + i" class="form-label">Self Remark</label>
+                </div>
+
+                <div class="col-sm-12 col-md-9 col-lg-4">
+                  <textarea [id]="'summernoteEditor2_' + i" class="editor-box" formControlName="self_remark"
+                    [readonly]="currentStep > 1"></textarea>
+                </div>
+
+
+                <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4">
+                  <label class="form-label">Self File Upload</label>
+                  <div class="input-group">
+                    <input type="file" class="form-control" placeholder="Choose File" aria-label=""
+                      aria-describedby="basic-addon1" (change)="onFileSelect($event, i, 'SelfFile')"
+                      [readonly]="currentStep > 1" />
+                    <span class="input-group-text" id="basic-addon1"><i
+                        class="fa-solid fa-download text-primary"></i></span>
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+
+            <div class="card" *ngIf="currentStep >= 2" >
+              <div class="card-header py-0 m-0 small text-white" style="background-color: rgb(40, 152, 244);">Report Manager Assessment</div>
+              <div class=" row gy-2 p-3 pt-2 gt-0">
+
+                <div class="col-sm-12 col-md-3 col-lg-2 d-flex align-items-center justify-content-between">
+
+                  <label [for]="'summernoteEditor3_' + i" class="form-label">RM Assessment</label>
+                </div>
+                <div class="col-sm-12 col-md-9 col-lg-4">
+                  <textarea [id]="'summernoteEditor3_' + i" class="editor-box" formControlName="rm_assesment"
+                    [disabled]="currentStep > 1"></textarea>
+                </div>
+
+
+
+                <div class="col-sm-12 col-md-3 col-lg-2 d-flex align-items-center justify-content-between">
+                  <label [for]="'summernoteEditor4_' + i" class="form-label">RM Remark</label>
+                </div>
+
+                <div class="col-sm-12 col-md-9 col-lg-4">
+                  <textarea [id]="'summernoteEditor4_' + i" class="editor-box" formControlName="rm_remark"
+                    [readonly]="currentStep > 2"></textarea>
+                </div>
+
+
+
+
+
+                <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4">
+                  <label class="form-label">RM File Upload</label>
+                  <div class="input-group">
+                    <input type="file" class="form-control" placeholder="Choose File" aria-label=""
+                      aria-describedby="basic-addon1" (change)="onFileSelect($event, i, 'RMFile')"
+                      [disabled]="currentStep > 2" />
+                    <span class="input-group-text" id="basic-addon1"><i
+                        class="fa-solid fa-download text-primary"></i></span>
+                  </div>
+                </div>
+
+
+
+              </div>
+            </div>
+
+
+            <div class="card" *ngIf="currentStep >= 3">
+              <div class="card-header  text-white py-0 m-0 small" style="background-color: rgb(9, 151, 92);">HOD Assessment </div>
+              <div class=" row gy-2 p-3 pt-2 gt-0">
+
+                <div class="col-sm-12 col-md-3 col-lg-2 d-flex align-items-center justify-content-between">
+
+                  <label [for]="'summernoteEditor5_' + i" class="form-label">HOD Assessment</label>
+                </div>
+                <div class="col-sm-12 col-md-9 col-lg-4">
+                  <textarea [id]="'summernoteEditor5_' + i" class="editor-box" formControlName="hod_assessment"
+                    [readonly]="currentStep > 3"></textarea>
+                </div>
+
+
+
+                <div class="col-sm-12 col-md-3 col-lg-2 d-flex align-items-center justify-content-between">
+                  <label [for]="'summernoteEditor6_' + i" class="form-label">HOD Remark</label>
+                </div>
+
+                <div class="col-sm-12 col-md-9 col-lg-4">
+                  <textarea [id]="'summernoteEditor6_' + i" class="editor-box" formControlName="hod_remark"
+                    [readonly]="currentStep > 3"></textarea>
+                </div>
+
+
+
+
+
+                <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4">
+                  <label class="form-label">HOD File Upload</label>
+                  <div class="input-group">
+                    <input type="file" class="form-control" placeholder="Choose File" aria-label=""
+                      aria-describedby="basic-addon1" (change)="onFileSelect($event, i, 'HODFile')"
+                  [disabled]="currentStep > 3" />
+                    <span class="input-group-text" id="basic-addon1"><i
+                        class="fa-solid fa-download text-primary"></i></span>
+                  </div>
+                </div>
+
+
+
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+   
+        <div class="text-end mt-3">
+          <button *ngIf="currentStep < 3" class="btn btn-primary" (click)="nextStep()">Next</button>
+          <button *ngIf="currentStep === 3" class="btn btn-success" (click)="submitAssessment()">Submit All</button>
+        </div>
+
+
+      </div>
+
+    </div>
+  </div>
+</div> -->

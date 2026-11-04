@@ -1,0 +1,380 @@
+<div class="row">
+  <div [ngClass]="isFactBoxOpen ? 'col-sm-12 col-md-8 col-lg-9' : 'col-12'">
+    <div class="card">
+      <!--  -->
+      <div class="card-header bg-primary py-lg-1 mt-0">
+        <div class="row w-100 align-items-center">
+          <!-- Title Section -->
+          <div class="col-12 col-md-3">
+            <h4>Import Attendance</h4>
+          </div>
+
+          <!-- Search Section -->
+          <div class="col-12 col-md-6 mt-2 mt-md-0">
+            <app-common-search (filtersChanged)="handleFilters($event)"></app-common-search>
+          </div>
+
+          <!-- Fact Box toggle button -->
+          <div class="col-12 col-md-3 d-flex justify-content-end align-items-center">
+            <button *ngIf="!isFactBoxOpen" class="btn btn-outline-light btn-sm d-flex align-items-center"
+              (click)="toggleFactBox()" title="Open Fact Box">
+              <i class="bi bi-info-circle me-1"></i> Fact Box
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="card-body mt-4">
+        <form [formGroup]="EmportAttendaceForm" (ngSubmit)="onSubmit()">
+          <div class="row row-cols-1 row-cols-md-4">
+
+
+            <div class="col">
+              <label>Month</label>
+
+              <div class="form-group">
+                <ng-select id="year" [items]="months" bindLabel="name" bindValue="value" formControlName="FkMonthId"
+                  placeholder="--Select --" class="w-100"></ng-select>
+                <span *ngIf="showError && EmportAttendaceForm.controls['FkMonthId'].invalid" class="text-danger mt-1"
+                  style="font-size: 12px;">
+                  Please enter Month.
+                </span>
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Year</label>
+
+              <div class="form-group">
+                <ng-select id="year
+                             " [items]="years" bindLabel="name" bindValue="value" formControlName="FkYearId"
+                  placeholder="--Select --" class="w-100"></ng-select>
+                <span *ngIf="showError && EmportAttendaceForm.controls['FkYearId'].invalid" class="text-danger mt-1"
+                  style="font-size: 12px;">
+                  Please enter Year.
+                </span>
+              </div>
+            </div>
+            <div class="col" *ngIf="isContractApplicable">
+              <label>Contractor Name</label>
+
+              <div class="form-group">
+                <ng-select 
+                  [items]="CostCenter"
+                  bindLabel="name"
+                  bindValue="value"
+                  [multiple]="true"
+                  [closeOnSelect]="false"
+                  formControlName="fk_costcentreid" 
+                  placeholder="--Select --"
+                  class="w-100"
+                  (clear)="clearCostCenters()"
+                >
+                  <!-- Display Selected CostCenters -->
+                  <ng-template ng-multi-label-tmp>
+                      <span>{{ getCostCenterDisplayText() || '--Select --' }}</span>
+                  </ng-template>
+
+                  <!-- Custom Checkbox for Select All -->
+                  <ng-template ng-option-tmp let-item="item" let-index="index">
+                      <div *ngIf="item.value === '__select_all__'">
+                          <input type="checkbox" 
+                          (change)="toggleSelectAllCostCenters($event)" 
+                          [checked]="isAllCostCentersSelected()" 
+                          class="form-check-input fs-6 mx-1"/>
+                          <strong>Select All</strong>
+                      </div>
+                   
+                      <!-- Normal location rows -->
+                      <div *ngIf="item.value !== '__select_all__'">
+                          <input type="checkbox" 
+                          [checked]="selectedCostCenters.includes(item.value)"
+                          (change)="toggleCostCenter(item.value)" 
+                          class="form-check-input fs-6 mx-1"/>
+                          {{ item.name }}
+                      </div>
+                  </ng-template>
+                </ng-select>
+              </div>
+            </div>
+
+
+            <div class="col align-content-center">
+              <button type="submit" class="btn btn-primary mx-1" [disabled]="isViewLoading">
+
+                <i *ngIf="isViewLoading" class="fa fa-spinner fa-spin me-2">
+                </i>
+
+                {{ isViewLoading ? 'Loading...' : 'View' }}</button>
+
+
+              <button type="reset" class="btn btn-outline-dark mx-1">Reset</button>
+            </div>
+
+
+          </div>
+        </form>
+
+
+        <div class="row">
+          <div class="col d-flex align-items-end justify-content-end ">
+            <button class="btn btn-primary px-3 mx-1" (click)="toggleImportView()">Import Excel</button>
+          </div>
+        </div>
+
+
+        <div class="container"
+          *ngIf="attendanceList?.attendancemarked?.length > 0 || attendanceList?.attendanceNotmarked?.length > 0">
+
+
+          <div class="row">
+
+            <!-- Card 2: Marked Employees -->
+
+            <div class="col-12 col-md-4">
+              <div class="card"
+                style="height: 40px; border: 1px solid #ffc107; box-shadow: none; border-left: 5px solid #ffc107;">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                  <div>
+                    <p class="card-title">Processed Attendance: &nbsp;<b>{{ this.AttendanceMarkedCount }}</b></p>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-12 col-md-4">
+              <div class="card"
+                style="height: 40px; border: 1px solid green; box-shadow: none; border-left: 5px solid #28a745;">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                  <div>
+                    <p class="card-title">Locked Attendance :&nbsp;<b>{{ this.NotMarkedorLockAttendanceCount }}</b></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- List of Employee -->
+      <div class="container"
+        *ngIf="!showImportView && (attendanceList?.attendancemarked?.length > 0 || attendanceList?.attendanceNotmarked?.length > 0)">
+        <!--  Marked Attendance -->
+        <div class=" row mt-4 mb-2">
+          <div class="col-sm-12 col-md-12 col-lg-6 col-xxl-6">
+            <p class="text-primary m-0">List of Employee (Processed Attendance)</p>
+          </div>
+          <div class="col-sm-12 col-md-12 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-end">
+
+            <!-- <button *ngIf="attendanceList?.attendancemarked?.length > 0" class="btn bg-white bg-primary mx-1 px-3"
+              (click)="exportTemplate()">
+              <i class="fa fa-download me-2"></i> Export Excel
+            </button> -->
+            <button *ngIf="attendanceList?.attendancemarked?.length > 0" class="btn btn-primary mx-1 px-3"
+              (click)="exportTemplate()">
+
+              <i *ngIf="!isExporting" class="fa fa-download me-2"></i>
+              <i *ngIf="isExporting" class="fa fa-spinner fa-spin me-2"></i>
+              {{ isExporting ? 'Wait...' : 'Export Excel' }}
+            </button>
+            <input type="text" class="form-control  w-auto ms-1" placeholder="Search employee..."
+              [(ngModel)]="searchTextAttendanceMarked" (input)="filterAttendance('Marked')" />
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Sr.</th>
+                <!-- <th>Emp ID</th> -->
+                <th>Code</th>
+                <th>Name</th>
+                <th>Location</th>
+                <th>Department</th>
+                <th>Designation</th>
+                <!-- <th>Grade</th>
+                <th>Attendance ID</th> -->
+                <th>Total Days</th>
+                <th>Paid days</th>
+                <th>LWP</th>
+                <th>SL</th>
+                <th>CL</th>
+                <th>EL</th>
+                <th>CompOff</th>
+                 <th>WOFF</th>
+                <th>NH</th>
+                <th>Double NH</th>
+                <th>OT Hrs</th>
+                <th>IT</th>
+                <th>CsurCharge</th>
+                <th>ECessCharge</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngIf="filteredAttendanceMarkedList?.length === 0">
+                <td colspan="19" class="text-center">No records found</td> <!-- Updated colspan to 19 -->
+              </tr>
+              <tr
+                *ngFor="let emp of filteredAttendanceMarkedList | paginate: { id: 'Marked', itemsPerPage: pageSize1, currentPage: pageIndex1, totalItems: AttendanceMarkedCount }; let i = index">
+                <td>{{ (pageIndex1 - 1) * pageSize1 + i + 1 }}</td>
+                <!-- <td>{{ emp.empId }}</td> -->
+                <td>{{ emp.empCode }}</td>
+                <td>{{ emp.empName }}</td>
+                <td>{{ emp.location }}</td>
+                <td>{{ emp.department }}</td>
+                <td>{{ emp.designation }}</td>
+                <!-- <td>{{ emp.grade }}</td>
+                <td>{{ emp.pk_attenid }}</td> -->
+                <td>{{ emp.totdays }}</td>
+                <td>{{emp.paiddays}}</td>
+                <td>{{ emp.lwp }}</td>
+                <td>{{ emp.sl }}</td>
+                <td>{{ emp.cl }}</td>
+                <td>{{ emp.el }}</td>
+                <td>{{ emp.compOff}}</td>
+
+                <td>{{ emp.woff }}</td>
+                <td>{{ emp.nh }}</td>
+                <td>{{ emp.doubleNH }}</td>
+                <td>{{ emp.otHrs }}</td>
+                <td>{{ emp.it }}</td>
+                <td>{{ emp.csurCharge }}</td>
+                <td>{{ emp.eCessCharge }}</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Pagination -->
+          <pagination-controls *ngIf="AttendanceMarkedCount > 0" id="Marked" (pageChange)="onMarkedPageChange($event)"
+            totalItems="AttendanceMarkedCount" itemsPerPage="pageSize1">
+          </pagination-controls>
+        </div>
+        <!-- Not Marked Attendance -->
+
+        <div class=" mt-4 mb-2 d-flex justify-content-between align-items-center">
+          <p class="text-primary m-0">List of Employee (Locked Attendance)</p>
+
+          <input type="text" class="form-control w-auto ms-3" placeholder="Search employee..."
+            [(ngModel)]="searchTextAttendanceNotMarked" (input)="filterAttendance('NotMarked')" />
+
+
+        </div>
+        <div class="table-responsive" style="overflow-x: auto;">
+          <table class="table  table-bordered table-sm min-width-table">
+            <thead class="">
+              <tr>
+                <th>Sr.</th>
+                <th>Code</th>
+                <th>Name</th>
+                <th>Location</th>
+                <th>Department</th>
+                <th>Designation</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngIf="filteredAttendaceNotMarkedList?.length === 0">
+                <td colspan="14" class="text-center">No records found</td>
+              </tr>
+              <tr
+                *ngFor="let emp of filteredAttendaceNotMarkedList | paginate: { id:'Notmarked',itemsPerPage: pageSize2, currentPage: pageIndex2, totalItems:NotMarkedorLockAttendanceCount }; let i = index">
+                <td>{{ (pageIndex2 - 1) * pageSize2 + i + 1 }}</td>
+                <td>{{ emp.empCode }}</td>
+
+                <td>{{ emp.empName }}</td>
+                <td>{{ emp.location }}</td>
+                <td>{{ emp.department }}</td>
+                <td>{{ emp.designation }}</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <pagination-controls *ngIf="NotMarkedorLockAttendanceCount > 0" id="Notmarked"
+            (pageChange)="onNotMarkedPageChange($event)" totalItems="NotMarkedorLockAttendanceCount"
+            itemsPerPage="pageSize2">
+          </pagination-controls>
+        </div>
+
+
+      </div>
+
+      <!-- export data  -->
+      <div *ngIf="showImportView">
+        <div class="card-body">
+
+          <form [formGroup]="EmportAttendaceForm" (ngSubmit)="Import()" class="row g-2 align-items-end mb-4">
+
+            <!-- File Input on the left -->
+            <div class="col-md-4">
+              <label class="form-label">Select File</label>
+              <input type="file" class="form-control" formControlName="file" (change)="onFileChange($event)">
+              <div
+                *ngIf="EmportAttendaceForm.get('file')?.hasError('required') && EmportAttendaceForm.get('file')?.touched"
+                class="text-danger" style="font-size: 12px;">
+                File is required.
+              </div>
+
+              <!-- Validation message for invalid file type -->
+              <div
+                *ngIf="EmportAttendaceForm.get('file')?.hasError('pattern') && EmportAttendaceForm.get('file')?.touched"
+                class="text-danger" style="font-size: 12px;">
+                Please upload a valid file (only .xlsx files allowed).
+              </div>
+            </div>
+
+
+            <!-- Right-aligned Buttons -->
+            <div class="col d-flex align-items-center justify-content-end  gap-2">
+
+              <!-- <button type="submit" class="btn btn-primary">Import</button>
+               -->
+              <button type="submit" class="btn btn-primary" [disabled]="isImporting">
+
+                <i *ngIf="isImporting" class="fa fa-spinner fa-spin me-2">
+                </i>
+
+                Import
+              </button>
+              <button type="reset" class="btn btn-outline-dark">Reset</button>
+              <button class="btn btn-outline-danger d-flex align-items-center justify-content-center p-2"
+                (click)="toggleImportView()"><i class="fa-solid fa-xmark fs-6 fw-semibold"></i></button>
+
+
+            </div>
+          </form>
+          <!-- Success message -->
+          <div *ngIf="messag" class="alert text-success" role="alert">
+            {{ messag }}
+          </div>
+
+          <!-- Error message -->
+          <div *ngIf="errormessag" class="alert text-danger" role="alert">
+            {{ errormessag }}
+          </div>
+
+
+        </div>
+
+      </div>
+
+
+    </div>
+
+  </div>
+
+  <!-- Right Side: Fact Box Sidebar -->
+  <app-fact-box [ngClass]="isFactBoxOpen ? 'col-sm-12 col-md-4 col-lg-3' : ''"
+    [title]="'Fact Box'"
+    [files]="factBoxFiles"
+    [isLoading]="isLoadingFactBox"
+    [isOpen]="isFactBoxOpen"
+    [totalItems]="totalUploadedFiles"
+    [currentPage]="pageIndexFactBox"
+    [itemsPerPage]="pageSizeFactBox"
+    (onToggle)="toggleFactBox()"
+    (onPageChange)="onFactBoxPageChange($event)"
+    (onDownload)="downloadFactBoxFile($event)">
+  </app-fact-box>
+</div>

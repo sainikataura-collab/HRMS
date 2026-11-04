@@ -1,0 +1,85 @@
+<div class="row mx-0 w-100">
+  <div class="col-sm-12 col-md-12 col-lg-12 px-1">
+    <div class="card mx-0">
+
+
+          <!--  -->
+               <div class="card-header bg-primary pe-0">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-12 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-between">
+            <h4 class="mb-0">Rebate Document </h4>
+            <button  class="btn btnheader mx-2 d-lg-none mb-1 mb-lg-0 py-0"
+               routerLink="/dash/reimbursement/reimbursementdashboard/RebateDocument">Add</button>
+
+          </div>
+
+
+          <div class="col-sm-12 col-md-3 col-lg-3 all-pickup-point-search-header d-flex align-items-center justify-content-md-end">
+            <input type="text" class="form-control"placeholder="Search..."  [(ngModel)]="searchText" />
+          </div>
+
+
+          <div class="col-sm-12 col-md-5 col-lg-5 d-flex justify-content-end align-items-center mt-md-0">
+            <div class="d-none d-md-flex">
+              <button  class="btn btnheader mx-2"
+               routerLink="/dash/reimbursement/reimbursementdashboard/RebateDocument">Add</button>
+              <!-- <button class="btn btnheader mx-2"
+                routerLink="/dash/attendance/attendancedashboard/cdoRequest">Add CDO </button> -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+
+          <!--  -->
+      <div class="card-body px-1">
+        <div class="table-invoice">
+          <table class="table table-bordered" id="exportTable">
+            <thead>
+              <tr>
+                <th>Sr.No.</th>
+                   
+                <th>Bill&nbsp;Date</th>
+                 <th>Bill&nbsp;No.</th>
+                <th>Section</th>
+                <th>Subsection</th>
+                <th>Amount</th>
+            
+                <th>Status</th>
+                <th>File&nbsp;Name</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of filteredData(); let i = index">
+                <td data-label="S.No. :">{{ i + 1 }}</td>
+                 <td data-label="bill_date">{{ item.billdate }}</td>
+                 <td data-label="Bill_No">{{ item.billno }}</td>
+               
+                  <td data-label="Section">{{ item.secname }}</td>
+                <td data-label="Sub_section">{{ item.subsecname }}</td>
+                <td data-label="Amount">{{ item.docsub_Amt }}</td>
+               
+                <!-- <td data-label="Status">{{ item.docsub_status }}</td> -->
+                <td data-label="Status" [ngClass]="{'text-success btn-success': item.docsub_status === 'Submited', 'text-danger btn-danger': item.docsub_status === 'Rejected', 'text-warning btn-warning': item.docsub_status === 'Undertaking'}">{{ item.docsub_status }}</td>
+
+
+
+                 <!-- <td>{{ item.filename }}</td> -->
+               <td data-label="file_name"  (click)="item.filename ?download(item.filename) : null" style="cursor: pointer; text-align: center;">
+                <i *ngIf="item.filename" class="fas fa-file-pdf text-danger" aria-hidden="true" title="View/Download file"></i>
+              </td>
+                    <td data-label="Action"><button class="btn btn-sm btn-outline" (click)="update(item.pk_docid)">
+                            <i class="fa-regular fa-pen-to-square"></i>
+                          </button></td>
+              </tr>
+            </tbody>
+          </table>
+          
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

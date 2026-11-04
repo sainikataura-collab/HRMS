@@ -1,0 +1,119 @@
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+         <!--  -->
+    
+    
+      <div class="card-header bg-blue py-lg-2 mt-0">
+        <div class="row w-100 align-items-center">
+    
+            <!-- Title Section -->
+            <div class="col-12 col-md-3">
+                <h4 class="text-white text-center text-md-start">Update Employee KRA & PLI</h4>
+            </div>
+    
+            <!-- Search Section -->
+            <div class="col-12 col-md-7 mt-2 mt-md-0">
+                <app-common-search (filtersChanged)="handleFilters($event)"></app-common-search>
+            </div>
+    
+          
+        </div>
+    </div>
+
+    <div class="card-body">
+        <div>
+
+
+          <div class="d-flex justify-content-between align-items-center mt-4 mb-2">
+            <p class="text-primary m-0 fw-bold ">List of Employee</p>
+            <input
+              type="text"
+              class="form-control w-auto"
+              placeholder="Search employee..."
+              [(ngModel)]="searchText"
+            />
+          </div>
+        
+          <!-- <div class="bg-primary rounded-1 mt-2 page-seperator">
+            <p class="p-1 text-white ms-4">List of Employee (Salary Processed)</p>
+          </div> -->
+        
+          
+            <div class="table-responsive table-invoice scrollable-table">
+                <form [formGroup]="EmployeeForm">
+              <table class="table table-bordered">
+                <thead class="sticky-top table-secondary" style="background-color: rgb(250, 251, 251);top:-2">
+                  <tr class="sticky-top">
+                   
+                    <th>Sr.</th>
+                    <th>Code</th>
+                    <th>Name</th>
+                    <th>Department</th>
+                    <th>Is KRA	</th>
+                    <th>KRA</th>
+                    <th>PLI</th>
+                    
+                  </tr>
+                </thead>
+                <tbody>
+                    <!-- <tr *ngFor="let emp of filteredData(); let i = index">
+                        <td>{{ i + 1 }}</td>
+                        <td>{{ emp.empcode }}</td>
+                        <td>{{ emp.empname }}</td>
+                        <td>{{ emp.depart }}</td>
+                        
+                        <td>{{ emp.isKRA ? 'Yes' : 'No' }}</td>
+                        <td>{{ emp.kra}}</td>
+                        <td>{{ emp.pli }}</td>
+
+                    
+                      </tr> -->
+
+                      <tbody formArrayName="employees">
+                        <tr *ngFor="let emp of filteredData(); let i = index" [formGroupName]="i">
+                          <td>{{ i + 1 }}</td>
+                          <td>{{ emp.get('empcode')?.value }}</td>
+                          <td>{{ emp.get('empname')?.value }}</td>
+                          <td>{{ emp.get('depart')?.value }}</td>
+                          <td><input type="checkbox" formControlName="isKRA" /></td>
+                          <td><input type="text" class="form-control" formControlName="kra" /></td>
+                          <td><input type="text" class="form-control" formControlName="pli" /></td>
+                        </tr>
+                      <tr *ngIf="filteredData().length === 0">
+                        <td colspan="6" class="text-center text-muted">No employees found.</td>
+                      </tr>
+                </tbody>
+        
+              </table>
+              </form>
+            </div>
+        
+        
+           
+            
+           
+            
+             
+        
+        
+          
+        
+            <div class="modal-footer">
+        
+              <button type="submit" class="btn btn-primary mx-1" (click)="updateFilteredEmployees()">Update</button>
+             
+        
+            </div>
+        
+        </div>
+       </div>
+
+
+     
+       
+       
+  </div>
+</div>    
+
+</div>

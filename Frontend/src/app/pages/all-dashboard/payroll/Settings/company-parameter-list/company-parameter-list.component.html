@@ -1,0 +1,148 @@
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-between">
+            <h4>
+              List of Company</h4>
+
+          </div>
+
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-center">
+            <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText" />
+          </div>
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-md-end">
+            <button class="btn btnheader" routerLink="/dash/user/userdashboard/Compony-Parameter">
+              Add
+            </button>
+            <button class="btn btn-light mx-1" (click)="exportToExcel()">
+              Download
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+
+      <div class="card-body">
+        <div class="table-responsive table-invoice">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Sr&nbsp;No. </th>
+                <th>Logo</th>
+                <th>Code</th>
+                <th>Name</th>
+                <th>Address</th>
+                <th>Contact</th>
+
+                <th>Action</th>
+                <th>Upload Logo</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                *ngFor=" let item of filteredData() | paginate : { itemsPerPage: pageSize, currentPage: pageIndex ,totalItems: totalItems };let i = index">
+                <td>{{(pageIndex-1)* pageSize+i+1}}</td>
+                <td>
+                  <img [src]="item.company_LogoPath && imageMap[item.company_LogoPath]
+      ? imageMap[item.company_LogoPath]
+      : 'assets/Image/Logo/empower.jpg'" width="80" height="60"
+                    style="object-fit: contain; border-radius: 4px; cursor: pointer; " alt="Company Logo"
+                    data-bs-toggle="modal" data-bs-target="#logoModal" (click)="openLogoModal(item)" />
+                </td>
+
+                <td>{{item.compcode}}</td>
+                <td>{{item.compname}}</td>
+                <td>{{item.address1}}</td>
+                <td>{{item.contactperson}}</td>
+                <td>
+                  <button class="btn btn-sm btn-outline" (click)="edit(encryption.encryptText(item.pk_companyId))"> <i
+                      class="fa-regular fa-pen-to-square"></i></button>
+
+                </td>
+                <td class="text-center">
+                  <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#logoModal"
+                    (click)="openLogoModal(item)">
+                    <i class="fa-solid fa-upload"></i>
+
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+
+          <!--hh-->
+
+          <div class="modal fade" id="logoModal" tabindex="-1">
+
+            <div class="modal-dialog modal-dialog-centered ">
+
+              <div class="modal-content ">
+
+                <div class="modal-header px-4 py-2 pb-0">
+
+                  <p class="modal-title">
+
+                    Upload Company Logo
+
+                  </p>
+
+                  <button type="button" class="btn-close" data-bs-dismiss="modal">
+                  </button>
+
+                </div>
+
+                <div class="modal-body text-center">
+
+                  <!-- Preview -->
+
+                  <img [src]="previewLogo" alt="Logo Preview" width="120" height="120" class="border rounded mb-3">
+
+                  <!-- File -->
+
+                  <input type="file" class="form-control" accept=".jpg,.jpeg,.png" (change)="onLogoSelected($event)">
+
+                </div>
+
+                <div class="modal-footer">
+
+                  <button type="button" class="btn btn-dark" data-bs-dismiss="modal">
+
+                    Close
+
+                  </button>
+
+                  <button type="button" class="btn btn-primary" (click)="uploadLogo()">
+
+                    Upload
+
+                  </button>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+          <!---->
+
+          <pagination-controls (pageChange)="onPageChange($event)" [responsive]="true">
+          </pagination-controls>
+
+          <ng-template #noData>
+            <tr>
+              <td colspan="4" class="text-center">No data available</td>
+            </tr>
+          </ng-template>
+
+        </div>
+      </div>
+
+
+    </div>
+  </div>
+</div>

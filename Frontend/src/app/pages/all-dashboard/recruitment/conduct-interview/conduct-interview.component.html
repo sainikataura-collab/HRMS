@@ -1,0 +1,193 @@
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+            <!-- card header  -->
+            <div class="card-header bg-primary py-lg-1 mt-0">
+                <div class="row w-100 align-items-center">
+
+                    <!-- Title Section -->
+                    <div class="col-sm-12 col-md-6 col-lg-6">
+                        <h4>{{ Isedit ? 'Update Conduct Interview' : 'Conduct Interview' }}</h4>
+                    </div>
+
+                    
+
+                    <!-- Button Section -->
+                    <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+                        <button class="btn btnheader"
+                            routerLink="/dash/recruitment/recruitmentdashboard/ConductInterview_list">
+                            Back
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+            
+            <!--  -->
+
+            <div class="card-body mt-4">
+
+       
+                <form class="row row-cols-1 row-cols-md-3" [formGroup]="ConductInterviewForm">
+
+                    <div class="col">
+                        <label>Job Details <span style="color: red;">*</span></label>
+                        <div class="form-group">
+                            <ng-select id="Member" [items]="jobList" bindLabel="name" bindValue="value"
+                                formControlName="fk_jobId" placeholder="--Select --" class="w-100"></ng-select>
+                            <div *ngIf="showerror   && ConductInterviewForm.get('fk_jobId')?.invalid"
+                                class="text-danger mt-1" style="font-size: 12px;">
+                                Please choose Job
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                     <!-- <div class="col">
+                        <label>Total Interview Round</label>
+                       <p  class="text-success fw-semibold fs-6 ps-5 ms-3"> {{totalinterviewround}}</p>
+                    </div> -->
+                        
+                <div class="col-sm-12 col-md-12 col-lg-8 ">
+            <div class="row pt-lg-4 ">
+
+
+             <div class="col-sm-0 col-md-0 col-lg-3">
+                <div class="card rounded border border-success shadow-none">
+                  <p class="small text-black lh-base fw-semibold px-1 pt-2 " style="font-size: 0.7rem;"><span
+                      class="ps-2"> Total Interview Round : <span class="text-success">{{totalinterviewround}}</span> </span></p>
+                </div>
+                   </div>
+
+                      <div class="col-sm-0 col-md-0 col-lg-3">
+                <div class="card rounded border border-success shadow-none">
+                  <p class="small text-black lh-base fw-semibold px-1 pt-2 " style="font-size: 0.7rem;"><span
+                      class="ps-2"> Total Candidate : <span class="text-success">{{totalcandidate}}</span> </span></p>
+                </div>
+                   </div>
+               <div class="col-sm-12 col-md-6 col-lg-3">
+                <div class="card rounded border border-primary ps-2 shadow-none">
+                  <p class="small text-black lh-base fw-semibold px-1 pt-2 " style="font-size: 0.7rem;"><span
+                      class="ps-2">Opening: <span class="text-primary"></span>{{jobopening_date}} </span></p>
+
+                </div>
+              </div>
+
+
+              <div class="col-sm-12 col-md-6 col-lg-3">
+                <div class="card rounded border border-primary ps-2 shadow-none">
+                  <p class="small text-black lh-base fw-semibold px-1 pt-2 " style="font-size: 0.7rem;"><span
+                      class="ps-2"> Closing : <span class="text-primary">{{jobclosing_date}}</span> </span></p>
+
+                </div>
+              </div>
+
+
+            </div>
+          </div>
+                   
+                    <div class="col-sm-12 col-md-12 col-lg-12">
+                        <div class="page-seperator bg-primary rounded-1">
+                            <p class="text-white ms-4 p-1">List of the candidates</p>
+                        </div>
+                    </div>
+
+                          <div class="col">
+                        <label>Select Candidate <span style="color: red;">*</span></label>
+                        <div class="form-group">
+                            <ng-select id="Member" [items]="Candidatelist" bindLabel="name" bindValue="value"
+                                formControlName="fk_recId" placeholder="--Select --" class="w-100"></ng-select>
+                            <div *ngIf="showerror   && ConductInterviewForm.get('fk_recId')?.invalid"
+                                class="text-danger mt-1" style="font-size: 12px;">
+                                Please Select Candidate
+                            </div>
+                        </div>
+
+                    </div>
+
+                       <div class="col">
+                        <label>Interview Round <span style="color: red;">*</span></label>
+                        <div class="form-group">
+                            <ng-select id="Member" [items]="interviewlist" bindLabel="name" bindValue="value"
+                                formControlName="interview_round" placeholder="--Select --" class="w-100"></ng-select>
+                            <div *ngIf="showerror   && ConductInterviewForm.get('interview_round')?.invalid"
+                                class="text-danger mt-1" style="font-size: 12px;">
+                                Please choose Interview Round
+                            </div>
+                        </div>
+
+                    </div>
+                      <div class="col">
+                        <label>Personality <span style="color: red;">*</span></label>
+                        <div class="form-group">
+                            <ng-select id="Member" [items]="personality" bindLabel="name" bindValue="value"
+                                formControlName="personality" placeholder="--Select --" class="w-100"></ng-select>
+                            <div *ngIf="showerror   && ConductInterviewForm.get('personality')?.invalid"
+                                class="text-danger mt-1" style="font-size: 12px;">
+                                Please choose Personality
+                            </div>
+                        </div>
+
+                    </div>
+                     
+
+                       <div class="col">
+                        <label>Interview Status <span style="color: red;">*</span></label>
+                        <div class="form-group">
+                            <ng-select id="Member" [items]="InterviewStatus" bindLabel="name" bindValue="value"
+                                formControlName="interview_status" placeholder="--Select --" class="w-100"></ng-select>
+                            <div *ngIf="showerror   && ConductInterviewForm.get('interview_status')?.invalid"
+                                class="text-danger mt-1" style="font-size: 12px;">
+                                Please choose Interview Status
+                            </div>
+                        </div>
+
+                    </div>
+                           <div class="col">
+                            <label>Interview Panel(Interviewer) <span style="color: red;">*</span></label>
+                            <div class="form-group">
+                                <ng-select id="Member" [items]="EmployeeList" bindLabel="name" bindValue="value"
+                                    formControlName="fk_empid" placeholder="--Select --" class="w-100" [multiple]="true" [closeOnSelect]="false" [searchable]="true"></ng-select>
+                                <div *ngIf="showerror   && ConductInterviewForm.get('fk_empid')?.invalid"
+                                    class="text-danger mt-1" style="font-size: 12px;">
+                                    Please choose Interviewer
+                                </div>
+                            </div>
+
+                        </div>
+
+                    <div class="col"><label>Interview Remarks</label>
+                        <div class="form-group">
+
+                              <textarea type="text" class="form-control flex-grow-1" formControlName="interview_remarks"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="col"><label>Personality Remarks</label>
+                        <div class="form-group">
+
+                              <textarea type="text" class="form-control flex-grow-1" formControlName="personalityremarks"></textarea>
+                        </div>
+                    </div>
+
+                        
+                      <div class="col"></div>
+                     <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary mx-1" (click)="submitForm()">{{ Isedit ? 'Update' :
+                            'Save' }}</button>
+
+                        <button type="reset" class="btn btn-outline-dark mx-1" (click)="Onreset()">Reset</button>
+                    </div>
+
+                </form>
+
+               
+
+                
+               
+
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,361 @@
+<div class="row">
+  <div class="col-12">
+    <div class="card w-100">
+
+      <!-- Card Header -->
+      <div class="card-header py-1 bg-primary">
+        <div class="row w-100 align-items-center">
+          <!-- Title Section -->
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-between">
+            <h4 class="mb-0 text-white">Vendor Employee Document Verification</h4>
+          </div>
+
+          <!-- Search Section in Header -->
+          <div
+            class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-center my-2 my-md-0">
+            <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchTerm"
+              (ngModelChange)="onFilterChange()" (keyup.enter)="onFilterChange()" />
+          </div>
+
+          <!-- Button Section -->
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex justify-content-md-end align-items-center gap-2">
+            <button type="button" class="btn btnheader bg-white text-primary shadow-sm" (click)="exportToExcel()"
+              [disabled]="isExporting" title="Download Excel">
+              <i class="fa fa-download me-1" *ngIf="!isExporting"></i>
+              <i class="fa fa-spinner fa-spin me-1" *ngIf="isExporting"></i>
+              {{ isExporting ? 'Exporting...' : 'Export Excel' }}
+            </button>
+            <button type="button" class="btn btnheader bg-white text-primary shadow-sm" (click)="loadList()"
+              title="Refresh List">
+              <i class="fa fa-refresh me-1"></i> Refresh
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card Body -->
+      <div class="card-body">
+
+        <!-- Filters Section -->
+        <div class="card bg-white border mb-3 p-3">
+          <div class="row g-3 align-items-end">
+            <div class="col-md-4">
+              <label class="form-label small fw-bold">Vendor</label>
+              <ng-select [items]="vendorList" bindLabel="name" bindValue="value" [(ngModel)]="selectedVendorId"
+                placeholder="-- All Vendors --" (change)="onFilterChange()" (clear)="onVendorClear()">
+              </ng-select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label small fw-bold">Location</label>
+              <ng-select [items]="locationList" bindLabel="name" bindValue="value" [(ngModel)]="selectedLocationId"
+                placeholder="-- All Locations --" (change)="onFilterChange()" (clear)="onLocationClear()">
+              </ng-select>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label small fw-bold">Status</label>
+              <ng-select [items]="statusOptions" bindLabel="name" bindValue="value" [(ngModel)]="selectedStatus"
+                placeholder="-- All --" (change)="onFilterChange()" (clear)="onStatusClear()">
+              </ng-select>
+            </div>
+            <div class="col-md-1">
+              <button class="btn btn-sm btn-outline-secondary w-100" (click)="resetFilters()" title="Reset Filters">
+                <i class="fa fa-rotate-right me-1"></i>Reset
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- HR Grid Table -->
+        <div class="table-responsive table-invoice">
+          <table id="exportTable" class="table">
+            <thead>
+              <tr>
+                <th>Sr.</th>
+                <th>Emp Code</th>
+                <th>Employee Name</th>
+                <th>Location</th>
+                <th>Vendor Name</th>
+                <th>Vendor Code</th>
+                <th style="min-width: 140px;">Approval Progress</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                *ngFor="let row of hrList | paginate : { itemsPerPage: pageSize, currentPage: pageIndex, totalItems: totalCount }; let i = index">
+                <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+                <td>{{ row.empcode || row.empCode || '-' }}</td>
+                <td>{{ row.empname || row.empName || '-' }}</td>
+                <td>{{ row.locationName || row.LocationName || '-' }}</td>
+                <td>{{ row.vendor_Name || row.vendorName || row.Vendor_Name || '-' }}</td>
+                <td>{{ row.vendor_Code || row.vendorCode || row.Vendor_Code || '-' }}</td>
+                <td>
+                  <div class="d-flex flex-column" style="min-width: 130px;">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                      <small class="fw-semibold text-dark">{{ row.docProgress || row.DocProgress || '0/0' }}</small>
+                      <small class="fw-bold text-success">{{ getProgressPercent(row) }}%</small>
+                    </div>
+                    <div class="progress" style="height: 8px; border-radius: 4px; background-color: #e9ecef;">
+                      <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar"
+                        [style.width.%]="getProgressPercent(row)" style="border-radius: 4px;"></div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <span class="badge" [ngClass]="{
+                    'bg-success': getRowStatus(row) === 'Completed',
+                    'bg-danger': getRowStatus(row) === 'Rejected',
+                    'bg-warning text-dark': getRowStatus(row) === 'Pending'
+                  }">
+                    {{ getRowStatus(row) }}
+                  </span>
+                  <div class="small mt-1" *ngIf="(row.rejectedDocs || row.RejectedDocs) > 0">
+                    <span class="text-danger fw-semibold">{{ row.rejectedDocs || row.RejectedDocs }} Rejected</span>
+                  </div>
+                </td>
+                <td>
+                  <button class="btn btn-sm btn-outline" (click)="openReviewModal(row)" title="View / Review">
+                    <i class="fa-regular fa-eye"></i>
+                  </button>
+                </td>
+              </tr>
+
+              <tr *ngIf="isLoading">
+                <td colspan="9" class="text-center py-4">
+                  <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+                </td>
+              </tr>
+              <tr *ngIf="!isLoading && hrList.length === 0">
+                <td colspan="9" class="text-center py-4 text-muted">No records found.</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <pagination-controls *ngIf="hrList.length > 0" (pageChange)="onPageChange($event)">
+          </pagination-controls>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Review & Approval Modal -->
+<div class="modal fade my-5 my-lg-3" id="reviewDocModal" tabindex="-1" aria-labelledby="reviewDocModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content border-0 shadow">
+      <!-- Header -->
+      <div class="modal-header bg-primary text-white py-2 d-flex justify-content-between align-items-center">
+        <h5 class="modal-title text-white mb-0 fs-6 text-start" id="reviewDocModalLabel">
+          Document Verification: {{ getSelectedEmpName() }} ({{ getSelectedEmpCode() }})
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body bg-white">
+        <!-- Summary Header Info -->
+        <div class="card border bg-white mb-3">
+          <div class="card-body py-2 px-3">
+            <div class="row g-2">
+              <div class="col-md-4">
+                <small class="text-muted d-block">Vendor</small>
+                <strong class="text-primary">{{ getSelectedVendorName() }}</strong>
+                <small class="text-muted" *ngIf="getSelectedVendorCode()"> ({{ getSelectedVendorCode() }})</small>
+              </div>
+              <div class="col-md-4">
+                <small class="text-muted d-block">Employee</small>
+                <strong class="text-dark">{{ getSelectedEmpName() }}</strong>
+                <small class="text-muted ms-1" *ngIf="getSelectedEmpCode()">({{ getSelectedEmpCode() }})</small>
+              </div>
+              <div class="col-md-4">
+                <small class="text-muted d-block">Location</small>
+                <strong class="text-dark">{{ getSelectedLocation() }}</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Verification Progress Card -->
+        <div class="card border bg-white mb-3 shadow-none p-3" *ngIf="employeeDocs.length > 0">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <div class="d-flex align-items-center">
+              <i class="fa fa-line-chart text-success me-2 fs-6"></i>
+              <strong class="text-dark">Verification Progress</strong>
+              <span class="text-muted small ms-2">({{ getApprovedCount() }} of {{ employeeDocs.length }} documents
+                approved)</span>
+            </div>
+            <div class="fw-bold text-success">{{ getApprovalPercent() }}%</div>
+          </div>
+          <div class="progress" style="height: 10px; border-radius: 6px; background-color: #e9ecef;">
+            <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar"
+              [style.width.%]="getApprovalPercent()" style="border-radius: 6px;">
+            </div>
+          </div>
+        </div>
+
+        <!-- Documents Table -->
+        <div class="table-responsive">
+          <table class="table table-bordered table-hover align-middle mb-0 bg-white">
+            <thead class="border-bottom">
+              <tr>
+                <th style="width: 5%;" class="text-center">Sr.No.</th>
+                <th style="width: 25%;">Document Type</th>
+                <th style="width: 25%;">File Name</th>
+                <th style="width: 15%;">Uploaded Date</th>
+                <th style="width: 15%;" class="text-center">Status</th>
+                <th style="width: 15%;" class="text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngIf="isLoadingDocs">
+                <td colspan="6" class="text-center py-4">
+                  <div class="spinner-border spinner-border-sm text-primary me-2"></div>
+                  <span>Loading documents...</span>
+                </td>
+              </tr>
+              <tr *ngIf="!isLoadingDocs && employeeDocs.length === 0">
+                <td colspan="6" class="text-center py-4 text-muted">No documents uploaded.</td>
+              </tr>
+              <tr *ngFor="let doc of employeeDocs; let i = index">
+                <td class="text-center">{{ i + 1 }}</td>
+                <td class="fw-semibold">{{ doc.docTypeName || doc.DocTypeName }}</td>
+                <td>{{ doc.originalFileName || doc.OriginalFileName }}</td>
+                <td>{{ (doc.uploadedDate || doc.UploadedDate) | date:'dd-MMM-yyyy HH:mm' }}</td>
+                <td class="text-center">
+                  <span class="badge" [ngClass]="{
+                    'bg-success': (doc.verificationStatus || doc.VerificationStatus) === 'Approved',
+                    'bg-danger': (doc.verificationStatus || doc.VerificationStatus) === 'Rejected',
+                    'bg-warning text-dark': (doc.verificationStatus || doc.VerificationStatus) === 'Pending'
+                  }">
+                    {{ doc.verificationStatus || doc.VerificationStatus || 'Pending' }}
+                  </span>
+                  <div class="small text-danger mt-1 text-start"
+                    *ngIf="(doc.verificationStatus || doc.VerificationStatus) === 'Rejected' && (doc.rejectionRemarks || doc.RejectionRemarks)">
+                    <strong>Reason:</strong> {{ doc.rejectionRemarks || doc.RejectionRemarks }}
+                  </div>
+                </td>
+                <td class="text-center">
+                  <div class="d-flex justify-content-center align-items-center gap-1">
+                    <button class="btn btn-sm" [ngClass]="hasViewedDoc(doc) ? 'btn-outline-success' : 'btn-outline-primary'"
+                      (click)="viewDocument(doc)" [title]="hasViewedDoc(doc) ? 'Document Viewed (Click to view again)' : 'Preview Document'">
+                      <i class="fa-regular fa-eye me-1"></i>{{ hasViewedDoc(doc) ? 'Viewed' : 'View' }}
+                    </button>
+                    <button *ngIf="!isVendorUser && isDocPending(doc)" class="btn btn-sm btn-success"
+                      [disabled]="isProcessingAction" (click)="approveDocument(doc)"
+                      [title]="hasViewedDoc(doc) ? 'Click to Approve' : 'Please view document first to approve'">
+                      <i class="fa fa-check me-1"></i>Approve
+                    </button>
+                    <button *ngIf="!isVendorUser && isDocPending(doc)" class="btn btn-sm btn-danger"
+                      [disabled]="isProcessingAction" (click)="openRejectModal(doc)" title="Reject Document">
+                      <i class="fa fa-times me-1"></i>Reject
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="modal-footer py-2">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Preview Modal -->
+<div class="modal fade my-5 my-lg-3" id="previewModalInApproval" tabindex="-1"
+  aria-labelledby="previewModalInApprovalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-content border-0 shadow">
+      <!-- Header -->
+      <div class="modal-header justify-content-center position-relative p-0">
+        <p class="modal-title w-100 text-center fw-semibold mb-0 py-2" id="previewModalInApprovalLabel">
+          {{ selectedDocForView?.originalFileName || selectedDocForView?.OriginalFileName ||
+          selectedDocForView?.docTypeName || 'View Document' }}
+        </p>
+        <button type="button" class="btn-close position-absolute end-0 me-3" data-bs-dismiss="modal"
+          aria-label="Close"></button>
+      </div>
+      <!-- Body -->
+      <div class="modal-body p-0" style="height: 80vh;">
+        <iframe *ngIf="selectedDocForView?.safeUrl" [src]="selectedDocForView.safeUrl"
+          class="w-100 h-100 border-0"></iframe>
+        <div *ngIf="!selectedDocForView?.safeUrl" class="d-flex justify-content-center align-items-center h-100">
+          <div class="text-center">
+            <div class="spinner-border spinner-border-sm text-primary mb-2" role="status"></div>
+            <p class="text-muted mb-0 small">Loading document...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Reject Reason Modal -->
+<div class="modal fade" id="rejectReasonModal" tabindex="-1" aria-labelledby="rejectReasonModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow">
+      <!-- Header -->
+      <div class="modal-header justify-content-center position-relative p-0">
+        <p class="modal-title w-100 text-center fw-semibold text-danger mb-0 py-2" id="rejectReasonModalLabel">
+          Reject Document: {{ docToReject?.docTypeName || docToReject?.DocTypeName || 'Document' }}
+        </p>
+        <button type="button" class="btn-close position-absolute end-0 me-3" data-bs-dismiss="modal"
+          aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <label class="form-label fw-semibold">Enter Rejection Reason <span class="text-danger">*</span></label>
+        <textarea class="form-control" rows="3" [(ngModel)]="rejectionRemarks"
+          placeholder="E.g., Document copy is blurry or incomplete..."></textarea>
+      </div>
+      <div class="modal-footer py-2">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-danger" (click)="confirmReject()" [disabled]="isProcessingAction">
+          <span *ngIf="isProcessingAction" class="spinner-border spinner-border-sm me-1"></span>
+          Confirm Reject
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Approve Confirmation Modal -->
+<div class="modal fade" id="approveConfirmModal" tabindex="-1" aria-labelledby="approveConfirmModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow">
+      <!-- Header -->
+      <div class="modal-header justify-content-center position-relative p-0">
+        <p class="modal-title w-100 text-center fw-semibold text-success mb-0 py-2" id="approveConfirmModalLabel">
+          Approve Document
+        </p>
+        <button type="button" class="btn-close position-absolute end-0 me-3" data-bs-dismiss="modal"
+          aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center py-4">
+        <div class="mb-3">
+          <i class="fa fa-circle-check text-success" style="font-size: 2.75rem;"></i>
+        </div>
+        <p class="mb-0 text-dark" style="font-size: 14px; line-height: 1.6;">
+          Are you sure you want to approve<br>
+          <strong class="text-primary">"{{ docToApprove?.docTypeName || docToApprove?.DocTypeName || 'Document' }}"</strong><br>
+          for employee <strong>{{ getSelectedEmpName() }}</strong>?
+        </p>
+      </div>
+      <div class="modal-footer py-2 justify-content-center gap-2">
+        <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-success px-4" (click)="confirmApprove()" [disabled]="isProcessingAction">
+          <span *ngIf="isProcessingAction" class="spinner-border spinner-border-sm me-1"></span>
+          Yes, Approve
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

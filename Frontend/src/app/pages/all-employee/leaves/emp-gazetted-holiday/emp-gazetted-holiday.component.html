@@ -1,0 +1,109 @@
+<div class="row m-0">
+    <div class="col-12 px-0 py-0">
+        <div class="card px-0 m-0">
+         
+
+ <div class="card-header">
+                <div class="row w-100">
+                    <div
+                        class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-between">
+                        <h4 class="mb-0">Gazetted Holidays</h4>
+
+                        <!-- <div class="dropdown d-flex align-items-center justify-content-center d-md-none">
+                            <button class="btn bg-transparent text-white px-0 mt-1" type="button"
+                                id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fa-solid fa-bars fs-6"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+
+                                <li><a class="dropdown-item">Add</a></li>
+                                <li><a class="dropdown-item">PDF</a></li>
+                            </ul>
+                        </div> -->
+
+
+
+                    </div>
+
+
+                    <div
+                        class="col-12 col-md-3 all-pickup-point-search-header d-flex align-items-center justify-content-md-end">
+                        <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText" />
+                    </div>
+
+
+                    <div class="col-12 col-md-3 d-flex justify-content-end align-items-center mt-md-0">
+                        <div class="d-none d-md-flex">
+                            <!-- <button class="btn btnheader mx-2">+ Add</button> -->
+                            <!-- <button class="btn btnheader"><i class="fa-solid fa-file-arrow-down"></i>&nbsp;Download</button>-->
+                        </div> 
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body px-0  m-2">
+                <div class="row g-4">
+                    <div class="col-md-4">
+
+
+                        <label>Year</label>
+                        <ng-select id="year" [items]="fk_yearid" bindLabel="name" bindValue="value"placeholder="--Select Year--" [(ngModel)]="yearid" class="w-100"
+                                    (change)="onYearChange(yearid)">
+                        </ng-select>
+                    </div>
+
+
+                </div>
+
+
+                <div class="row pt-3 pb-1">
+                    <div class="col-12">
+                        <p class="text-primary fw-semibold">List of Holidays</p>
+                    </div>
+                </div>
+
+
+
+
+
+                <div class="table-responsive-md">
+                    <table id="exportTable" class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Sr.No</th>
+                              
+                                <th>Date</th>
+                                  
+                                <th>Holiday</th>
+                                <th>Day Name </th>
+
+
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                         
+
+                            <tr *ngFor=" let item of filteredData(); let i = index">
+      
+
+                             <td data-label="Sr.No. : ">{{i + 1}}</td>
+                                <td data-label="Date: ">{{item.dated}}</td>
+                                <td data-label="Holiday : ">{{item.holidaytype}}</td>
+                                <td data-label="Day Name: ">{{item.day_Name}}</td>
+                                 
+                            </tr>
+                        </tbody>
+
+                    </table>
+                   
+
+                </div>
+            </div>
+
+
+
+
+        </div>
+    </div>
+</div>

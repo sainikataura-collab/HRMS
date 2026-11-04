@@ -1,0 +1,98 @@
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="row w-100">
+                  
+                  <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-between">
+                    <h4>Working Day list</h4>
+                   
+                  </div>
+                  
+                  <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-center">
+                    <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText" />
+                  </div>
+                  <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-md-end">
+                    <button class="btn btnheader" routerLink="/dash/adminAttendance/adminAttendancedashboard/WorkingDayMaster">
+                      Add
+                      </button>
+                      <button class="btn btn-light mx-1" (click)="exportToExcel()">
+                        Download
+                      </button>
+                  </div>
+                  
+                </div>
+            </div>
+            <div class="card-body">
+              <div class="row g-4">
+                <div class="col-md-4"><label>Year</label>
+              <ng-select id="year" 
+                  [items]="years" 
+                  bindLabel="name" 
+                  bindValue="value"
+                  placeholder="--Select Year--"
+                  [(ngModel)]="fk_yearid"
+                  (change)="onYearChange(fk_yearid)"
+                  class="w-100">
+              </ng-select>
+              
+                  
+                </div>
+              </div>
+              
+            </div>
+            <div class="card-body">
+              <div class="table-responsive table-invoice">
+                    <table id="exportTable" class="table table-bordered">
+                        <thead>
+                          <tr>
+                            <th>Sr.No</th>
+                            <th>Location </th>
+                            <th>Holiday Name</th>
+                            <th>Dated</th>
+                            <!-- <th>Is NH.</th>
+                            <th>Is&nbsp;Working&nbsp;Day</th> -->
+                            <th>Action</th>
+                            
+                          </tr>
+                        </thead>
+                       
+                      <tbody>
+                        <tr *ngFor=" let item of filteredData() 
+                        | paginate : { itemsPerPage: pageSize, currentPage: page ,totalItems: totalItems };let i = index">
+      
+                          <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+                          <td>{{ item.locname }}</td>
+                          <td>{{ item.holidaytype }}</td>
+                          <td>{{ item.dated | date:'dd-MM-yyyy'}}</td>
+                          <!-- <td>{{ item.isNHName }}</td>
+                          <td>{{item.isWorkingDayName}}</td> -->
+                          <td>
+                            <button class="btn btn-sm btn-outline" (click)="isUpdate(encryptionService.encryptText(item.pk_holidayid))">
+                              <i class="fa-regular fa-pen-to-square"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline" (click)="deleteHoliday(item.pk_holidayid)">
+                              <i class="fa fa-trash"></i>
+                            </button>
+                          </td>
+                        </tr>
+                      </tbody>
+                      
+                    </table>
+                    <pagination-controls
+                    (pageChange)="onPageChange($event)"
+                    >
+                  </pagination-controls>
+                
+                        <ng-template #noData>
+                          <tr>
+                            <td colspan="4" class="text-center">No data available</td>
+                          </tr>
+                        </ng-template>
+                    
+                  </div>
+            </div>
+        </div>
+    </div>
+</div>

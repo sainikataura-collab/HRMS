@@ -1,0 +1,90 @@
+<div class="row mt-2">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+
+            <!-- card Header Start -->
+            <div class="card-header bg-blue">
+                <div class="row w-100">
+                    <div class="col-sm-12 col-md-12 col-lg-12">
+                        <h4 class="">Export & Import Employee</h4>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Card Header end -->
+            <div class="card-body mt-1">
+
+              <div class="row pb-2">
+                <app-common-search></app-common-search>
+              </div>
+
+                <form class="row row-cols-1 row-cols-md-3 g-4">
+
+                    <div class="col">
+                        <label for="" class="">Office Type</label>
+                        <ng-select id="" [items]="OfficeType" bindLabel="name" bindValue="value"
+                            formControlName="OfficeType" placeholder="Office Type" class="w-100 small"
+                            formControlName="OfficeType"></ng-select>
+                    </div>
+
+                    <div class="col">
+                        <label for="" class="">Grade</label>
+                        <ng-select id="" [items]="Grade" bindLabel="name" bindValue="value" placeholder="Grade"
+                            class="w-100 small" formControlName="Grade"></ng-select>
+                    </div>
+
+
+
+
+                    <div class="row">
+                        <div class="col d-flex align-items-end justify-content-end pt-5 pb-3">
+
+                            <button type="button" class="btn btn-outline-dark btn-sm mx-1 px-2">Reset</button>
+                            <button type="submit" class="btn btn-success btn-sm mx-1 px-2">View</button>
+
+                        </div>
+                    </div>
+
+
+                </form>
+
+
+
+            </div>
+
+            <div class="row pt-2 pt-lg-4">
+                <div class="col-sm-12 col-md-12 col-lg-12">
+
+                    <div class="page-seperator mx-2 rounded-1">
+                        <p class="text-white ms-4 p-1">Import Employee Other Details</p>
+                    </div>
+                    <div class="card-body mt-1">
+                        <form class="row row-cols-1 row-cols-md-3 g-4">
+
+
+                            <div class="col">
+                                <label for="" class="">Select File</label>
+                                <input 
+                                type="file" 
+                                class="form-control" 
+                                id="fileInput" 
+                                accept=".pdf,.docx,.xlsx"
+                              >
+                            </div>
+                            <div class="col"></div>
+
+
+                            <div class="col d-flex align-items-end justify-content-end pt-4 pb-3">
+                                <button type="button" class="btn btn-outline-dark btn-sm mx-1 px-2">Reset</button>
+                                <button type="submit" class="btn btn-primary btn-sm mx-1 px-2">Import</button>
+    
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

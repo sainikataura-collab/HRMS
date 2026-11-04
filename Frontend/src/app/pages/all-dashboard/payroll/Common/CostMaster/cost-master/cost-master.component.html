@@ -1,0 +1,74 @@
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+      <div class="card">
+  
+        <div class="card-header bg-primary">
+          <div class="row w-100">
+            <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-between">
+             <h4 class="">{{Isedit ? 'Update Contractor Master' : 'Contractor Master' }}</h4>
+            </div>
+            <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+              <button class="btn btnheader" routerLink="/dash/user/userdashboard/CostMaster_list">Back
+              </button>
+            </div>
+  
+          </div>
+        </div>
+  
+        <!-- main header close -->
+  
+        <!--  -->
+  
+        <div class="card-body mt-4">
+          <form class="row row-cols-1 row-cols-md-3 g-4" [formGroup]="FunctionMaster">
+  
+  
+        
+            <div class="col">
+              <label for="" class="">Code<span style="color: red;">*</span></label>
+              <input type="text" class="form-control" formControlName="code" id="inputPassword">
+              <span *ngIf="showError &&FunctionMaster.controls['code'].invalid" class="text-danger mt-1"
+                style="font-size: 12px;">
+                Please enter code.
+              </span>
+            </div>
+  
+            <div class="col">
+              <label for="Description">Description<span style="color: red;">*</span></label>
+              <input id="Description" type="text" class="form-control" formControlName="description" (blur)="checkDuplicate(FunctionMaster.get('description')?.value)"/>
+  
+              <span *ngIf="showError &&FunctionMaster.controls['description'].invalid && !FunctionMaster.get('description')?.errors?.['duplicate']" class="text-danger mt-1 lh-base"
+                style="font-size: 12px;">
+                Please enter description.
+              </span>
+  
+              <div *ngIf="FunctionMaster.get('description')?.errors?.['duplicate']" 
+                    class="text-danger lh-base" style="font-size:10px;">
+                    {{ FunctionMaster.get('description')?.errors?.['duplicate'] }}
+                </div>
+  
+  
+            </div>
+  
+  
+           
+            
+          </form>
+           <!-- Buttons -->
+           <div class="modal-footer">
+            <button type="submit" class="btn btn-primary mx-1" (click)="onSubmit()">{{ Isedit ? 'Update' : 'Save' }}</button>
+            <button type="reset" class="btn btn-outline-dark mx-1">Reset</button>
+        
+          </div>
+        </div>
+  
+  
+  
+  
+  
+  
+  
+  
+      </div>
+    </div>
+  </div>

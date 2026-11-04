@@ -1,0 +1,140 @@
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+            <!--  -->
+            <div class="card-header bg-blue ">
+                <div class="row w-100 ">
+                    <div class="col-sm-12 col-md-6 col-lg-6 ">
+                        <h4>Employee Search</h4>
+                    </div>
+                    <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+                        <button class="btn btnheader" routerLink="/dash/hr/hrdashboard/CRD_BudgetIssue_Mst_list">Back
+                        </button>
+                    </div>
+                </div>
+
+
+            </div>
+            <div class="row">
+
+                <app-common-search></app-common-search>
+            </div>
+            <div class="card-header mt-4">
+                <div class="row w-100">
+                  <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-between">
+                    <h4>List of Pending Negligence</h4>
+                   
+                  </div>
+             
+              
+                  
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive table-invoice">
+                    <table class="table table-bordered">
+                        <thead>
+                          <tr>
+                            <th>Sr.</th>
+                            <th>Dated</th>
+                            <th>Detail of Incident</th>
+                            <th>Type</th>   
+                            <th>Emp Code</th>
+                            <th>Emp Name</th>
+                            <th>department</th>   
+                            <th>Raised By</th>
+                            <th>Status</th>
+                            <th>File</th>            
+                            <th>Action</th>
+                            
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr *ngFor="let item of PendingNegligencelist; let i = index">
+                            <td>{{ i + 1 }}</td>
+                            <td> {{item.Dated}}</td>
+                            <td>{{item.DetailofIncident}}</td>
+                            <td> {{item.Type}}</td>
+                            <td> {{item.EmpCode}}</td>
+                            <td>{{item.EmpName}}</td>
+                            <td> {{item.department}}</td>
+                            <td> {{item.RaisedBy}}</td>
+                            <td>{{item.Status}}</td>
+                            <td> {{item.File}}</td>
+                      
+                     
+                            <td>
+                                <button class="btn btn-sm btn-outline"  ><i class="fa-solid fa-eye" style="color:#3080e8; font-size: 14px;"></i></button>
+                              
+                              </td>
+                          </tr> 
+                        </tbody>
+                      </table>
+            
+                    
+                  </div>
+            </div>
+
+            <!-- List of Approved Negligence -->
+
+            <div class="card-header">
+                <div class="row w-100">
+                  <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-between">
+                    <h4>List of Approved Negligence</h4>
+                   
+                  </div>
+             
+              
+                  
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive table-invoice">
+                    <table class="table table-bordered">
+                        <thead>
+                          <tr>
+                            <th>Sr.</th>
+                            <th>Employee Name</th>
+                            <th>Employee Code</th>
+                            <th>Raised By</th>   
+                            <th>Department</th>
+                            <th>Location</th>
+                            <th>Incident Date</th>   
+                            <th>Incident Details</th>
+                            <th>Status</th>
+                            <th>OPEN  File</th>            
+                            <th>Action</th>
+                            
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr *ngFor="let item of ApprovedNegligencelist; let i = index">
+                            <td>{{ i + 1 }}</td>
+                            <td> {{item.EmployeeName}}</td>
+                            <td>{{item.EmployeeCode}}</td>
+                            <td> {{item.RaisedBy}}</td>
+                            <td> {{item.Department}}</td>
+                            <td>{{item.Location}}</td>
+                            <td> {{item.IncidentDate}}</td>
+                            <td> {{item.IncidentDetails}}</td>
+                            <td>{{item.Status}}</td>
+                            <td> {{item.OPENFile}}</td>
+                      
+                     
+                            <td>
+                                <button class="btn btn-sm btn-outline" (click)="delete(item.id)" ><i class="fa-solid fa-rectangle-xmark" style="color:#3080e8; font-size: 14px;"></i></button>
+                              
+                              </td>
+                          </tr> 
+                        </tbody>
+                      </table>
+            
+                    
+                  </div>
+            </div>
+
+
+        </div>
+    </div>
+
+</div>

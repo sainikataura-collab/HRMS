@@ -1,0 +1,241 @@
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+
+    <div class="card">
+
+      <div class="card-header bg-primary">
+        <div class="d-flex w-100 align-items-center justify-content-between">
+          <h4 class="mb-0">Employee Rent Details</h4>
+          <button class="btn btnheader" routerLink="/dash/reimbursement/reimbursementdashboard/RentDetailsList">
+            Back
+          </button>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <!-- <h5 class="mb-3">Monthly Rent Detail</h5> -->
+
+        <div class="d-flex align-items-center gap-2 mb-3">
+          <input type="number" class="form-control w-auto" [(ngModel)]="fillAmount" />
+          <button class="btn btn-primary" (click)="fillAll()">Fill All</button>
+        </div>
+
+
+
+        <form [formGroup]="form" (ngSubmit)="submit()">
+          <!-- table -->
+          <div class="table-responsive">
+            <table class="table table-bordered align-middle">
+              <thead>
+                <tr>
+                  <th>S. No.</th>
+                  <th>Month</th>
+                  <th>Year</th>
+                  <th>Rent</th>
+                  <th>Remarks</th>
+                </tr>
+              </thead>
+              <tbody formArrayName="monthlyRentList">
+                <ng-container *ngFor="let row of monthlyRentList.controls; let i = index" [formGroupName]="i">
+                  <tr>
+                    <td>{{ i + 1 }}</td>
+                    <!-- <td>{{ row.get('fk_monthId')?.value }}</td> -->
+
+                    <td>{{ getMonthLabel(row.get('fk_monthId')?.value) }}</td>
+                    <td>{{ row.get('fk_yearId')?.value }}</td>
+
+                    <td>
+                      <input type="number" class="form-control" formControlName="rentamount" />
+                    </td>
+                    <td>
+                      <textarea class="form-control textarea" formControlName="remarks" rows="4"
+                        placeholder="Enter your remarks here…">
+                  </textarea>
+
+                    </td>
+                  </tr>
+                </ng-container>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- total amount -->
+          <div class="row">
+            <div class="col-sm-8 text-center bg-light p-3">
+              <strong>Total Amount: </strong>
+              <span class="text-success">{{ totalAmount | number: '1.2-2' }}</span>
+
+              <br>
+            </div>
+            <div class="col-sm-4">
+
+            </div>
+          </div>
+
+
+          <!-- STATUS DETAIL -->
+          <div class="row">
+            <strong>
+              <p class="text-primary mt-1">Status Detail:</p>
+            </strong>
+            <div class="col-sm-4">
+              <label for="docsub_status" class="form-label">Document Status<span class="text-danger">*</span></label>
+              <select id="docsub_status" class="form-select" formControlName="docsub_status">
+                <option value="">Select status</option>
+                <option value="Y">Submitted</option>
+                <option value="U">Undertaking</option>
+                <!-- …other options… -->
+              </select>
+            </div>
+            <div class="col-sm-4">
+              <label for="remarks" class="form-label">Remarks</label>
+              <textarea id="remarks" class="form-control" rows="1" formControlName="remarks"
+                placeholder="Enter remarks…"></textarea>
+            </div>
+            <div class="col-sm-4"></div>
+          </div>
+
+          <!-- LANDLORD DETAIL -->
+          <!-- LANDLORD DETAIL -->
+          <!-- <div *ngIf="totalAmount > 100000 && form.get('docsub_status')?.value == 'Y' ">
+
+            <div class="row">
+
+              <p class="text-primary">Landlord Detail:</p>
+              <div class="col-sm-4">
+                <label for="panNo" class="form-label">PAN No<span class="text-danger">*</span></label>
+                <input type="text" id="panNo" class="form-control" formControlName="panNo" placeholder="Enter PAN No" />
+              </div>
+              <div class="col-sm-4">
+                <label for="landlordName" class="form-label">Landlord Name<span class="text-danger">*</span></label>
+                <input type="text" id="landlordName" class="form-control" formControlName="landlordName"
+                  placeholder="Enter Name" />
+              </div>
+              <div class="col-sm-4">
+                <label for="landlordAddress" class="form-label">Landlord Address<span
+                    class="text-danger">*</span></label>
+                <textarea id="landlordAddress" class="form-control" rows="1" formControlName="landlordAddress"
+                  placeholder="Enter Address"></textarea>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-4">
+                <label for="rentDetailType" class="form-label">Rent Detail Type<span
+                    class="text-danger">*</span></label>
+                <select id="rentDetailType" class="form-select" formControlName="rentDetailType">
+                  <option value="">Select type</option>
+                  <option value="O">Old Detail</option>
+                  <option value="N">New Detail</option>
+                </select>
+              </div>
+              <div class="col-sm-4">
+                <label for="file" class="form-label">Upload File<span class="text-danger">*</span></label>
+                <input type="file" id="file" class="form-control" formControlName="file"
+                  (change)="onFileChange($event)" />
+
+              </div>
+              <div class="col-sm-4"></div>
+            </div>
+          </div> -->
+          <!-- LANDLORD DETAIL -->
+<!-- ✅ Show landlord fields when Document Status is "Submitted" (Y) -->
+<div  *ngIf="totalAmount > 100000 && form.get('docsub_status')?.value == 'Y'">
+  <div class="row my-3">
+    <p class="text-primary">Landlord Detail:</p>
+    
+    <div class="col-sm-4">
+      <label for="panNo" class="form-label">PAN No<span class="text-danger">*</span></label>
+      <input type="text" id="panNo" class="form-control" formControlName="panNo" 
+             placeholder="Enter PAN No"
+             [class.is-invalid]="submitted && form.get('panNo')?.invalid" />
+      <span *ngIf="submitted && form.get('panNo')?.invalid" 
+            class="text-danger" style="font-size: 12px;">
+        PAN No is required.
+      </span>
+      <span *ngIf="submitted && form.get('panNo')?.errors?.['pattern']"
+      class="text-danger" style="font-size:12px;">
+  Invalid PAN No.
+</span>
+    </div>
+
+    <div class="col-sm-4">
+      <label for="landlordName" class="form-label">Landlord Name<span class="text-danger">*</span></label>
+      <input type="text" id="landlordName" class="form-control" formControlName="landlordName"
+        placeholder="Enter Name"
+        [class.is-invalid]="submitted && form.get('landlordName')?.invalid" />
+      <span *ngIf="submitted && form.get('landlordName')?.invalid" 
+            class="text-danger" style="font-size: 12px;">
+        Landlord name is required.
+      </span>
+    </div>
+
+    <div class="col-sm-4">
+      <label for="landlordAddress" class="form-label">Landlord Address<span class="text-danger">*</span></label>
+      <textarea id="landlordAddress" class="form-control" rows="1" formControlName="landlordAddress"
+        placeholder="Enter Address"
+        [class.is-invalid]="submitted && form.get('landlordAddress')?.invalid"></textarea>
+      <span *ngIf="submitted && form.get('landlordAddress')?.invalid" 
+            class="text-danger" style="font-size: 12px;">
+        Landlord address is required.
+      </span>
+    </div>
+  </div>
+
+  <div class="row mt-3">
+    <div class="col-sm-4">
+      <label for="rentDetailType" class="form-label">Rent Detail Type<span class="text-danger">*</span></label>
+      <select id="rentDetailType" class="form-select" formControlName="rentDetailType"
+              [class.is-invalid]="submitted && form.get('rentDetailType')?.invalid">
+        <option value="">Select type</option>
+        <option value="O">Old Detail</option>
+        <option value="N">New Detail</option>
+      </select>
+      <span *ngIf="submitted && form.get('rentDetailType')?.invalid" 
+            class="text-danger" style="font-size: 12px;">
+        Rent detail type is required.
+      </span>
+    </div>
+
+    <div class="col-sm-4">
+      <label for="file" class="form-label">Upload File<span class="text-danger">*</span></label>
+      <input type="file" id="file" class="form-control" 
+             (change)="onFileChange($event)"
+             [class.is-invalid]="submitted && form.get('file')?.invalid" />
+      
+    
+      
+      <span *ngIf="submitted && form.get('file')?.invalid " 
+            class="text-danger" style="font-size: 12px;">
+        File upload is required.
+      </span>
+    </div>
+
+    <div class="col-sm-4">
+      <label for="landlordAccountNumber" class="form-label">Landlord Account Number<span class="text-danger">*</span></label>
+      <input [class.is-invalid]="submitted && form.get('landlordAccountNumber')?.invalid" type="text" id="landlordAccountNumber" class="form-control" 
+             formControlName="landlordAccountNumber"
+             placeholder="Enter Account Number" />
+
+              <span *ngIf="submitted && form.get('landlordAccountNumber')?.invalid " 
+            class="text-danger" style="font-size: 12px;">
+        Landlord Account Number is required.
+      </span>
+    </div>
+  </div>
+</div>
+          
+          
+          <!-- SUBMIT BUTTON -->
+          <div class="row my-2">
+            <div class="col-12 text-end">
+              <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+          </div>
+
+
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

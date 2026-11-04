@@ -1,0 +1,166 @@
+<div class="alert alert-light" role="alert">
+  <strong>{{alertType}}</strong> {{message}}
+  </div>
+
+
+  <div class="row">
+
+    <div class="col-md-12 position-relative">
+        <label for="autoSizingInputGroup">Advanced Search</label>
+        <div class="input-group">
+            <input type="search" class="form-control" id="autoSizingInputGroup">
+            <div class="input-group-text">
+                <a href="#" (click)="toggleFilterForm($event)">
+                    <i class="fa-solid fa-sliders fs-5"></i>
+                </a>
+            </div>
+        </div>
+    
+        <!-- Advanced Filter Form -->
+        <div class="card shadow-lg rounded-0 border position-absolute me-3 ms-1 py-2" 
+             [ngClass]="{'d-none': !isFilterFormVisible}" 
+             (click)="onModalClick($event)"
+             style="z-index: 1000;">
+            <div class="card-body p-3 me-lg-1">
+                <form class="row row-cols-1 row-cols-md-3 g-4">
+                   
+                    <div class="col">
+                        <!-- <label for="empcode" class="form-label">Code</label> -->
+                        <input type="text" class="form-control rounded-0 border-0 border-bottom border-primary" id="" placeholder="Enter Employee Code" aria-label="First name">
+                       
+                    </div>
+                    <div class="col">
+                        <!-- <label for="empcode" class="form-label">Code</label> -->
+                        <input type="text" class="form-control rounded-0 border-0 border-bottom border-primary" id="fromCode" placeholder="Enter Employee Code(M)">
+                    </div>
+                    <div class="col">
+                        <!-- <label for="name" class="form-label">Name</label> -->
+                        <input type="name" class="form-control rounded-0 border-0 border-bottom border-primary" id="empname" placeholder="Enter Employee Name">
+                    </div>
+                   
+                    
+                    <div class="col">
+                        <label for="" class="">Office Type</label>
+                        <ng-select  id="" [items]="OfficeType" bindLabel="name" bindValue="value"
+                            formControlName="OfficeType" placeholder="Office Type" class="w-100 small"></ng-select>
+                    </div>
+
+
+                  
+                    <div class="col">
+                        <label>Location</label>
+                        <ng-select [items]="Location" bindLabel="name" bindValue="value" [multiple]="true"
+                            [(ngModel)]="selectedLocations" [closeOnSelect]="false"
+                            placeholder="--Select Locations--" class="w-100 small">
+
+                            <!-- Custom Checkbox for Select All -->
+                            <ng-template ng-option-tmp let-item="item" let-index="index">
+                                <div *ngIf="index === 0">
+                                    <input type="checkbox" (change)="toggleSelectAll($event)"
+                                        [checked]="isAllSelected()" />
+                                    <strong>Select All</strong>
+                                </div>
+                                <div *ngIf="index !== 0">
+                                    <input type="checkbox" [checked]="selectedLocations.includes(item.value)"
+                                        (change)="toggleLocation(item.value)" />
+                                    {{ item.name }}
+                                </div>
+                            </ng-template>
+
+                        </ng-select>
+                    </div>
+
+                    <!-- <div class="col">
+                        <label for="" class="">Location</label>
+                        <ng-select  id="" [items]="Location" bindLabel="name" bindValue="value"
+                            formControlName="location" placeholder="location" class="w-100 small"></ng-select>
+                    </div> -->
+                    
+                    <div class="col">
+                        <label for="" class="">Status</label>
+                        <ng-select  id="" [items]="Status" bindLabel="name" bindValue="value"
+                            formControlName="Status" placeholder="Status" class="w-100 small"></ng-select>
+                    </div>
+
+
+                   
+
+
+                    <div class="col">
+                        <label>Department</label>
+                        <ng-select [items]="NewDepartment" bindLabel="name" bindValue="value" [multiple]="true"
+                            [(ngModel)]="selectedDepartment" [closeOnSelect]="false"
+                            placeholder="--Select Department--" class="w-100 small">
+
+                            <!-- Custom Checkbox for Select All -->
+                            <ng-template ng-option-tmp let-item="item" let-index="index">
+                                <div *ngIf="index === 0">
+                                    <input type="checkbox" (change)="toggleNewDepartmentAll($event)"
+                                        [checked]="isAllSelectedDepartment()" />
+                                    <strong>Select All</strong>
+                                </div>
+                                <div *ngIf="index !== 0">
+                                    <input type="checkbox" [checked]="selectedDepartment.includes(item.value)"
+                                        (change)="toggleNewDepartment(item.value)" />
+                                    {{ item.name }}
+                                </div>
+                            </ng-template>
+
+                        </ng-select>
+                    </div>
+
+                    <div class="col">
+                        <label for="" class="">Designation</label>
+                        <ng-select  id="" [items]="NewDesignation" bindLabel="name" bindValue="value"
+                            formControlName="NewDesignation" placeholder="Designation" class="w-100 small"></ng-select>
+                    </div>
+
+                    <div class="col">
+                        <label for="" class="">Nature</label>
+                        <ng-select  id="" [items]="NewNature" bindLabel="name" bindValue="value"
+                            formControlName="NewNature" placeholder="Nature" class="w-100 small"></ng-select>
+                    </div>
+
+                    <div class="col">
+                        <label for="" class="">Posting City</label>
+                        <ng-select  id="" [items]="NewPostingCity" bindLabel="name" bindValue="value"
+                            formControlName="NewPostingCity" placeholder="New Posting City" class="w-100 small"></ng-select>
+                    </div>
+
+                    <div class="col">
+                        <label for="" class="">Short By</label>
+                        <ng-select  id="" [items]="SortBy" bindLabel="name" bindValue="value"
+                            formControlName="SortBy" placeholder="SortBy" class="w-100 small"></ng-select>
+                    </div>
+
+                    <div class="col d-flex align-items-end justify-content-end py-3 py-lg-0">
+                   
+                        <button type="button" class="btn btn-outline-dark btn-sm mx-1 px-2">Reset</button>
+                        <button type="button" class="btn btn-primary btn-sm mx-1 px-2">Set Filter</button>
+                        <button type="button" class="btn btn-dark btn-sm mx-1" (click)="closeFilterForm()">Close</button>
+                    </div>
+
+                   
+
+                   
+
+                    
+
+                
+
+                   
+                </form>
+                <!-- <div class="row">
+                    <div class="col d-flex align-items-end justify-content-end py-3 py-lg-0">
+                   
+                        <button type="button" class="btn btn-outline-dark btn-sm mx-1 px-2">Reset</button>
+                        <button type="button" class="btn btn-primary btn-sm mx-1 px-2">Set Filter</button>
+                        <button type="button" class="btn btn-dark btn-sm mx-1" (click)="closeFilterForm()">Close</button>
+                    </div>
+                </div> -->
+            </div>
+        </div>
+    </div>
+    
+</div>
+

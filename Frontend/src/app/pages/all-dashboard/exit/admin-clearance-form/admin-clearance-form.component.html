@@ -1,0 +1,91 @@
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card">
+      <div class="card-header bg-blue">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-6 col-lg-6"><h4>Department Clearance Form</h4></div>
+          <div class="col-sm-12 col-md-6 col-lg-6 d-flex align-items-center justify-content-md-end">
+            <button class="btn btnheader" routerLink="/dash/exit/exitdashboard/admin_resignation_list">Back</button>
+          </div>
+        </div>
+      </div>
+      <div class="card-body mt-4">
+
+        <!-- Employee Info -->
+        <div class="row row-cols-1 row-cols-md-3 mb-4">
+          <div class="col"><label>Employee Code</label>
+            <div class="form-group"><input type="text" class="form-control flex-grow-1" [value]="empInfo.empCode" readonly></div>
+          </div>
+          <div class="col"><label>Employee Name</label>
+            <div class="form-group"><input type="text" class="form-control flex-grow-1" [value]="empInfo.empName" readonly></div>
+          </div>
+          <div class="col"><label>Last Working Day</label>
+            <div class="form-group"><input type="text" class="form-control flex-grow-1" [value]="empInfo.lwd" readonly></div>
+          </div>
+        </div>
+
+        <div class="bg-primary rounded-1 page-seperator mb-3">
+          <p class="p-1 text-white ms-4 mb-0">Clearance Status by Department</p>
+        </div>
+
+        <form [formGroup]="clearanceForm">
+          <div class="table-responsive table-invoice">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th style="width:40px">#</th>
+                  <th>Department</th>
+                  <th style="width:190px">Status</th>
+                  <th style="width:140px">Recovery (₹)</th>
+                  <th style="width:150px">Cleared By</th>
+                  <th style="width:150px">Cleared Date</th>
+                  <th>Remarks</th>
+                </tr>
+              </thead>
+              <tbody formArrayName="departments">
+                <tr *ngFor="let dept of departments.controls; let i = index" [formGroupName]="i">
+                  <td>{{ i + 1 }}</td>
+                  <td class="align-middle fw-semibold">{{ getGroup(i).get('name')?.value }}</td>
+                  <td>
+                    <ng-select
+                      [items]="statusOptions"
+                      bindLabel="name"
+                      bindValue="value"
+                      formControlName="status"
+                      [clearable]="false"
+                      placeholder="--Select--"
+                      class="w-100">
+                    </ng-select>
+                  </td>
+                  <td>
+                    <input type="number" class="form-control form-control-sm"
+                      formControlName="recoveryAmount"
+                      [attr.disabled]="getGroup(i).get('status')?.value !== 'Recovery Required' ? true : null"
+                      placeholder="0">
+                  </td>
+                  <td><input type="text" class="form-control form-control-sm" formControlName="clearedBy"></td>
+                  <td><input type="date" class="form-control form-control-sm" formControlName="clearedDate"></td>
+                  <td><input type="text" class="form-control form-control-sm" formControlName="remarks" placeholder="Remarks"></td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td colspan="3" class="text-end fw-bold">Total Recovery:</td>
+                  <td class="fw-bold">₹ {{ totalRecovery() }}</td>
+                  <td colspan="3"></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </form>
+
+        <div class="row">
+          <div class="col d-flex align-items-end justify-content-end pt-4 pb-3">
+            <button type="submit" class="btn btn-primary mx-1" (click)="submitForm()">Save Clearance</button>
+            <button type="reset" class="btn btn-outline-dark mx-1">Reset</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

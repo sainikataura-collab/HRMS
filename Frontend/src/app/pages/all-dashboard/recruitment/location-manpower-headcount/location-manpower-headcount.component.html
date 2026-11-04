@@ -1,0 +1,545 @@
+<div class="ats-location-master-page">
+
+  <!-- ========================================================================= -->
+  <!-- VIEW 1: MASTER LIST PAGE (currentView === 'list')                         -->
+  <!-- ========================================================================= -->
+  <div *ngIf="currentView === 'list'">
+
+    <!-- ── 1. MASTER HEADER STRIP (Single Line Layout) ──────────────── -->
+    <div class="master-header p-2.5 px-3 mb-3 bg-white rounded-3 border shadow-sm">
+      <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap">
+        <!-- Title & Back -->
+        <div class="d-flex align-items-center gap-2">
+          <a routerLink="/dash/recruitment/recruitmentdashboard" class="btn-back rounded d-flex align-items-center justify-content-center text-dark text-decoration-none" title="Back to Recruitment Dashboard">
+            <i class="bi bi-arrow-left"></i>
+          </a>
+          <span class="master-title fw-bold text-dark">Location Manpower & Buffer Master</span>
+        </div>
+
+        <!-- Controls: Search & Export CSV (In same single line) -->
+        <div class="d-flex align-items-center gap-2">
+          <!-- Search Input -->
+          <div class="search-box position-relative" style="width: 240px;">
+            <i class="bi bi-search search-icon"></i>
+            <input type="text" 
+                   class="form-control form-control-sm search-field" 
+                   [(ngModel)]="searchQuery" 
+                   (ngModelChange)="applyFilters()" 
+                   placeholder="Search hub, code...">
+          </div>
+
+          <!-- Export CSV Button -->
+          <button type="button" class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1.5" (click)="exportMasterToCsv()" style="font-size: 11px; height: 28px;">
+            <i class="bi bi-download me-1"></i> Export CSV
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 2. COMPACT MASTER KPI SUMMARY STRIP (3 Cards) ─────────────── -->
+    <div class="row g-3 mb-3 kpi-summary-strip">
+      <div class="col-12 col-md-4">
+        <div class="kpi-mini-card p-2 px-3 bg-white rounded-2 border d-flex justify-content-between align-items-center shadow-sm">
+          <div>
+            <span class="kpi-mini-label text-muted">REGISTERED LOCATIONS</span>
+            <div class="kpi-mini-val text-dark fw-bold">{{ totalRecordsCount }} <small class="text-muted fw-normal" style="font-size: 11px;">Hubs</small></div>
+          </div>
+          <div class="kpi-mini-icon bg-primary-subtle text-primary">
+            <i class="bi bi-geo-alt-fill"></i>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-md-4">
+        <div class="kpi-mini-card p-2 px-3 bg-white rounded-2 border d-flex justify-content-between align-items-center shadow-sm">
+          <div>
+            <span class="kpi-mini-label text-muted">SANCTIONED BASE DEMAND</span>
+            <div class="kpi-mini-val text-dark fw-bold">{{ totalBaseSanctioned | number }} <small class="text-muted fw-normal" style="font-size: 11px;">Heads</small></div>
+          </div>
+          <div class="kpi-mini-icon bg-success-subtle text-success">
+            <i class="bi bi-people-fill"></i>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-md-4">
+        <div class="kpi-mini-card p-2 px-3 bg-white rounded-2 border d-flex justify-content-between align-items-center shadow-sm">
+          <div>
+            <span class="kpi-mini-label text-muted">TOTAL BUFFER CONTINGENCY</span>
+            <div class="kpi-mini-val text-primary fw-bold">+{{ totalBufferHeadcount | number }} <small class="text-muted fw-normal" style="font-size: 11px;">Standby Heads</small></div>
+          </div>
+          <div class="kpi-mini-icon bg-info-subtle text-info-emphasis">
+            <i class="bi bi-shield-plus"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 3. MASTER RECORDS TABLE ───────────────────────────────────── -->
+    <div class="table-container bg-white rounded-3 border shadow-sm">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0 ats-master-table">
+          <thead>
+            <tr>
+              <th class="text-center" style="width: 45px;">#</th>
+              <th>OPERATING HUB / LOCATION</th>
+              <th>ZONE & STATE</th>
+              <th class="text-end">SANCTIONED DEMAND</th>
+              <th class="text-center">LOCATION BUFFER %</th>
+              <th class="text-end">TARGET CAPACITY</th>
+              <th>LAST MODIFIED</th>
+              <th class="text-center" style="width: 100px;">ACTIONS</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let record of paginatedList; let idx = index">
+              <!-- Index -->
+              <td class="text-center text-muted fw-semibold" style="font-size: 11px;">
+                {{ (currentPage - 1) * pageSize + idx + 1 }}
+              </td>
+
+              <!-- Location Hub Details -->
+              <td>
+                <div class="d-flex align-items-center gap-2">
+                  <div class="hub-avatar rounded-circle d-flex align-items-center justify-content-center fw-bold">
+                    {{ record.locationCode.slice(0, 2) }}
+                  </div>
+                  <div>
+                    <div class="fw-bold text-dark hub-title" (click)="openEditPage(record)" title="Click to Edit Location">
+                      {{ record.locationName }}
+                    </div>
+                    <div class="d-flex align-items-center gap-1.5 mt-0.5">
+                      <span class="badge-hub-code">{{ record.locationCode }}</span>
+                    </div>
+                  </div>
+                </div>
+              </td>
+
+              <!-- Zone & State -->
+              <td>
+                <span class="badge-zone">{{ record.zone }}</span>
+                <small class="text-muted d-block mt-0.5" style="font-size: 10.5px;">{{ record.state }}</small>
+              </td>
+
+              <!-- Sanctioned Base Demand -->
+              <td class="text-end">
+                <span class="fw-bold text-dark" style="font-size: 12.5px;">{{ record.baseRequired | number }}</span>
+                <small class="text-muted d-block" style="font-size: 9.5px;">Sanctioned</small>
+              </td>
+
+              <!-- Location Buffer (Clean Badge Display - NO inline dropdown) -->
+              <td class="text-center">
+                <span class="badge-buffer-display">
+                  {{ record.bufferPercentage }}% <small>(+{{ record.bufferHeadcount }} heads)</small>
+                </span>
+              </td>
+
+              <!-- Total Target Capacity -->
+              <td class="text-end">
+                <span class="badge-target-capacity">
+                  {{ record.totalTargetCapacity | number }} Heads
+                </span>
+              </td>
+
+              <!-- Last Modified -->
+              <td>
+                <div class="text-dark" style="font-size: 11px;">{{ record.lastUpdatedDate }}</div>
+                <small class="text-muted" style="font-size: 10px;">By {{ record.lastUpdatedBy }}</small>
+              </td>
+
+              <!-- Actions -->
+              <td class="text-center">
+                <div class="d-flex align-items-center justify-content-center gap-1">
+                  <!-- Print QR Code Action Button -->
+                  <button type="button" 
+                          class="btn-table-action btn-print-action" 
+                          (click)="openQrModal(record)"
+                          title="Print Location Walk-In QR Poster">
+                    <i class="bi bi-qr-code me-1"></i> Print QR
+                  </button>
+
+                  <!-- Edit Action Button (Opens Dedicated Edit Page) -->
+                  <button *ngIf="canEditManpower || isAdmin"
+                          type="button" 
+                          class="btn-table-action btn-edit-action" 
+                          (click)="openEditPage(record)" 
+                          title="Edit Location Manpower">
+                    <i class="bi bi-pencil-square me-1"></i> Edit
+                  </button>
+                  <span *ngIf="!canEditManpower && !isAdmin" class="badge bg-light text-muted border px-2 py-1" style="font-size: 10px;">
+                    <i class="bi bi-lock-fill me-1"></i> View Only
+                  </span>
+
+                  <!-- Delete Action Button -->
+                  <button *ngIf="canEditManpower || isAdmin"
+                          type="button" 
+                          class="btn-table-action btn-delete-action" 
+                          (click)="deleteMasterRecord(record)" 
+                          title="Delete Record">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Empty State -->
+            <tr *ngIf="filteredMasterRecords.length === 0">
+              <td colspan="8" class="text-center py-4">
+                <div class="empty-state-box">
+                  <i class="bi bi-search text-muted mb-1.5" style="font-size: 24px;"></i>
+                  <h6 class="text-dark fw-bold mb-1" style="font-size: 13px;">No Matching Location Records</h6>
+                  <p class="text-muted mb-2" style="font-size: 11px;">
+                    No records match "{{ searchQuery }}".
+                  </p>
+                  <button class="btn btn-outline-primary btn-sm" (click)="searchQuery = ''; applyFilters();" style="font-size: 11px;">
+                    Clear Filters
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Table Footer with Pagination -->
+      <div class="table-footer p-2.5 px-3 border-top d-flex flex-wrap justify-content-between align-items-center gap-2" *ngIf="filteredMasterRecords.length > 0">
+        <div class="text-muted" style="font-size: 11px;">
+          Showing <span class="fw-semibold text-dark">{{ (currentPage - 1) * pageSize + 1 }}</span> to 
+          <span class="fw-semibold text-dark">{{ Math.min(currentPage * pageSize, filteredMasterRecords.length) }}</span> of 
+          <span class="fw-semibold text-dark">{{ filteredMasterRecords.length }}</span> entries
+        </div>
+
+        <div class="d-flex align-items-center gap-1">
+          <button type="button" class="btn btn-sm btn-pagination" [disabled]="currentPage === 1" (click)="goToPage(currentPage - 1)">
+            <i class="bi bi-chevron-left"></i> Prev
+          </button>
+          <span class="px-2 fw-semibold text-dark" style="font-size: 11px;">Page {{ currentPage }} of {{ totalPages }}</span>
+          <button type="button" class="btn btn-sm btn-pagination" [disabled]="currentPage === totalPages" (click)="goToPage(currentPage + 1)">
+            Next <i class="bi bi-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- VIEW 2: DEDICATED EDIT / ADD PAGE (Organized & Compact)                    -->
+  <!-- ========================================================================= -->
+  <div *ngIf="currentView === 'edit' || currentView === 'add'" class="edit-view-wrapper">
+    
+    <div class="edit-card bg-white rounded-3 border shadow-sm px-3 pb-3 pt-2">
+      
+      <!-- Top Action Bar -->
+      <div class="d-flex align-items-center justify-content-between pb-2 mb-3 border-bottom flex-wrap gap-2">
+        <div class="d-flex align-items-center gap-2">
+          <button type="button" class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1.5" (click)="backToList()" style="font-size: 11px; height: 28px;">
+            <i class="bi bi-arrow-left me-1"></i> Back to List
+          </button>
+          <span class="text-muted" style="font-size: 11px;">/</span>
+          <span class="fw-bold text-dark" style="font-size: 13px;">
+            {{ currentView === 'edit' ? 'Edit Location Manpower' : 'Add Location Manpower' }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Section 1: Location Identity (Compact Strip) -->
+      <div class="location-strip p-2 px-3 rounded-2 border mb-3" [ngClass]="currentView === 'edit' ? 'bg-light' : 'bg-white'">
+        <!-- Edit Mode: Location Strip -->
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2" *ngIf="currentView === 'edit'">
+          <div class="d-flex align-items-center gap-2.5">
+            <i class="bi bi-geo-alt-fill text-primary me-2" style="font-size: 15px;"></i>
+            <div>
+              <div class="d-flex align-items-center gap-2 flex-wrap">
+                <span class="fw-bold text-dark" style="font-size: 13px;">{{ formLocationName }}</span>
+                <span class="badge-hub-code">{{ formLocationCode }}</span>
+              </div>
+              <small class="text-muted d-block mt-0.5" style="font-size: 10.5px;">
+                {{ formState }}
+              </small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Add Mode: Hub Dropdown -->
+        <div *ngIf="currentView === 'add'">
+          <label class="form-label-mini mb-1">Select Operational Hub <span class="text-danger">*</span></label>
+          <select class="form-select form-select-sm" [(ngModel)]="formLocationId" (ngModelChange)="onSelectHub($event)" style="font-size: 11.5px; height: 30px;">
+            <option *ngFor="let hub of authorizedHubMasterList" [value]="hub.id">
+              {{ hub.name }} ({{ hub.code }}) — {{ hub.state }}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Section 2: Headcount Demand & Buffer Configuration (Clean 2-Column Grid) -->
+      <div class="row g-3 mb-3">
+        
+        <!-- Left: Sanctioned Demand -->
+        <div class="col-12 col-md-5">
+          <label class="form-label-mini mb-1">
+            Sanctioned Base Demand <span class="text-danger">*</span>
+          </label>
+          <div class="d-flex align-items-center gap-1.5">
+            <input type="number" 
+                   class="form-control form-control-sm text-end fw-bold" 
+                   min="1" 
+                   [(ngModel)]="formBaseRequired" 
+                   placeholder="100"
+                   style="width: 100px; height: 32px; font-size: 12.5px;">
+            <span class="text-muted fw-semibold" style="font-size: 11.5px;">Heads</span>
+          </div>
+        </div>
+
+        <!-- Right: Location Buffer % & Presets -->
+        <div class="col-12 col-md-7">
+          <div class="d-flex align-items-center justify-content-between mb-1">
+            <label class="form-label-mini mb-0">
+              Location Buffer % <span class="text-danger">*</span>
+            </label>
+            <span class="text-primary fw-semibold" style="font-size: 11px;">
+              +{{ formComputedBufferHeadcount }} Standby Heads
+            </span>
+          </div>
+          
+          <div class="d-flex align-items-center gap-2 flex-wrap">
+            <div class="d-flex align-items-center gap-1">
+              <input type="number" 
+                     class="form-control form-control-sm text-end fw-semibold" 
+                     min="0" 
+                     max="100" 
+                     [(ngModel)]="formBufferPercentage"
+                     style="width: 65px; height: 32px; font-size: 12px;">
+              <span class="text-muted fw-semibold" style="font-size: 11.5px;">%</span>
+            </div>
+
+            <!-- Presets -->
+            <div class="d-flex gap-2 flex-wrap">
+              <button type="button" 
+                      *ngFor="let pct of presetOptions" 
+                      class="btn-micro-preset" 
+                      [class.active]="formBufferPercentage === pct" 
+                      (click)="selectBufferPreset(pct)">
+                {{ pct }}%
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Section 3: Target Capacity (Dedicated Clean Result Banner) -->
+      <div class="target-capacity-banner p-2.5 px-3 rounded-2 border d-flex align-items-center justify-content-between mb-3 bg-light">
+        <div class="d-flex align-items-center gap-2.5">
+          <i class="bi bi-calculator text-primary me-2" style="font-size: 16px;"></i>
+          <div>
+            <span class="fw-bold text-dark d-block" style="font-size: 12px;">Total Target Capacity</span>
+            <small class="text-muted" style="font-size: 10.5px;">
+              Base Demand ({{ formBaseRequired }}) + Standby Buffer ({{ formComputedBufferHeadcount }})
+            </small>
+          </div>
+        </div>
+
+        <div class="d-flex align-items-center gap-2">
+          <span class="fw-bold text-success" style="font-size: 16px;">
+            {{ formComputedTargetCapacity | number }} <small style="font-size: 11px; font-weight: 500;">Heads</small>
+          </span>
+          <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size: 9.5px; padding: 2px 6px;">
+            Auto-Computed
+          </span>
+        </div>
+      </div>
+
+      <!-- Section 4: Remarks (Compact) -->
+      <div class="mb-3">
+        <label class="form-label-mini mb-1">Remarks</label>
+        <input type="text" 
+               class="form-control form-control-sm" 
+               [(ngModel)]="formRemarks" 
+               placeholder="Enter remarks..." 
+               style="height: 30px; font-size: 11.5px;">
+      </div>
+
+      <!-- Bottom Footer Strip -->
+      <div class="d-flex align-items-center justify-content-between pt-3 border-top flex-wrap gap-2">
+        <small class="text-muted d-flex align-items-center" style="font-size: 10.5px;">
+          <i class="bi bi-shield-check text-success me-1.5"></i> All modifications are logged in audit trail.
+        </small>
+
+        <div class="d-flex align-items-center gap-3">
+          <button type="button" class="btn btn-sm btn-outline-secondary px-3" (click)="backToList()" style="font-size: 11px; height: 30px;">
+            Cancel
+          </button>
+          <button type="button" class="btn btn-sm btn-primary-action fw-semibold px-3 d-flex align-items-center" (click)="saveMasterRecord()" style="font-size: 11px; height: 30px;">
+            <i class="bi bi-check2 me-1.5"></i> Save Changes
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: PRINTABLE LOCATION QR POSTER                                       -->
+  <!-- ========================================================================= -->
+  <div class="qr-modal-backdrop" *ngIf="showQrModal" (click)="closeQrModal()">
+    <div class="qr-modal-dialog pb-2" (click)="$event.stopPropagation()">
+
+      <!-- Modal Header (Distinct Dark Slate Bar) -->
+      <div class="qr-modal-header d-flex align-items-center justify-content-between px-3 py-2.5">
+        <div class="d-flex align-items-center gap-2">
+          <div class="qr-icon-badge d-flex align-items-center justify-content-center rounded-2 bg-primary text-white">
+            <i class="bi bi-qr-code-scan"></i>
+          </div>
+          <div>
+            <h6 class="mb-0 fw-bold text-white" style="font-size: 13px;">Location Walk-In QR Poster Preview</h6>
+            <small class="text-white-50" style="font-size: 10.5px;">Encrypted Public Application Portal</small>
+          </div>
+        </div>
+        <button type="button" class="btn-close btn-close-white btn-close-sm" (click)="closeQrModal()"
+          aria-label="Close"></button>
+      </div>
+
+      <!-- Modal Body (Contrasting Canvas with Centered Poster Frame) -->
+      <div class="qr-modal-body">
+
+        <div class="qr-poster-card text-center bg-white shadow-sm overflow-hidden" id="printableQrPoster">
+
+          <!-- 1. Top Soft-Blue Brand & Title Section -->
+          <div class="poster-top-header p-3 pb-2.5">
+            <!-- Company Logo -->
+            <div class="d-flex align-items-center justify-content-center mb-1.5" *ngIf="qrModalLocation?.companyLogoUrl">
+              <img [src]="qrModalLocation?.companyLogoUrl" (error)="onLogoError($event)" alt="Logo" class="company-logo-img" style="max-height: 46px; max-width: 140px; object-fit: contain;">
+            </div>
+
+            <!-- Catchy Main Bilingual Headline -->
+            <h4 class="poster-hero-title mb-0">
+              Scan karo, Apply karo
+            </h4>
+            <div class="poster-hero-subhindi">
+              स्कैन करें और आज ही नौकरी के लिए अप्लाई करें
+            </div>
+          </div>
+
+          <!-- 2. Location Info & Walk-In Title -->
+          <div class="poster-location-section pt-2.5 pb-2 px-3">
+            <div class="d-flex align-items-center justify-content-center gap-2 mb-1">
+              <span class="poster-loc-name">
+                <i class="bi bi-geo-alt-fill me-1"></i>{{ qrModalLocation?.locationName }}
+              </span>
+              <span class="poster-hub-pill">{{ qrModalLocation?.locationCode }}</span>
+            </div>
+            <div class="poster-walkin-subtitle">
+              Spot Hiring & Walk-In Application
+            </div>
+          </div>
+
+          <!-- 3. QR Code Container -->
+          <div class="poster-qr-section py-2 px-3">
+            <div class="qr-blue-frame position-relative d-inline-block">
+              <div *ngIf="isGeneratingQr" class="qr-loading-spinner py-4 px-4">
+                <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+                <p class="text-muted mt-2 mb-0" style="font-size: 11px;">Generating QR code...</p>
+              </div>
+
+              <img *ngIf="!isGeneratingQr && qrCodeDataUrl" [src]="qrCodeDataUrl" alt="Walk-in QR Code"
+                class="qr-code-img"
+                style="width: 185px; height: 185px; object-fit: contain; display: block;">
+            </div>
+
+            <div class="qr-scan-cta mt-2 mb-2">
+              Camera ya Google Lens se scan karein
+            </div>
+          </div>
+
+          <!-- 4. Numbered 3-Step Bilingual Guide -->
+          <div class="poster-steps-section text-start">
+            <!-- Step 1 -->
+            <div class="step-item">
+              <div class="step-num-badge">1</div>
+              <div>
+                <div class="step-en-text">Open camera or Google Lens</div>
+                <div class="step-hi-text">कैमरा या गूगल लेंस खोलें</div>
+              </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="step-item">
+              <div class="step-num-badge">2</div>
+              <div>
+                <div class="step-en-text">Scan this QR to see open jobs</div>
+                <div class="step-hi-text">खुली नौकरियाँ देखने के लिए QR स्कैन करें</div>
+              </div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="step-item">
+              <div class="step-num-badge">3</div>
+              <div>
+                <div class="step-en-text">Enter name, mobile, Aadhaar & pick vendor</div>
+                <div class="step-hi-text">नाम, मोबाइल, आधार भरें और वेंडर चुनें</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5. Dark Navy Dual-Card Footer Section -->
+          <div class="poster-dark-footer p-2.5 px-3">
+            <div class="d-flex align-items-center justify-content-between gap-2">
+              
+              <!-- Card 1: Aadhaar Requirement -->
+              <div class="footer-info-card d-flex align-items-center gap-2 flex-grow-1 p-2 rounded-3 text-start">
+                <div class="footer-card-icon rounded-2 d-flex align-items-center justify-content-center text-white">
+                  <i class="bi bi-person-vcard"></i>
+                </div>
+                <div class="footer-card-content">
+                  <div class="footer-card-label">Saath layein</div>
+                  <div class="footer-card-title">Aadhaar Card</div>
+                  <div class="footer-card-sub">आधार कार्ड साथ लाएँ</div>
+                </div>
+              </div>
+
+              <!-- Card 2: HR Helpline -->
+              <div class="footer-info-card d-flex align-items-center gap-2 flex-grow-1 p-2 rounded-3 text-start">
+                <div class="footer-card-icon rounded-2 d-flex align-items-center justify-content-center text-white">
+                  <i class="bi bi-phone"></i>
+                </div>
+                <div class="footer-card-content">
+                  <div class="footer-card-label">HR helpline</div>
+                  <div class="footer-card-title">+91 XXXXX XXXXX</div>
+                  <div class="footer-card-sub">मदद के लिए कॉल करें</div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Modal Footer Action Bar -->
+      <div
+        class="qr-modal-footer px-3 py-2.5 border-top bg-light d-flex align-items-center justify-content-between flex-wrap gap-2">
+        <button type="button" class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1"
+          (click)="copyQrLink()" style="font-size: 11px; height: 30px;">
+          <i class="bi bi-link-45deg"></i> Copy Link
+        </button>
+
+        <div class="d-flex align-items-center gap-2">
+          <button type="button" class="btn btn-sm btn-outline-primary d-flex align-items-center gap-1"
+            (click)="downloadQrImage()" style="font-size: 11px; height: 30px;">
+            <i class="bi bi-download"></i> Download PNG
+          </button>
+
+          <button type="button" class="btn btn-sm btn-primary-action fw-semibold d-flex align-items-center gap-1 px-3"
+            (click)="printQrPoster()" style="font-size: 11px; height: 30px;">
+            <i class="bi bi-printer-fill"></i> Print Poster
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+

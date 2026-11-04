@@ -1,0 +1,81 @@
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <!-- Heading -->
+      <div class="card-header bg-primary">
+        <div class="row w-100">
+          <!-- Title Section -->
+          <div class="col-sm-12 col-md-6 col-lg-4 d-flex align-items-center justify-content-start">
+            <h4 class="text-white">External Candidates</h4>
+          </div>
+          <!-- Search Section -->
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-center">
+              <input type="text" class="form-control" placeholder="Search by name or source..." [(ngModel)]="searchText"/>
+          </div>
+          <!-- Filter Section -->
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-center mt-2 mt-md-0">
+             <ng-select [items]="jobList"
+                        bindLabel="job_title"
+                        bindValue="pk_JobId"
+                        placeholder="Filter by Job..."
+                        [(ngModel)]="selectedJobId"
+                        (change)="onJobChange()"
+                        class="w-100 bg-white rounded">
+             </ng-select>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <div class="table-responsive table-invoice">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Sr.</th>
+                <th>Source</th>
+                <th>Candidate Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Experience (Yrs)</th>
+                <th>Current Designation</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let data of filteredData() | paginate: { itemsPerPage: pageSize, currentPage: pageIndex, totalItems: totalItems }; let i = index">
+                <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+                <td>
+                  <span *ngFor="let source of getSources(data.sourcePlatform)" class="badge me-1" [ngClass]="{'bg-info': source === 'Naukri', 'bg-success': source === 'Indeed', 'bg-secondary': source !== 'Naukri' && source !== 'Indeed'}">
+                    {{ source }}
+                  </span>
+                </td>
+                <td>{{ data.fullName }}</td>
+                <td>{{ data.email }}</td>
+                <td>{{ data.phoneNumber }}</td>
+                <td>{{ data.yearsOfExperience }}</td>
+                <td>{{ data.currentDesignation }}</td>
+                <td>
+                  <button class="btn btn-outline-info btn-sm me-2" [routerLink]="['/dash/recruitment/recruitmentdashboard/external-candidate-details', data.externalId]">
+                    <i class="fa fa-eye"></i> View Profile
+                  </button>
+                  <button class="btn btn-outline-primary btn-sm" (click)="importCandidate(data.externalId)">
+                    Import Profile
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          
+          <pagination-controls (pageChange)="onPageChange($event)" [responsive]="true"></pagination-controls>
+             
+          <ng-template #noData>
+            <tr>
+              <td colspan="8" class="text-center">No external candidates found</td>
+            </tr>
+          </ng-template>
+        </div>
+      </div>
+     
+    </div>
+  </div>
+</div>

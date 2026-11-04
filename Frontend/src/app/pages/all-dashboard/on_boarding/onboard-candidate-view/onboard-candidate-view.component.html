@@ -1,0 +1,797 @@
+<!-- Loading State -->
+<div class="container-fluid py-5" *ngIf="isLoading">
+  <div class="row justify-content-center">
+    <div class="col-lg-6 text-center">
+      <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="mt-3 text-muted small">Loading candidate details...</p>
+    </div>
+  </div>
+</div>
+
+<!-- Main Content -->
+<div class="wrap" *ngIf="!isLoading && candidateSummary">
+
+  <!-- BLUE HEADER BAR -->
+  <div class="fs-topbar" style="display:flex; align-items:center; justify-content:space-between; background:#3B78E7; border-radius:8px; padding:12px 20px; margin-bottom:16px;">
+    <div style="display:flex; align-items:center; gap:12px;">
+      <span style="font-size:15px; font-weight:700; color:#fff; letter-spacing:0.2px;">Candidate Onboarding View</span>
+      <span class="badge rounded-pill" [ngStyle]="{'background': progressPercentage === 100 ? '#10B981' : '#F59E0B', 'color': '#fff', 'font-weight': '700', 'padding': '5px 12px', 'font-size': '12px'}">
+        {{ progressPercentage }}% Completed
+      </span>
+    </div>
+    <div class="fs-topbar-actions" style="display:flex; gap:8px; align-items:center;">
+      <button style="font-size:12px; font-weight:600; padding:6px 16px; border-radius:20px; border:1.5px solid rgba(255,255,255,0.8); background:transparent; color:#fff; cursor:pointer;" (click)="goBack()">
+        Back
+      </button>
+      <button style="font-size:12px; font-weight:600; padding:6px 16px; border-radius:20px; border:none; background:#fff; color:#3B78E7; cursor:pointer; display:inline-flex; align-items:center; gap:5px;" (click)="downloadPDF()" [disabled]="isDownloading">
+        <i [ngClass]="{'fa fa-spinner fa-spin': isDownloading, 'fa fa-download': !isDownloading}"></i>
+        <span *ngIf="!isDownloading">Download PDF</span>
+        <span *ngIf="isDownloading">Downloading...</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- PROGRESS BAR CARD -->
+  <div class="fs-progress-card" *ngIf="totalVisibleStepsCount > 0" style="background:#fff; border:1px solid #E5E7EB; border-radius:8px; padding:14px 20px; margin-bottom:16px; box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+      <div style="display:flex; align-items:center; gap:8px;">
+        <i class="fa fa-chart-line" style="color:#10B981;"></i>
+        <span style="font-size:13px; font-weight:700; color:#1F2937;">Verification Progress</span>
+        <span style="font-size:12px; color:#6B7280;">({{ completedStepsCount }} of {{ totalVisibleStepsCount }} configured sections completed)</span>
+      </div>
+      <span style="font-size:13px; font-weight:700; color:#10B981;">
+        {{ progressPercentage }}%
+      </span>
+    </div>
+    <div class="progress" style="height:10px; background:#E6F4EA; border-radius:6px; overflow:hidden;">
+      <div 
+        class="progress-bar bg-success progress-bar-striped progress-bar-animated" 
+        role="progressbar" 
+        [style.width.%]="progressPercentage" 
+        [attr.aria-valuenow]="progressPercentage" 
+        aria-valuemin="0" 
+        aria-valuemax="100"
+        style="transition: width 0.5s ease; background-color: #10B981 !important;">
+      </div>
+    </div>
+  </div>
+
+  <div id="pdf-content">
+    <!-- GRID OF SECTIONS -->
+    <div class="grid">
+
+      <!-- PERSONAL INFO — Profile Card Style -->
+      <div class="custom-card" *ngIf="companyConfig?.basicInfoVisible">
+        <div class="card-head" onclick="this.parentElement.classList.toggle('collapsed')">
+          <div class="card-head-left">
+            <div class="card-icon"><i class="fa fa-user"></i></div>
+            <span class="card-title">Personal Information</span>
+          </div>
+          <span class="chevron">▾</span>
+        </div>
+        <div class="card-body" style="padding: 16px;">
+          <div class="fs-person-flex" style="display:flex; gap:24px; align-items:center; flex-wrap:wrap;">
+            <!-- Profile Side (Left) -->
+            <div class="fs-person-photo" style="flex:0 0 180px; text-align:center; border-right:1px solid #E4E8F0; padding-right:24px;">
+              <!-- Circular Avatar -->
+              <div style="display:inline-flex; align-items:center; justify-content:center; width:110px; height:110px; border-radius:50%; background:#f0f4ff; border:2px solid #E4E8F0; overflow:hidden; font-size:36px; font-weight:700; color:#3B78E7;">
+                <img *ngIf="imageUrls.profilePhoto" [src]="imageUrls.profilePhoto" alt="Profile" style="width:100%; height:100%; object-fit:contain; display:block;" />
+                <span *ngIf="!imageUrls.profilePhoto">{{ (candidateSummary.basicInfo?.candidate_name || 'C')[0] | uppercase }}</span>
+              </div>
+              
+              <!-- Name & Role -->
+              <div style="margin-top: 8px;">
+                <div style="font-size:15px; font-weight:700; color:#1F2937; letter-spacing: -0.2px; line-height:1.2;">{{ candidateSummary.basicInfo?.candidate_name || 'N/A' }}</div>
+                <div style="font-size:11px; color:#6B7280; font-weight:500; margin-top:4px;">Delivery Associate<br/>Contract Basis</div>
+                <div style="margin-top:6px; display:flex; gap:6px; justify-content:center; flex-wrap:wrap;">
+                  <span *ngIf="candidateSummary.basicInfo?.vendor_Status" style="font-size:10px; font-weight:600; padding:2px 8px; border-radius:20px; display:inline-block;"
+                    [ngStyle]="{'background': candidateSummary.basicInfo?.vendor_Status === 'Active' ? '#E8F3EC' : '#FEF3E2', 'color': candidateSummary.basicInfo?.vendor_Status === 'Active' ? '#2F7D5C' : '#92610A'}">
+                    ● {{ candidateSummary.basicInfo?.vendor_Status }}
+                  </span>
+                  <span *ngIf="totalVisibleStepsCount > 0" style="font-size:10px; font-weight:600; padding:2px 8px; border-radius:20px; display:inline-block;"
+                    [ngStyle]="{'background': progressPercentage === 100 ? '#E8F3EC' : '#FEF3E2', 'color': progressPercentage === 100 ? '#2F7D5C' : '#92610A'}">
+                    {{ progressPercentage }}% Filled
+                  </span>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Details Grid (Right) -->
+            <div class="fs-person-details" style="flex:1; min-width:200px;">
+              <div class="fields" style="grid-template-columns: repeat(2,1fr); text-align: left; gap:12px;">
+                <div class="field" style="margin-bottom:0;"><label><i class="fa fa-phone" style="color:#3B78E7; margin-right:4px; font-size:10px;"></i>Mobile</label><div class="val" style="margin-top:2px;">{{ candidateSummary.basicInfo?.mobile || 'N/A' }}</div></div>
+                <div class="field" style="margin-bottom:0;"><label><i class="fa fa-envelope" style="color:#3B78E7; margin-right:4px; font-size:10px;"></i>Email</label><div class="val" style="margin-top:2px;">{{ candidateSummary.basicInfo?.email || 'Not provided' }}</div></div>
+                <div class="field" style="margin-bottom:0;"><label><i class="fa fa-tag" style="color:#3B78E7; margin-right:4px; font-size:10px;"></i>Vendor Code</label><div class="val" style="margin-top:2px;">{{ candidateSummary.basicInfo?.vendor_Code || 'N/A' }}</div></div>
+                <div class="field" style="margin-bottom:0;"><label><i class="fa fa-map-pin" style="color:#3B78E7; margin-right:4px; font-size:10px;"></i>Pincode</label><div class="val" style="margin-top:2px;">{{ candidateSummary.basicInfo?.pincode || 'N/A' }}</div></div>
+                <div class="field" style="margin-bottom:0;"><label><i class="fa fa-map" style="color:#3B78E7; margin-right:4px; font-size:10px;"></i>State</label><div class="val" style="margin-top:2px;">{{ candidateSummary.basicInfo?.stateName || 'N/A' }}</div></div>
+                <div class="field" style="margin-bottom:0;"><label><i class="fa fa-city" style="color:#3B78E7; margin-right:4px; font-size:10px;"></i>City</label><div class="val" style="margin-top:2px;">{{ candidateSummary.basicInfo?.cityName || 'N/A' }}</div></div>
+                <div class="field" style="grid-column: span 2; margin-bottom:0;"><label><i class="fa fa-home" style="color:#3B78E7; margin-right:4px; font-size:10px;"></i>Address</label><div class="val" style="line-height:1.3; margin-top:2px; word-break:break-word;">{{ candidateSummary.basicInfo?.address || 'N/A' }}</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AADHAAR -->
+      <div class="custom-card" *ngIf="companyConfig?.aadhaarVisible">
+        <div class="card-head" onclick="this.parentElement.classList.toggle('collapsed')">
+          <div class="card-head-left">
+            <div class="card-icon"><i class="fa fa-id-card"></i></div>
+            <span class="card-title">Aadhaar Card</span>
+          </div>
+          <span class="chevron">▾</span>
+        </div>
+        <div class="card-body">
+          <div style="display:block;">
+            <!-- Aadhaar Details -->
+            <div class="fields" style="grid-template-columns: repeat(3, 1fr);">
+              <div class="field"><label>Aadhaar Number</label><div class="val">XXXX-XXXX-{{ (candidateSummary.aadhaarDetails?.aadhaarNo || '0000').slice(-4) }}</div></div>
+              <div class="field"><label>Name on Card</label><div class="val">{{ candidateSummary.aadhaarDetails?.aadhaarName || 'N/A' }}</div></div>
+              <div class="field"><label>Date of Birth</label><div class="val">{{ candidateSummary.aadhaarDetails?.aadhaarDob | date:'dd MMM yyyy' }}</div></div>
+            </div>
+            <div class="field" style="margin-top:12px;"><label>Aadhaar Address</label><div class="val" style="font-size:12px; line-height:1.5; word-break:break-word;">{{ candidateSummary.aadhaarDetails?.aadhaarAddress || 'N/A' }}</div></div>
+            
+            <!-- All Aadhaar Images in one row -->
+            <div class="fs-img-scroll" style="display:flex; gap:12px; margin-top:16px; flex-wrap:nowrap; align-items:flex-start; overflow-x:auto;">
+              <div *ngIf="imageUrls.aadhaarFront" style="text-align:center;">
+                <img [src]="imageUrls.aadhaarFront" alt="Aadhaar Front"
+                  style="width:110px; height:75px; object-fit:cover; border-radius:6px; border:1px solid #E4E8F0; cursor:pointer;"
+                  (click)="openModal(imageUrls.aadhaarFront, 'Aadhaar Front')" />
+                <div style="font-size:11px; color:#6B7280; margin-top:4px;">Front</div>
+              </div>
+              <div *ngIf="imageUrls.aadhaarBack" style="text-align:center;">
+                <img [src]="imageUrls.aadhaarBack" alt="Aadhaar Back"
+                  style="width:110px; height:75px; object-fit:cover; border-radius:6px; border:1px solid #E4E8F0; cursor:pointer;"
+                  (click)="openModal(imageUrls.aadhaarBack, 'Aadhaar Back')" />
+                <div style="font-size:11px; color:#6B7280; margin-top:4px;">Back</div>
+              </div>
+              <!-- Vertical divider if father images exist -->
+              <div *ngIf="imageUrls.fatherAadhaarFront || imageUrls.fatherAadhaarBack"
+                style="width:1px; background:#E4E8F0; align-self:stretch; margin:0 4px;">
+              </div>
+              <div *ngIf="imageUrls.fatherAadhaarFront" style="text-align:center;">
+                <img [src]="imageUrls.fatherAadhaarFront" alt="Father Aadhaar Front"
+                  style="width:110px; height:75px; object-fit:cover; border-radius:6px; border:1px solid #E4E8F0; cursor:pointer;"
+                  (click)="openModal(imageUrls.fatherAadhaarFront, 'Father Aadhaar Front')" />
+                <div style="font-size:11px; color:#6B7280; margin-top:4px;">Father Front</div>
+              </div>
+              <div *ngIf="imageUrls.fatherAadhaarBack" style="text-align:center;">
+                <img [src]="imageUrls.fatherAadhaarBack" alt="Father Aadhaar Back"
+                  style="width:110px; height:75px; object-fit:cover; border-radius:6px; border:1px solid #E4E8F0; cursor:pointer;"
+                  (click)="openModal(imageUrls.fatherAadhaarBack, 'Father Aadhaar Back')" />
+                <div style="font-size:11px; color:#6B7280; margin-top:4px;">Father Back</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAN -->
+      <div class="custom-card" *ngIf="companyConfig?.panVisible">
+        <div class="card-head" onclick="this.parentElement.classList.toggle('collapsed')">
+          <div class="card-head-left">
+            <div class="card-icon"><i class="fa fa-credit-card"></i></div>
+            <span class="card-title">PAN Card</span>
+          </div>
+          <span class="chevron">▾</span>
+        </div>
+        <div class="card-body">
+          <div class="fs-pan-flex" style="display:flex; justify-content:space-between; align-items:flex-start; gap:24px; flex-wrap:wrap;">
+            <!-- PAN Details (Left) -->
+            <div style="flex:1; min-width:200px;">
+              <div class="fields" style="grid-template-columns: repeat(2, 1fr);">
+                <div class="field"><label>PAN Number</label><div class="val">{{ maskPAN(candidateSummary.panDetails?.panNo) }}</div></div>
+                <div class="field"><label>Name on Card</label><div class="val">{{ candidateSummary.panDetails?.panName || 'N/A' }}</div></div>
+                <div class="field" style="grid-column: span 2;"><label>Date of Birth</label><div class="val">{{ candidateSummary.panDetails?.panDob | date:'dd MMM yyyy' }}</div></div>
+              </div>
+            </div>
+            <!-- PAN Image (Right) -->
+            <div *ngIf="imageUrls.panCard" style="text-align:center; flex-shrink:0;">
+              <img [src]="imageUrls.panCard" alt="PAN Card"
+                style="width:135px; height:90px; object-fit:cover; border-radius:6px; border:1px solid #E4E8F0; cursor:pointer;"
+                (click)="openModal(imageUrls.panCard, 'PAN Card')" />
+              <div style="font-size:11px; color:#6B7280; margin-top:4px;">PAN Card</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- EDUCATION -->
+      <div class="custom-card" *ngIf="companyConfig?.qualificationVisible">
+        <div class="card-head" onclick="this.parentElement.classList.toggle('collapsed')">
+          <div class="card-head-left">
+            <div class="card-icon"><i class="fa fa-graduation-cap"></i></div>
+            <span class="card-title">Education <span class="card-sub">{{ candidateSummary.qualifications.length || 0 }} record(s)</span></span>
+          </div>
+          <span class="chevron">▾</span>
+        </div>
+        <div class="card-body" style="padding-top:4px;">
+          <table class="custom-table">
+            <thead><tr><th>Qualification</th><th>Institute</th><th>Year</th><th>Marks</th><th>Doc</th></tr></thead>
+            <tbody>
+              <tr *ngFor="let qual of candidateSummary.qualifications">
+                <td>{{ qual.qualification }}</td>
+                <td>{{ qual.institute }}</td>
+                <td>{{ qual.passyear }}</td>
+                <td>{{ qual.marks }}%</td>
+                <td>
+                  <a *ngIf="qual.documentupload" class="doc-link" [href]="getFileUrl(qual.documentupload)" target="_blank">📄 View</a>
+                  <span *ngIf="!qual.documentupload" class="empty-note">-</span>
+                </td>
+              </tr>
+              <tr *ngIf="!candidateSummary.qualifications || candidateSummary.qualifications.length === 0">
+                <td colspan="5" class="empty-note text-center">No records found</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- EXPERIENCE -->
+      <div class="custom-card" *ngIf="companyConfig?.experienceVisible">
+        <div class="card-head" onclick="this.parentElement.classList.toggle('collapsed')">
+          <div class="card-head-left">
+            <div class="card-icon"><i class="fa fa-briefcase"></i></div>
+            <span class="card-title">Experience <span class="card-sub">{{ candidateSummary.experience.length || 0 }} record(s)</span></span>
+          </div>
+          <span class="chevron">▾</span>
+        </div>
+        <div class="card-body" style="padding-top:4px;">
+          <table class="custom-table">
+            <thead><tr><th>Company</th><th>Designation</th><th>From Date</th><th>To Date</th><th>CTC</th><th>Doc</th><th>Offer Letter</th></tr></thead>
+            <tbody>
+              <tr *ngFor="let exp of candidateSummary.experience">
+                <td>{{ exp.compname }}</td>
+                <td>{{ exp.designation }}</td>
+                <td>{{ exp.fromdate | date:'dd MMM yyyy' }}</td>
+                <td>{{ exp.todate | date:'dd MMM yyyy' }}</td>
+                <td>{{ exp.ctc }}</td>
+                <td>
+                  <a *ngIf="exp.documentupload" class="doc-link" [href]="getFileUrl(exp.documentupload)" target="_blank">📄 View</a>
+                  <span *ngIf="!exp.documentupload" class="empty-note">-</span>
+                </td>
+                <td>
+                  <a *ngIf="exp.offerletter" class="doc-link" [href]="getFileUrl(exp.offerletter)" target="_blank">📄 View</a>
+                  <span *ngIf="!exp.offerletter" class="empty-note">-</span>
+                </td>
+              </tr>
+              <tr *ngIf="!candidateSummary.experience || candidateSummary.experience.length === 0">
+                <td colspan="7" class="empty-note text-center">No records found</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- FAMILY -->
+      <div class="custom-card" *ngIf="companyConfig?.familyVisible">
+        <div class="card-head" onclick="this.parentElement.classList.toggle('collapsed')">
+          <div class="card-head-left">
+            <div class="card-icon"><i class="fa fa-users"></i></div>
+            <span class="card-title">Family Details <span class="card-sub">{{ candidateSummary.family.length || 0 }} record(s)</span></span>
+          </div>
+          <span class="chevron">▾</span>
+        </div>
+        <div class="card-body" style="padding-top:4px;">
+          <table class="custom-table">
+            <thead><tr><th>Name</th><th>Relation</th><th>DOB</th><th>Qualification</th><th>Occupation</th></tr></thead>
+            <tbody>
+              <tr *ngFor="let member of candidateSummary.family">
+                <td>{{ member.membername }}</td>
+                <td>{{ member.relation }}</td>
+                <td>{{ member.dob | date:'dd MMM yyyy' }}</td>
+                <td>{{ member.qualification || '-' }}</td>
+                <td>{{ member.occupation || '-' }}</td>
+              </tr>
+              <tr *ngIf="!candidateSummary.family || candidateSummary.family.length === 0">
+                <td colspan="5" class="empty-note text-center">No records found</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- BANK -->
+      <div class="custom-card" *ngIf="companyConfig?.bankAccountVisible">
+        <div class="card-head" onclick="this.parentElement.classList.toggle('collapsed')">
+          <div class="card-head-left">
+            <div class="card-icon"><i class="fa fa-university"></i></div>
+            <span class="card-title">Bank Account</span>
+          </div>
+          <span class="chevron">▾</span>
+        </div>
+        <div class="card-body">
+          <div class="fields two">
+            <div class="field"><label>Bank Name</label><div class="val">{{ candidateSummary.bankDetails?.bankName || 'Not provided' }}</div></div>
+            <div class="field"><label>Account Number</label><div class="val">{{ maskAccountNumber(candidateSummary.bankDetails?.accountNo) }}</div></div>
+            <div class="field"><label>IFSC Code</label><div class="val">{{ candidateSummary.bankDetails?.ifscCode || 'Not provided' }}</div></div>
+            <div class="field"><label>Branch</label><div class="val" [ngClass]="{'muted': !candidateSummary.bankDetails?.branchName}">{{ candidateSummary.bankDetails?.branchName || 'Not provided' }}</div></div>
+            <div class="field" style="grid-column: span 2;"><label>Passbook / Cheque</label><div class="val">
+              <a *ngIf="candidateSummary.bankDetails?.passbookPhoto" class="doc-link" [href]="candidateSummary.bankDetails?.passbookPhoto" target="_blank">📄 View Document</a>
+              <span *ngIf="!candidateSummary.bankDetails?.passbookPhoto" class="muted">Not provided</span>
+            </div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DRIVING LICENCE & VEHICLE VERIFICATION -->
+      <div class="custom-card" *ngIf="companyConfig?.drivingLicenceVisible && ($any(candidateSummary.basicInfo)?.dlNo || $any(candidateSummary.basicInfo)?.dlPhoto || drivingLicenceData?.dlNo || drivingLicenceData?.dlPhoto || drivingLicenceData?.vehicle_Insurance_No || drivingLicenceData?.vehicle_RC_No)">
+        <div class="card-head" onclick="this.parentElement.classList.toggle('collapsed')">
+          <div class="card-head-left">
+            <div class="card-icon"><i class="fa fa-id-card"></i></div>
+            <span class="card-title">Driving Licence &amp; Vehicle Verification</span>
+          </div>
+          <span class="chevron">▾</span>
+        </div>
+        <div class="card-body">
+          <div>
+            <div class="fields" style="grid-template-columns: repeat(3, 1fr);">
+              <div class="field"><label>DL Number</label><div class="val" [ngClass]="{'muted': !($any(candidateSummary.basicInfo)?.dlNo || drivingLicenceData?.dlNo)}">{{ ($any(candidateSummary.basicInfo)?.dlNo || drivingLicenceData?.dlNo) || 'Not provided' }}</div></div>
+              
+              <div class="field" *ngIf="drivingLicenceData?.vehicle_Insurance_No || drivingLicenceData?.vehicle_Insurance_Photo">
+                <label>Vehicle Insurance No</label>
+                <div class="val" [ngClass]="{'muted': !drivingLicenceData?.vehicle_Insurance_No}">{{ drivingLicenceData?.vehicle_Insurance_No || 'Not provided' }}</div>
+              </div>
+              
+              <div class="field" *ngIf="drivingLicenceData?.vehicle_RC_No || drivingLicenceData?.vehicle_RC_Photo">
+                <label>Vehicle RC No</label>
+                <div class="val" [ngClass]="{'muted': !drivingLicenceData?.vehicle_RC_No}">{{ drivingLicenceData?.vehicle_RC_No || 'Not provided' }}</div>
+              </div>
+            </div>
+            <div class="fs-img-row" style="display:flex; gap:12px; margin-top:16px;">
+              <div *ngIf="imageUrls.dlPhoto" style="text-align:center;">
+                <img [src]="imageUrls.dlPhoto" alt="Driving Licence" style="width:135px; height:90px; object-fit:cover; border-radius:6px; border:1px solid #E4E8F0; cursor:pointer;" (click)="openModal(imageUrls.dlPhoto, 'Driving Licence')" />
+                <div style="font-size:11px; color:#6B7280; margin-top:4px;">Driving Licence</div>
+              </div>
+              <div *ngIf="imageUrls.vehicleInsurancePhoto" style="text-align:center;">
+                <img [src]="imageUrls.vehicleInsurancePhoto" alt="Vehicle Insurance" style="width:135px; height:90px; object-fit:cover; border-radius:6px; border:1px solid #E4E8F0; cursor:pointer;" (click)="openModal(imageUrls.vehicleInsurancePhoto, 'Vehicle Insurance')" />
+                <div style="font-size:11px; color:#6B7280; margin-top:4px;">Vehicle Insurance</div>
+              </div>
+              <div *ngIf="imageUrls.vehicleRCPhoto" style="text-align:center;">
+                <img [src]="imageUrls.vehicleRCPhoto" alt="Vehicle RC" style="width:135px; height:90px; object-fit:cover; border-radius:6px; border:1px solid #E4E8F0; cursor:pointer;" (click)="openModal(imageUrls.vehicleRCPhoto, 'Vehicle RC')" />
+                <div style="font-size:11px; color:#6B7280; margin-top:4px;">Vehicle RC</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- GST -->
+      <div class="custom-card" *ngIf="companyConfig?.vendorGstVisible || isVendor || vendorGstData">
+        <div class="card-head" onclick="this.parentElement.classList.toggle('collapsed')">
+          <div class="card-head-left">
+            <div class="card-icon"><i class="fa fa-file-text"></i></div>
+            <span class="card-title">GST Details</span>
+          </div>
+          <span class="chevron">▾</span>
+        </div>
+        <div class="card-body">
+          <div style="display:flex;align-items:center;gap:8px; margin-bottom:12px;">
+            <span class="field" style="margin:0;"><label>GST Applicable</label></span>
+            <span class="chip" [ngClass]="vendorGstData?.vendor_IsGSTApplicable ? 'blue' : ''" [style.background]="!vendorGstData?.vendor_IsGSTApplicable ? '#EFEDE7' : ''" [style.color]="!vendorGstData?.vendor_IsGSTApplicable ? 'var(--muted)' : ''">
+              {{ vendorGstData?.vendor_IsGSTApplicable ? 'Applicable' : 'Not Applicable' }}
+            </span>
+          </div>
+          
+          <div *ngIf="vendorGstData?.vendor_IsGSTApplicable">
+            <div class="fields" style="grid-template-columns: repeat(3, 1fr);">
+              <div class="field"><label>GST Number</label><div class="val">{{ vendorGstData?.vendor_GSTNo || 'N/A' }}</div></div>
+            </div>
+            <div class="fs-img-row" style="display:flex; gap:12px; margin-top:16px;">
+              <div *ngIf="imageUrls.gstPhoto" style="text-align:center;">
+                <img [src]="imageUrls.gstPhoto" alt="GST Certificate" style="width:135px; height:90px; object-fit:cover; border-radius:6px; border:1px solid #E4E8F0; cursor:pointer;" (click)="openModal(imageUrls.gstPhoto, 'GST Certificate')" />
+                <div style="font-size:11px; color:#6B7280; margin-top:4px;">GST Certificate</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VOTER ID -->
+      <div class="custom-card" *ngIf="companyConfig?.voterVisible">
+        <div class="card-head" onclick="this.parentElement.classList.toggle('collapsed')">
+          <div class="card-head-left">
+            <div class="card-icon"><i class="fa fa-address-card"></i></div>
+            <span class="card-title">Voter ID</span>
+          </div>
+          <span class="chevron">▾</span>
+        </div>
+        <div class="card-body">
+          <div>
+            <div class="fields" style="grid-template-columns: repeat(3, 1fr);">
+              <div class="field"><label>Voter ID Number</label><div class="val" [ngClass]="{'muted': !candidateSummary.voterDetails?.voterNo}">{{ candidateSummary.voterDetails?.voterNo || 'Not provided' }}</div></div>
+              <div class="field"><label>Name</label><div class="val" [ngClass]="{'muted': !candidateSummary.voterDetails?.voterName}">{{ candidateSummary.voterDetails?.voterName || 'Not provided' }}</div></div>
+              <div class="field"><label>DOB</label><div class="val" [ngClass]="{'muted': !candidateSummary.voterDetails?.voterDOB}">{{ candidateSummary.voterDetails?.voterDOB ? (candidateSummary.voterDetails?.voterDOB | date:'dd MMM yyyy') : 'Not provided' }}</div></div>
+              <div class="field" style="grid-column: span 3;"><label>Address</label><div class="val" [ngClass]="{'muted': !candidateSummary.voterDetails?.voterAddress}">{{ candidateSummary.voterDetails?.voterAddress || 'Not provided' }}</div></div>
+            </div>
+            <!-- Voter Images -->
+            <div class="fs-img-row" style="display:flex; gap:12px; margin-top:16px;">
+              <div *ngIf="imageUrls.voterFrontPhoto" style="text-align:center;">
+                <img [src]="imageUrls.voterFrontPhoto" alt="Voter Front" style="width:135px; height:90px; object-fit:cover; border-radius:6px; border:1px solid #E4E8F0; cursor:pointer;" (click)="openModal(imageUrls.voterFrontPhoto, 'Voter Front')" />
+                <div style="font-size:11px; color:#6B7280; margin-top:4px;">Front</div>
+              </div>
+              <div *ngIf="imageUrls.voterBackPhoto" style="text-align:center;">
+                <img [src]="imageUrls.voterBackPhoto" alt="Voter Back" style="width:135px; height:90px; object-fit:cover; border-radius:6px; border:1px solid #E4E8F0; cursor:pointer;" (click)="openModal(imageUrls.voterBackPhoto, 'Voter Back')" />
+                <div style="font-size:11px; color:#6B7280; margin-top:4px;">Back</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AYUSHMAN -->
+      <div class="custom-card" *ngIf="companyConfig?.ayushmanVisible || candidateSummary.basicInfo?.ayushman_PMJAY_ID || candidateSummary.basicInfo?.ayushman_Photo || imageUrls.ayushmanPhoto">
+        <div class="card-head" onclick="this.parentElement.classList.toggle('collapsed')">
+          <div class="card-head-left">
+            <div class="card-icon"><i class="fa fa-id-card-o"></i></div>
+            <span class="card-title">Ayushman Card</span>
+          </div>
+          <span class="chevron">▾</span>
+        </div>
+        <div class="card-body">
+          <div>
+            <div class="fields" style="grid-template-columns: repeat(3, 1fr);">
+              <div class="field"><label>PM-JAY ID</label><div class="val" [ngClass]="{'muted': !candidateSummary.basicInfo?.ayushman_PMJAY_ID}">{{ candidateSummary.basicInfo?.ayushman_PMJAY_ID || 'Not provided' }}</div></div>
+            </div>
+            <div class="fs-img-row" style="display:flex; gap:12px; margin-top:16px;">
+              <div *ngIf="imageUrls.ayushmanPhoto" style="text-align:center;">
+                <img [src]="imageUrls.ayushmanPhoto" alt="Ayushman Card" style="width:135px; height:90px; object-fit:cover; border-radius:6px; border:1px solid #E4E8F0; cursor:pointer;" (click)="openModal(imageUrls.ayushmanPhoto, 'Ayushman Card')" />
+                <div style="font-size:11px; color:#6B7280; margin-top:4px;">Ayushman Document</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- LIFE INSURANCE -->
+      <div class="custom-card" *ngIf="companyConfig?.lifeinsuranceVisible || candidateSummary.basicInfo?.lifeInsurance_No || candidateSummary.basicInfo?.lifeInsurance_Photo || imageUrls.lifeInsurancePhoto">
+        <div class="card-head" onclick="this.parentElement.classList.toggle('collapsed')">
+          <div class="card-head-left">
+            <div class="card-icon"><i class="fa fa-file-text-o"></i></div>
+            <span class="card-title">Life Insurance</span>
+          </div>
+          <span class="chevron">â–¾</span>
+        </div>
+        <div class="card-body">
+          <div>
+            <div class="fields" style="grid-template-columns: repeat(3, 1fr);">
+              <div class="field"><label>Policy Number</label><div class="val" [ngClass]="{'muted': !candidateSummary.basicInfo?.lifeInsurance_No}">{{ candidateSummary.basicInfo?.lifeInsurance_No || 'Not provided' }}</div></div>
+            </div>
+            <div class="fs-img-row" style="display:flex; gap:12px; margin-top:16px;">
+              <div *ngIf="imageUrls.lifeInsurancePhoto" style="text-align:center;">
+                <img [src]="imageUrls.lifeInsurancePhoto" alt="Life Insurance Document" style="width:135px; height:90px; object-fit:cover; border-radius:6px; border:1px solid #E4E8F0; cursor:pointer;" (click)="openModal(imageUrls.lifeInsurancePhoto, 'Life Insurance Document')" />
+                <div style="font-size:11px; color:#6B7280; margin-top:4px;">Life Insurance Document</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- E-SHRAM -->
+      <div class="custom-card" *ngIf="companyConfig?.eshramVisible || candidateSummary.basicInfo?.eshram_UAN || candidateSummary.basicInfo?.eshram_Photo || imageUrls.eshramPhoto">
+        <div class="card-head" onclick="this.parentElement.classList.toggle('collapsed')">
+          <div class="card-head-left">
+            <div class="card-icon"><i class="fa fa-id-card-o"></i></div>
+            <span class="card-title">E-Shram Card</span>
+          </div>
+          <span class="chevron">▾</span>
+        </div>
+        <div class="card-body">
+          <div>
+            <div class="fields" style="grid-template-columns: repeat(3, 1fr);">
+              <div class="field"><label>UAN</label><div class="val" [ngClass]="{'muted': !candidateSummary.basicInfo?.eshram_UAN}">{{ candidateSummary.basicInfo?.eshram_UAN || 'Not provided' }}</div></div>
+            </div>
+            <div class="fs-img-row" style="display:flex; gap:12px; margin-top:16px;">
+              <div *ngIf="imageUrls.eshramPhoto" style="text-align:center;">
+                <img [src]="imageUrls.eshramPhoto" alt="E-Shram Card" style="width:135px; height:90px; object-fit:cover; border-radius:6px; border:1px solid #E4E8F0; cursor:pointer;" (click)="openModal(imageUrls.eshramPhoto, 'E-Shram Card')" />
+                <div style="font-size:11px; color:#6B7280; margin-top:4px;">E-Shram Document</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /grid -->
+
+    <!-- SERVICE AGREEMENT -->
+    <div class="agreement" *ngIf="isVendor && vendorAgreement" style="border:none; box-shadow:0 4px 15px rgba(0,0,0,0.05); border-radius:10px; overflow:hidden; margin-top:20px;">
+      
+      <div class="fs-agreement-head" style="background:#111; color:#fff; display:flex; justify-content:space-between; align-items:center; padding:16px 24px;">
+        <h3 style="margin:0; font-size:16px; font-weight:700; letter-spacing:0.3px;">Service Agreement – Delivery Associate</h3>
+        <span style="background:#333; color:#ddd; font-size:11.5px; padding:5px 12px; border-radius:20px; font-weight:600;">Packet / Contract Basis</span>
+      </div>
+      
+      <div class="agreement-body" style="padding: 40px; background:#fff;">
+        <h2 style="text-align:center; font-size:22px; font-weight:800; color:#17202A; margin-bottom:5px; line-height:1.4;">
+          SERVICE AGREEMENT – DELIVERY ASSOCIATE<br/>
+          (PACKET/CONTRACT BASIS)
+        </h2>
+        
+        <p style="margin-top:40px; font-size:14px; color:#4B5563;">
+          This Agreement is entered into on <b>{{ todayDateFormatted }}</b> between:
+        </p>
+        <p style="font-size:14px; color:#4B5563; line-height:1.7; margin-bottom:40px;">
+          <b style="color:#111;">IdentifyPlus Delivery Services Private Limited</b>, having its registered office at <u style="text-decoration-color:#aaa;">Gurugram – 122001</u> ("<b>Company</b>") AND Mr./Ms. <u style="text-decoration-color:#aaa;">{{ vendorAgreement?.vendor_Name || candidateName }}</u>, residing at <u style="text-decoration-color:#aaa;">{{ vendorAgreement?.vendor_Address || candidateSummary.basicInfo?.address || 'Gurugram, Haryana' }}</u> ("<b>Delivery Associate</b>"/"<b>Contractor</b>").
+        </p>
+
+        <!-- Clauses -->
+        <div style="font-size:14px; color:#4B5563; line-height:1.6;">
+          <h4 style="font-size:16px; font-weight:700; color:#17202A; margin:0 0 8px;">1. Scope of Services</h4>
+          <p style="margin:0 0 24px;">The Contractor shall collect, transport, and deliver parcels/packets assigned by the Company in a safe and timely manner. Any undelivered parcel, COD collection, or Company property shall be returned to the designated Company representative as instructed.</p>
+          
+          <h4 style="font-size:16px; font-weight:700; color:#17202A; margin:0 0 8px;">2. Independent Contractor Relationship</h4>
+          <p style="margin:0 0 24px;">The Contractor is engaged as an independent contractor and not as an employee of the Company. The Contractor shall not be entitled to PF, ESI, gratuity, bonus, leave, insurance, or any other employee benefits. The Contractor shall be solely responsible for compliance with applicable laws relating to his/her engagement, including taxes and statutory obligations, if any.</p>
+          
+          <h4 style="font-size:16px; font-weight:700; color:#17202A; margin:0 0 8px;">3. Confidentiality</h4>
+          <p style="margin:0 0 24px;">The Contractor shall maintain strict confidentiality of customer information, delivery data, business processes, and any information received during the course of engagement and shall not disclose the same to any third party.</p>
+          
+          <h4 style="font-size:16px; font-weight:700; color:#17202A; margin:0 0 8px;">4. Compensation</h4>
+          <p style="margin:0 0 16px;">The Company shall pay service charges as per the applicable rate card communicated from time to time.</p>
+          
+          <!-- Rate Card Table -->
+          <div class="rate-card-mini" *ngIf="vendorActiveRateCards && vendorActiveRateCards.length > 0" style="margin-bottom:16px; border-radius:4px; background:#F8F9FA;">
+            <table>
+              <thead>
+                <tr><th>S.NO</th><th>CLIENT</th><th>MODEL</th><th>FHR ID</th><th>LOCATION</th><th>EFFECTIVE FROM</th><th>STATUS</th><th>CONFIGURED RATES & VALUES</th></tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of vendorActiveRateCards; let i = index">
+                  <td>{{ i + 1 }}</td>
+                  <td style="color:#3B78E7; font-weight:600;">{{ item.clientName || 'N/A' }}</td>
+                  <td><span class="chip blue">{{ item.modelName || 'Standard' }}</span></td>
+                  <td>{{ item.fhrid || 'N/A' }}</td>
+                  <td>{{ item.location || 'N/A' }}</td>
+                  <td>{{ item.effectiveFrom | date:'dd-MM-yyyy' }}</td>
+                  <td class="text-center">
+                    <span class="badge rounded-pill px-2" [ngClass]="item.isActive ? 'bg-success' : 'bg-danger'" [style.background]="item.isActive ? '#10B981' : '#EF4444'" style="color:#fff; font-size:11px; font-weight:600; padding:3px 8px; border-radius:12px;">
+                      {{ item.isActive ? 'Active' : 'Inactive' }}
+                    </span>
+                  </td>
+                  <td class="text-start py-2">
+                    <div class="d-flex flex-wrap gap-2" style="display:flex; flex-wrap:wrap; gap:8px;">
+                      <div *ngIf="item.vehicleTypeName"
+                        class="d-flex align-items-center rounded px-2 py-1 bg-dark text-white shadow-sm"
+                        style="border: 1px solid #495057; display:inline-flex; align-items:center; background:#212529; color:#fff; border-radius:6px; padding:4px 8px; font-size:11px; font-weight:600;">
+                        <i class="fa-solid fa-truck me-2" style="margin-right:6px;"></i><span class="fw-bold small">{{ item.vehicleTypeName }}</span>
+                      </div>
+                      <ng-container *ngFor="let rate of item.rates">
+                        <div class="bg-white rounded border" style="border-color:#dee2e6 !important; padding:4px 8px; display:inline-flex; flex-direction:column; gap:3px; align-items:flex-start; background:#fff; border:1px solid #dee2e6; border-radius:6px;">
+                          <div class="d-flex align-items-center gap-2" style="display:inline-flex; align-items:center; gap:8px;">
+                            <span class="fw-bold text-dark font-size-11" style="font-size:11.5px; font-weight:700; color:#17202A;">{{ rate.label }}</span>
+                            <span class="badge rounded-pill px-3" [ngClass]="rate.isFixed ? 'bg-success' : 'bg-primary'"
+                              [style.background]="rate.isFixed ? '#10B981' : '#3B78E7'" style="color:#fff; font-size:10px; font-weight:600; padding:2px 10px; border-radius:20px;">{{ rate.type }}</span>
+                            <ng-container *ngIf="!rate.isSlab">
+                              <span class="fw-bold font-size-11" [ngClass]="rate.isFixed ? 'text-success' : 'text-primary'"
+                                [style.color]="rate.isFixed ? '#10B981' : '#3B78E7'" style="font-size:11.5px; font-weight:700;">
+                                <ng-container *ngIf="rate.isFixed && rate.type !== 'Base Rate'">₹ </ng-container>{{ rate.value }}
+                              </span>
+                            </ng-container>
+                          </div>
+                          <ng-container *ngIf="rate.isSlab && (rate.slabs?.length || rate.value)">
+                            <div *ngFor="let slab of (rate.slabs || parseSlabExpr(rate.value))"
+                              style="display:flex; align-items:center; gap:5px; font-size:10px; padding-left:2px;">
+                              <span style="color:#555; font-weight:600; background:#e8f0fe; border-radius:4px; padding:1px 5px;">{{ slab.range }}%</span>
+                              <span style="color:#aaa;">&#8594;</span>
+                              <span class="text-primary fw-bold" style="color:#3B78E7; font-weight:700;">₹ {{ slab.rate }}</span>
+                            </div>
+                          </ng-container>
+                        </div>
+                      </ng-container>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <p style="margin:0 0 24px;">Payments shall be released within 15–20 days from the end of the relevant month, subject to reconciliation, Govt. taxes and losses done by Contractor.</p>
+          
+          <h4 style="font-size:16px; font-weight:700; color:#17202A; margin:0 0 8px;">5. Term and Termination</h4>
+          <p style="margin:0 0 24px;">Either party may terminate this Agreement by providing 15 days' written notice and remain valid till termination by either party in writing. The Company may terminate the Agreement immediately in cases involving misconduct, fraud, theft, customer complaints, breach of trust, or violation of Company policies and can take legal action against the contractor. Upon termination, the Contractor shall immediately return all parcels, cash collections, documents, and Company assets in his/her possession.</p>
+          
+          <h4 style="font-size:16px; font-weight:700; color:#17202A; margin:0 0 8px;">6. General</h4>
+          <p style="margin:0 0 40px;">The Contractor confirms that all information and documents submitted are true and correct. The contractor confirms that he has no relative working in the place of Employment. The contractor further confirms that he/she will follow company code of conduct. Any dispute arising from this Agreement shall be subject to the exclusive jurisdiction of the courts at Gurugram, Haryana.</p>
+        </div>
+
+        <hr style="border:none; border-top:1px dashed #E4E8F0; margin-bottom:30px;">
+
+        <!-- Signature Row -->
+        <div class="fs-sign-row" style="display:flex; justify-content:space-between; font-size:14px; color:#17202A;">
+          <div style="min-width: 250px;">
+            <div style="font-weight:700; margin-bottom:10px; color: #17202A;">For IdentifyPlus Delivery Services Pvt. Ltd.</div>
+            
+            <ng-container *ngIf="isStampVisible">
+              <div style="display: flex; align-items: flex-end; gap: 15px; margin-bottom: 8px;">
+                <!-- ALWAYS Show Company Stamp if Verified -->
+                <img *ngIf="imageUrls.stampPhoto" 
+                     [src]="imageUrls.stampPhoto" alt="Company Seal" 
+                     style="height:60px; object-fit:contain; display:block;" />
+
+                <!-- Show HR Signature if it exists -->
+                <div *ngIf="candidateSummary.basicInfo?.approvedBySignature">
+                  <div style="font-size: 11px; color: #6B7280; margin-bottom:2px;">Approver Signature:</div>
+                  <img [src]="signatureBaseUrl + candidateSummary.basicInfo?.approvedBySignature" 
+                       alt="Approver Signature" 
+                       style="height:45px; object-fit:contain; display:block; cursor:pointer;" 
+                       (click)="openModal(signatureBaseUrl + candidateSummary.basicInfo?.approvedBySignature, 'Approver Signature')" />
+                </div>
+              </div>
+                   
+              <!-- Show Approver Name & Date -->
+              <div *ngIf="candidateSummary.basicInfo?.approvedByName" style="font-size: 13px; color: #17202A; margin-bottom:2px;">
+                <span style="font-size: 11px; color: #6B7280;">Approver Name: </span><span style="font-weight: 600;">{{ candidateSummary.basicInfo?.approvedByName }}</span>
+              </div>
+              <div *ngIf="candidateSummary.basicInfo?.approvedDate" style="font-size: 11px; color: #6B7280; margin-bottom:4px;">
+                Approved Date: <span style="font-weight: 600; color: #17202A;">{{ candidateSummary.basicInfo?.approvedDate | date:'dd-MMM-yyyy' }}</span>
+              </div>
+              
+              <!-- Show Remarks -->
+              <div *ngIf="candidateSummary.basicInfo?.approverRemarks" style="font-size: 11px; color: #4B5563; font-style: italic; background-color: #F3F4F6; padding: 4px 8px; border-radius: 4px; display: inline-block;">
+                Remark: "{{ candidateSummary.basicInfo?.approverRemarks }}"
+              </div>
+            </ng-container>
+
+            <!-- Fallback text if not verified -->
+            <div *ngIf="!isStampVisible && (!imageUrls.stampPhoto)" style="color:#6B7280; font-style:italic; margin-bottom:8px; font-size:13px;">[Company Seal & Signature]</div>
+          </div>
+          <div style="text-align:left; min-width:200px;">
+            <div style="font-weight:700; margin-bottom:10px;">By Contractor</div>
+            <div style="font-weight:600;">{{ vendorAgreement?.vendor_Name || candidateName }}</div>
+            <img *ngIf="imageUrls.signaturePhoto" [src]="imageUrls.signaturePhoto" alt="Signature" style="height:35px; object-fit:contain; margin-top:2px; display:block; cursor:pointer;" (click)="openModal(imageUrls.signaturePhoto, 'Signature')" />
+            <div *ngIf="!imageUrls.signaturePhoto" style="color:#B14A3D; font-size:12px; font-style:italic; margin-top:4px;">Signature not uploaded yet</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div> <!-- end pdf content -->
+
+  <!-- Action Footer for HR -->
+  <div class="fs-hr-footer" style="background:#fff; border:1px solid #E4E8F0; border-radius:10px; margin-top:16px;" *ngIf="currentStatusName === 'Submitted'">
+    <div class="d-flex justify-content-end align-items-center p-3" style="gap:10px;">
+      <button style="font-size:12.5px; font-weight:600; padding:8px 16px; border-radius:7px; border:1px solid #E4E8F0; background:#fff; color:#1F2937; cursor:pointer; display:inline-flex; align-items:center; gap:6px;" (click)="reInitiateVendor()">
+        <i class="fa fa-undo"></i> Re-Initiate
+      </button>
+      <button style="font-size:12.5px; font-weight:600; padding:8px 16px; border-radius:7px; border:none; background:#3B78E7; color:#fff; cursor:pointer; display:inline-flex; align-items:center; gap:6px;" (click)="updateVendorStatus(5, 'Verified')">
+        <i class="fa fa-check"></i> Verify Vendor
+      </button>
+    </div>
+  </div>
+
+</div> <!-- /wrap -->
+
+<!-- Image View Modal -->
+<div *ngIf="modalOpen" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; display:flex; align-items:center; justify-content:center; padding: 20px;">
+  
+  <div style="background:#fff; border-radius:8px; width:100%; max-width:800px; display:flex; flex-direction:column; box-shadow:0 10px 25px rgba(0,0,0,0.2);">
+    <!-- Header -->
+    <div style="display:flex; justify-content:space-between; align-items:center; padding:15px 20px; border-bottom:1px solid #E4E8F0;">
+      <h4 style="color:#1F2937; margin:0; font-size:18px; font-weight:600;">{{ modalImageTitle }}</h4>
+      <button (click)="closeModal()" style="background:transparent; border:none; color:#6B7280; font-size:24px; cursor:pointer; line-height:1; padding:0;">&times;</button>
+    </div>
+    <!-- Image -->
+    <div style="padding:20px; display:flex; align-items:center; justify-content:center; background:#f9fafb; border-bottom-left-radius:8px; border-bottom-right-radius:8px;">
+      <img [src]="modalImageUrl" alt="View Image" style="max-width:100%; max-height:70vh; object-fit:contain; border-radius:4px; border:1px solid #E4E8F0;" />
+    </div>
+  </div>
+
+</div>
+
+<!-- Verify Vendor Confirmation Modal -->
+<div *ngIf="showVerifyConfirmModal" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.55); z-index:9999; display:flex; align-items:center; justify-content:center; padding:20px;">
+  <div style="background:#fff; border-radius:12px; width:100%; max-width:600px; max-height:90vh; display:flex; flex-direction:column; box-shadow:0 20px 40px rgba(0,0,0,0.22); overflow:hidden;">
+    
+    <!-- Header -->
+    <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 20px; border-bottom:1px solid #E0F2FE; background:#F0F9FF; flex-shrink: 0;">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <div style="width:32px; height:32px; border-radius:50%; background:#BAE6FD; display:flex; align-items:center; justify-content:center; color:#0284C7; font-size:16px;">
+          <i class="fa fa-check-circle"></i>
+        </div>
+        <h4 style="color:#0C4A6E; margin:0; font-size:16px; font-weight:700;">Confirm Vendor Verification</h4>
+      </div>
+      <button type="button" (click)="closeVerifyConfirmModal()" [disabled]="isVerifyingStatus" style="background:transparent; border:none; color:#9CA3AF; font-size:24px; cursor:pointer; line-height:1; padding:0;">&times;</button>
+    </div>
+
+    <!-- Body -->
+    <div style="padding:16px 20px; overflow-y:auto;">
+      <p style="font-size:14px; font-weight:600; color:#1F2937; margin:0 0 12px;">
+        Are you sure you want to change the vendor status to Verified?
+      </p>
+
+      <div style="background:#F0F9FF; border:1px solid #BAE6FD; border-left:4px solid #0284C7; border-radius:8px; padding:10px 14px;">
+        <div style="font-weight:700; color:#0369A1; font-size:13px; margin-bottom:4px; display:flex; align-items:center; gap:6px;">
+          <i class="fa fa-circle-info"></i> Vendor Details:
+        </div>
+        <div style="font-size:13px; color:#0C4A6E; line-height:1.5;">
+          <div style="display:flex; gap:20px;">
+            <div><strong>Vendor Name:</strong> {{ candidateSummary.basicInfo?.candidate_name || candidateName }}</div>
+            <div *ngIf="candidateSummary.basicInfo?.vendor_Code"><strong>Vendor Code:</strong> {{ candidateSummary.basicInfo?.vendor_Code }}</div>
+          </div>
+          <div style="margin-top:4px; font-size:12px; color:#0284C7;">Once verified, the vendor status will be updated to Verified and a verified PDF copy will be downloaded automatically.</div>
+        </div>
+      </div>
+
+      <!-- Approver Details Form -->
+      <div style="margin-top: 12px;">
+        <div style="display: flex; gap: 16px; margin-bottom: 10px; align-items: flex-start;">
+          <div style="flex: 1;">
+            <label style="display:block; font-size:12px; font-weight:600; color:#374151; margin-bottom:2px;">Approved By Name <span style="color:red;">*</span></label>
+            <input type="text" [(ngModel)]="approvedByName" placeholder="Enter Approver Name" style="width:100%; padding:6px 10px; border-radius:6px; border:1px solid #D1D5DB; font-size:13px;">
+          </div>
+          
+          <div style="flex: 1;">
+            <label style="display:block; font-size:12px; font-weight:600; color:#374151; margin-bottom:2px;">Signature Upload <span style="color:red;">*</span></label>
+            <input type="file" accept=".png,.jpg,.jpeg,.pdf" (change)="onSignatureFileSelected($event)" style="width:100%; padding:4px; border-radius:6px; border:1px solid #D1D5DB; font-size:13px; background:#fff;">
+            <div style="font-size:10px; color:#6B7280; margin-top:2px;">Allowed formats: .jpg, .png, .pdf</div>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 4px;">
+          <label style="display:block; font-size:12px; font-weight:600; color:#374151; margin-bottom:2px;">Remarks <span style="color:red;">*</span></label>
+          <textarea [(ngModel)]="approverRemarks" rows="1" placeholder="Enter Remarks" style="width:100%; padding:6px 10px; border-radius:6px; border:1px solid #D1D5DB; font-size:13px; resize:vertical; min-height: 36px;"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="fs-confirm-footer" style="display:flex; justify-content:flex-end; align-items:center; gap:10px; padding:12px 20px; background:#F9FAFB; border-top:1px solid #E5E7EB;">
+      <button type="button" (click)="closeVerifyConfirmModal()" [disabled]="isVerifyingStatus" style="padding:8px 16px; border-radius:6px; border:1px solid #D1D5DB; background:#fff; color:#374151; font-size:13px; font-weight:600; cursor:pointer;">
+        Cancel
+      </button>
+      <button type="button" (click)="confirmAndProceedVerify()" [disabled]="isVerifyingStatus" style="padding:8px 20px; border-radius:6px; border:none; background:#0284C7; color:#fff; font-size:13px; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:0 1px 2px rgba(0,0,0,0.05);">
+        <span *ngIf="isVerifyingStatus" class="spinner-border spinner-border-sm"></span>
+        <i *ngIf="!isVerifyingStatus" class="fa fa-check"></i>
+        <span>{{ isVerifyingStatus ? 'Verifying...' : 'OK' }}</span>
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- Re-Initiate Vendor Confirmation Modal -->
+<div *ngIf="showReInitiateConfirmModal" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.55); z-index:9999; display:flex; align-items:center; justify-content:center; padding:20px;">
+  <div style="background:#fff; border-radius:12px; width:100%; max-width:480px; display:flex; flex-direction:column; box-shadow:0 20px 40px rgba(0,0,0,0.22); overflow:hidden;">
+    
+    <!-- Header -->
+    <div style="display:flex; justify-content:space-between; align-items:center; padding:16px 22px; border-bottom:1px solid #E5E7EB; background:#FFFBEB;">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <div style="width:34px; height:34px; border-radius:50%; background:#FEF3C7; display:flex; align-items:center; justify-content:center; color:#D97706; font-size:16px;">
+          <i class="fa fa-undo"></i>
+        </div>
+        <h4 style="color:#111827; margin:0; font-size:16px; font-weight:700;">Confirm Re-Initiate</h4>
+      </div>
+      <button type="button" (click)="closeReInitiateConfirmModal()" [disabled]="isReInitiatingStatus" style="background:transparent; border:none; color:#9CA3AF; font-size:24px; cursor:pointer; line-height:1; padding:0;">&times;</button>
+    </div>
+
+    <!-- Body -->
+    <div style="padding:22px 24px;">
+      <p style="font-size:15px; font-weight:600; color:#1F2937; margin:0 0 16px;">
+        Are you sure you want to Re-Initiate this vendor?
+      </p>
+
+      <div style="background:#FFFBEB; border:1px solid #FDE68A; border-left:4px solid #F59E0B; border-radius:8px; padding:14px 16px;">
+        <div style="font-weight:700; color:#92400E; font-size:13px; margin-bottom:6px; display:flex; align-items:center; gap:6px;">
+          <i class="fa fa-exclamation-triangle"></i> Action Note:
+        </div>
+        <p style="margin:0; font-size:13px; color:#78350F; line-height:1.6;">
+          This will update the vendor status and send them an email notification to correct and resubmit their details.
+        </p>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="fs-confirm-footer" style="display:flex; justify-content:flex-end; align-items:center; gap:10px; padding:14px 24px; background:#F9FAFB; border-top:1px solid #E5E7EB;">
+      <button type="button" (click)="closeReInitiateConfirmModal()" [disabled]="isReInitiatingStatus" style="padding:8px 18px; border-radius:6px; border:1px solid #D1D5DB; background:#fff; color:#374151; font-size:13px; font-weight:600; cursor:pointer;">
+        Cancel
+      </button>
+      <button type="button" (click)="confirmAndProceedReInitiate()" [disabled]="isReInitiatingStatus" style="padding:8px 22px; border-radius:6px; border:none; background:#D97706; color:#fff; font-size:13px; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:0 1px 2px rgba(0,0,0,0.05);">
+        <span *ngIf="isReInitiatingStatus" class="spinner-border spinner-border-sm"></span>
+        <i *ngIf="!isReInitiatingStatus" class="fa fa-undo"></i>
+        <span>{{ isReInitiatingStatus ? 'Re-Initiating...' : 'OK' }}</span>
+      </button>
+    </div>
+
+  </div>
+</div>

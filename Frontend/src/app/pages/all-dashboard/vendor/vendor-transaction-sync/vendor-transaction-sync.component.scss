@@ -1,0 +1,150 @@
+/* ── Summary KPI Chips ─────────────────────────────────────── */
+.summary-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  border: 1px solid transparent;
+}
+
+.chip-total {
+  background: #e8f0fe;
+  color: #1a56db;
+  border-color: #c3d7fa;
+}
+
+.chip-synced {
+  background: #dcfce7;
+  color: #16a34a;
+  border-color: #bbf7d0;
+}
+
+.chip-pending {
+  background: #fef9c3;
+  color: #b45309;
+  border-color: #fde68a;
+}
+
+.chip-payable {
+  background: #f3e8ff;
+  color: #7e22ce;
+  border-color: #e9d5ff;
+}
+
+.chip-deficit {
+  background: #fee2e2;
+  color: #b91c1c;
+  border-color: #fca5a5;
+}
+
+.deduction-exceeded-cell {
+  background-color: #fff1f2 !important;
+}
+
+.deduction-exceeded-badge {
+  display: inline-flex;
+  align-items: center;
+  background-color: #fee2e2;
+  color: #b91c1c;
+  border: 1px solid #f87171;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-weight: 700;
+  box-shadow: 0 1px 3px rgba(220, 38, 38, 0.15);
+}
+
+.deficit-carryforward-badge {
+  display: inline-flex;
+  align-items: center;
+  background-color: #fff7ed;
+  color: #c2410c;
+  border: 1px solid #fdba74;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-weight: 700;
+}
+
+/* ── Sync Grid Table ────────────────────────────────────────── */
+.sync-table {
+  font-size: 13px;
+
+  th {
+    vertical-align: middle;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+  }
+
+  .deduction-col-header {
+    background-color: #fef2f2 !important;
+    color: #991b1b !important;
+    border-bottom: 2px solid #dc3545 !important;
+    font-weight: 600 !important;
+  }
+
+  .positive-col-header {
+    background-color: #f0fdf4 !important;
+    color: #166534 !important;
+    border-bottom: 2px solid #16a34a !important;
+    font-weight: 600 !important;
+  }
+
+  td {
+    vertical-align: middle;
+  }
+}
+
+.synced-row {
+  background-color: #f0fdf4 !important;
+}
+
+.pending-row {
+  background-color: #ffffff;
+
+  &:hover {
+    background-color: #f8faff !important;
+  }
+}
+
+.deduction-link {
+  transition: all 0.15s ease-in-out;
+
+  &:hover {
+    color: #b02a37 !important;
+    text-shadow: 0 0 1px rgba(176, 42, 55, 0.4);
+  }
+}
+
+/* ── Modal styling matching Attendance-InOut_shift ── */
+.modal {
+  .small {
+    font-size: 11px;
+    font-weight: 500;
+  }
+}
+
+/* ── Dropdown & Form Label Styling (Matching vendor-deduction-entry) ── */
+.form-label {
+  font-size: 0.8rem;
+}
+
+::ng-deep {
+  .ng-dropdown-panel {
+    font-size: 0.8rem !important;
+
+    .ng-option {
+      font-size: 0.8rem !important;
+      padding: 6px 10px !important;
+    }
+  }
+
+  .ng-select {
+    font-size: 0.82rem !important;
+
+    .ng-select-container {
+      min-height: 32px !important;
+      font-size: 0.82rem !important;
+    }
+  }
+}

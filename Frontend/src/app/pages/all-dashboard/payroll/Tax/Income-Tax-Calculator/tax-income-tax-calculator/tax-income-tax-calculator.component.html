@@ -1,0 +1,137 @@
+<div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-primary">
+            <div class="row w-100">
+              <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-between">
+                <h4>Employee Search</h4>
+              </div>
+              <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+                <button class="btn btnheader" routerLink="">
+                  goTolist
+                </button>
+              </div>
+
+            </div>
+          </div>
+        <div class="card-body">
+          <form [formGroup]="IncomeTaxForm">
+            <!-- Employee Search Section -->
+           <div class="row mb-2">
+            <app-common-search ></app-common-search>
+           </div>
+            
+            <!-- <div class="row">
+            
+              <div class="col-12 col-md-4 mb-3">
+                <div class="form-group">
+                  <label for="code">Code:</label>
+                  <input id="code" type="text" formControlName="code" class="form-control"  placeholder="enter code "/>
+                </div>
+              </div> -->
+              <!-- <div class="col-12 col-md-4 mb-3">
+                <div class="form-group">
+                  <label for="name">Name:</label>
+                  <input id="name" type="text" formControlName="name" class="form-control"  placeholder="entre name" />
+                </div>
+              </div> -->
+              <!-- <div class="col-12 col-md-4 mb-3">
+                <div class="form-group">
+                  <label for="status">Status:</label>
+                  <input id="status" type="text" formControlName="status" class="form-control" />
+                </div>
+              </div> -->
+            <!-- </div> -->
+  
+            <div class="row">
+              <!-- <div class="col-12 col-md-4 mb-3">
+                <div class="form-group">
+                  <label for="location">Location:</label>
+                  <ng-select [items]="locations" bindLabel="name" formControlName="location" placeholder="select you location"></ng-select>
+                </div>
+              </div> -->
+              <!-- <div class="col-12 col-md-4 mb-3">
+                <div class="form-group">
+                  <label for="department">Department:</label>
+                  <ng-select [items]="departments" bindLabel="name" formControlName="department" placeholder="select your department"></ng-select>
+                </div>
+              </div> -->
+              <!-- <div class="col-12 col-md-4 d-flex justify-content-between mb-3"> -->
+                 
+                    <!-- <div class="modal-footer">
+                        <button type="submit" class="btn btn-outline-dark mx-1"  (click)="onSearch()">Search</button>
+                        <button type="submit" class="btn btn-primary mx-1" (click)="clearFilters()">Clear</button>
+                    </div> -->
+              <!-- </div> -->
+            </div>
+          </form>
+          
+  
+          <!-- Employee Leave Assignment Section -->
+          <div class="page-seperator bg-primary mx-2 rounded-1">
+            <p class="text-white ms-4 p-1">IncomeTax Calculator</p>
+          </div>
+
+          <form [formGroup]="IncomeTax">
+            <div class="row">
+              <div class="col-12 col-md-4 mb-3">
+                <div class="form-group">
+                  <label for="employeeCode">Employee Code:</label>
+                  <ng-select [items]="filteredEmployeeList" bindLabel="displayName" 
+                  bindValue="empCode"  formControlName="employeeCode" (change)="onSelectEmployee($event)" placeholder="select empcode"></ng-select>
+                </div>
+              </div>
+              <div class="col-12 col-md-4 mb-3">
+                <div class="form-group">
+                  <label for="financialYear">Financial Year:</label>
+                  <ng-select [items]="financialYears" bindLabel="year" formControlName="financialYear"  placeholder="--select financial year--"></ng-select>
+                </div>
+                            <!-- Show validation message when showError is true -->
+                <div *ngIf="showError && IncomeTax.controls['financialYear'].invalid" class="text-danger">
+                    Please select a financial year.
+                </div>
+              </div>
+              <div class="col-12 col-md-4 d-flex justify-content-between mb-3">
+                <!-- Button Section -->
+                   <div class="modal-footer">
+                       <button type="submit" class="btn btn-primary mx-1" (click)="onShowIncomeTaxDetails()" >Show</button>
+                       <button type="submit" class="btn btn-outline-dark mx-1">Export</button>
+                   </div>
+               </div>
+             
+              </div>
+  
+          </form>
+          <!-- IncomeTax Details Table --> 
+
+          <div class="page-seperator bg-primary mx-2 rounded-1">
+            <p class="text-white ms-4 p-1">IncomeTax Details</p>
+          </div>
+          <div class="row mx-1">
+            <div class="col-12">
+                <div class="table-responsive">
+                    <table class="table table-invoice table-responsive">
+                        <thead>
+                          <tr>
+                            <th>Sr. No.</th>
+                            <th>Description</th>
+                            <th>Amount</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr *ngFor="let item of incomeTaxDetails; let i = index">
+                            <td>{{ i + 1 }}</td>
+                            <td>{{ item.description }}</td>
+                            <td>{{ item.amount | currency }}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                  </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+  

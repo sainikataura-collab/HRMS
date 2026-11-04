@@ -1,0 +1,549 @@
+.custom-checkbox {
+  transform: scale(1);
+  margin-left: -98px;
+}
+
+.card-header {
+  background-color: #3080e8;
+  font-weight: bold;
+}
+
+.ngx-pagination .current {
+  padding: .1875rem .625rem;
+  background: #3080e8 !important;
+  color: #fefefe;
+  cursor: default;
+}
+
+.dropdown-menu {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.min-width-table {
+  min-width: 1200px;
+}
+
+// Progress bar inside fact box
+.fact-box-progress {
+  height: 8px;
+  background-color: #e9ecef;
+  border-radius: 10px;
+  overflow: hidden;
+
+  .progress-bar {
+    height: 100%;
+    border-radius: 10px;
+    background-color: var(--bar-color, #3080e8);
+    transition: width 0.6s ease, background-color 0.4s ease;
+  }
+}
+
+
+.fact-box-selection-pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #eef4ff;
+  border: 1px solid #c5d9f8;
+  border-radius: 6px;
+  padding: 8px 10px;
+
+  i {
+    font-size: 16px;
+    color: #3080e8;
+    flex-shrink: 0;
+  }
+
+  .fact-box-sel-count {
+    font-size: 18px;
+    font-weight: 700;
+    color: #3080e8;
+    line-height: 1;
+  }
+
+  .fact-box-sel-label {
+    font-size: 11px;
+    color: #6c757d;
+    display: block;
+    margin-top: 2px;
+  }
+}
+
+// ── Fact Box ─────────────────────────────────────────────
+.fact-box-card {
+  position: sticky;
+  top: 75px;
+  align-self: flex-start;
+  max-height: calc(100vh - 95px);
+  overflow-y: auto;
+  border-radius: 6px;
+  border: none;
+  border-top: 3px solid #3080e8;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
+  background: #8b5cf60a;
+  z-index: 99;
+
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #c5d9f8;
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+
+.fact-box-header {
+  background: transparent;
+  border-bottom: 1px solid rgba(139, 92, 246, 0.12);
+  padding: 6px 8px 4px 8px;
+
+  h6 {
+    font-size: 11px;
+    font-weight: 700;
+    color: #2c3e50;
+    letter-spacing: 0.3px;
+
+    i {
+      color: #3080e8;
+    }
+  }
+
+  .fact-box-close {
+    background: none;
+    border: none;
+    color: #adb5bd;
+    font-size: 12px;
+    line-height: 1;
+    padding: 1px 3px;
+    border-radius: 4px;
+    transition: background 0.2s, color 0.2s;
+
+    &:hover {
+      background: #f1f3f5;
+      color: #495057;
+    }
+  }
+}
+
+.fact-box-body {
+  padding: 6px 8px 8px 8px;
+  font-size: 10.5px;
+  color: #495057;
+}
+
+.fact-box-section-label {
+  display: block;
+  font-size: 8.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #adb5bd;
+  margin-bottom: 2px;
+}
+
+.fact-box-progress {
+  height: 4px;
+  background-color: #e9ecef;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 5px;
+
+  .progress-bar {
+    height: 100%;
+    border-radius: 10px;
+    background-color: var(--bar-color, #3080e8);
+    transition: width 0.6s ease, background-color 0.4s ease;
+  }
+}
+
+.fact-box-stat-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1px 0;
+    border-bottom: 1px solid #f8f9fa;
+    font-size: 10.5px;
+    line-height: 1.2;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    .stat-label {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: #495057;
+
+      .stat-dot {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        display: inline-block;
+        flex-shrink: 0;
+
+        &.dot-warning {
+          background: #ffc107;
+        }
+
+        &.dot-success {
+          background: #28a745;
+        }
+
+        &.dot-danger {
+          background: #dc3545;
+        }
+      }
+    }
+
+    .stat-badge {
+      font-size: 9.5px;
+      font-weight: 700;
+      background: #f8f9fa;
+      border: 1px solid #e9ecef;
+      color: #343a40;
+      padding: 0 5px;
+      border-radius: 20px;
+      line-height: 1.2;
+    }
+  }
+}
+
+.fact-box-divider {
+  border: none;
+  border-top: 1px dashed #e0e0e0;
+  margin: 3px 0;
+}
+
+.fact-box-action-btn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 7px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 5px;
+  border: 1px solid #dee2e6;
+  background: #f8f9fa;
+  transition: background 0.2s, color 0.2s;
+  margin-bottom: 6px;
+  cursor: pointer;
+
+  i {
+    margin-right: 6px;
+    width: 12px;
+  }
+
+  &.process-btn {
+    color: #3080e8;
+    border-color: #c5d9f8;
+
+    &:hover:not(:disabled) {
+      background: #eaf1fd;
+      border-color: #3080e8;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  &.unprocess-btn {
+    color: #dc3545;
+    border-color: #f5c2c7;
+
+    &:hover:not(:disabled) {
+      background: #fdf0f1;
+      border-color: #dc3545;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+}
+
+.fact-box-info-tip {
+  background: #f8f9fa;
+  border-left: 3px solid #3080e8;
+  border-radius: 4px;
+  padding: 8px 10px;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 12px;
+
+  i {
+    font-size: 12px;
+    color: #3080e8;
+    margin-top: 1px;
+    flex-shrink: 0;
+  }
+
+  p {
+    font-size: 11px;
+    line-height: 1.5;
+    color: #6c757d;
+    margin: 0;
+  }
+}
+
+.fact-box-percent-badge {
+  font-size: 10px;
+  font-weight: 700;
+  color: #3080e8;
+  background: #eef4ff;
+  padding: 2px 7px;
+  border-radius: 20px;
+  border: 1px solid #c5d9f8;
+}
+
+// ── Suggestion Box Label ──────────────────────────────────
+.fact-suggestion-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #3080e8;
+  margin-bottom: 8px;
+
+  .fact-suggestion-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #3080e8;
+    display: inline-block;
+    animation: suggestion-dot-pulse 1.5s ease-in-out infinite;
+  }
+}
+
+@keyframes suggestion-dot-pulse {
+
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.5);
+    opacity: 0.5;
+  }
+}
+
+// ── Animated Help Guide Card ──────────────────────────────
+
+.fact-help-card {
+  margin-top: 6px;
+  border-radius: 8px;
+  border: 1.5px solid var(--hint-color, #3080e8);
+  background: #fff;
+  padding: 8px 10px;
+  position: relative;
+  animation: help-card-breathe 3s ease-in-out infinite;
+
+  // Subtle glowing outline pulse
+  @keyframes help-card-breathe {
+
+    0%,
+    100% {
+      box-shadow: 0 0 0 0 rgba(48, 128, 232, 0);
+    }
+
+    50% {
+      box-shadow: 0 0 0 5px rgba(48, 128, 232, 0.12);
+    }
+  }
+}
+
+.fact-help-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.fact-help-icon-wrap {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--hint-color, #3080e8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  animation: help-icon-zoom 2.5s ease-in-out infinite;
+
+  i {
+    font-size: 12px;
+    color: #fff;
+  }
+
+  @keyframes help-icon-zoom {
+
+    0%,
+    100% {
+      transform: scale(1);
+    }
+
+    45% {
+      transform: scale(1.22);
+    }
+
+    55% {
+      transform: scale(1.22);
+    }
+  }
+}
+
+.fact-help-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--hint-color, #3080e8);
+  letter-spacing: 0.2px;
+}
+
+.fact-help-text {
+  font-size: 11px;
+  line-height: 1.6;
+  color: #555;
+  margin: 0 0 8px 0;
+  padding-left: 2px;
+}
+
+.fact-help-goto {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--hint-color, #3080e8);
+  text-decoration: none;
+  background: #f0f6ff;
+  border: 1px solid var(--hint-color, #3080e8);
+  border-radius: 5px;
+  padding: 4px 10px;
+  transition: background 0.2s ease, transform 0.15s ease;
+
+  i {
+    font-size: 10px;
+  }
+
+  &:hover {
+    background: var(--hint-color, #3080e8);
+    color: #fff;
+    transform: translateX(2px);
+  }
+}
+
+
+
+.fact-box-fab {
+  position: fixed;
+  right: 28px;
+  bottom: 30px;
+  z-index: 9999;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: none;
+  background: #3080e8;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(48, 128, 232, 0.4);
+  transition: background 0.25s ease, transform 0.2s ease;
+
+  // Ripple ring pseudo element
+  &::before {
+    content: '';
+    position: absolute;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    border: 2px solid rgba(48, 128, 232, 0.6);
+    animation: fab-ripple 2s ease-out infinite;
+    pointer-events: none;
+  }
+
+  i {
+    font-size: 20px;
+    display: inline-block;
+    animation: fab-icon-pulse 2s ease-in-out infinite;
+  }
+
+  &:hover {
+    background: #2068cc;
+    transform: scale(1.1);
+
+    i {
+      animation: none;
+      transform: scale(1.15);
+      transition: transform 0.2s ease;
+    }
+
+    &::before {
+      animation: none;
+      border-color: transparent;
+    }
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+// Ripple expanding ring
+@keyframes fab-ripple {
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+
+  70% {
+    transform: scale(1.7);
+    opacity: 0.15;
+  }
+
+  100% {
+    transform: scale(1.9);
+    opacity: 0;
+  }
+}
+
+// Icon zoom pulse
+@keyframes fab-icon-pulse {
+  0% {
+    transform: scale(1);
+  }
+
+  40% {
+    transform: scale(1.2);
+  }
+
+  60% {
+    transform: scale(1.2);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}

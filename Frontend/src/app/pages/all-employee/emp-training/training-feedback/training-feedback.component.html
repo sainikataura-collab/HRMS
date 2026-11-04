@@ -1,0 +1,86 @@
+<div class="container py-4" style="max-width: 900px;">
+  <div class="card shadow border-0 rounded-4 border-top border-3 border-primary">
+    <div class="card-body p-4">
+
+      <h4 class="fw-semibold text-primary text-center mb-1">Program Feedback</h4>
+      <p class="text-muted text-center small mb-4">We value your feedback! Help us improve future programs.</p>
+
+      <form [formGroup]="feedbackForm" (ngSubmit)="submitFeedback()" class="row g-3">
+
+        <div class="col-12">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Training Programs <span class="text-danger">*</span></label>
+              <ng-select [items]="trainingPrograms"  bindLabel="name" bindValue="value"
+               formControlName="fk_planningId" placeholder="Select Training Program" ></ng-select>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Would you recommend this program? <span
+                  class="text-danger">*</span></label>
+              <ng-select [items]="recommendList" bindLabel="name" bindValue="value"
+              formControlName="recommend" placeholder="Recommend" ></ng-select>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="col-12 mt-3">
+          <div class="row g-3">
+
+            <div class="col-md-6">
+              <label class="form-label small fw-semibold mb-1">What could be improved?</label>
+              <textarea class="form-control form-control-sm" formControlName="improvements" rows="3"
+                placeholder="Share your suggestions..."></textarea>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- <div class="col-12 mt-3">
+          <div class="liked-section p-3 rounded-3">
+            <label class="form-label small fw-semibold mb-2 d-block">What did you like most? <span
+                class="text-muted small">(Select all that apply)</span></label>
+            <div class="d-flex flex-wrap gap-2">
+              <div *ngFor="let option of likedOptions" class="form-check checkbox-pill">
+                <input class="form-check-input" type="checkbox" [value]="option.id" (change)="onCheckboxChange($event)"
+                  [id]="option.id">
+                <label class="form-check-label small pt-1" [for]="option.id">{{ option.name }}</label>
+              </div>
+            </div>
+          </div>
+        </div> -->
+
+
+
+
+        <div class="col-12 mt-3 d-flex align-items-center justify-content-center">
+        <div class="rating d-flex gap-2 align-items-center">
+          <ng-container *ngFor="let r of [1,2,3,4,5]">
+            <label
+              class="btn star-btn"
+              [ngClass]="{ 'text-warning': feedbackForm.get('rating')?.value >= r, 'text-muted': feedbackForm.get('rating')?.value < r }"
+              (click)="setRating(r)">
+              ★
+            </label>
+          </ng-container>
+        </div>
+      </div>
+
+
+
+        <div class="col-12 d-flex justify-content-center mt-4">
+          <button type="submit" class="btn btn-primary px-4 py-1 shadow-sm">Submit Feedback</button>
+        </div>
+
+
+        <div class="col-12" *ngIf="submitted">
+          <div class="alert alert-success small mt-2 mb-0">
+            <strong>✅ Thank you for your feedback!</strong> Your response has been recorded.
+          </div>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,162 @@
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card mt-lg-1">
+      <!-- card header  -->
+      <div class="card-header bg-primary">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-between">
+            <h4 class="py-lg-1">Employee wise Draft KRA</h4>
+          </div>
+
+
+        </div>
+        <div class="col-sm-12 col-md-12 col-lg-2 col-12">
+          <div class="col-sm-12 col-md-4 col-lg-12  d-flex align-items-center justify-content-md-end">
+            <button class="btn btnheader" routerLink="/dash/appraisal/appraisaldashboard/Empwise-KRA-List">
+              Back
+            </button>
+
+          </div>
+        </div>
+      </div>
+
+
+
+
+      <div class="card-body  px-2 px-lg-4 " [formGroup]="EmpWiseForm">
+        <div id="stickyHeader" class="row sticky-top p-0 m-0">
+          <div class="col-sm-12 col-md-12 col-lg-4 px-0">
+            <label class="form-label">Epmloyee<span style="color: red;">*</span></label>
+            <div class="form-group">
+              <ng-select [items]="employee" bindLabel="name" bindValue="value" formControlName="fk_empid"
+                placeholder="--Select Employee--" class="w-100 small"></ng-select>
+              <span *ngIf="showError && EmpWiseForm.controls['fk_empid'].invalid" class="text-danger mt-1"
+                style="font-size: 12px;">
+                Please enter employee.
+              </span>
+            </div>
+          </div>
+        </div>
+
+
+
+        <div class="row pb-2 px-2 ">
+          <div class="col-12 d-lg-flex  align-items-center justify-content-between">
+            <p class="m-0"><span class="text-primary m-0 fw-semibold ">List of KRA(s)</span>
+              <span class="small ps-2 ps-lg-4 text-danger">(Can't take Weightage out of 100)</span>
+              <!-- <span class="small ps-2 ps-lg-4 text-danger">(Total weightage cannot exceed 100)</span> -->
+            </p>
+
+            <p class="text-primary m-0 fw-semibold "><span class="text-dark">Total KRA : </span> <span
+                class="text-primary"> {{ cards.length }}</span></p>
+            <p class="text-primary m-0 fw-semibold "><span class="text-dark">Total Weightage : </span>
+              <!-- <span class="text-primary">{{ EmpWiseForm.get('Weightage')?.value || 0 }}</span> -->
+              <span class="text-primary">{{ getTotalWeightage() }}</span>
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div formArrayName="cards">
+
+
+
+          <div *ngFor="let card of cards.controls; let i = index" [formGroupName]="i" [attr.id]="'kra-card-' + i"
+            class="card   card-kra col-sm-12 col-md-12 col-lg-12">
+            <div class="row px-0 py-0 m-0">
+              <div class="col-1 px-0 py-0 m-0">
+                <p class="small py-0 ps-3 my-0 mx-0 ">
+                  <span class="rounded-1 bg-primary text-white small px-1">{{ i + 1 }}</span>
+                </p>
+              </div>
+              <div class="col-11"></div>
+            </div>
+
+            <div class="row gy-2 p-3 pt-0 gt-0">
+
+              <div class="col-sm-12 col-md-3 col-lg-1 d-flex align-items-center justify-content-between">
+
+                <label [for]="'summernoteEditor' + i" class="form-label">KRA</label>
+              </div>
+              <div class="col-sm-12 col-md-9 col-lg-5">
+                <textarea [id]="'summernoteEditor' + i" class="editor-box" formControlName="KRA"></textarea>
+              </div>
+
+              <div class="col-sm-12 col-md-3 col-lg-1 d-flex align-items-center justify-content-between">
+                <label [for]="'summernoteEditor2_' + i" class="form-label">KPA</label>
+              </div>
+              <div class="col-sm-12 col-md-9 col-lg-5">
+                <textarea [id]="'summernoteEditor2_' + i" class="editor-box" formControlName="KPA"></textarea>
+              </div>
+
+              <div class="col-sm-12 col-md-3 col-lg-1 d-flex align-items-center justify-content-between">
+                <label [for]="'summernoteEditor3_' + i" class="form-label">KPI</label>
+              </div>
+              <div class="col-sm-12 col-md-9 col-lg-5">
+                <textarea [id]="'summernoteEditor3_' + i" class="editor-box" formControlName="KPI"></textarea>
+              </div>
+
+              <div class="col-sm-12 col-md-3 col-lg-1 d-flex align-items-center justify-content-between">
+                <label [for]="'summernoteEditor4_' + i" class="form-label ">Target</label>
+              </div>
+              <div class="col-sm-12 col-md-9 col-lg-5">
+                <textarea [id]="'summernoteEditor4_' + i" class="editor-box" formControlName="TargetValue"></textarea>
+              </div>
+
+
+
+              <div class="col-sm-12 col-md-3 col-lg-1 d-flex align-items-center justify-content-between">
+                <label [for]="" class="form-label ">Weightage</label>
+              </div>
+              <div class="col-sm-12 col-md-9 col-lg-5">
+                <input type="number" class="form-control" formControlName="Weightage" (input)="validateWeightage(i)" (keydown)="preventInvalidChars($event)">
+
+                <div class="text-danger" *ngIf="weightageErrors[i]" style="font-size: 12px;">
+                  {{ weightageErrors[i] }}
+                </div>
+              </div>
+
+              <div class="col-sm-12 col-md-3 col-lg-1 d-flex align-items-center justify-content-between">
+                <label [for]="" class="form-label ">File</label>
+              </div>
+              <div class="col-sm-12 col-md-9 col-lg-3">
+                <input type="file" class="form-control" (change)="onFileSelected($event,i)">
+               
+
+              </div>
+
+
+
+              <div class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-end">
+                <button type="submit" class="btn btn-primary" (click)="onSubmit(i)">Update</button>
+                <button type="button" *ngIf="cards.length > 1" class="btn btn-danger btn-sm mx-1"
+                  (click)="deleteCard(i)">
+                  <i class="fas fa-trash-alt"></i>
+                </button>
+              </div>
+
+            </div>
+          </div>
+
+
+          <div class="col-sm-12 col-md-12 col-lg-12 d-flex align-items-center justify-content-end">
+            <button class=" btn btn-outline-transparent text-primary py-0 px-1 small fw-semibold" (click)="addCard()"><i
+                class="fa-solid fa-plus"></i>Add More</button>
+
+          </div>
+
+        </div>
+
+
+
+
+
+
+
+      </div>
+
+    </div>
+  </div>
+</div>

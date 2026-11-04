@@ -1,0 +1,893 @@
+<!-- ===================== 1. TOP HEADER & FILTER SECTION ===================== -->
+<section>
+  <div class="container-fluid">
+    <div class="row border-bottom align-items-center py-2">
+
+      <!-- Title -->
+      <div class="col-sm-12 col-md-5 col-lg-5">
+        <p class="small mb-0">
+          <span class="text-muted">Attendance Dashboard</span>
+          <span *ngIf="activeDayFilter > 0" class="badge bg-primary text-white ms-2 px-2 py-1 shadow-sm cursor-pointer"
+            (click)="onDaySelectChange(0)" title="Click to switch to Monthly Overview">
+            <i class="fa-regular fa-calendar-check me-1"></i> Date: {{ getDayFormatted(activeDayFilter) }} <i
+              class="fa-solid fa-xmark ms-1"></i>
+          </span>
+          <span *ngIf="activeDayFilter === 0"
+            class="badge bg-primary-subtle text-primary ms-2 border border-primary-subtle">
+            <i class="fa-regular fa-calendar me-1"></i> {{ selectedMonthName }} {{ selectedYearName }} (Monthly Summary)
+          </span>
+          <br>
+          <span class="fw-semibold text-primary">
+            <i class="fa-solid fa-users"></i> Total Employee -
+          </span>
+          <span class="fw-bold text-primary">{{ kpiSummary.totalEmployees | number }}</span>
+        </p>
+      </div>
+
+      <!-- Filters Form -->
+      <div class="col-sm-12 col-md-7 col-lg-7">
+        <form [formGroup]="filterForm">
+          <div class="row row-cols-2 row-cols-md-4 g-2 pt-lg-1 small">
+
+            <div class="col">
+              <ng-select [items]="departments" bindLabel="name" bindValue="value" formControlName="departmentId"
+                placeholder="Department" (change)="onFilterChange()" [clearable]="false">
+              </ng-select>
+            </div>
+
+            <div class="col">
+              <ng-select [items]="locations" bindLabel="name" bindValue="value" formControlName="locationId"
+                placeholder="Location" (change)="onFilterChange()" [clearable]="false">
+              </ng-select>
+            </div>
+
+            <div class="col">
+              <ng-select [items]="months" bindLabel="name" bindValue="value" formControlName="monthId"
+                placeholder="Select Month" (change)="onFilterChange()" [clearable]="false">
+              </ng-select>
+            </div>
+
+            <div class="col">
+              <ng-select id="fk_yearId" [items]="years" bindLabel="name" bindValue="value" formControlName="yearId"
+                placeholder="--Year --" (change)="onFilterChange()" [clearable]="false">
+              </ng-select>
+            </div>
+
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 2. STAT CARDS ===================== -->
+<section>
+  <div class="container-fluid py-2">
+    <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
+      <div class="d-flex align-items-center gap-2">
+        <span class="small fw-semibold text-dark">
+          <i class="fa-solid fa-chart-line me-1 text-primary"></i>
+          <span>{{ activeDayFilter > 0 ? ('Daily Attendance Statistics (' + getDayFormatted(activeDayFilter) + ')') :
+            ('Monthly Attendance Summary (' + selectedMonthName + ' ' + selectedYearName + ')') }}</span>
+        </span>
+      </div>
+      <div class="d-flex align-items-center gap-2">
+        <label class="small text-muted mb-0 fw-semibold">View Daywise:</label>
+        <select class="form-select form-select-sm" style="width: 160px; font-size: 11px;"
+          [(ngModel)]="activeDayFilter" (ngModelChange)="onDaySelectChange($event)">
+          <option [ngValue]="0">All (Monthly)</option>
+          <option *ngFor="let item of monthDaysList; trackBy: trackByDay" [ngValue]="item.day">{{ item.label }}
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-6 g-2">
+
+      <!-- Total Employees -->
+      <div class="col">
+        <div class="card p-2 border-0 border-start border-3 border-primary rounded-1 shadow-sm cursor-pointer"
+          [class.active-stat]="activeStatusFilter === ''" (click)="clearDrillDownFilters()"
+          title="Click to view all employees">
+          <div class="d-flex align-items-center gap-2">
+            <span class="icon-box bg-primary text-white p-1 px-2 rounded-1">
+              <i class="fa-solid fa-users"></i>
+            </span>
+            <div>
+              <p class="small fw-semibold mb-0">Total Staff</p>
+              <span class="fw-bold text-primary">{{ kpiSummary.totalEmployees | number }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Present -->
+      <div class="col">
+        <div class="card p-2 border-0 border-start border-3 border-success rounded-1 shadow-sm cursor-pointer"
+          [class.active-stat]="activeStatusFilter === 'Present'" (click)="toggleStatusFilter('Present')"
+          [title]="activeDayFilter > 0 ? 'Filter Present on ' + getDayFormatted(activeDayFilter) : 'Filter Present in ' + selectedMonthName">
+          <div class="d-flex align-items-center gap-2">
+            <span class="icon-box bg-success text-white p-1 px-2 rounded-1">
+              <i class="fa-solid fa-check-circle"></i>
+            </span>
+            <div>
+              <p class="small fw-semibold mb-0">{{ activeDayFilter > 0 ? 'Present' : 'Total Present' }}</p>
+              <span class="fw-bold text-success">{{ (activeDayFilter > 0 ? kpiSummary.presentCount : kpiSummary.totalPresentDays) | number }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Absent -->
+      <div class="col">
+        <div class="card p-2 border-0 border-start border-3 border-danger rounded-1 shadow-sm cursor-pointer"
+          [class.active-stat]="activeStatusFilter === 'Absent'" (click)="toggleStatusFilter('Absent')"
+          [title]="activeDayFilter > 0 ? 'Filter Absent on ' + getDayFormatted(activeDayFilter) : 'Filter Absent in ' + selectedMonthName">
+          <div class="d-flex align-items-center gap-2">
+            <span class="icon-box bg-danger p-1 px-2 rounded text-white">
+              <i class="fa-solid fa-times-circle"></i>
+            </span>
+            <div>
+              <p class="small fw-semibold mb-0">{{ activeDayFilter > 0 ? 'Absent' : 'Total Absent' }}</p>
+              <span class="fw-bold text-danger">{{ (activeDayFilter > 0 ? kpiSummary.absentCount : kpiSummary.totalAbsentDays) | number }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Late -->
+      <div class="col">
+        <div class="card p-2 border-0 border-start border-3 border-warning rounded-1 shadow-sm cursor-pointer"
+          [class.active-stat]="activeStatusFilter === 'Late'" (click)="toggleStatusFilter('Late')"
+          title="Click to filter Late staff">
+          <div class="d-flex align-items-center gap-2">
+            <span class="icon-box bg-warning p-1 px-2 rounded text-white">
+              <i class="fa-solid fa-clock"></i>
+            </span>
+            <div>
+              <p class="small fw-semibold mb-0">{{ activeDayFilter > 0 ? 'Late' : 'Total Late' }}</p>
+              <span class="fw-bold text-warning">{{ (activeDayFilter > 0 ? kpiSummary.lateCount : kpiSummary.totalLateDays) | number }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Half Day -->
+      <div class="col">
+        <div class="card p-2 border-0 border-start border-3 border-purple rounded-1 shadow-sm cursor-pointer"
+          [class.active-stat]="activeStatusFilter === 'Half Day'" (click)="toggleStatusFilter('Half Day')"
+          title="Click to filter Half Day staff">
+          <div class="d-flex align-items-center gap-2">
+            <span class="icon-box bg-purple p-1 px-2 rounded text-white">
+              <i class="fa-solid fa-circle-half-stroke"></i>
+            </span>
+            <div>
+              <p class="small fw-semibold mb-0">{{ activeDayFilter > 0 ? 'Half Day' : 'Total Half Day' }}</p>
+              <span class="fw-bold text-purple">{{ (activeDayFilter > 0 ? kpiSummary.halfDayCount : kpiSummary.totalHalfDays) | number }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- On Leave -->
+      <div class="col">
+        <div class="card p-2 border-0 border-start border-3 border-info rounded-1 shadow-sm cursor-pointer"
+          [class.active-stat]="activeStatusFilter === 'Leave'" (click)="toggleStatusFilter('Leave')"
+          title="Click to filter On Leave staff">
+          <div class="d-flex align-items-center gap-2">
+            <span class="icon-box bg-info p-1 px-2 rounded text-white">
+              <i class="fa-solid fa-calendar-minus"></i>
+            </span>
+            <div>
+              <p class="small fw-semibold mb-0">{{ activeDayFilter > 0 ? 'On Leave' : 'Total Leave' }}</p>
+              <span class="fw-bold text-info">{{ (activeDayFilter > 0 ? kpiSummary.onLeaveCount : kpiSummary.totalLeaveDays) | number }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 3. MAIN DASHBOARD CONTENT ===================== -->
+<section>
+  <div class="container-fluid py-2">
+    <div class="row g-3">
+
+      <!-- LEFT SIDE: Employee Grid & Attendance Trend (col-lg-8) -->
+      <div class="col-lg-8">
+
+        <!-- Employee Attendance Details Table -->
+        <div class="card rounded-3 shadow-sm mb-3">
+          <div class="card-header ps-2 d-flex align-items-center justify-content-between flex-wrap gap-2"
+            style="border-top: 2px solid #3080e8; border-bottom: 1px solid #cdcfdf;">
+
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+              <p class="text-primary fw-semibold small mb-0">
+                <i class="fa-solid fa-users me-1"></i> Employee Attendance Details
+              </p>
+              <span *ngIf="activeStatusFilter" class="badge bg-warning text-dark cursor-pointer"
+                (click)="toggleStatusFilter('')">
+                {{ activeStatusFilter }} <i class="fa-solid fa-xmark ms-1"></i>
+              </span>
+              <span *ngIf="activeDayFilter > 0" class="badge bg-primary text-white cursor-pointer"
+                (click)="onDaySelectChange(0)" title="Click to switch to Monthly view">
+                {{ getDayFormatted(activeDayFilter) }} (Day-wise) <i class="fa-solid fa-xmark ms-1"></i>
+              </span>
+              <span *ngIf="activeDayFilter === 0" class="badge bg-light text-muted border">
+                Monthly Overview ({{ selectedMonthName }})
+              </span>
+            </div>
+
+            <!-- Right Controls: Live Search & Export -->
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+              <input type="text" class="form-control border-success form-control-sm" style="width: 170px;"
+                placeholder="Search employee..." (input)="onSearchInput($event)" />
+
+              <button class="btn btn-outline-success btn-sm" (click)="exportToExcel()" title="Export Excel Report">
+                <i class="fa-solid fa-file-excel me-1"></i> Export
+              </button>
+            </div>
+
+          </div>
+
+          <!-- Table Body -->
+          <div class="card-body p-0 table-responsive position-relative" style="min-height: 250px;">
+            <!-- Loading Overlay -->
+            <div *ngIf="isGridLoading" class="table-loading-overlay d-flex justify-content-center align-items-center">
+              <div class="spinner-border text-primary spinner-border-sm me-2" role="status"></div>
+              <span class="small fw-semibold text-primary">Loading attendance details...</span>
+            </div>
+
+            <div *ngIf="employeeList.length === 0 && !isGridLoading" class="text-center py-5 text-dark small">
+              <i class="fa-solid fa-inbox fs-3 mb-2 d-block"></i>No employee attendance records found
+            </div>
+
+            <table class="table table-hover mb-0" *ngIf="employeeList.length > 0">
+              <thead class="table-light">
+                <tr>
+                  <th>#</th>
+                  <th>Emp Code</th>
+                  <th>Employee Name</th>
+                  <th>Department</th>
+                  <th *ngIf="activeDayFilter === 0" class="text-center text-success">Present</th>
+                  <th *ngIf="activeDayFilter === 0" class="text-center text-danger">Absent</th>
+                  <th *ngIf="activeDayFilter === 0" class="text-center text-warning">Late</th>
+                  <th *ngIf="activeDayFilter === 0" class="text-center text-info">Leave</th>
+                  <th *ngIf="activeDayFilter === 0" class="text-center text-purple">Half Day</th>
+                  <th *ngIf="activeDayFilter === 0" class="text-center" style="width: 80px;">Details</th>
+                  <th *ngIf="activeDayFilter > 0" class="text-center">Status / Tag</th>
+                  <th *ngIf="activeDayFilter > 0" class="text-center">In Time</th>
+                  <th *ngIf="activeDayFilter > 0" class="text-center">Out Time</th>
+                  <th *ngIf="activeDayFilter > 0" class="text-center">Working Hour</th>
+                  <th *ngIf="activeDayFilter > 0" class="text-center">Verification</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let emp of employeeList | paginate: { id: 'empGridPg', itemsPerPage: pageSize, currentPage: currentPage, totalItems: totalRecords }; let i = index; trackBy: trackByEmp">
+                  <td>{{ (currentPage - 1) * pageSize + i + 1 }}</td>
+                  <td>
+                    <span class="badge bg-light text-dark border p-1 px-2">{{ emp.empcode || emp.Empcode }}</span>
+                  </td>
+                  <td>
+                    <div class="d-flex align-items-center gap-2">
+                      <div class="avatar-circle" [ngClass]="avatarColor(emp.empname || emp.Empname)">
+                        {{ (emp.empname || emp.Empname || 'E').charAt(0) }}
+                      </div>
+                      <span>{{ emp.empname || emp.Empname }}</span>
+                    </div>
+                  </td>
+                  <td><span class="dept-pill">{{ emp.department || emp.Department || '-' }}</span></td>
+                  <td *ngIf="activeDayFilter === 0" class="text-center fw-bold text-success">{{ emp.present ?? emp.Present }}</td>
+                  <td *ngIf="activeDayFilter === 0" class="text-center fw-bold text-danger">{{ emp.absent ?? emp.Absent }}</td>
+                  <!-- Late -->
+                  <td *ngIf="activeDayFilter === 0" class="text-center fw-bold text-warning"
+                    [class.cursor-pointer]="(emp.late || emp.Late) > 0"
+                    (click)="(emp.late || emp.Late) > 0 ? openOccurrencesModal(emp, 'Late') : null"
+                    [title]="(emp.late || emp.Late) > 0 ? 'Click to view Late logs' : ''">
+                    {{ emp.late ?? emp.Late }}
+                  </td>
+
+                  <!-- Leave -->
+                  <td *ngIf="activeDayFilter === 0" class="text-center fw-bold text-info"
+                    [class.cursor-pointer]="(emp.leave || emp.Leave) > 0"
+                    (click)="(emp.leave || emp.Leave) > 0 ? openOccurrencesModal(emp, 'Leave') : null"
+                    [title]="(emp.leave || emp.Leave) > 0 ? 'Click to view Leave logs' : ''">
+                    {{ emp.leave ?? emp.Leave }}
+                  </td>
+
+                  <!-- Half Day -->
+                  <td *ngIf="activeDayFilter === 0" class="text-center text-purple fw-bold"
+                    [class.cursor-pointer]="(emp.halfday || emp.Halfday) > 0"
+                    (click)="(emp.halfday || emp.Halfday) > 0 ? openOccurrencesModal(emp, 'Half Day') : null"
+                    [title]="(emp.halfday || emp.Halfday) > 0 ? 'Click to view Half Day logs' : ''">
+                    {{ emp.halfday ?? emp.Halfday }}
+                  </td>
+
+                  <!-- Monthly Occurrence Details Action Button -->
+                  <td *ngIf="activeDayFilter === 0" class="text-center">
+                    <button class="btn btn-xs btn-outline-primary py-0 px-2 small rounded-pill shadow-sm"
+                      (click)="openOccurrencesModal(emp)"
+                      title="View all attendance occurrence records & photos for {{ emp.empname || emp.Empname }}">
+                      <i class="fa-solid fa-list-check me-1"></i> Logs
+                    </button>
+                  </td>
+
+                  <!-- Daywise Status / Description Badge -->
+                  <td *ngIf="activeDayFilter > 0" class="text-center">
+                    <span *ngIf="emp.daydescription || emp.Daydescription || emp.daystatus || emp.Daystatus"
+                      class="badge bg-light text-dark border px-2 py-1 small fw-semibold">
+                      {{ emp.daydescription || emp.Daydescription || emp.daystatus || emp.Daystatus }}
+                    </span>
+                    <span *ngIf="!(emp.daydescription || emp.Daydescription || emp.daystatus || emp.Daystatus)" class="text-muted small">-</span>
+                  </td>
+
+                  <!-- Daywise Columns -->
+                  <!-- In Time -->
+                  <td *ngIf="activeDayFilter > 0" class="text-center small text-muted">
+                    {{ (emp.intime || emp.Intime || emp.punchInTime || emp.PunchInTime) || '-' }}
+                  </td>
+
+                  <!-- Out Time -->
+                  <td *ngIf="activeDayFilter > 0" class="text-center small text-muted">
+                    {{ (emp.outtime || emp.Outtime || emp.punchOutTime || emp.PunchOutTime) || '-' }}
+                  </td>
+
+                  <!-- Working Hour -->
+                  <td *ngIf="activeDayFilter > 0" class="text-center small text-muted">
+                    {{ (emp.workhour || emp.Workhour) || '-' }}
+                  </td>
+
+                  <!-- Verification Source -->
+                  <td *ngIf="activeDayFilter > 0" class="text-center">
+                    <ng-container *ngIf="(emp.punchInImageUrl || emp.PunchInImageUrl || emp.punchOutImageUrl || emp.PunchOutImageUrl || (emp.punchSource || emp.PunchSource) === 'Mobile'); else biometricOrNone">
+                      <span class="badge bg-primary-subtle text-primary border border-primary-subtle cursor-pointer"
+                        (click)="openSelfieModal(emp, 'both')" title="View Punch Verification & GPS Details">
+                        <i class="fa-solid fa-camera me-1"></i> Mobile
+                      </span>
+                    </ng-container>
+                    <ng-template #biometricOrNone>
+                      <span *ngIf="(emp.punchSource || emp.PunchSource) === 'Biometric'"
+                        class="badge bg-success-subtle text-success border border-success-subtle">
+                        <i class="fa-solid fa-fingerprint me-1"></i> Biometric
+                      </span>
+                      <span
+                        *ngIf="(emp.punchSource || emp.PunchSource) !== 'Biometric' && (emp.punchSource || emp.PunchSource) !== 'Mobile'"
+                        class="text-muted small">
+                        -
+                      </span>
+                    </ng-template>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Employee Table Pagination Footer at Bottom of Employee List -->
+          <div class="card-footer d-flex flex-wrap justify-content-between align-items-center py-2 px-3 bg-white border-top" *ngIf="totalRecords > 0">
+            <span class="small text-muted">
+              Showing {{ totalRecords === 0 ? 0 : (currentPage - 1) * pageSize + 1 }} to {{ Math.min(currentPage *
+              pageSize, totalRecords) }} of {{ totalRecords | number }} entries
+            </span>
+
+            <pagination-controls
+              id="empGridPg"
+              (pageChange)="onPageChange($event)"
+              [responsive]="true">
+            </pagination-controls>
+          </div>
+
+        </div>
+
+        <!-- Attendance Trend Chart (Days 1–31) -->
+        <div class="card shadow-sm rounded-3">
+          <div class="card-header ps-2 py-2 d-flex align-items-center justify-content-between flex-wrap gap-2"
+            style="border-top: 2px solid #3080e8; border-bottom: 1px solid #cdcfdf;">
+
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+              <p class="text-primary fw-semibold small mb-0">
+                <i class="fa-solid fa-chart-column me-1"></i>
+                <span *ngIf="activeDayFilter === 0">Attendance Trend ({{ selectedMonthName }} {{ selectedYearName }})</span>
+                <span *ngIf="activeDayFilter > 0">Attendance Breakdown ({{ getDayFormatted(activeDayFilter) }})</span>
+              </p>
+            </div>
+
+          </div>
+          <div class="card-body p-2">
+            <div style="position: relative; height: 230px; width: 100%;">
+              <canvas id="dailyAttendanceTrend"></canvas>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT SIDE: Donut Chart & Monthly Summary (col-lg-4) -->
+      <div class="col-lg-4">
+
+        <!-- Donut Chart -->
+        <div class="card shadow-sm mb-3 rounded-3">
+          <div class="card-body">
+            <p class="text-primary fw-semibold small text-center mb-2">
+              <i class="fa-solid fa-chart-pie me-1"></i>
+              <span *ngIf="activeDayFilter > 0">Attendance Overview ({{ getDayFormatted(activeDayFilter) }})</span>
+              <span *ngIf="activeDayFilter === 0">Attendance Overview ({{ selectedMonthName }} {{ selectedYearName }})</span>
+            </p>
+            <div style="position: relative; height: 180px; width: 100%;">
+              <canvas id="todayAttendanceDonut"></canvas>
+            </div>
+            <div class="d-flex justify-content-center gap-2 mt-2 small flex-wrap">
+              <span class="cursor-pointer" (click)="toggleStatusFilter('Present')"
+                [title]="activeDayFilter > 0 ? 'Filter Present for ' + getDayFormatted(activeDayFilter) : 'Filter Present in ' + selectedMonthName">
+                <span class="legend-dot bg-success"></span> Present: <strong class="text-success">{{ (activeDayFilter > 0 ? kpiSummary.presentCount : kpiSummary.totalPresentDays) | number }}</strong>
+              </span>
+              <span class="cursor-pointer" (click)="toggleStatusFilter('Absent')"
+                [title]="activeDayFilter > 0 ? 'Filter Absent for ' + getDayFormatted(activeDayFilter) : 'Filter Absent in ' + selectedMonthName">
+                <span class="legend-dot bg-danger"></span> Absent: <strong class="text-danger">{{ (activeDayFilter > 0 ? kpiSummary.absentCount : kpiSummary.totalAbsentDays) | number }}</strong>
+              </span>
+              <span class="cursor-pointer" (click)="toggleStatusFilter('Late')" title="Filter Late staff">
+                <span class="legend-dot bg-warning"></span> Late: <strong class="text-warning">{{ (activeDayFilter > 0 ? kpiSummary.lateCount : kpiSummary.totalLateDays) | number }}</strong>
+              </span>
+              <span class="cursor-pointer" (click)="toggleStatusFilter('Half Day')" title="Filter Half Day staff">
+                <span class="legend-dot bg-purple"></span> Half Day: <strong class="text-purple">{{ (activeDayFilter > 0 ? kpiSummary.halfDayCount : kpiSummary.totalHalfDays) | number }}</strong>
+              </span>
+              <span class="cursor-pointer" (click)="toggleStatusFilter('Leave')" title="Filter On Leave staff">
+                <span class="legend-dot bg-info"></span> Leave: <strong class="text-info">{{ (activeDayFilter > 0 ? kpiSummary.onLeaveCount : kpiSummary.totalLeaveDays) | number }}</strong>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Today's / Live Action Highlights Card -->
+        <div class="card shadow-sm rounded-3">
+          <div class="card-header bg-white py-2 px-3 d-flex justify-content-between align-items-center"
+            style="border-top: 2px solid #fd7e14; border-bottom: 1px solid #e9ecef;">
+            <div class="d-flex align-items-center gap-2">
+              <span class="text-warning"><i class="fa-solid fa-bolt"></i></span>
+              <p class="fw-semibold text-dark small mb-0">Live Action Highlights</p>
+            </div>
+            <span class="badge bg-light text-muted border small" style="font-size: 10px;">
+              {{ activeDayFilter > 0 ? getDayFormatted(activeDayFilter) : selectedMonthName }}
+            </span>
+          </div>
+
+          <div class="card-body p-2">
+            <!-- Filter Pills -->
+            <div class="d-flex gap-1 mb-2 pb-2 border-bottom flex-wrap" style="font-size: 11px;">
+              <button type="button" class="btn btn-xs rounded-pill py-0 px-2"
+                [ngClass]="activeHighlightTab === 'all' ? 'btn-dark' : 'btn-outline-secondary'"
+                (click)="setHighlightTab('all')">
+                All ({{ liveHighlights.length }})
+              </button>
+              <button *ngIf="lateHighlightsCount > 0" type="button" class="btn btn-xs rounded-pill py-0 px-2"
+                [ngClass]="activeHighlightTab === 'Late' ? 'btn-warning text-dark' : 'btn-outline-warning text-dark'"
+                (click)="setHighlightTab('Late')">
+                Late ({{ lateHighlightsCount }})
+              </button>
+              <button *ngIf="halfDayHighlightsCount > 0" type="button" class="btn btn-xs rounded-pill py-0 px-2"
+                [ngClass]="activeHighlightTab === 'HalfDay' ? 'btn-purple text-white' : 'btn-outline-purple'"
+                (click)="setHighlightTab('HalfDay')">
+                Half Day ({{ halfDayHighlightsCount }})
+              </button>
+              <button *ngIf="leaveHighlightsCount > 0" type="button" class="btn btn-xs rounded-pill py-0 px-2"
+                [ngClass]="activeHighlightTab === 'Leave' ? 'btn-info text-white' : 'btn-outline-info'"
+                (click)="setHighlightTab('Leave')">
+                Leave ({{ leaveHighlightsCount }})
+              </button>
+              <button *ngIf="mobileHighlightsCount > 0" type="button" class="btn btn-xs rounded-pill py-0 px-2"
+                [ngClass]="activeHighlightTab === 'Mobile' ? 'btn-primary text-white' : 'btn-outline-primary'"
+                (click)="setHighlightTab('Mobile')">
+                Mobile ({{ mobileHighlightsCount }})
+              </button>
+            </div>
+
+            <!-- List of Highlights (5 items per page cleanly without scroll) -->
+            <div style="min-height: 290px;">
+              <div *ngIf="paginatedHighlights.length === 0" class="text-center py-5 text-muted">
+                <i class="fa-solid fa-circle-check text-success fs-3 mb-2"></i>
+                <p class="small mb-0">No exceptions or entries found.</p>
+              </div>
+
+              <div *ngFor="let item of displayedHighlights | paginate: { id: 'highlightPg', itemsPerPage: highlightPageSize, currentPage: highlightCurrentPage }; trackBy: trackByHighlight"
+                class="highlight-item p-2 mb-2 rounded d-flex align-items-center justify-content-between gap-2 shadow-xs"
+                [ngClass]="{
+                  'border-warning': (item.type || item.Type) === 'Late',
+                  'border-purple': (item.type || item.Type) === 'HalfDay',
+                  'border-info': (item.type || item.Type) === 'Leave',
+                  'border-primary': (item.type || item.Type) === 'Mobile',
+                  'border-success': (item.type || item.Type) === 'Present'
+                }">
+
+                <div class="d-flex align-items-center gap-2">
+                  <div class="avatar-circle" style="width: 32px; height: 32px; font-size: 11px;"
+                    [ngClass]="avatarColor(item.empName || item.EmpName)">
+                    {{ (item.empName || item.EmpName || 'E').charAt(0) }}
+                  </div>
+                  <div>
+                    <span class="fw-semibold text-dark d-block" style="font-size: 12px;">
+                      {{ item.empName || item.EmpName }}
+                    </span>
+                    <span class="text-muted" style="font-size: 10px;">
+                      {{ item.empCode || item.EmpCode }} • {{ item.department || item.Department || '-' }}
+                    </span>
+                  </div>
+                </div>
+
+                <div class="text-end">
+                  <span *ngIf="(item.type || item.Type) === 'Late'"
+                    class="badge bg-warning text-dark px-2 py-1 fw-normal" style="font-size: 10px;">
+                    <i class="fa-solid fa-clock me-1"></i>{{ formatLateDetails(item.details || item.Details || item.lateComing || item.LateComing) }}
+                  </span>
+                  <span *ngIf="(item.type || item.Type) === 'HalfDay'"
+                    class="badge bg-purple text-white px-2 py-1 fw-normal" style="font-size: 10px;">
+                    <i class="fa-solid fa-circle-half-stroke me-1"></i>Half Day
+                  </span>
+                  <span *ngIf="(item.type || item.Type) === 'Leave'"
+                    class="badge bg-info text-white px-2 py-1 fw-normal" style="font-size: 10px;">
+                    <i class="fa-solid fa-calendar-minus me-1"></i>{{ item.details || item.Details || 'Leave' }}
+                  </span>
+                  <span *ngIf="(item.type || item.Type) === 'Mobile'"
+                    class="badge bg-primary text-white px-2 py-1 fw-normal" style="font-size: 10px;">
+                    <i class="fa-solid fa-mobile-screen-button me-1"></i>Mobile GPS
+                  </span>
+                  <span *ngIf="(item.type || item.Type) === 'Present'"
+                    class="badge bg-success text-white px-2 py-1 fw-normal" style="font-size: 10px;">
+                    <i class="fa-solid fa-check me-1"></i>On Time
+                  </span>
+                  <span class="d-block text-muted mt-1" style="font-size: 10px;">
+                    <ng-container *ngIf="item.datedStr || item.DatedStr || item.attenDate || item.AttenDate">
+                      {{ item.datedStr || item.DatedStr || (item.attenDate || item.AttenDate | date:'dd MMM yyyy') }}
+                    </ng-container>
+                    <ng-container *ngIf="(item.datedStr || item.DatedStr || item.attenDate || item.AttenDate) && (item.inTime || item.InTime)">
+                      •
+                    </ng-container>
+                    <ng-container *ngIf="item.inTime || item.InTime">
+                      In: {{ formatTimeWithSeconds(item.inTime || item.InTime) }}
+                    </ng-container>
+                  </span>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Highlights Mini Pagination Footer -->
+            <div *ngIf="displayedHighlights.length > 0"
+              class="d-flex justify-content-between align-items-center pt-2 mt-2 border-top px-1"
+              style="font-size: 11px;">
+              <span class="text-muted" style="font-size: 10px;">
+                Showing {{ (highlightCurrentPage - 1) * highlightPageSize + 1 }} to {{ Math.min(highlightCurrentPage *
+                highlightPageSize, displayedHighlights.length) }} of {{ displayedHighlights.length }}
+              </span>
+              <pagination-controls
+                id="highlightPg"
+                (pageChange)="goToHighlightPage($event)"
+                [responsive]="true">
+              </pagination-controls>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===================== EXPANDABLE SELFIE LIGHTBOX MODAL ===================== -->
+<div *ngIf="isSelfieModalOpen" class="modal-backdrop-custom selfie-modal-backdrop d-flex justify-content-center align-items-center"
+  (click)="closeSelfieModal()">
+  <div class="selfie-modal-card card shadow-lg" (click)="$event.stopPropagation()">
+    <div class="card-header ps-3 pe-3 py-2 d-flex justify-content-between align-items-center bg-white"
+      style="border-top: 2.5px solid #3080e8; border-bottom: 1px solid #cdcfdf;">
+      <p class="text-primary fw-semibold small mb-0 d-flex align-items-center gap-2">
+        <i class="fa-solid fa-camera"></i> Punch Verification & Location Details
+      </p>
+      <button type="button" class="btn-close" (click)="closeSelfieModal()"></button>
+    </div>
+
+    <div class="card-body p-3">
+      <!-- Employee Header Info -->
+      <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3 flex-wrap gap-2">
+        <div>
+          <span class="small text-muted fw-semibold">Employee: </span>
+          <span class="fw-bold text-primary">{{ selectedEmployeeForModal?.empname || selectedEmployeeForModal?.Empname }}</span>
+          <span class="badge bg-light text-dark border ms-2">{{ selectedEmployeeForModal?.empcode || selectedEmployeeForModal?.Empcode }}</span>
+          <span *ngIf="selectedEmployeeForModal?.formattedDate || selectedEmployeeForModal?.FormattedDate" class="badge bg-primary-subtle text-primary border border-primary-subtle ms-2">
+            {{ selectedEmployeeForModal?.formattedDate || selectedEmployeeForModal?.FormattedDate }}
+          </span>
+        </div>
+        <div>
+          <span class="dept-pill">{{ selectedEmployeeForModal?.department || selectedEmployeeForModal?.Department || '-' }}</span>
+        </div>
+      </div>
+
+      <!-- Comparison of Punch In vs Punch Out -->
+      <div class="row g-3">
+        <!-- PUNCH IN CARD -->
+        <div class="col-md-6 border-end">
+          <div class="d-flex align-items-center justify-content-between mb-2">
+            <span class="badge bg-success-subtle text-dark border border-success-subtle px-2 py-1 fw-semibold" style="color: #000000 !important;">
+              <i class="fa-solid fa-arrow-right-to-bracket text-success me-1"></i> Punch In
+            </span>
+            <span class="fw-bold text-dark small" style="color: #000000 !important;">
+              {{ (selectedEmployeeForModal?.intime || selectedEmployeeForModal?.Intime || selectedEmployeeForModal?.punchInTime || selectedEmployeeForModal?.PunchInTime) || '-' }}
+            </span>
+          </div>
+
+          <div class="selfie-large-wrapper border rounded mb-2">
+            <img *ngIf="selectedEmployeeForModal?.punchInImageUrl || selectedEmployeeForModal?.PunchInImageUrl || selectedEmployeeForModal?.punchImageUrl || selectedEmployeeForModal?.PunchImageUrl; else noInImg"
+              [src]="getSelfieUrl(selectedEmployeeForModal?.punchInImageUrl || selectedEmployeeForModal?.PunchInImageUrl || selectedEmployeeForModal?.punchImageUrl || selectedEmployeeForModal?.PunchImageUrl)"
+              alt="Punch In Photo" class="selfie-large-img">
+            <ng-template #noInImg>
+              <div class="text-muted small p-4 text-center">
+                <i class="fa-solid fa-image-slash fs-2 mb-1 d-block text-muted opacity-50"></i>
+                <span>No Punch In Photo</span>
+              </div>
+            </ng-template>
+          </div>
+
+          <div class="mb-2">
+            <label class="small text-dark fw-semibold d-block mb-1">
+              <i class="fa-solid fa-location-dot text-success me-1"></i> Location Address
+            </label>
+            <div class="small text-dark p-2 rounded bg-white border" style="font-size: 11px; min-height: 48px; color: #000000 !important; background-color: #ffffff !important;">
+              {{ (selectedEmployeeForModal?.punchInLocAddress || selectedEmployeeForModal?.PunchInLocAddress || selectedEmployeeForModal?.locAddress || selectedEmployeeForModal?.LocAddress) || 'Location address not recorded' }}
+            </div>
+          </div>
+
+          <div *ngIf="selectedEmployeeForModal?.punchInLatitude || selectedEmployeeForModal?.PunchInLatitude || selectedEmployeeForModal?.latitude" class="small text-dark font-monospace" style="font-size: 10px; color: #000000 !important;">
+            <i class="fa-solid fa-crosshairs me-1 text-muted"></i> Lat: {{ selectedEmployeeForModal?.punchInLatitude || selectedEmployeeForModal?.PunchInLatitude || selectedEmployeeForModal?.latitude }}, Long: {{ selectedEmployeeForModal?.punchInLongitude || selectedEmployeeForModal?.PunchInLongitude || selectedEmployeeForModal?.longitude }}
+          </div>
+        </div>
+
+        <!-- PUNCH OUT CARD -->
+        <div class="col-md-6">
+          <div class="d-flex align-items-center justify-content-between mb-2">
+            <span class="badge bg-danger-subtle text-dark border border-danger-subtle px-2 py-1 fw-semibold" style="color: #000000 !important;">
+              <i class="fa-solid fa-arrow-right-from-bracket text-danger me-1"></i> Punch Out
+            </span>
+            <span class="fw-bold text-dark small" style="color: #000000 !important;">
+              {{ (selectedEmployeeForModal?.outtime || selectedEmployeeForModal?.Outtime || selectedEmployeeForModal?.punchOutTime || selectedEmployeeForModal?.PunchOutTime) || '-' }}
+            </span>
+          </div>
+
+          <div class="selfie-large-wrapper border rounded mb-2">
+            <img *ngIf="selectedEmployeeForModal?.punchOutImageUrl || selectedEmployeeForModal?.PunchOutImageUrl; else noOutImg"
+              [src]="getSelfieUrl(selectedEmployeeForModal?.punchOutImageUrl || selectedEmployeeForModal?.PunchOutImageUrl)"
+              alt="Punch Out Photo" class="selfie-large-img">
+            <ng-template #noOutImg>
+              <div class="text-muted small p-4 text-center">
+                <i class="fa-solid fa-image-slash fs-2 mb-1 d-block text-muted opacity-50"></i>
+                <span>No Punch Out Photo</span>
+              </div>
+            </ng-template>
+          </div>
+
+          <div class="mb-2">
+            <label class="small text-dark fw-semibold d-block mb-1">
+              <i class="fa-solid fa-location-dot text-danger me-1"></i> Location Address
+            </label>
+            <div class="small text-dark p-2 rounded bg-white border" style="font-size: 11px; min-height: 48px; color: #000000 !important; background-color: #ffffff !important;">
+              {{ (selectedEmployeeForModal?.punchOutLocAddress || selectedEmployeeForModal?.PunchOutLocAddress) || 'Location address not recorded' }}
+            </div>
+          </div>
+
+          <div *ngIf="selectedEmployeeForModal?.punchOutLatitude || selectedEmployeeForModal?.PunchOutLatitude" class="small text-dark font-monospace" style="font-size: 10px; color: #000000 !important;">
+            <i class="fa-solid fa-crosshairs me-1 text-muted"></i> Lat: {{ selectedEmployeeForModal?.punchOutLatitude || selectedEmployeeForModal?.PunchOutLatitude }}, Long: {{ selectedEmployeeForModal?.punchOutLongitude || selectedEmployeeForModal?.PunchOutLongitude }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-footer text-end py-2 bg-white border-top">
+      <button class="btn btn-sm btn-secondary" (click)="closeSelfieModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== EMPLOYEE MONTHLY OCCURRENCE DETAILS MODAL ===================== -->
+<div *ngIf="isOccurrencesModalOpen" class="modal-backdrop-custom d-flex justify-content-center align-items-center"
+  (click)="closeOccurrencesModal()">
+  <div class="occurrence-modal-card card shadow-lg" (click)="$event.stopPropagation()">
+    <!-- Header matching project theme -->
+    <div class="card-header ps-3 pe-3 py-2 d-flex justify-content-between align-items-center bg-white"
+      style="border-top: 2.5px solid #3080e8; border-bottom: 1px solid #cdcfdf;">
+      <div class="d-flex align-items-center gap-2">
+        <p class="text-primary fw-semibold small mb-0 d-flex align-items-center gap-2">
+          <i class="fa-solid fa-calendar-days text-primary"></i> Attendance Occurrence Details
+        </p>
+        <span class="badge bg-light text-dark border">
+          {{ selectedEmployeeForOccurrences?.empname || selectedEmployeeForOccurrences?.Empname }} ({{ selectedEmployeeForOccurrences?.empcode || selectedEmployeeForOccurrences?.Empcode }})
+        </span>
+        <span class="badge bg-primary-subtle text-primary border border-primary-subtle">
+          {{ selectedMonthName }} {{ selectedYearName }}
+        </span>
+      </div>
+      <button type="button" class="btn-close" (click)="closeOccurrencesModal()"></button>
+    </div>
+
+    <!-- Filter Pills / Summary Badges -->
+    <div class="bg-light p-2 border-bottom d-flex align-items-center justify-content-between flex-wrap gap-2 modal-filter-bar">
+      <div class="d-flex align-items-center gap-2 flex-wrap">
+        <button class="btn btn-xs rounded-pill" [ngClass]="!occurrenceModalFilter ? 'btn-primary' : 'btn-outline-secondary'" (click)="setOccurrenceModalFilter('')">
+          All Occurrences
+        </button>
+        <button class="btn btn-xs rounded-pill" [ngClass]="occurrenceModalFilter === 'Half Day' ? 'btn-purple text-white' : 'btn-outline-secondary'" (click)="setOccurrenceModalFilter('Half Day')">
+          <i class="fa-solid fa-circle-half-stroke me-1"></i> Half Day
+        </button>
+        <button class="btn btn-xs rounded-pill" [ngClass]="occurrenceModalFilter === 'Late' ? 'btn-warning text-dark' : 'btn-outline-secondary'" (click)="setOccurrenceModalFilter('Late')">
+          <i class="fa-solid fa-clock me-1"></i> Late
+        </button>
+        <button class="btn btn-xs rounded-pill" [ngClass]="occurrenceModalFilter === 'Leave' ? 'btn-info text-white' : 'btn-outline-secondary'" (click)="setOccurrenceModalFilter('Leave')">
+          <i class="fa-solid fa-calendar-minus me-1"></i> Leave
+        </button>
+      </div>
+      <div class="d-flex align-items-center gap-2">
+        <span class="badge bg-white text-dark border small">
+          {{ employeeOccurrencesList.length }} occurrence{{ employeeOccurrencesList.length === 1 ? '' : 's' }}
+        </span>
+        <button class="btn btn-xs btn-outline-danger rounded-pill d-flex align-items-center gap-1 shadow-sm px-2 py-1"
+          [disabled]="isOccurrencesLoading || employeeOccurrencesList.length === 0"
+          (click)="exportOccurrencesPdf()"
+          title="Export Occurrence Logs as PDF">
+          <i class="fa-solid fa-file-pdf"></i> Export PDF
+        </button>
+      </div>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="card-body p-3">
+      <!-- Loading State -->
+      <div *ngIf="isOccurrencesLoading" class="text-center py-5">
+        <div class="spinner-border text-primary" role="status"></div>
+        <p class="small text-muted mt-2">Loading occurrence records...</p>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="!isOccurrencesLoading && employeeOccurrencesList.length === 0" class="text-center py-5 text-muted">
+        <i class="fa-solid fa-folder-open fs-2 mb-2 d-block opacity-50"></i>
+        <span>No matching occurrence records found for this employee in {{ selectedMonthName }}.</span>
+      </div>
+
+      <!-- Occurrence Cards List -->
+      <div *ngIf="!isOccurrencesLoading && employeeOccurrencesList.length > 0" class="d-flex flex-column gap-3">
+        <div *ngFor="let occ of employeeOccurrencesList" class="card border rounded-2 p-3 shadow-sm occurrence-card">
+          <!-- Occurrence Card Top Header -->
+          <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 border-bottom pb-2 mb-2">
+            <div class="d-flex align-items-center gap-2">
+              <span class="badge bg-primary px-2 py-1">
+                <i class="fa-regular fa-calendar me-1"></i> {{ occ.formattedDate || occ.FormattedDate }}
+              </span>
+              <span class="badge bg-light text-muted border">
+                {{ occ.weekday || occ.Weekday }}
+              </span>
+            </div>
+
+            <div class="d-flex align-items-center gap-2">
+              <!-- Status Pill & Day Description -->
+              <span *ngIf="occ.dayDescription || occ.DayDescription"
+                class="badge bg-secondary-subtle text-dark border px-2 py-1">
+                {{ occ.dayDescription || occ.DayDescription }}
+              </span>
+              <span *ngIf="(occ.dayStatus || occ.DayStatus) === 'HD' || (occ.dayStatus || occ.DayStatus) === 'Half Day'"
+                class="badge bg-purple text-white px-2 py-1">
+                <i class="fa-solid fa-circle-half-stroke me-1"></i> Half Day
+              </span>
+              <span *ngIf="occ.lateComing || occ.LateComing"
+                class="badge bg-warning text-dark px-2 py-1">
+                <i class="fa-solid fa-clock me-1"></i> Late by {{ formatTimeWithSeconds(occ.lateComing || occ.LateComing) }}
+              </span>
+              <span *ngIf="(occ.dayStatus || occ.DayStatus) === 'L' || (occ.dayStatus || occ.DayStatus) === 'Leave'"
+                class="badge bg-info text-white px-2 py-1">
+                <i class="fa-solid fa-calendar-minus me-1"></i> On Leave
+              </span>
+
+              <!-- Working Hour -->
+              <span *ngIf="occ.workhour || occ.Workhour"
+                class="badge bg-light text-dark border px-2 py-1">
+                <i class="fa-solid fa-business-time me-1 text-primary"></i> {{ occ.workhour || occ.Workhour }}
+              </span>
+
+              <!-- Punch Source -->
+              <span class="badge bg-light text-dark border">
+                <i class="fa-solid me-1" [ngClass]="(occ.punchSource || occ.PunchSource) === 'Mobile' ? 'fa-mobile-screen text-primary' : 'fa-fingerprint text-success'"></i>
+                {{ occ.punchSource || occ.PunchSource }}
+              </span>
+            </div>
+          </div>
+
+          <!-- In / Out Comparison Grid -->
+          <div class="row g-3">
+            <!-- PUNCH IN -->
+            <div class="col-md-6 border-end">
+              <div class="d-flex align-items-center justify-content-between mb-1">
+                <span class="badge bg-success-subtle text-dark border border-success-subtle fw-semibold" style="color: #000000 !important;">
+                  <i class="fa-solid fa-arrow-right-to-bracket text-success me-1"></i> Punch In: {{ (occ.intime || occ.Intime || occ.punchInTime || occ.PunchInTime) || '-' }}
+                </span>
+                <span *ngIf="occ.punchInImageUrl || occ.PunchInImageUrl" class="small text-muted" style="font-size: 10px;">
+                  <i class="fa-solid fa-magnifying-glass-plus text-primary me-1"></i>Click photo to enlarge
+                </span>
+              </div>
+
+              <div class="d-flex align-items-start gap-2 mt-2">
+                <ng-container *ngIf="occ.punchInImageUrl || occ.PunchInImageUrl; else noOccInPhoto">
+                  <div class="occurrence-photo-box in-photo"
+                    (click)="openSelfieModal(occ, 'in')"
+                    title="Click to view full size Punch In photo & GPS details">
+                    <img [src]="getSelfieUrl(occ.punchInImageUrl || occ.PunchInImageUrl)" alt="Punch In Photo">
+                    <div class="zoom-overlay">
+                      <i class="fa-solid fa-magnifying-glass-plus"></i>
+                    </div>
+                  </div>
+                </ng-container>
+                <ng-template #noOccInPhoto>
+                  <div class="bg-light border rounded d-flex align-items-center justify-content-center flex-shrink-0" style="width: 56px; height: 56px;">
+                    <i class="fa-solid fa-camera-slash text-muted opacity-50"></i>
+                  </div>
+                </ng-template>
+                <div class="small flex-grow-1">
+                  <div class="text-dark fw-semibold" style="font-size: 11px;">
+                    <i class="fa-solid fa-location-dot text-success me-1"></i> Location:
+                  </div>
+                  <div class="text-muted" style="font-size: 11px; line-height: 1.35;">
+                    {{ (occ.punchInLocAddress || occ.PunchInLocAddress) || 'Location not recorded' }}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- PUNCH OUT -->
+            <div class="col-md-6">
+              <div class="d-flex align-items-center justify-content-between mb-1">
+                <span class="badge bg-danger-subtle text-dark border border-danger-subtle fw-semibold" style="color: #000000 !important;">
+                  <i class="fa-solid fa-arrow-right-from-bracket text-danger me-1"></i> Punch Out: {{ (occ.outtime || occ.Outtime || occ.punchOutTime || occ.PunchOutTime) || '-' }}
+                </span>
+                <span *ngIf="occ.punchOutImageUrl || occ.PunchOutImageUrl" class="small text-muted" style="font-size: 10px;">
+                  <i class="fa-solid fa-magnifying-glass-plus text-danger me-1"></i>Click photo to enlarge
+                </span>
+              </div>
+
+              <div class="d-flex align-items-start gap-2 mt-2">
+                <ng-container *ngIf="occ.punchOutImageUrl || occ.PunchOutImageUrl; else noOccOutPhoto">
+                  <div class="occurrence-photo-box out-photo"
+                    (click)="openSelfieModal(occ, 'out')"
+                    title="Click to view full size Punch Out photo & GPS details">
+                    <img [src]="getSelfieUrl(occ.punchOutImageUrl || occ.PunchOutImageUrl)" alt="Punch Out Photo">
+                    <div class="zoom-overlay">
+                      <i class="fa-solid fa-magnifying-glass-plus"></i>
+                    </div>
+                  </div>
+                </ng-container>
+                <ng-template #noOccOutPhoto>
+                  <div class="bg-light border rounded d-flex align-items-center justify-content-center flex-shrink-0" style="width: 56px; height: 56px;">
+                    <i class="fa-solid fa-camera-slash text-muted opacity-50"></i>
+                  </div>
+                </ng-template>
+                <div class="small flex-grow-1">
+                  <div class="text-dark fw-semibold" style="font-size: 11px;">
+                    <i class="fa-solid fa-location-dot text-danger me-1"></i> Location:
+                  </div>
+                  <div class="text-muted" style="font-size: 11px; line-height: 1.35;">
+                    {{ (occ.punchOutLocAddress || occ.PunchOutLocAddress) || 'Location not recorded' }}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="card-footer py-2 bg-white border-top d-flex justify-content-between align-items-center">
+      <span class="small text-muted">
+        Showing occurrences for <strong>{{ selectedEmployeeForOccurrences?.empname || selectedEmployeeForOccurrences?.Empname }}</strong>
+      </span>
+      <button class="btn btn-sm btn-secondary" (click)="closeOccurrencesModal()">Close</button>
+    </div>
+  </div>
+</div>

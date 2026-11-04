@@ -1,0 +1,78 @@
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header bg-primary">
+        <div class="row w-100 d-flex align-items-center justify-content-between">
+          <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6">
+            <h4 class="mb-0 text-white">{{ codeId ? codeType + ' Update' : 'Insert ' + codeType}}</h4>
+          </div>
+
+          <div class="col-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+            <button class="btn btnheader mx-2" [routerLink]="['/dash/user/userdashboard/general/list', codeTypeId]"
+              [queryParams]="{ codeType: codeType}">
+              Back
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <form [formGroup]="insertForm" (ngSubmit)="onSubmit()">
+          <input type="hidden" formControlName="codeTypeId">
+          <input type="hidden" formControlName="codeId">
+          <div class="row row-cols-1 row-cols-md-3 g-4">
+            <div class="col">
+              <label for="code">Code<span style="color: red;" *ngIf="isCodeRequired">*</span></label>
+              <div class="form-group">
+                <input type="text" class="form-control" id="code" formControlName="code" placeholder="Enter Code">
+                <span *ngIf="submitted && validate['code'].errors?.['required']" class="text-danger mt-1"
+                  style="font-size: 12px;">
+                  Please enter Code
+                </span>
+              </div>
+            </div>
+            <div class="col">
+              <label for="name">Name<span style="color: red;">*</span></label>
+              <div class="form-group">
+                <input type="text" class="form-control" id="name" formControlName="name" placeholder="Enter Name"
+                  (blur)="onNameBlur()">
+
+                <span *ngIf="validate['name'].errors?.['duplicate']" class="text-danger" style="font-size: 12px;">
+                  {{ validate['name'].errors?.['duplicate'] }}
+                </span>
+                <span
+                  *ngIf="!validate['name'].errors?.['duplicate'] && submitted && validate['name'].errors?.['required']"
+                  class="text-danger mt-1" style="font-size: 12px;">
+                  Please enter Name
+                </span>
+              </div>
+            </div>
+
+
+
+            <div class="col">
+              <label for="codeDescription">Description</label>
+              <div class="form-group">
+                <input type="text" class="form-control" id="codeDescription" formControlName="codeDescription"
+                  placeholder="Enter Description">
+              </div>
+            </div>
+
+            <div class="col">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="isActive" formControlName="isActive">
+                <label class="form-check-label align-items-center" for="isActive">Is Active</label>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-12 d-flex align-items-center justify-content-end ">
+              <button type="submit" class="btn btn-primary mx-1">{{codeId? 'Update': 'Save'}}</button>
+              <button type="reset" class="btn btn-outline-dark mx-1">Reset</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

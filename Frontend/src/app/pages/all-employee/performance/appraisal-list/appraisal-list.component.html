@@ -1,0 +1,87 @@
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card">
+     <div class="card-header bg-primary text-white">
+        <div class="row w-100">
+
+          <div class="col-sm-12 col-md-4 d-flex align-items-center justify-content-between">
+            <h4>Employee Appraisal List</h4>
+          </div>
+
+
+          <div #pdfContent id="appraisalPdfContent"
+            class="col-sm-12 col-md-4 d-flex align-items-center justify-content-center">
+            <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText" />
+          </div>
+
+          <div #pdfContent id="pdfContent" class="col-sm-12 col-md-4 d-flex align-items-center justify-content-md-end">
+            <button class="btn btnheader" routerLink="/dash/performance/performancedashboard/Appraisal">
+              Add Appraisal
+            </button>
+
+  <button class="btn btnheader mx-1" (click)="downloadExcel()">
+              <i class="fa fa-file-excel"></i> Export Excel
+            </button>
+          
+
+          </div>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table table-bordered">
+          <thead class="table-light">
+            <tr>
+              <th>S.No.</th>
+              <th>Employee&nbsp;Name</th>
+              <th>Appraisal&nbsp;Year</th>
+              <th>Final KRA&nbsp;Score</th>
+              <th>Behavioral&nbsp;Score</th>
+              <th>Final&nbsp;Weighted&nbsp;Score</th>
+              <th>Dated</th>
+              <th>status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of filteredData(); let i = index">
+              <td>{{ i + 1 }}</td>
+              <td>{{ item.employeeName }}</td>
+              <td>{{ item.appraisalYear }}</td>
+              <td>{{ item.finalKRAScore }}</td>
+              <td>{{ item.behavioralScore }}</td>
+              <td>{{ item.finalWeightedScore }}</td>
+              <td>{{ item.dated | date:'dd-MM-yyyy' }}</td>
+               <td>
+     <span class="badge" [ngClass]="{
+  'bg-success': item.status === 2,
+  'bg-warning': item.status === 1,
+  'bg-secondary': item.status === 0
+}">
+  {{ item.status === 2 ? 'Approved' : (item.status === 1 ? 'Submitted' : 'Draft') }}
+</span>
+
+              <td>
+                <button class="btn mx-1 px-0" (click)="viewAppraisal(item.pk_empid,item.yearId)">
+                  <i class="fa-solid fa-eye"></i>
+                </button>
+                <button
+          *ngIf="item.status === 0"
+          class="btn mx-1 px-0"
+          (click)="update(item.pk_empid,item.yearId)">
+          <i class="fa-solid fa-pen"></i>
+        </button>
+              </td>
+            
+            </tr>
+
+
+            <tr *ngIf="filteredData().length === 0">
+              <td colspan="8" class="text-center">No data found.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

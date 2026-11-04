@@ -1,0 +1,335 @@
+<section class="">
+    <div class="container-fluid">
+        <div class="row border-bottom pb-3 mb-4 align-items-center bg-white p-2 rounded shadow-sm">
+            <div class="col-lg-6 col-12">
+                <p class="fw-semibold mb-1 text-dark">
+                    <i class="fa-solid fa-calendar-alt text-primary me-2"></i> Event Dashboard
+                </p>
+                <span class="small text-muted ps-4">Viewing Event </span>
+            </div>
+
+
+
+            <div class="col-lg-6 col-12">
+                <form [formGroup]="filterForm">
+                    <div class="row g-2">
+                        <div class="col">
+                            <ng-select [items]="Month" bindLabel="name" bindValue="value" placeholder="--Select Month--"
+                                class="w-100 small" formControlName="fk_monthId"></ng-select>
+                            <!-- <select class="form-select form-select-sm w-100">
+                            <option selected>--Select Quarter--</option>
+                            <option>Q1</option>
+                            <option>Q2</option>
+                            <option>Q3</option>
+                            <option>Q4</option>
+                        </select> -->
+                        </div>
+
+                        <div class="col">
+                            <ng-select [items]="Year" bindLabel="name" bindValue="value" placeholder="--Select year--"
+                                class="w-100 small" formControlName="fk_yearId">
+                            </ng-select>
+                            <!-- <select class="form-select form-select-sm w-100">
+                            <option selected>--Select Year--</option>
+                            <option>2023</option>
+                            <option>2024</option>
+                            <option>2025</option>
+                            <option>2026</option>
+                        </select> -->
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="row row-cols-1 row-cols-md-4 row-cols-lg-4 g-3 mb-4 text-center">
+
+            <!-- <div class="col">
+                <div class="card shadow-sm border-0 border-start border-3 border-info">
+                    <div class="card-body py-3">
+                        <i class="fa-solid fa-calendar-days text-info fs-3 mb-1"></i>
+                        <p class="fw-semibold small text-muted mb-0">Upcoming Events</p>
+                        <p class="h4 fw-bold text-info mb-0">{{ dashboard?.upcomingEvents || 0 }}</p>
+                    </div>
+                </div>
+            </div> -->
+
+            <div class="col">
+                <div class="card shadow-sm border-0 border-start border-3 border-success">
+                    <div class="card-body py-3">
+                        <i class="fa-solid fa-gift text-primary fs-3 mb-1"></i>
+                        <p class="fw-semibold small text-muted mb-0">Events</p>
+                        <!-- <p class="h4 fw-bold text-success mb-0">4</p> -->
+                        <p class="h4 fw-bold text-success mb-0">{{ dashboard?.upcomingEvents || 0 }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card shadow-sm border-0 border-start border-3 border-success">
+                    <div class="card-body py-3">
+                        <i class="fa-solid fa-cake-candles text-success fs-3 mb-1"></i>
+                        <p class="fw-semibold small text-muted mb-0">Today Birthdays</p>
+                        <p class="h4 fw-bold text-success mb-0">{{ dashboard?.todayBirthdays || 0 }}</p>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col">
+                <div class="card shadow-sm border-0 border-start border-3 border-warning">
+                    <div class="card-body py-3">
+                        <i class="fa-solid fa-hourglass-start text-warning fs-3 mb-1"></i>
+                        <p class="fw-semibold small text-muted mb-0">Upcoming Birthdays</p>
+                        <p class="h4 fw-bold text-warning mb-0">{{ dashboard?.upcomingBirthdays || 0 }}</p>
+                        <!-- <p class="h4 fw-bold text-warning mb-0">25</p> -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card shadow-sm border-0 border-start border-3 border-danger">
+                    <div class="card-body py-3">
+                        <i class="fa-solid fa-ring text-danger fs-3 mb-1"></i>
+                        <p class="fw-semibold small text-muted mb-0">Anniversary</p>
+                        <p class="h4 fw-bold text-danger mb-0">{{ dashboard?.todayAnniversary || 0 }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- <div class="col">
+                <div class="card shadow-sm border-0 border-start border-3 border-success">
+                    <div class="card-body py-3">
+                        <i class="fa-solid fa-gift text-success fs-3 mb-1"></i>
+                        <p class="fw-semibold small text-muted mb-0">Events</p>
+                        <p class="h4 fw-bold text-success mb-0">{{ dashboard?.totalEvents || 0 }}</p>
+                    </div>
+                </div>
+            </div> -->
+
+        </div>
+
+
+        <div class="row g-4">
+
+            <div class="col-sm-12 col-md-12 col-lg-7">
+                <div class="card shadow-sm animate-fade-in border-top border-2 pt-2 border-primary rounded-2">
+                    <div class="card-body py-lg-0 px-2 px-lg-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <p class="card-title mb-0 fw-bold small text-primary">Events</p>
+                            <!-- <p class="badge badge-success"><span>Unread : <span>10</span></span></p> -->
+                            <p class="badge unread-badge-3 d-flex align-items-center"
+                                routerLink="/dash/event/eventdashboard/emp-chatboat">
+
+                                <i class="fa-regular fa-bell unread-dot me-1"></i>
+                                Chat : <span>{{ unreadCount }}</span>
+                            </p>
+
+
+
+
+                        </div>
+
+                        <!-- Tabs -->
+                        <ul class="nav nav-tabs nav-tabs-custom small fw-semibold" id="highlightTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="today-tab" data-bs-toggle="tab"
+                                    data-bs-target="#today" type="button" role="tab">
+                                    🎂 Today's Birthday
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="upcoming-tab" data-bs-toggle="tab"
+                                    data-bs-target="#upcoming" type="button" role="tab">
+                                    📅 Upcoming Birthdays
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="anniversary-tab" data-bs-toggle="tab"
+                                    data-bs-target="#anniversary" type="button" role="tab">
+                                    💍 Anniversary
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="events-tab" data-bs-toggle="tab" data-bs-target="#events"
+                                    type="button" role="tab">
+                                    🎉 Events
+                                </button>
+                            </li>
+                        </ul>
+
+                        <!-- Tab Content -->
+                        <div class="tab-content mt-3 small" id="highlightTabsContent">
+
+
+
+                            <!-- Today's Birthdays -->
+                            <div class="tab-pane fade show active" id="today" role="tabpanel">
+                                <ul class="list-group scrollable-list">
+                                    <li *ngFor="let emp of todayBirthdays"
+                                        class="list-group-item d-flex align-items-center justify-content-between">
+                                        <div class="d-flex align-items-center">
+                                            <img src="assets/Image/profile_images.png" class="rounded-circle user-img"
+                                                width="40" height="40" />
+                                            <div class="ms-3 lh-sm">
+                                                <span class="fw-bold small">{{ emp.empName }}</span>
+                                                <p class="text-muted mb-0 small-sm">{{ emp.deptName }}</p>
+                                            </div>
+                                        </div>
+                                        <button class="btn btn-sm btn-outline-primary rounded-circle shadow-sm"
+                                            title="Send Message" (click)="openChatbot(emp.pk_empid,emp.type)">
+                                            <i class="fa-solid fa-paper-plane"></i>
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <!-- Upcoming Birthdays -->
+                            <div class="tab-pane fade" id="upcoming" role="tabpanel">
+                                <ul class="list-group scrollable-list">
+                                    <li *ngFor="let emp of upcomingBirthdays"
+                                        class="list-group-item d-flex align-items-center justify-content-between">
+                                        <div class="d-flex align-items-center">
+                                            <img src="assets/Image/profile_images.png" class="rounded-circle user-img"
+                                                alt="" width="40px" height="40px">
+                                            <div class="ms-3 lh-sm">
+                                                <span class="fw-bold small">{{ emp.empName }}</span>
+                                                <p class="text-muted mb-0 small-sm">{{ emp.deptName }}</p>
+                                            </div>
+
+                                        </div>
+                                        <span class="badge bg-light text-dark small">{{ emp.birthDate }}</span>
+                                        <!-- <span class="badge bg-light text-dark small">Nov 10</span> -->
+                                        <button class="btn btn-sm btn-outline-primary rounded-circle shadow-sm"
+                                            (click)="openChatbot(emp.pk_empid,emp.type)">
+                                            <i class="fa-solid fa-paper-plane"></i>
+                                        </button>
+                                    </li>
+
+                                </ul>
+                            </div>
+
+                            <!-- Anniversaries -->
+                            <div class="tab-pane fade" id="anniversary" role="tabpanel">
+                                <ul class="list-group scrollable-list">
+                                    <li *ngFor="let emp of Anniversaries"
+                                        class="list-group-item d-flex align-items-center justify-content-between">
+                                        <div class="d-flex align-items-center">
+                                            <img src="assets/Image/profile_images.png" class="rounded-circle user-img"
+                                                alt="" width="40px" height="40px">
+
+
+                                            <div class="ms-3 lh-sm">
+                                                <span class="fw-bold small">{{ emp.empName }}</span>
+                                                <p class="text-muted mb-0 small-sm">{{ emp.anniversaryYear }} Years at
+                                                    {{ emp.deptName }}</p>
+                                            </div>
+
+                                        </div>
+                                        <button class="btn btn-sm btn-outline-primary rounded-circle shadow-sm"
+                                            title="Send Wishes">
+                                            <i class="fa-solid fa-gift"></i>
+                                        </button>
+                                    </li>
+
+                                </ul>
+                            </div>
+
+                            <!-- Upcoming Events -->
+                            <div class="tab-pane fade" id="events" role="tabpanel">
+                                <ul class="list-group scrollable-list">
+                                    <li *ngFor="let ev of upcomingEvents"
+                                        class="list-group-item d-flex align-items-center justify-content-between">
+                                        <div class="d-flex align-items-center">
+                                            <img src="assets/Image/event.jpeg" class="rounded-circle user-img" alt=""
+                                                width="40px" height="40px">
+
+                                            <div class="ms-3 lh-sm">
+                                                <span class="fw-bold small">{{ ev.eventName }}</span>
+                                                <p class="text-success small-sm  mb-0"
+                                                    style="font-size: 11px; font-weight: 500;">{{ ev.eventVenue }}
+                                                    <span class="badge bg-primary-subtle text-primary small-sm py-1">
+                                                        <i class="bi bi-geo-alt-fill me-1"></i>{{ ev.eventDate }}
+                                                    </span>
+                                                </p>
+
+                                            </div>
+                                        </div>
+                                        <button class="btn btn-sm btn-outline-primary rounded-circle shadow-sm"
+                                            title="Plan Celebration">
+                                            <i class="fa-solid fa-gift"></i>
+                                        </button>
+                                    </li>
+
+
+                                </ul>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="col-sm-12 col-md-12 col-lg-5 ">
+
+                <div class="card shadow-sm mb-4 ">
+                    <div class="card-header bg-light py-2" style="border-top:2px solid #27af56;">
+                        <p class="fw-bold mb-0 small">
+                            <i class="fa-solid fa-clock-rotate-left me-1"></i>
+
+                            Recent Event Activity
+                        </p>
+                    </div>
+                    <div class="card-body small p-2  " style="max-height: 300px; overflow-y: auto;">
+
+                        <ul class="list-group list-group-flush small">
+
+                            <li *ngFor="let e of RecentActivity"
+                                class="list-group-item d-flex justify-content-between align-items-center px-2 py-0 lh-lg">
+
+                                <div class="d-flex align-items-center">
+                                    <!-- Dynamic Icons -->
+                                    <i class="fa-solid me-2" [ngClass]="{
+                                            'fa-check-circle text-success': e.activityStatus === 'Success',
+                                            'fa-hourglass-half text-warning': e.activityStatus === 'Review',
+                                            'fa-clock text-info': e.activityStatus === 'Upcoming'
+                                        }">
+                                    </i>
+
+
+                                    <div class="px-2 lh-base my-2">
+                                        <span class="fw-semibold">{{ e.eventName }}</span>
+                                        <small class="text-muted d-block small">
+                                            {{ e.eventDate | date:'MMM d, y' }}
+                                        </small>
+                                    </div>
+
+                                </div>
+
+                                <!-- Dynamic Badge -->
+                                <span class="badge py-1 text-white small" [ngClass]="{
+                                'bg-success': e.activityStatus === 'Success',
+                                'bg-warning': e.activityStatus === 'Review',
+                                'bg-info': e.activityStatus === 'Upcoming'
+                                }">
+                                    {{ e.activityText }}
+                                </span>
+
+
+                            </li>
+
+                        </ul>
+
+
+                    </div>
+                </div>
+
+
+
+            </div>
+
+        </div>
+    </div>
+</section>

@@ -1,0 +1,124 @@
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+      <div class="card">
+   
+    <!--  -->
+    <div class="card-header bg-blue ">
+      <div class="row w-100 ">
+    <div class="col-sm-12 col-md-6 col-lg-6  ">
+         <h4 class="">Export Attendance Template</h4></div>
+    
+
+</div>
+
+</div>
+     
+    <!--  -->
+<div class="card-body">
+    <div class="text-center">
+        <button class="btn bg-blue text-white d-flex align-items-center justify-content-center mx-auto px-4"(click)="exportToExcel()">
+            <i class="fa fa-download"></i> &nbsp;&nbsp;Export Employee Excel
+        </button>
+    </div>
+    
+</div>
+ <!--  -->
+ <div class="card-header bg-blue ">
+    <div class="row w-100 ">
+  <div class="col-sm-12 col-md-6 col-lg-6  ">
+       <h4 class="">Run Attendance Job</h4></div>
+
+    </div>
+
+ </div>
+<div class="card-body mt-4">
+  <form [formGroup]="AttendanceForm"class="row row-cols-1 row-cols-md-3 g-4">
+
+    <div class="col">
+        <label>From Date</label>
+        <div class="form-group">
+            <input type="date"class="form-control"formControlName="fromDate">
+            <span *ngIf="showError && AttendanceForm.controls['fromDate'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+              Please enter From Date.
+            </span>
+        </div>
+    </div>
+    <div class="col">
+        <label>To Date</label>
+        <div class="form-group">
+            <input type="date"class="form-control"formControlName="toDate">
+            <span *ngIf="showError && AttendanceForm.controls['toDate'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+              Please enter To Date.
+            </span>
+        </div>
+    </div>
+     
+
+  </form>
+  <div class="row">
+    <div class="col d-flex align-items-end justify-content-end pt-4 pb-3">
+   
+        <button type="button" class="btn btn-primary  mx-1"(click)=" OnSubmit()">Run Job</button>                   
+    </div>
+</div>
+</div>
+
+    <!--  -->
+    <div class="card-header bg-blue ">
+        <div class="row w-100 ">
+      <div class="col-sm-12 col-md-6 col-lg-6  ">
+           <h4 class="">Import Attendance Punch</h4></div>
+  
+        </div>
+  
+     </div>
+    <div class="card-body mt-4">
+      <form [formGroup]="ImportForm"class="row row-cols-1 row-cols-md-3 g-4">
+        <div class="col">
+            <label>Month</label>               
+            <div class="form-group">
+              <ng-select id="year" [items]="months" bindLabel="name" bindValue="value"
+              formControlName="month" placeholder="--Select --"
+              class="w-100"></ng-select>
+              <span *ngIf="showError && ImportForm.controls['month'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                Please enter Month.
+              </span>
+            </div> 
+        </div>
+        <div class="col">
+          <label>Year</label>
+      
+          <div class="form-group">
+            <ng-select id="year" [items]="years" bindLabel="name" bindValue="value"
+            formControlName="year" placeholder="--Select --"
+            class="w-100"></ng-select>
+            <span *ngIf="showError && ImportForm.controls['year'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+              Please enter Year.
+            </span>
+          </div> 
+      </div>
+            <div class="col"><label>Select File</label>
+                <div class="form-group">
+                    <input  type="file" class="form-control flex-grow-1" formControlName="file">
+                    
+                </div>                
+            </div>
+         
+
+      </form>
+      <div class="row">
+        <div class="col d-flex align-items-end justify-content-end pt-4 pb-3">
+       
+            <button type="button" class="btn btn-outline-dark mx-1"(click)="resetForm()">Reset</button>
+            <button type="button" class="btn btn-primary  mx-1"(click)="OnImport()">Import</button>                   
+        </div>
+    </div>
+    </div>
+
+
+
+
+      
+</div>
+</div>
+</div> 

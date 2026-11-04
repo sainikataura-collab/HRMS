@@ -1,0 +1,454 @@
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card">
+
+      <!--  -->
+      <div class="card-header bg-blue ">
+        <div class="row w-100 ">
+          <div class="col-sm-12 col-md-6 col-lg-6  ">
+            <h4 class="">
+              {{ isedit ? 'Update Candidate Master' : ' Candidate Master' }}
+            </h4>
+          </div>
+          <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+            <button class="btn btnheader" routerLink="/dash/recruitment/recruitmentdashboard/candidateMaster_list">Back
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!--  -->
+
+      <div class="card-body mt-4">
+        <form class="row row-cols-1 row-cols-md-3" [formGroup]="candidateMaster_Details">
+
+
+          <div class="col">
+            <label>Job details<span style="color: red;">*</span></label>
+            <div class="form-group">
+              <ng-select id="jobDetail" [items]="JobList" bindLabel="name" bindValue="value" formControlName="fk_jobId"
+                placeholder="--Select --" class="w-100"></ng-select>
+              <span class="text-danger mt-1" style="font-size: 12px;"
+                *ngIf="showerror && candidateMaster_Details.controls['fk_jobId'].invalid">
+                Please select Job detail.
+              </span>
+            </div>
+          </div>
+          <div class="col"><label>Date<span style="color: red;">*</span></label>
+            <div class="form-group">
+              <input type="date" class="form-control flex-grow-1" formControlName="dated">
+              <span class="text-danger mt-1" style="font-size: 12px;"
+                *ngIf="showerror && candidateMaster_Details.controls['dated'].invalid">
+                Please enter date.
+              </span>
+            </div>
+          </div>
+
+
+          <div class="col"><label>Gender <span style="color: red;">*</span></label>
+            <div class="form-group">
+              <!-- <input  type="radio" formControlName="gender" value="male">Male
+                <input  type="radio" formControlName="gender" value="female">Female -->
+
+              <ng-select id="gender" [items]="gender" bindLabel="name" bindValue="value" formControlName="gender"
+                placeholder="--Select --" class="w-100"></ng-select>
+              <span class="text-danger mt-1" style="font-size: 12px;"
+                *ngIf="showerror && candidateMaster_Details.controls['gender'].invalid">
+                Please select gender.
+              </span>
+            </div>
+          </div>
+          <div class="col"><label>DOB<span style="color: red;">*</span></label>
+            <div class="form-group">
+              <input type="date" class="form-control flex-grow-1" formControlName="dateofbirth">
+              <span class="text-danger mt-1" style="font-size: 12px;"
+                *ngIf="showerror && candidateMaster_Details.controls['dateofbirth'].invalid">
+                Please enter DOB.
+              </span>
+            </div>
+          </div>
+
+
+
+          <div class="col">
+
+            <label>Candidate Mobile No <span style="color: red;">*</span></label>
+            <div class="form-group">
+
+              <input type="text" class="form-control flex-grow-1" formControlName="mobile"
+                (keypress)="validateNumber1($event)" maxlength="10" (blur)="onMobileBlur()"
+            >
+
+              <span class="text-danger mt-1" style="font-size: 12px;"
+                *ngIf="showerror && candidateMaster_Details.controls['mobile'].invalid  && !isDuplicateMobile">
+                Please enter mobile number
+              </span>
+
+              <!-- <span class=" mt-1" style="font-size: 12px; cursor: pointer;" *ngIf="isDuplicateMobile">
+                <span class="text-warning  pe-lg-3">Mob-No Already Registerd</span> 
+                <span class="  border-bottom border-primary"data-bs-toggle="offcanvas" data-bs-target="#offcanvasWithBothOptions" aria-controls="offcanvasWithBothOptions">
+                   <span class="text-primary">More Details </span> <i class="fa-solid fa-circle-info"></i></span>
+              </span> -->
+
+
+              <span class=" mt-1" style="font-size: 12px;" *ngIf="isDuplicateMobile">
+                <span class="text-warning  pe-lg-3">Mob-No Already Registerd</span> 
+              <span style="cursor: pointer;"><a href="#offcanvasRight"> <span class="  border-bottom border-primary" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
+                   <span class="text-primary">More Details </span> <i class="fa-solid fa-circle-info"></i></span></a></span> 
+              </span>
+            
+
+            
+          
+
+
+
+
+
+            </div>
+          </div>
+
+
+
+          <div class="col"><label>Candidate Name<span style="color: red;">*</span></label>
+            <div class="form-group">
+              <input type="text" class="form-control flex-grow-1" formControlName="candidate_name">
+              <span class="text-danger mt-1" style="font-size: 12px;"
+                *ngIf="showerror && candidateMaster_Details.controls['candidate_name'].invalid">
+                Please enter candidate name.
+              </span>
+
+            </div>
+          </div>
+
+          <div class="col"><label>Email Id <span style="color: red;">*</span></label>
+            <div class="form-group">
+              <input type="email" class="form-control flex-grow-1" formControlName="email" (blur)="onEmailBlur()"
+              >
+              <span class="text-danger mt-1" style="font-size: 12px;"
+                *ngIf="showerror && candidateMaster_Details.controls['email'].invalid  && !isDuplicateemail">
+                Please enter email
+              </span>
+
+                <span class=" mt-1" style="font-size: 12px; cursor: pointer;" *ngIf="isDuplicateemail">
+                <span class="text-warning  pe-lg-3">Email Already Registerd</span> 
+                <span class="  border-bottom border-primary" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
+                   <span class="text-primary">More Details </span> <i class="fa-solid fa-circle-info"></i></span>
+              </span>
+
+            </div>
+          </div>
+
+          <div class="col"><label>Father's/Husband Name</label>
+            <div class="form-group">
+              <input type="text" class="form-control flex-grow-1" formControlName="father_name">
+
+            </div>
+          </div>
+
+
+
+
+
+          <div class="col"><label>Total Experience<span style="color: red;">*</span></label>
+            <div class="form-group">
+              <input type="text" class="form-control flex-grow-1" formControlName="totexperience"
+                (keypress)="validateNumber($event)">
+              <span class="text-danger mt-1" style="font-size: 12px;"
+                *ngIf="showerror && candidateMaster_Details.controls['totexperience'].invalid">
+                Please enter Experience.
+              </span>
+            </div>
+          </div>
+
+
+
+
+
+          <div class="col"><label>Key Skills</label>
+
+            <div class="form-group">
+              <input type="text" class="form-control flex-grow-1" formControlName="keyskills">
+
+            </div>
+          </div>
+
+          <div class="col"><label>Nativity</label>
+            <div class="form-group">
+              <input type="text" class="form-control flex-grow-1" formControlName="nativity">
+
+            </div>
+          </div>
+
+          <div class="col"><label>Education</label>
+            <div class="form-group">
+              <input type="text" class="form-control flex-grow-1" formControlName="education">
+
+            </div>
+          </div>
+
+          <div class="col"><label>Designation</label>
+            <div class="form-group">
+              <input type="text" class="form-control flex-grow-1" formControlName="designation">
+
+            </div>
+          </div>
+
+          <div class="col"><label>Function Name</label>
+            <div class="form-group">
+              <input type="text" class="form-control flex-grow-1" formControlName="functionName">
+
+            </div>
+          </div>
+
+          <div class="col"><label>Department</label>
+            <div class="form-group">
+              <input type="text" class="form-control flex-grow-1" formControlName="department">
+
+            </div>
+          </div>
+          <div class="col"><label>Interviewer</label>
+            <div class="form-group">
+              <input type="text" class="form-control flex-grow-1" formControlName="interviewer">
+
+            </div>
+          </div>
+          <div class="col">
+            <label>Status<span style="color: red;">*</span></label>
+            <div class="form-group">
+              <ng-select id="status" [items]="selects" bindLabel="name" bindValue="value" formControlName="status"
+                placeholder="--Select --" class="w-100"></ng-select>
+              <span class="text-danger mt-1" style="font-size: 12px;"
+                *ngIf="showerror && candidateMaster_Details.controls['status'].invalid">
+                Please select status.
+              </span>
+            </div>
+
+          </div>
+          <div class="col"><label>Reference Source</label>
+            <div class="form-group">
+              <input type="text" class="form-control flex-grow-1" formControlName="refname">
+
+            </div>
+          </div>
+
+          <div class="col"><label>Current CTC<span style="color: red;">*</span></label>
+            <div class="form-group">
+              <input type="text" class="form-control flex-grow-1" formControlName="currentctc"
+                (keypress)="validateNumber($event)">
+              <span class="text-danger mt-1" style="font-size: 12px;"
+                *ngIf="showerror && candidateMaster_Details.controls['currentctc'].invalid">
+                Please enter Current CTC
+              </span>
+            </div>
+          </div>
+          <div class="col"><label>Expected CTC<span style="color: red;">*</span></label>
+            <div class="form-group">
+              <input type="text" class="form-control flex-grow-1" formControlName="expectedctc"
+                (keypress)="validateNumber($event)">
+              <span class="text-danger mt-1" style="font-size: 12px;"
+                *ngIf="showerror && candidateMaster_Details.controls['expectedctc'].invalid">
+                Please enter Expected CTC
+              </span>
+            </div>
+          </div>
+          <div class="col">
+            <label>Zone</label>
+            <div class="form-group">
+              <ng-select id="jobDetail" [items]="ZoneList" bindLabel="name" bindValue="value"
+                formControlName="fk_zoneId" placeholder="--Select --" class="w-100"></ng-select>
+            </div>
+          </div>
+
+
+
+          <div class="col">
+            <label>Notice Period :</label>
+            <div class="row row-cols-2 row-cols-md-2">
+              <div class="col-6 form-group px-0 d-flex align-items-center justify-content-center px-lg-3">
+                <small style="color: red; font-size: 0.8rem;" class="small">Month</small>
+                <input type="text" class="form-control flex-grow-1"
+                  style="width:100px;height:30px;display: inline-block;" formControlName="npmonth"
+                  (keypress)="validateNumber($event)" maxlength="2">
+              </div>
+
+              <div class="col-6 form-group px-0  px-lg-3">
+                <div class="d-flex align-items-center justify-content-start">
+                  <small style="color: red; font-size: 0.8rem;" class="small">[days]*</small>
+                  <input type="text" appMaxday class="form-control flex-grow-1"
+                    style="width:100px;height:30px;display: inline-block;" formControlName="npdys"
+                    (keypress)="validateNumber($event)" maxlength="2">
+                </div>
+                <span class="text-danger mt-1 ps-3 ps-lg-5" style="font-size: 12px;"
+                  *ngIf="showerror && candidateMaster_Details.controls['npdys'].invalid">
+                  Please enter days.
+                </span>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="col"><label>Join in days<span style="color: red;">*</span></label>
+
+            <div class="form-group">
+              <input type="text" appMaxday class="form-control flex-grow-1" formControlName="Joinindays"
+                (keypress)="validateNumber($event)" maxlength="2">
+              <span class="text-danger mt-1" style="font-size: 12px;"
+                *ngIf="showerror && candidateMaster_Details.controls['Joinindays'].invalid">
+                Please enter days.
+              </span>
+            </div>
+          </div>
+
+
+
+          <div class="col"><label>Upload CV</label>
+            <div class="form-group d-flex align-items-center justify-content-between">
+              <!-- <input  type="file" class="form-control flex-grow-1" formControlName="File"> -->
+              <input type="file" class="form-control me-2" (change)="onFileSelected($event)">
+              <a *ngIf="ImageUrl && !fileToUpload" [href]="ImageUrl" target="_blank"
+                class="d-flex align-items-center justify-content-center btn btn-outline-primary p-2">
+                <i class="fa-solid fa-eye" style="font-size: 0.9rem;"></i>
+              </a>
+            </div>
+          </div>
+          <div class="col"><label>Upload picture</label>
+            <div class="form-group d-flex align-items-center justify-content-between">
+              <!-- <input  type="file" class="form-control flex-grow-1" formControlName="Pic">
+                     -->
+
+              <input type="file" class="form-control me-2" (change)="onPicSelected($event)">
+              <a *ngIf="picImageUrl && !fileToUploadPic" [href]="picImageUrl" target="_blank"
+                class="d-flex align-items-center justify-content-center btn btn-outline-primary p-2">
+                <i class="fa-solid fa-eye" style="font-size: 0.9rem;"></i>
+              </a>
+            </div>
+          </div>
+          <div class="col"><label>Remarks<span style="color: red;">*</span></label>
+            <div class="form-group">
+
+              <textarea type="text" formControlName="remarks" class="form-control flex-grow-1"></textarea>
+              <span class="text-danger mt-1" style="font-size: 12px;"
+                *ngIf="showerror && candidateMaster_Details.controls['remarks'].invalid">
+                Please enter remarks.
+              </span>
+            </div>
+          </div>
+        </form>
+
+        <div class="row">
+          <div class="col d-flex align-items-end justify-content-end pt-4 pb-3">
+            <button type="button" class="btn btn-primary  mx-1" (click)="onsubmit()">{{ isedit ? 'Update' : 'Save'
+              }}</button>
+
+            <button type="button" class="btn btn-outline-dark mx-1" (click)="onReset()">Reset</button>
+          </div>
+        </div>
+      </div>
+
+
+
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+<!--  -->
+
+
+
+<div class="offcanvas offcanvas-end" data-bs-backdrop="static" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+  <div class="offcanvas-header border-bottom p-0 m-0 border-primary">
+    <p class="offcanvas-title small text-primary pt-2 m-0" id="offcanvasRightLabel">Candidate History <i class="fa-solid fa-circle-info"></i></p>
+    <button type="button" class="btn-close btn-sm" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+<div class="offcanvas-body">
+  <div class="container px-1 px-lg-2 ">
+    
+            <p class="small text-primary ">
+         <span class="fw-semibold"> Candidate Details </span>
+          </p>
+    <!-- 👤 Profile Card Grid -->
+    <div class="card p-3 my-3 shadow offcanvas-card " *ngFor="let candidate of candidateDetailsList">
+      <div class="row">
+
+        <!-- Profile Image -->
+      
+        <div class="col-2">
+
+
+<img 
+  [src]="imageMap[candidate.picturename]" 
+  (error)="onImageError($event)" 
+  alt="Profile" 
+  class="rounded-circle animated-border" 
+  width="45" 
+  height="45" 
+  style="object-fit: cover;">
+
+   </div>
+
+        <!-- Name -->
+        <div class="col-10 d-flex align-items-end justify-content-start">
+          <p class="small  ">
+         <span class="fw-semibold text-primary ps-3 ps-lg-0"> {{ candidate.candidate_name }} </span>
+          </p>
+        </div>
+
+        </div>
+
+          <div class="row row-cols-1 row-cols-md-2 g-3 pt-4 align-items-center">
+ 
+           
+        <!-- Status -->
+        <div class="col m-0">
+          <p class="small m-0">
+            <span class="fw-semibold small">Status : </span> {{ candidate.StatusName }}
+          </p>
+        </div>
+
+        <!-- Date -->
+        <div class="col m-0">
+          <p class="small m-0">
+            <span class="fw-semibold small">Date :</span>{{ candidate.InterviewDate | date: 'dd-MM-yyyy' }}
+          </p>
+        </div>
+
+        <!-- Education -->
+        <div class="col m-0">
+          <p class="small m-0">
+            <span class="fw-semibold small">Education :</span> {{ candidate.education }}
+          </p>
+        </div>
+
+        <!-- Gender -->
+        <div class="col m-0">
+          <p class="small m-0">
+            <span class="fw-semibold small">Gender :</span>{{ candidate.gender === 'f' ? 'Female' : candidate.gender === 'm' ? 'Male' : 'Unknown' }}
+          </p>
+        </div>
+
+        <!-- Job -->
+        <div class="col m-0">
+          <p class="small m-0">
+            <span class="fw-semibold small">Job :</span> {{ candidate.Job_title }}
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+</div>
+
+

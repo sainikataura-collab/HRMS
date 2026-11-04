@@ -1,0 +1,81 @@
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+      <div class="card">
+   
+    <!--  -->
+    <div class="card-header bg-blue ">
+      <div class="row w-100 ">
+    <div class="col-sm-12 col-md-6 col-lg-6  "> 
+        <h4 class="">
+            State Master</h4></div>
+            <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+                <button class="btn btnheader" routerLink="/dash/user/userdashboard/stateMaster">Back
+                  </button>
+              </div>
+
+</div>
+
+</div>
+     
+    <!--  -->
+
+    <div class="card-body mt-4">
+      <form [formGroup]="UserDetails"class="row row-cols-1 row-cols-md-3">
+       
+       
+            <div class="col"><label>Code</label>
+                <div class="form-group">
+                    <input  type="text" class="form-control flex-grow-1" formControlName="code">
+                    <span *ngIf="showError && UserDetails.controls['code'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                      Please enter Code.
+                    </span>
+                </div>                
+            </div>
+            <div class="col"><label>Description</label>
+                <div class="form-group">
+                    <input  type="text" class="form-control flex-grow-1" formControlName="description">
+                    <span *ngIf="showError && UserDetails.controls['description'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                      Please enter Description.
+                    </span>
+                </div>                
+            </div> 
+            <div class="col">
+                <label>LWF Applicable</label>
+                <div class="form-group">
+                    <input type="checkbox"class="form-check-input fs-6" formControlName="LWFApplicable">
+                </div>
+            </div><div class="col">
+                <label>PT Applicable</label>
+                <div class="form-group">
+                    <input type="checkbox"class="form-check-input fs-6" formControlName="PTApplicable">
+                </div>
+            </div> 
+            <div class="col"><label>GST No.</label>
+                <div class="form-group">
+                    <input  type="text" class="form-control flex-grow-1" formControlName="GSTNo">
+                    <span *ngIf="showError && UserDetails.controls['description'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                        Please enter GST No.
+                      </span>
+                </div>                
+            </div>  
+           
+
+      </form>
+
+      <div class="modal-footer">
+        <!-- <button class="btn btn-primary mx-1" type="submit">Save</button> -->
+            <button type="button" class="btn btn-primary bg-blue  mx-1"(click)="onSubmit()">{{ id ? 'Update' : 'Save' }}</button> 
+            <button type="button" class="btn btn-outline-dark mx-1"(click)="resetForm()">Reset</button>                  
+
+        <!-- <button class="btn btn-outline-dark mx-1">View</button> -->
+    </div>
+     
+    </div>
+
+   
+   
+
+      
+</div>
+</div>
+</div> 

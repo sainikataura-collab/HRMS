@@ -1,0 +1,85 @@
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+            <!-- Heading -->
+            <div class="card-header bg-blue">
+                <div class="row w-100">
+                    <div class="col-sm-12 col-md-12 col-lg-12">
+                        <h4 class="">Employee Search</h4>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-md-6 col-lg-6 d-flex align-items-center justify-content-end ms-auto gap-2">
+                    <button class="btn btn-light" (click)="view()">
+                        <i class=""></i> Goto List
+                    </button>
+                </div>
+            </div>
+            <!-- form -->
+            <div class="card-body mt-4">
+                <div class="row mb-4">
+                    <app-common-search></app-common-search>
+                </div>
+                <form [formGroup]="departmentForm">
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary  mx-1">Save</button>
+                        <button type="button" class="btn btn-outline-dark mx-1" (click)="resetForm()">Reset</button>
+                    </div>
+                </form>
+            </div>
+            <div class="card-header bg-blue">
+                <div class="row w-100">
+                    <div class="col-sm-12 col-md-12 col-lg-12">
+                        <h4 class="">Employee Weekly Off Master</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <form [formGroup]="departmentForm" (ngSubmit)="onSubmit()">
+                    <div class="row my-3">
+                        <div class="col-md-4">
+                        <label for="LeaveNatureType" class="">Employee</label>
+                        <ng-select id="SelectEmployeeType" [items]="SelectEmployeeType" bindLabel="name" bindValue="value"
+                            formControlName="SelectEmployeeType" placeholder="--Select Employee--"
+                            class="w-100"></ng-select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="card-header bg-blue">
+                <div class="row w-100">
+                    <div class="col-sm-12 col-md-12 col-lg-12">
+                        <h4 class="">Week Off Day Details</h4>
+                    </div>
+                </div>
+            </div>
+
+            <!-- weekly day  -->
+            <form [formGroup]="departmentForm" (ngSubmit)="onSubmit()">
+            <div class="table-responsive mt-3">
+                <table class="table table-bordered">
+                    <thead class="bg-secondary text-white">
+                        <tr>
+                            <th>S.No</th>
+                            <th>Day / Occurrence</th>
+                            <th *ngFor="let n of [1,2,3,4,5]">{{n}}st</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let day of weekDays; let i = index">
+                            <td>{{ i + 1 }}</td>
+                            <td>{{ day }}</td>
+                            <td *ngFor="let n of [0,1,2,3,4]">
+                                <input type="checkbox" [formControl]="getCheckboxControl(i, n)">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary  mx-1">Save</button>
+                <button type="button" class="btn btn-outline-dark mx-1" (click)="resetForm()">Reset</button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>

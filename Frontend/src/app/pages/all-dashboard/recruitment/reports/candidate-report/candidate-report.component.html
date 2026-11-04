@@ -1,0 +1,402 @@
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card">
+
+      <!-- Card Header -->
+      <div class="card-header bg-primary py-lg-1 mt-0">
+        <div class="row w-100 align-items-center">
+          <!-- Title Section -->
+          <div class="col-12 col-md-6">
+            <h4 class="text-white mb-0">Candidate Report</h4>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card Body Filter Form -->
+      <div class="card-body mt-4">
+        <form [formGroup]="filterForm" (ngSubmit)="applyFilters()">
+          <div class="row row-cols-1 row-cols-md-4 g-3">
+
+            <div class="col">
+              <label>Month</label>
+              <div class="form-group">
+                <ng-select [items]="monthList" bindLabel="label" bindValue="value" formControlName="month"
+                  placeholder="--Select Month --" class="w-100">
+                </ng-select>
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Year</label>
+              <div class="form-group">
+                <ng-select [items]="yearList" bindLabel="label" bindValue="value" formControlName="year"
+                  placeholder="--Select Year --" class="w-100">
+                </ng-select>
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Job / Position</label>
+              <div class="form-group">
+                <ng-select [items]="jobList" bindLabel="label" bindValue="value" formControlName="jobId"
+                  placeholder="--Select Job --" class="w-100">
+                </ng-select>
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Location</label>
+              <div class="form-group">
+                <ng-select [items]="locationList" bindLabel="label" bindValue="value" formControlName="locationId"
+                  placeholder="--Select Location --" class="w-100">
+                </ng-select>
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Department</label>
+              <div class="form-group">
+                <ng-select [items]="departmentList" bindLabel="label" bindValue="value" formControlName="department"
+                  placeholder="--Select Department --" class="w-100">
+                </ng-select>
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Source / Vendor</label>
+              <div class="form-group">
+                <ng-select [items]="sourceList" bindLabel="label" bindValue="value" formControlName="source"
+                  placeholder="--Select Source --" class="w-100">
+                </ng-select>
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Status</label>
+              <div class="form-group">
+                <ng-select [items]="statusList" bindLabel="label" bindValue="value" formControlName="status"
+                  placeholder="--Select Status --" class="w-100">
+                </ng-select>
+              </div>
+            </div>
+
+            <div class="col">
+              <label>From Date</label>
+              <div class="form-group">
+                <input type="date" class="form-control" formControlName="fromDate" />
+              </div>
+            </div>
+
+            <div class="col">
+              <label>To Date</label>
+              <div class="form-group">
+                <input type="date" class="form-control" formControlName="toDate" />
+              </div>
+            </div>
+
+          </div>
+
+          <div class="row row-cols-1 row-cols-md-12 mt-3">
+            <div class="col d-flex align-items-center justify-content-end">
+              <button type="submit" class="btn btn-primary mx-1">View</button>
+              <button type="button" class="btn btn-outline-dark mx-1" (click)="resetFilters()">Reset</button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- List of Candidates Section -->
+      <div>
+        <div class="row p-2 align-items-center">
+          <div class="col-12 col-lg-5">
+            <p class="text-dark m-0 ps-3 text-primary fw-bold">List of Candidates</p>
+          </div>
+
+          <div class="col-12 col-lg-7 d-lg-flex align-items-center justify-content-end">
+            <button class="btn btn-primary mx-1" (click)="exportToExcel()" [disabled]="isExporting || filteredDataList.length === 0">
+              <i *ngIf="!isExporting" class="fa fa-download me-2"></i>
+              <i *ngIf="isExporting" class="fa fa-spinner fa-spin me-2"></i>
+              {{ isExporting ? 'Wait...' : 'Export Excel' }}
+            </button>
+
+            <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText"
+              (ngModelChange)="applyFilters()" style="width: 25%;" />
+          </div>
+        </div>
+
+        <div class="table-responsive table-invoice">
+          <table class="table table-bordered" id="exportTable">
+            <thead>
+              <tr>
+                <th>Sr.</th>
+                <th>Month</th>
+                <th>Candidate ID</th>
+                <th>Candidate Name</th>
+                <th>Email</th>
+                <th>Mobile</th>
+                <th>Job / Position</th>
+                <th>Department</th>
+                <th>Location</th>
+                <th>Source</th>
+                <th>Exp (Yrs)</th>
+                <th>Current CTC</th>
+                <th>Expected CTC</th>
+                <th>Notice Period</th>
+                <th>Education</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                *ngFor="let item of filteredDataList | paginate: { itemsPerPage: pageSize, currentPage: pageIndex, totalItems: totalItems }; let i = index">
+                <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+                <td>{{ item.monthYear }}</td>
+                <td>{{ item.pkRecId }}</td>
+                <td>{{ item.candidateName }}</td>
+                <td>{{ item.email }}</td>
+                <td>{{ item.mobile }}</td>
+                <td>
+                  <div class="fw-bold">{{ item.jobTitle }}</div>
+                  <small class="text-dark" *ngIf="item.mrfCode">{{ item.mrfCode }}</small>
+                </td>
+                <td>{{ item.department }}</td>
+                <td>{{ item.location }}</td>
+                <td>{{ item.source }}</td>
+                <td>{{ item.experience }}</td>
+                <td>{{ item.currentCtc }}</td>
+                <td>{{ item.expectedCtc }}</td>
+                <td>{{ item.noticePeriod }}</td>
+                <td>{{ item.education }}</td>
+                <td>
+                  <span class="badge" [ngClass]="getStatusBadgeClass(item.displayStatus)">
+                    {{ item.displayStatus }}
+                  </span>
+                </td>
+                <td>
+                  <button type="button" class="btn btn-link btn-sm text-primary px-0 text-decoration-none"
+                    (click)="openCandidateDetails(item)" title="View Candidate Profile">
+                    <i class="fa fa-eye me-1"></i> View
+                  </button>
+                </td>
+              </tr>
+
+              <!-- No records fallback using global no-result-card -->
+              <tr *ngIf="!filteredDataList.length">
+                <td colspan="17" class="p-0 border-0">
+                  <div class="no-result-card rounded-0">
+                    <div class="icon-box-search">
+                      <i class="fa-regular fa-folder-open"></i>
+                    </div>
+                    <h5>No records found</h5>
+                    <p>Try adjusting your <span>filters</span> or date range</p>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <pagination-controls *ngIf="filteredDataList.length > 0" (pageChange)="onPageChange($event)" [autoHide]="true" totalItems="totalItems"
+            itemsPerPage="pageSize">
+          </pagination-controls>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Candidate Details Modal (Pure Bootstrap 5) -->
+<div class="modal fade show d-block" *ngIf="selectedCandidate" tabindex="-1"
+  style="background-color: rgba(0, 0, 0, 0.6); z-index: 1060; overflow-y: auto; padding-top: 80px; padding-bottom: 40px;"
+  (click)="closeCandidateDetails()">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg my-0 mx-auto" style="max-height: calc(100vh - 120px);"
+    (click)="$event.stopPropagation()">
+    <div class="modal-content border-0 shadow">
+
+      <!-- Modal Header (Compact Small Font Size) -->
+      <div class="modal-header bg-primary text-white py-1 px-3">
+        <div class="d-flex align-items-center text-white" style="font-size: 0.90rem; font-weight: 600;">
+          <i class="fa fa-user-circle me-2"></i> Candidate Profile: {{ selectedCandidate.candidateName }} ({{
+          selectedCandidate.pkRecId }})
+        </div>
+        <button type="button" class="btn-close btn-close-white btn-sm" (click)="closeCandidateDetails()"
+          aria-label="Close"></button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="modal-body p-3">
+
+        <!-- Status Summary Bar (bg-warning-subtle) -->
+        <div class="bg-warning-subtle border border-warning-subtle rounded p-2 mb-3 small">
+          <div class="row g-2 text-center text-md-start align-items-center">
+            <div class="col-4 border-end border-warning-subtle">
+              <span class="text-dark d-block fw-semibold" style="font-size: 11px;">PIPELINE STATUS</span>
+              <span class="badge mt-1" [ngClass]="getStatusBadgeClass(selectedCandidate.displayStatus)">
+                {{ selectedCandidate.displayStatus }}
+              </span>
+            </div>
+            <div class="col-4 border-end border-warning-subtle">
+              <span class="text-dark d-block fw-semibold" style="font-size: 11px;">POSITION</span>
+              <strong class="text-primary">{{ selectedCandidate.jobTitle }}</strong>
+            </div>
+            <div class="col-4">
+              <span class="text-dark d-block fw-semibold" style="font-size: 11px;">APPLIED DATE</span>
+              <span class="text-dark fw-semibold text-truncate d-block">{{ selectedCandidate.appliedDate ?
+                (selectedCandidate.appliedDate | date:'dd-MM-yyyy') : '-' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Candidate Info Grid (Subtle Card Colors) -->
+        <div class="row g-3 small">
+
+          <!-- Column 1: Personal & Contact (bg-info-subtle header) -->
+          <div class="col-md-6">
+            <div class="card border border-info-subtle h-100 shadow-sm">
+              <div
+                class="card-header bg-info-subtle text-info-emphasis py-1 px-2 fw-bold border-bottom border-info-subtle small">
+                <i class="fa fa-address-card me-1 text-info"></i> Personal & Contact Info
+              </div>
+              <div class="card-body p-2">
+                <table class="table table-sm table-borderless mb-0">
+                  <tbody>
+                    <tr>
+                      <td class="text-dark" style="width: 40%;">Full Name:</td>
+                      <td class="fw-semibold text-dark">{{ selectedCandidate.candidateName }}</td>
+                    </tr>
+                    <tr>
+                      <td class="text-dark">Email:</td>
+                      <td class="text-dark">{{ selectedCandidate.email || '-' }}</td>
+                    </tr>
+                    <tr>
+                      <td class="text-dark">Mobile:</td>
+                      <td class="text-dark">{{ selectedCandidate.mobile || '-' }}</td>
+                    </tr>
+                    <tr>
+                      <td class="text-dark">Gender:</td>
+                      <td class="text-dark">{{ selectedCandidate.gender || '-' }}</td>
+                    </tr>
+                    <tr>
+                      <td class="text-dark">Education:</td>
+                      <td class="text-dark">{{ selectedCandidate.education || '-' }}</td>
+                    </tr>
+                    <tr>
+                      <td class="text-dark">Key Skills:</td>
+                      <td class="text-dark">{{ selectedCandidate.keySkills || '-' }}</td>
+                    </tr>
+                    <tr>
+                      <td class="text-dark">Address:</td>
+                      <td class="text-dark">{{ selectedCandidate.address || '-' }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Column 2: Hiring & Professional Info (bg-success-subtle header) -->
+          <div class="col-md-6">
+            <div class="card border border-success-subtle h-100 shadow-sm">
+              <div
+                class="card-header bg-success-subtle text-success-emphasis py-1 px-2 fw-bold border-bottom border-success-subtle small">
+                <i class="fa fa-briefcase me-1 text-success"></i> Job & Compensation Details
+              </div>
+              <div class="card-body p-2">
+                <table class="table table-sm table-borderless mb-0">
+                  <tbody>
+                    <tr>
+                      <td class="text-dark" style="width: 40%;">Requisition / MRF:</td>
+                      <td class="fw-semibold text-primary">{{ selectedCandidate.mrfCode || selectedCandidate.jobId ||
+                        '-' }}</td>
+                    </tr>
+                    <tr>
+                      <td class="text-dark">Department:</td>
+                      <td class="text-dark">{{ selectedCandidate.department || '-' }}</td>
+                    </tr>
+                    <tr>
+                      <td class="text-dark">Location:</td>
+                      <td class="text-dark">{{ selectedCandidate.location || '-' }}</td>
+                    </tr>
+                    <tr>
+                      <td class="text-dark">Source / Vendor:</td>
+                      <td class="text-dark">{{ selectedCandidate.source || '-' }}</td>
+                    </tr>
+                    <tr>
+                      <td class="text-dark">Total Experience:</td>
+                      <td class="text-dark">{{ selectedCandidate.experience }} Years</td>
+                    </tr>
+                    <tr>
+                      <td class="text-dark">Current CTC:</td>
+                      <td class="text-dark">{{ selectedCandidate.currentCtc }}</td>
+                    </tr>
+                    <tr>
+                      <td class="text-dark">Expected CTC:</td>
+                      <td class="text-dark">{{ selectedCandidate.expectedCtc }}</td>
+                    </tr>
+                    <tr>
+                      <td class="text-dark">Notice Period:</td>
+                      <td class="text-dark">{{ selectedCandidate.noticePeriod }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Hiring Funnel Checkpoints (bg-primary-subtle header + subtle boxes) -->
+        <div class="card border border-primary-subtle mt-3 shadow-sm small">
+          <div
+            class="card-header bg-primary-subtle text-primary-emphasis py-1 px-2 fw-bold border-bottom border-primary-subtle small">
+            <i class="fa fa-tasks me-1 text-primary"></i> Recruitment Lifecycle Checkpoints
+          </div>
+          <div class="card-body p-2">
+            <div class="row g-2 text-center">
+              <div class="col">
+                <div class="border border-primary-subtle rounded p-2 bg-primary-subtle bg-opacity-25">
+                  <span class="text-dark d-block fw-semibold" style="font-size: 11px;">Screening</span>
+                  <span class="badge mt-1" [ngClass]="selectedCandidate.shortlistStatus ? 'bg-success' : 'bg-primary'">
+                    {{ selectedCandidate.shortlistStatus ? 'Shortlisted' : 'Pending' }}
+                  </span>
+                </div>
+              </div>
+              <div class="col">
+                <div class="border border-warning-subtle rounded p-2 bg-warning-subtle bg-opacity-50">
+                  <span class="text-dark d-block fw-semibold" style="font-size: 11px;">Interview Rounds</span>
+                  <span class="badge mt-1"
+                    [ngClass]="selectedCandidate.interviewRound > 0 ? 'bg-warning text-dark' : 'bg-primary'">
+                    {{ selectedCandidate.interviewRound > 0 ? ('Round ' + selectedCandidate.interviewRound) : 'Not
+                    Scheduled' }}
+                  </span>
+                </div>
+              </div>
+              <div class="col">
+                <div class="border border-info-subtle rounded p-2 bg-info-subtle bg-opacity-25">
+                  <span class="text-dark d-block fw-semibold" style="font-size: 11px;">Offer / Selection</span>
+                  <span class="badge mt-1"
+                    [ngClass]="selectedCandidate.finalSelectionStatus ? 'bg-success' : 'bg-primary'">
+                    {{ selectedCandidate.finalSelectionStatus ? 'Selected / Offered' : 'Pending' }}
+                  </span>
+                </div>
+              </div>
+              <div class="col">
+                <div class="border border-success-subtle rounded p-2 bg-success-subtle bg-opacity-25">
+                  <span class="text-dark d-block fw-semibold" style="font-size: 11px;">Onboarding</span>
+                  <span class="badge mt-1" [ngClass]="selectedCandidate.isOnboardingDone ? 'bg-success' : 'bg-primary'">
+                    {{ selectedCandidate.isOnboardingDone ? 'Joined / Onboarded' : 'Pending' }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+
+
+    </div>
+  </div>
+</div>

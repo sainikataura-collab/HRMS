@@ -1,0 +1,220 @@
+// @media screen and (max-width: 767.98px) {
+
+//     #exportTable thead {
+//         display: none;
+//     }
+
+//     /* Make table rows behave like flex containers (cards) */
+//     #exportTable tbody tr {
+//         display: flex; 
+//         flex-wrap: wrap; 
+//         margin-bottom: 15px;
+//         border: 1px solid #ddd; 
+//         border-radius: 8px;
+//         padding: 10px;
+//         box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
+//         background-color: transparent; 
+//         align-items: flex-start; 
+//         overflow: hidden; 
+//     }
+
+
+//     #exportTable tbody td {
+//         display: flex; 
+//         align-items: baseline; 
+//         min-width: 120px; 
+//         padding: 0px 10px; /* Adjust padding for visual spacing */
+//         box-sizing: border-box; /* Include padding in width calculation */
+//         border-bottom: none; /* Remove individual cell borders */
+//         word-break: break-word; /* Breaks words if they are too long */
+//         overflow-wrap: break-word; /* Another property for word breaking */
+//         hyphens: auto; /* Allow hyphenation for better text flow */
+       
+       
+//     }
+
+    
+//     #exportTable tbody td:nth-last-child(odd):last-child:not(:nth-of-type(5)) { /* Exclude Action column */
+//         flex-basis: 100%; /* Make it full width if it's the only one left */
+//         min-width: 100%; /* Ensure it spans fully */
+//     }
+
+
+//     /* Style the data-label (header) */
+//     #exportTable tbody td::before {
+//         content: attr(data-label); /* Get label from data-label attribute */
+//         font-weight: 600; /* Slightly bolder for clarity */
+//         color: #3080e8; /* Your specified color for the label */
+//         flex-shrink: 0; /* Prevent label from shrinking */
+//         margin-right: 8px; /* Space between label and value */
+//         text-align: left;
+//         line-height: 1; /* Adjusted line-height for better alignment with content */
+//     }
+
+//     /* Specific styling for the 'Action' column in card view */
+//     #exportTable tbody td:nth-of-type(5) { /* Assuming 'Action' is the 4th column */
+//         flex: 0 0 100%; /* Fix this column to always take 100% width and not grow/shrink */
+//         justify-content: center; /* Center the buttons within their 100% width */
+//         padding-top: 10px; /* Add some space above action buttons */
+//         border-top: 1px dashed #eee; /* Add a subtle separator above actions */
+//         margin-top: 5px;
+//         flex-wrap: wrap; /* If buttons are many, allow them to wrap within this column */
+//     }
+
+//     #exportTable tbody td:nth-of-type(5)::before {
+//         content: ""; /* Hide the pseudo-element for the action column */
+//         display: none;
+//     }
+
+//     .table:not(.table-sm):not(.table-md):not(.dataTable) td,
+// .table:not(.table-sm):not(.table-md):not(.dataTable) th {
+//     height: auto;
+// }
+// }
+
+
+@media screen and (max-width: 767.98px) {
+  
+  #exportTable thead {
+    display: none;
+  }
+
+  /* ===== HIDE UNWANTED COLUMNS ===== */
+  #exportTable tbody td[data-label="Sr.No. : "] {
+    display: none !important;
+  }
+
+  /* ===== CARD CONTAINER ===== */
+  #exportTable tbody tr {
+    display: block;
+    margin: 1rem 0.2rem;
+    padding: 0rem;
+    background: #ffffff;
+    border: 1px dashed #87dabc;
+    border-left: 4px solid #10b981;
+    border-radius: 0.3rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    position: relative;
+  }
+
+   #exportTable tbody tr:nth-child(even) {
+    border-left-color: #10b981;
+       border-left: 4px solid #3080e8;
+  }
+
+  /* ===== RESET TD ===== */
+  #exportTable tbody td {
+    display: block;
+    padding: 0;
+    padding-bottom: 10px;
+    margin: 0;
+    border: none;
+    background: transparent;
+    height: auto;
+  }
+
+  #exportTable tbody td::before {
+    display: none !important;
+  }
+
+  /* ===== DATE HEADER ===== */
+  #exportTable tbody td[data-label="Date: "] {
+    display: block;
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: #2b2e41 !important;
+    padding: 0.3rem 0.5rem;
+    background: #bed9c95c;
+    text-align: start !important;
+  }
+
+  #exportTable tbody td[data-label="Date: "]::before {
+    content: '📅' !important;
+    display: inline-block !important;
+    font-size: .65rem;
+    margin-right: 0.5rem;
+    text-align: start !important;
+  }
+
+  /* ===== STATUS BADGE (Top Right) ===== */
+  #exportTable tbody td[data-label="Holiday : "] {
+    position: absolute;
+    top: 0.4rem;
+    right: 0.3rem;
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 40px;
+    font-size: 0.55rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #ffffff !important;
+    line-height: 1.4;
+  }
+
+
+  #exportTable tbody tr:nth-child(odd) td[data-label="Holiday : "] {
+    background: #10b981;
+  }
+
+  #exportTable tbody tr:nth-child(even) td[data-label="Holiday : "] {
+    background: #10b981;
+    // background: #3080e8;
+  }
+
+
+  /* ===== TIME ROW ===== */
+  #exportTable tbody td[data-label="Day Name: "] {
+    display: inline-flex;
+    align-items: center;
+    padding: 0 0.5rem;
+    font-size: 0.65rem;
+    color: #1f2937;
+    font-weight: 500;
+    width: 30%;
+  }
+
+  #exportTable tbody td[data-label="Day Name: "]::before {
+    content: '🕐' !important;
+    display: inline-block !important;
+    font-size: 0.65rem;
+    margin-right: 0.5rem;
+  }
+}
+
+
+// 
+
+
+.card-header{
+  background-color: #3080e8;
+  font-weight: bold;
+}
+
+
+.bg-light-success {
+  background-color: #caf8d4; /* Light green background */
+  color: #155724; /* Dark green text */
+  padding: 5px 10px;
+  border-radius: 7px;
+}
+
+.bg-light-error {
+  background-color: #ffeaca; /* Light red background */
+  color: #721c24; /* Dark red text */
+  padding: 5px 10px;
+  border-radius: 7px;
+}
+
+@media screen and (max-width:1024px){
+  .card-header{
+  padding: 5px 0px 0px 20px;
+  }
+  }
+
+  @media screen and (max-width:1024px) {
+    .all-pickup-point-search-header{
+      margin-bottom: 7px;
+    }
+  }

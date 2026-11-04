@@ -1,0 +1,185 @@
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card">
+
+      <!-- Header -->
+      <div class="card-header bg-blue">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-6 col-lg-6">
+            <h4 class="">{{ Isedit ? 'Update Training Planning form ' : 'Add Training Planning form' }}</h4>
+          </div>
+          <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+            <button class="btn btnheader"
+              routerLink="/dash/training/trainingdashboard/TrainingPlanning_List">Back</button>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- Body -->
+      <div class="card-body mt-4">
+        <form [formGroup]="trainingForm" class="row row-cols-1 row-cols-md-3 g-4">
+
+
+          <div class="col">
+            <label>Program</label>
+            <ng-select [items]="Programddl" bindLabel="name" bindValue="value" placeholder="--Select program--"
+              formControlName="programId" class="w-100 small">
+            </ng-select>
+            <span *ngIf="showError && trainingForm.controls['programId'].invalid" class="text-danger small">
+              Please Select Trainer.
+            </span>
+          </div>
+          <div class="col">
+            <label>SubProgram</label>
+            <ng-select [items]="SubProgram" bindLabel="name" bindValue="value" placeholder="--Select program--"
+              formControlName="subProgramId" class="w-100 small">
+            </ng-select>
+            <span *ngIf="showError && trainingForm.controls['subProgramId'].invalid" class="text-danger small">
+              Please Select Trainer.
+            </span>
+          </div>
+          
+
+         
+
+
+          <!-- Trainer Dropdown -->
+          <div class="col">
+            <label>Trainer<span style="color:red">*</span></label>
+            <ng-select [items]="trainerList" bindLabel="name" bindValue="value" placeholder="--Select Trainer--"
+              formControlName="trainer" class="w-100 small">
+            </ng-select>
+            <span *ngIf="showError && trainingForm.controls['trainer'].invalid" class="text-danger small">
+              Please Select Trainer.
+            </span>
+
+          </div>
+
+
+
+          <!-- Institute Dropdown (shown only when External trainer is selected) -->
+          <div class="col" *ngIf="showInstituteDropdown">
+            <label>Institute<span style="color:red">*</span></label>
+            <ng-select [items]="institutes" bindLabel="name" bindValue="value" placeholder="--Select Institute--"
+              formControlName="institute" class="w-100 small">
+            </ng-select>
+
+          </div>
+
+         <!-- Trainer Dropdown (shown only when internal trainer is selected) -->
+          <div class="col" *ngIf="showemployeeDropdown">
+            <label>Trainer Name<span style="color:red">*</span></label>
+            <ng-select [items]="employees" bindLabel="name" bindValue="value" placeholder="--Select employee--"
+              formControlName="trainername" class="w-100 small">
+            </ng-select>
+             <span *ngIf="showError && trainingForm.controls['trainername'].invalid" class="text-danger small">
+              Please select Mode.
+            </span>
+          </div>
+
+
+          <!-- Mode Dropdown -->
+          <div class="col">
+            <label>Mode<span style="color:red">*</span></label>
+            <ng-select [items]="modeList" bindLabel="name" bindValue="value" placeholder="--Select Mode--"
+              formControlName="mode" class="w-100 small">
+            </ng-select>
+            <span *ngIf="showError && trainingForm.controls['mode'].invalid" class="text-danger small">
+              Please select Mode.
+            </span>
+          </div>
+
+          <!-- Date & Time -->
+          <div class="col">
+            <label>Date & Time<span style="color:red">*</span></label>
+            <input type="datetime-local" class="form-control" formControlName="dateTime">
+            <span *ngIf="showError && trainingForm.controls['dateTime'].invalid" class="text-danger small">
+              Please enter dateTime
+            </span>
+          </div>
+
+          <!-- Duration -->
+          <div class="col">
+            <label>Duration (in Month)</label>
+            <input type="number" class="form-control" formControlName="duration" placeholder="enter duration">
+
+            <span *ngIf="showError && trainingForm.controls['duration'].invalid" class="text-danger small">
+              Please enter duration
+            </span>
+          </div>
+
+          <div class="col"  *ngIf="showLocation">
+            <label>Veneu</label>
+            <input type="text" class="form-control" formControlName="location" placeholder=" enter location">
+
+            <span *ngIf="showError && trainingForm.controls['location'].invalid" class="text-danger small">
+              Please enter location
+            </span>
+          </div>
+
+          <!-- Target Audience Type -->
+          <div class="col-12">
+            <label>Target Audience</label>
+
+            <!-- Choose type -->
+            <div class="d-flex gap-3 my-2">
+              <label><input type="radio" value="D" (change)="onAudienceTypeChange('D')"
+                  [checked]="selectedAudienceType=='D'"> Department</label>
+              <label><input type="radio" value="R" (change)="onAudienceTypeChange('R')"
+                  [checked]="selectedAudienceType=='R'"> Role</label>
+              <label><input type="radio" value="E" (change)="onAudienceTypeChange('E')"
+                  [checked]="selectedAudienceType=='E'"> Employee</label>
+            </div>
+
+            <!-- Single dropdown, bound dynamically -->
+            <ng-select [items]="currentList" bindLabel="name" bindValue="value" [multiple]="true"
+              [closeOnSelect]="false" formControlName="audienceValues" placeholder="--Select--" class="w-100 small">
+            </ng-select>
+
+            <span *ngIf="showError && trainingForm.controls['audienceValues'].invalid" class="text-danger small">
+              Please select audienceValues
+            </span>
+
+          </div>
+
+          <!-- Training Charge -->
+          <div class="col">
+            <label>Training Charge<span style="color:red">*</span></label>
+            <input 
+  type="number"
+  formControlName="trainingcharge"
+  class="form-control"
+  placeholder="Enter Training Charge"
+  min="0"
+  (keydown)="preventInvalidKeys($event)" />
+
+            <!-- <input type="text" class="form-control" formControlName="trainingcharge" placeholder="enter Charge"> -->
+            <span *ngIf="showError && trainingForm.controls['trainingcharge'].invalid" class="text-danger small">
+              Please enter Training Charge.
+            </span>
+          </div>
+
+
+          <!-- Approvals -->
+          <div class="col">
+            <label>Approval From Management</label><br>
+            <input type="checkbox" formControlName="isApproved" class="form-check-input fs-6 mx-1">
+          </div>
+        </form>
+
+        <!-- Buttons -->
+        <div class="row">
+          <div class="col d-flex align-items-end justify-content-end pt-4 pb-3">
+            <button type="button" class="btn btn-primary mx-1" (click)="onSubmit()">
+              {{ Isedit ? 'Update' : 'Save' }}
+            </button>
+            <button type="button" class="btn btn-outline-dark mx-1" (click)="resetForm()">Reset</button>
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+  </div>
+</div>

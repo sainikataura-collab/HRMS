@@ -1,0 +1,115 @@
+.mobile-only, .loading-screen {
+  text-align: center;
+  padding: 2rem;
+  font-size: 1.1rem;
+}
+
+
+
+.office-marker {
+  width: 30px;
+  height: 30px;
+  background-color: #ff0000; /* bright red */
+  border: 3px solid white;
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+  z-index: 999;
+}
+
+
+
+.camera-preview-fullscreen {
+  position: fixed; // 🔥 fixed instead of relative
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.3); // optional overlay
+  z-index: 9999;
+  overflow: hidden;
+}
+
+
+#cameraPreview.camera-preview-full {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+
+/* Top Center */
+.capture-status {
+  position: fixed; // 🔥 must be fixed, not absolute
+  top: 4.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #fff;
+  color:#c62828;
+  border:1px solid #aaa;
+  border-top:2px soild #3080e8;
+
+  padding: 10px 8px;
+  border-radius: 12px;
+  z-index: 10000;
+  pointer-events: auto;
+}
+
+/* Bottom Center Button */
+.capture-button {
+  position: fixed; // 🔥 must be fixed, not absolute
+  bottom: 5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #1976d2;
+  color: white;
+  padding: 14px 28px;
+  border: none;
+  border-radius: 30px;
+  font-size: 1.2rem;
+  z-index: 10000;
+  pointer-events: auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+
+.capture-button:disabled {
+  background-color: #aaa;
+  cursor: not-allowed;
+}
+
+
+
+// vishal added css
+
+.card-custom{
+    border-top:2px solid #3080e8 !important;
+}
+.card-custom2{
+    border-top:2px solid #056d30 !important;
+}
+
+.small{
+    font-size:12px;
+}
+
+.preview-card{
+    border-top:2px solid #3080e8;
+}
+
+
+
+
+@media  screen and (min-width:768px) {
+    .hide-desktop-map{
+    display: none !important;
+  }
+
+}
+
+

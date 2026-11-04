@@ -1,0 +1,60 @@
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-primary">
+                <div class="row w-100">
+                    <div
+                        class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-between">
+                        <h4>{{Isedit ? 'Update Language Master' : 'Language Master' }}</h4>
+                    </div>
+                    <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+                        <button class="btn btnheader" routerLink="/dash/hr/hrdashboard/LanguageMaster_list">
+                           Back
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body mt-4">
+                <form [formGroup]="LanguageMaster">
+                    <!-- Department Name -->
+
+                    <div class="row">
+                        <div class="col-4">
+                            <label for="description">Description <span style="color: red;">*</span></label>
+                            <div class="form-group">
+                                <input id="description" type="text" class="form-control"
+                                    formControlName="description"  (blur)="checkDuplicate(LanguageMaster.get('description')?.value)"/>
+                                <span
+                                    *ngIf="showError &&LanguageMaster.controls['description'].invalid && !LanguageMaster.get('description')?.errors?.['duplicate']"
+                                    class="text-danger mt-1 lh-base" style="font-size: 12px;">
+                                    Please enter description.
+                                </span>
+
+                
+                              <div *ngIf="LanguageMaster.get('description')?.errors?.['duplicate']" 
+                                    class="text-danger lh-base" style="font-size:10px;">
+                                    {{ LanguageMaster.get('description')?.errors?.['duplicate'] }}
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="col-8 modal-footer">
+                            <button type="submit" class="btn btn-primary mx-1" (click)="onSubmit()">{{ Isedit? 'Update' : 'Save' }}</button>
+
+                            <button type="reset" class="btn btn-outline-dark mx-1">Reset</button>
+                        </div>
+
+
+                    </div>
+
+                    <!-- Footer buttons -->
+
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

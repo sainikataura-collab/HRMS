@@ -1,0 +1,331 @@
+<section>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+          <div class="card-header bg-blue">
+            <div class="row w-100">
+              <div class="col-sm-12 col-md-6 col-lg-6">
+                <h4>Driving Licence & Vehicle Verification</h4>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-body mt-2">
+            <!-- ====================== VIEW MODE ====================== -->
+  <div *ngIf="isViewMode && dlData">
+
+  <div class="row g-4">
+
+    <!-- Driving Licence -->
+    <div class="col-sm-12 col-md-4">
+      <p class="fw-semibold text-primary mb-2 fs-6">Driving Licence</p>
+      <p class="d-flex"><span> Licence No : </span> <span class="ps-2 fw-semibold">{{ dlData.dlNo }}</span></p>
+      
+
+      <div class="card" *ngIf="dlData.dlPhoto">
+        <div class="card-header py-1 px-2 bg-light">
+          <small class="fw-semibold">Driving Licence</small>
+        </div>
+        <img
+          [src]="dlData.dlPhoto"
+          alt="Driving Licence"
+          class="card-img-bottom aadhaar-thumb"
+          (click)="openImagePreview(dlData.dlPhoto, 'Driving Licence')"
+        />
+      </div>
+    </div>
+
+    <!-- Vehicle Insurance -->
+    <div
+      class="col-sm-12 col-md-4"
+      *ngIf="dlData.vehicle_Insurance_No || dlData.vehicle_Insurance_Photo"
+    >
+  
+
+        <p class="fw-semibold text-primary mb-2 fs-6">Vehicle Insurance</p>
+      <p class="d-flex"><span *ngIf="dlData.vehicle_Insurance_No"> Insurance No : </span> <span class="ps-2 fw-semibold" *ngIf="dlData.vehicle_Insurance_No">  {{ dlData.vehicle_Insurance_No }}</span></p>
+      
+
+
+
+
+      <div class="card" *ngIf="dlData.vehicle_Insurance_Photo">
+        <div class="card-header py-1 px-2 bg-light">
+          <small class="fw-semibold">Vehicle Insurance</small>
+        </div>
+        <img
+          [src]="dlData.vehicle_Insurance_Photo"
+          alt="Vehicle Insurance"
+          class="card-img-bottom aadhaar-thumb"
+          (click)="openImagePreview(dlData.vehicle_Insurance_Photo, 'Vehicle Insurance')"
+        />
+      </div>
+    </div>
+
+    <!-- Vehicle RC -->
+    <div
+      class="col-sm-12 col-md-4"
+      *ngIf="dlData.vehicle_RC_No || dlData.vehicle_RC_Photo"
+    >
+
+
+      
+        <p class="fw-semibold text-primary mb-2 fs-6">Vehicle RC</p>
+      <p class="d-flex"><span *ngIf="dlData.vehicle_RC_No"> RC No : </span> <span class="ps-2 fw-semibold" *ngIf="dlData.vehicle_RC_No">   {{ dlData.vehicle_RC_No }}</span></p>
+      
+
+
+      <div class="card" *ngIf="dlData.vehicle_RC_Photo">
+        <div class="card-header py-1 px-2 bg-light">
+          <small class="fw-semibold">Vehicle RC</small>
+        </div>
+        <img
+          [src]="dlData.vehicle_RC_Photo"
+          alt="Vehicle RC"
+          class="card-img-bottom aadhaar-thumb"
+          (click)="openImagePreview(dlData.vehicle_RC_Photo, 'Vehicle RC')"
+        />
+      </div>
+    </div>
+
+  </div>
+
+  <div class="mt-4">
+    <button type="button" class="btn btn-warning" (click)="editDL()">
+      <i class="fas fa-edit me-1"></i> Edit Details
+    </button>
+  </div>
+
+</div>
+
+
+<!-- Enlarge Image Modal -->
+<div class="modal fade" id="imagePreviewModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header py-2">
+        <p class="modal-title mb-0 text-primary fw-semibold">{{ previewImageTitle }}</p>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center p-2">
+        <img [src]="previewImageSrc" class="img-fluid" alt="Preview" />
+      </div>
+    </div>
+  </div>
+</div>
+
+            <!-- ====================== FORM MODE ====================== -->
+            <form *ngIf="!isViewMode" [formGroup]="dlForm" (ngSubmit)="onSubmit()">
+              <!-- Driving Licence Section -->
+              <p class="text-primary mt-3  pb-2 fw-semibold fs-6">Driving Licence</p>
+              <div class="row">
+                <!-- DL No -->
+                <div class="col-sm-12 col-md-6 col-lg-4">
+                  <label>Driving Licence No <span class="text-danger">*</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text">
+                      <i class="fas fa-id-card"></i>
+                    </span>
+                    <input
+                      type="text"
+                      class="form-control text-uppercase"
+                      formControlName="DLNo"
+                      placeholder="e.g. DL-1420110012345"
+                      maxlength="25"
+                      (blur)="checkDLDuplicate()"
+                    />
+                  </div>
+                  <div
+                    *ngIf="(submitted || validate['DLNo'].touched) && validate['DLNo'].errors"
+                    class="text-danger mt-1 small"
+                  >
+                    <div *ngIf="validate['DLNo'].errors['required']">
+                      Driving Licence number is required.
+                    </div>
+                    <div *ngIf="validate['DLNo'].errors['pattern']">
+                      Please enter a valid Driving Licence number.
+                    </div>
+                    <div *ngIf="validate['DLNo'].errors['duplicate']">
+                      {{ validate['DLNo'].errors['duplicate'] }}
+                    </div>
+                  </div>
+                </div>
+
+                <!-- DL Photo Upload -->
+                <div class="col-sm-12 col-md-6 col-lg-5">
+                  <label>
+                    Upload Driving Licence Photo
+                    <span class="text-danger" *ngIf="!dlData?.dlPhoto">*</span>
+                  </label>
+                  <div class="input-group">
+                    <input
+                      type="file"
+                      class="form-control"
+                      (change)="onFileSelected($event, 'DLPhotoFile')"
+                      accept="image/jpeg,image/png,image/jpg,application/pdf"
+                    />
+                  </div>
+                  <small class="text-muted">Allowed: JPG, PNG, PDF (Max 5MB)</small>
+                  <div
+                    *ngIf="submitted && validate['DLPhotoFile'].errors && !dlData?.dlPhoto"
+                    class="text-danger mt-1 small"
+                  >
+                    Please upload Driving Licence photo.
+                  </div>
+
+                  <!-- Image Preview -->
+                  <div *ngIf="previewDLImage" class="mt-2">
+                    <img
+                      [src]="previewDLImage"
+                      alt="DL Preview"
+                      class="img-thumbnail"
+                      style="max-width: 250px; max-height: 160px; object-fit: contain;"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Vehicle Insurance Section -->
+              <ng-container *ngIf="companyConfig?.vehicleInsuranceVisible">
+               
+                 <p class="text-primary mt-3  pb-2 fw-semibold fs-6"><span>Vehicle Insurance</span><span *ngIf="companyConfig?.vehicleInsuranceMandatory" class="text-danger"> *</span></p>
+                <div class="row">
+                  <!-- Insurance No -->
+                  <div class="col-sm-12 col-md-6 col-lg-4">
+                    <label>Vehicle Insurance No <span class="text-danger" *ngIf="companyConfig?.vehicleInsuranceMandatory">*</span></label>
+                    <div class="input-group">
+                      <span class="input-group-text">
+                        <i class="fas fa-shield-alt"></i>
+                      </span>
+                      <input
+                        type="text"
+                        class="form-control text-uppercase"
+                        formControlName="Vehicle_Insurance_No"
+                        placeholder="e.g. IN-12345678"
+                        maxlength="50"
+                      />
+                    </div>
+                    <div
+                      *ngIf="submitted && validate['Vehicle_Insurance_No'].errors"
+                      class="text-danger mt-1 small"
+                    >
+                      Vehicle Insurance number is required.
+                    </div>
+                  </div>
+
+                  <!-- Insurance Photo Upload -->
+                  <div class="col-sm-12 col-md-6 col-lg-5">
+                    <label>
+                      Upload Vehicle Insurance Document
+                      <span class="text-danger" *ngIf="companyConfig?.vehicleInsuranceMandatory && !dlData?.vehicle_Insurance_Photo">*</span>
+                    </label>
+                    <div class="input-group">
+                      <input
+                        type="file"
+                        class="form-control"
+                        (change)="onFileSelected($event, 'Vehicle_Insurance_PhotoFile')"
+                        accept="image/jpeg,image/png,image/jpg,application/pdf"
+                      />
+                    </div>
+                    <small class="text-muted">Allowed: JPG, PNG, PDF (Max 5MB)</small>
+                    <div
+                      *ngIf="submitted && validate['Vehicle_Insurance_PhotoFile'].errors && !dlData?.vehicle_Insurance_Photo"
+                      class="text-danger mt-1 small"
+                    >
+                      Please upload Vehicle Insurance document.
+                    </div>
+
+                    <!-- Image Preview -->
+                    <div *ngIf="previewInsuranceImage" class="mt-2">
+                      <img
+                        [src]="previewInsuranceImage"
+                        alt="Insurance Preview"
+                        class="img-thumbnail"
+                        style="max-width: 250px; max-height: 160px; object-fit: contain;"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+
+              <!-- Vehicle RC Section -->
+              <ng-container *ngIf="companyConfig?.vehicleRCVisible">
+                 <p class="text-primary mt-3  pb-2 fw-semibold fs-6"> <span>Vehicle RC</span> <span *ngIf="companyConfig?.vehicleRCMandatory" class="text-danger"> *</span> </p>
+                <div class="row">
+                  <!-- RC No -->
+                  <div class="col-sm-12 col-md-6 col-lg-4">
+                    <label>Vehicle RC No <span class="text-danger" *ngIf="companyConfig?.vehicleRCMandatory">*</span></label>
+                    <div class="input-group">
+                      <span class="input-group-text">
+                        <i class="fas fa-car"></i>
+                      </span>
+                      <input
+                        type="text"
+                        class="form-control text-uppercase"
+                        formControlName="Vehicle_RC_No"
+                        placeholder="e.g. MH-12-AB-1234"
+                        maxlength="50"
+                      />
+                    </div>
+                    <div
+                      *ngIf="submitted && validate['Vehicle_RC_No'].errors"
+                      class="text-danger mt-1 small"
+                    >
+                      Vehicle RC number is required.
+                    </div>
+                  </div>
+
+                  <!-- RC Photo Upload -->
+                  <div class="col-sm-12 col-md-6 col-lg-5">
+                    <label>
+                      Upload Vehicle RC Document
+                      <span class="text-danger" *ngIf="companyConfig?.vehicleRCMandatory && !dlData?.vehicle_RC_Photo">*</span>
+                    </label>
+                    <div class="input-group">
+                      <input
+                        type="file"
+                        class="form-control"
+                        (change)="onFileSelected($event, 'Vehicle_RC_PhotoFile')"
+                        accept="image/jpeg,image/png,image/jpg,application/pdf"
+                      />
+                    </div>
+                    <small class="text-muted">Allowed: JPG, PNG, PDF (Max 5MB)</small>
+                    <div
+                      *ngIf="submitted && validate['Vehicle_RC_PhotoFile'].errors && !dlData?.vehicle_RC_Photo"
+                      class="text-danger mt-1 small"
+                    >
+                      Please upload Vehicle RC document.
+                    </div>
+
+                    <!-- Image Preview -->
+                    <div *ngIf="previewRCImage" class="mt-2">
+                      <img
+                        [src]="previewRCImage"
+                        alt="RC Preview"
+                        class="img-thumbnail"
+                        style="max-width: 250px; max-height: 160px; object-fit: contain;"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+
+              <!-- Submit Buttons -->
+              <div class="row mt-4">
+                <div class="col-12">
+                  <button type="submit" class="btn btn-primary me-2">
+                    <i class="fas fa-save me-1"></i> Save & Continue
+                  </button>
+                  <button type="button" class="btn btn-secondary" (click)="reset()">
+                    Reset
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

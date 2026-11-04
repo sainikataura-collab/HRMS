@@ -1,0 +1,140 @@
+<div class="row">
+    <div class="col-12">
+        <div class="card w-100">
+
+            <div class="card-header py-1 bg-primary">
+                <div class="row w-100">
+                    <div
+                        class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-between">
+                        <h4>Exit Interviews</h4>
+                    </div>
+
+                    <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+                        <input type="text" class="form-control w-50" placeholder="Search..." [(ngModel)]="searchText" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <div class="table-responsive table-invoice">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Employee Code</th>
+                                <th>Employee Name</th>
+                                <th>Department</th>
+                                <th>Resignation Date</th>
+                                <th>Expected Last Working Date</th>
+                                <th>Notice Period</th>
+                                <th>Notice Period Served</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr *ngFor="let item of filteredData()">
+
+                                <td>{{ item.empcode || item.EmpCode || '-' }}</td>
+                                <td>{{ item.empname || item.EmpName || '-' }}</td>
+                                <td>{{ item.department || item.Department || '-' }}</td>
+
+                                <td>
+                                    {{ (item.resignationDate || item.ResignationDate) | date:'dd-MMM-yyyy' }}
+                                </td>
+
+                                <td>
+                                    {{ (item.expectedLastWorkingDate || item.ExpectedLastWorkingDate) |
+                                    date:'dd-MMM-yyyy' }}
+                                </td>
+
+                                <td>{{ item.noticePeriod || item.NoticePeriod || '-' }}</td>
+
+                                <td>
+                                    <span class="badge"
+                                        [ngClass]="(item.noticePeriodServed || item.NoticePeriodServed) ? 'bg-success' : 'bg-danger'">
+                                        {{ (item.noticePeriodServed || item.NoticePeriodServed) ? 'Yes' : 'No' }}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="badge" [ngClass]="getInterviewStatusClass(item)">
+                                        {{ getInterviewStatusText(item) }}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <button
+                                        *ngIf="!(item.pk_exitInterviewId || item.Pk_ExitInterviewId || item.PK_ExitInterviewId)"
+                                        type="button" class="btn btn-sm btn-primary" (click)="openExitInterview(item)">
+                                        Process
+                                    </button>
+
+                                    <button
+                                        *ngIf="item.pk_exitInterviewId || item.Pk_ExitInterviewId || item.PK_ExitInterviewId"
+                                        type="button" class="btn btn-sm btn-outline mx-1"
+                                        (click)="viewExitInterview(item)">
+                                        <i class="fa fa-eye"></i>
+                                    </button>
+
+                                    <button type="button" class="btn btn-sm btn-outline mx-1"
+                                        (click)="downloadExitInterviewPdf(item)">
+                                        <i class="fa fa-print"></i>
+                                    </button>
+                                </td>
+                            </tr>
+
+                            <tr *ngIf="filteredData().length === 0">
+                                <td colspan="9" class="text-center">
+                                    No records found.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- PDF Preview Modal -->
+            <div class="modal my-5 my-lg-3 fade" id="exitInterviewPdfModal" tabindex="-1">
+                <div class="modal-dialog modal-xl modal-dialog-centered">
+                    <div class="modal-content">
+
+                        <div class="modal-header justify-content-center position-relative p-0">
+                            <p class="modal-title w-100 text-center fw-semibold">
+                                Exit Interview Report Preview
+                            </p>
+
+                            <button type="button" class="btn-close position-absolute end-0 me-3"
+                                (click)="closePreviewModal()">
+                            </button>
+                        </div>
+
+                        <div class="modal-body px-1 px-lg-3 py-2">
+
+                            <iframe *ngIf="previewPdfUrl" [src]="previewPdfUrl" class="pdf-frame">
+                            </iframe>
+
+                            <div *ngIf="!previewPdfUrl" class="text-center">
+                                <p>No PDF available</p>
+                            </div>
+
+                        </div>
+
+                        <div class="modal-footer justify-content-center flex-wrap gap-2">
+                            <button type="button" class="btn btn-primary px-4" (click)="downloadPreviewPdf()">
+                                Download
+                            </button>
+
+                            <button type="button" class="btn btn-secondary px-4" (click)="closePreviewModal()">
+                                Back
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <!-- End PDF Preview Modal -->
+
+        </div>
+    </div>
+</div>

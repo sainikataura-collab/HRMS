@@ -1,0 +1,152 @@
+<!-- candidate-family-details.component.html -->
+<section>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-12 col-md-12 col-lg-12">     
+<div class="card">
+  <!-- Header -->
+  <div class="card-header bg-primary py-lg-1 mt-0">
+    <div class="row w-100 align-items-center">
+      <div class="col-12">
+        <h4 class="text-white mb-0">{{ isEdit ? 'Edit Family Details' : 'Family Member Details' }}</h4>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card Body -->
+  <div class="card-body">
+    <form [formGroup]="CandidateFamilyDetailsForm">
+      <div class="g-4 row row-cols-1 row-cols-md-3">
+        
+        <!-- Member Name -->
+        <div class="col">
+          <label for="membername">Member Name<span class="text-danger font-bold">*</span></label>
+          <input id="membername" type="text" class="form-control" formControlName="membername" 
+                 placeholder="Enter member name">
+          <span *ngIf="showError && CandidateFamilyDetailsForm.controls['membername'].invalid" 
+                class="text-danger mt-1" style="font-size: 12px;">
+            Please enter Member Name
+          </span>
+        </div>
+
+        <!-- Relation -->
+        <div class="col">
+          <label for="relation">Relation<span class="text-danger font-bold">*</span></label>
+          <ng-select id="relation" [items]="Relation" bindLabel="name" bindValue="value"
+                     formControlName="relation" placeholder="-- Select Relation --" class="w-100">
+          </ng-select>
+          <span *ngIf="showError && CandidateFamilyDetailsForm.controls['relation'].invalid" 
+                class="text-danger mt-1" style="font-size: 12px;">
+            Please select Relation
+          </span>
+        </div>
+
+        <!-- Date of Birth -->
+        <div class="col">
+          <label for="dob">Date Of Birth<span class="text-danger font-bold">*</span></label>
+          <input id="dob" type="date" class="form-control" formControlName="dob">
+          <span *ngIf="showError && CandidateFamilyDetailsForm.controls['dob'].invalid" 
+                class="text-danger mt-1" style="font-size: 12px;">
+            Please select Date of Birth
+          </span>
+        </div>
+
+        <!-- Qualification -->
+        <div class="col">
+          <label for="qualification">Qualification</label>
+          <input id="qualification" type="text" class="form-control" formControlName="qualification"
+                 placeholder="Enter qualification">
+        </div>
+
+        <!-- Occupation -->
+        <div class="col">
+          <label for="occupation">Occupation</label>
+          <input id="occupation" type="text" class="form-control" formControlName="occupation"
+                 placeholder="Enter occupation">
+        </div>
+      </div>
+
+      <!-- Form Actions -->
+      <div class="modal-footer px-0">
+        <button type="button" class="btn btn-primary mx-1" (click)="submitForm()">
+          <i class="fa fa-save"></i> {{ isEdit ? 'Update' : 'Save' }}
+        </button>
+        <button type="button" class="btn btn-outline-dark mx-1" (click)="resetForm()">
+          <i class="fa fa-refresh"></i> Reset
+        </button>
+      </div>
+
+      <!-- Family List Section -->
+ 
+
+      
+        <div class="mb-3 ">
+        <p class="text-primary fs-6 fw-semibold">
+          <i class="fa fa-list"></i> Family Member List
+        </p>
+      </div>
+
+      <!-- Table -->
+      <div class="row">
+        <div class="col-12">
+          <div class="table-responsive border-top border-2 border-primary">
+            <table class="table table-bordered table-hover">
+              <thead class="table-light">
+                <tr>
+                  <th style="width: 50px;">Sr.No</th>
+                  <th>Member Name</th>
+                  <th>Relation</th>
+                  <th>Date of Birth</th>
+                  <th>Qualification</th>
+                  <th>Occupation</th>
+                  <th style="width: 120px;">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let member of familyList | paginate: { itemsPerPage: pageSize, currentPage: pageIndex, totalItems: totalItems }; let i = index">
+                  <td class="text-center">{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+                  <td>{{ member.membername }}</td>
+                  <td>{{ member.relation }}</td>
+                  <td>{{ member.dob | date:'dd-MM-yyyy' }}</td>
+                  <td>{{ member.qualification || '-' }}</td>
+                  <td>{{ member.occupation || '-' }}</td>
+                  <td class="text-center">
+                    <button class="btn btn-sm btn-primary me-1" 
+                            (click)="isUpdate(member.pk_familyid)"
+                            title="Edit">
+                      <i class="fa fa-pen-to-square"></i>
+                    </button>
+                    <button class="btn btn-sm btn-danger" 
+                            (click)="deleteCandidateFamilyDetails(member.pk_familyid)"
+                            title="Delete">
+                      <i class="fa fa-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+                <tr *ngIf="familyList.length === 0">
+                  <td colspan="7" class="text-center text-muted py-4">
+                    <i class="fa fa-info-circle"></i> No family member records found. Please add your family members above.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          
+          <!-- Pagination -->
+          <div class="d-flex justify-content-center mt-3" *ngIf="totalItems > pageSize">
+            <pagination-controls 
+              (pageChange)="onPageChange($event)"
+              previousLabel="Previous"
+              nextLabel="Next">
+            </pagination-controls>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+ </div>
+    </div>
+  </div>
+</section>

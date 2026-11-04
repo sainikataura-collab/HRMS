@@ -1,0 +1,113 @@
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card">
+      <div class="card-header bg-primary">
+        <div class="row w-100 d-flex align-items-center justify-content-between">
+          <div class="col-lg-8">
+            <h4 class="text-white">RM Assessment View</h4>
+          </div>
+          <div class="col-lg-4 d-flex justify-content-end">
+            <button class="btn btnheader" routerLink="/dash/performance/performancedashboard/Report-manager-assessment-List">Back</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-body px-2 px-lg-4">
+
+        <div class="card emp-assesment-card my-3 py-2 px-3" *ngFor="let card of cards.controls; let i = index">
+          <div class="row py-3 mb-3 gx-3 gy-2 small">
+
+           
+
+               <!-- KRA -->
+                <div class="col-12 col-md-12 d-flex">
+                  <div class="fw-semibold me-2">KRA:</div>
+                  <!-- <div>{{ card.value.kra }}</div> -->
+                  <div [innerHTML]="card.value.kra | safeHtml"></div>
+
+                  <!-- <div [innerHTML]="getSanitizedHtml(card.value.kra)"></div> -->
+                </div>
+
+            <!-- KPI -->
+            <div class="col-12 d-flex">
+              <div class="fw-semibold me-2">KPI:</div>
+              <div [innerHTML]="card.value.kpi | safeHtml"></div>
+            </div>
+
+            <!-- KPA -->
+            <div class="col-12 d-flex">
+              <div class="fw-semibold me-2">KPA:</div>
+              <div [innerHTML]="card.value.kpa | safeHtml"></div>
+            </div>
+
+            <!-- Target -->
+            <div class="col-12 d-flex">
+              <div class="fw-semibold me-2">Target:</div>
+              <div [innerHTML]="card.value.targetvalue | safeHtml"></div>
+            </div>
+
+            <!-- Weightage -->
+            <div class="col-12 col-md-6 d-flex">
+              <div class="fw-semibold me-2">Weightage:</div>
+              <div>{{ card.value.weightage }}</div>
+            </div>
+
+            <!-- File Attachment -->
+            <div class="col-12 col-md-6 d-flex align-items-center">
+              <div class="fw-semibold me-2">File:</div>
+              <ng-container *ngIf="card.value.attachmentPath; else noFile">
+                <i class="fa fa-download" style="cursor: pointer;" (click)="download(card.value.attachmentPath)" title="Download file"></i>
+              </ng-container>
+              <ng-template #noFile>
+                <span>No file uploaded</span>
+              </ng-template>
+            </div>
+          </div>
+
+          <!-- Self Assessment -->
+          <div class="card">
+            <div class="card-header py-0 m-0 small text-white" style="background-color: rgb(40, 152, 244);">
+              Self Assessment
+            </div>
+            <div class="row gy-2 p-3 pt-2">
+              <div class="col-md-3 col-lg-2 fw-semibold small">Self Assessment:</div>
+              <div class="col-md-9 col-lg-4">
+                <span class="small">{{ card.value.selfAssessment }}</span>
+              </div>
+
+              <div class="col-md-3 col-lg-2 fw-semibold small">Self Remark:</div>
+              <div class="col-md-9 col-lg-4">
+                <div class="small" [innerHTML]="card.value.selfRemark | safeHtml"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- RM Assessment -->
+
+           <div class="card">
+            <div class="card-header py-0 m-0 small text-white" style="background-color: rgb(40, 152, 244);">
+              RM Assessment
+            </div>
+            <div class="row gy-2 p-3 pt-2">
+              <div class="col-md-3 col-lg-2 fw-semibold small">RM Assessment:</div>
+              <div class="col-md-9 col-lg-4">
+                <span class="small">{{ card.value.RMAssessment }}</span>
+              </div>
+
+              <div class="col-md-3 col-lg-2 fw-semibold small">RM Remark:</div>
+              <div class="col-md-9 col-lg-4">
+                <div class="small" [innerHTML]="card.value.RMRemark | safeHtml"></div>
+              </div>
+            </div>
+          </div>
+         
+
+
+       
+        </div> <!-- end inner card -->
+      </div> <!-- end card-body -->
+    </div> <!-- end main card -->
+  </div>
+</div>
+
+

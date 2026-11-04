@@ -1,0 +1,72 @@
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+
+      <div class="card-header bg-blue">
+        <div class="row w-100">
+          <!-- Title Section -->
+          <div class="col-sm-12 col-md-6 col-lg-4 d-flex align-items-center justify-content-start">
+            <h4 class="text-white">Pending Attendance Regularisation</h4>
+          </div>
+          <div class="col-sm-12 col-md-6 col-lg-4 d-flex align-items-center justify-content-center">
+            <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText3" />
+          </div>
+          <!-- Back Button -->
+          <div class="col-sm-12 col-md-6 col-lg-4 d-flex align-items-center justify-content-end ms-auto gap-2">
+
+          </div>
+        </div>
+      </div>
+
+
+      <div class="card-body">
+
+        <div>
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Sr.</th>
+                <th>Emp Code</th>
+                <th>Emp Name</th>
+                <th>Apply Date</th>
+                <th>Attendance Date</th>
+                <th>Type</th>
+                <th>CDO Hours</th>
+                <th>In Time</th>
+                <th>Out Time</th>
+                <th>Remark</th>
+                <th>Status</th>
+                <th>Action</th>
+
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of filteredLeaves3; let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>{{ item.empcode }}</td>
+                <td>{{ item.empname }}</td>
+                <td>{{item.sdated}}</td>
+                <td>{{ item.attenDate }}</td>
+                <td>{{item.description}}</td>
+                <td>{{item.cdoHours}}</td>
+                <td>{{ item.Intime }}</td>
+                <td>{{ item.Outtime }}</td>
+                <td>{{ item.remarks }}</td>
+                <td><span *ngIf="item.Status === 'Pending'" style="color: #FFC107;">{{ item.Status }}</span>
+                    <span *ngIf="item.Status === 'Awaiting HR Review'" style="color: #008000;">{{item.Status}}</span>
+                </td>
+
+               <td>                   
+                     <button class="btn" (click)="approveOrReject(item.pk_inoutid, 'approve')"><i class="fa fa-check-circle fs-6"></i> </button>
+                      <button class="btn " (click)="approveOrReject(item.pk_inoutid, 'reject')"><i class="fa-solid fa-trash fs-6" ></i></button>
+                  </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>

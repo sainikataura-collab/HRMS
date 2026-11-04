@@ -1,0 +1,25 @@
+.level-master .col{
+    margin-bottom: 0px;
+    // padding-top: 0px;
+    // margin-top: 0px;
+}
+
+.form-group{
+    margin-bottom:0px;
+}
+
+.table:not(.table-sm):not(.table-md):not(.dataTable) th td {
+  padding: 0 10px;
+  height: 40px;
+  vertical-align: middle;
+  white-space: nowrap;
+  // font-size: 13px;
+}
+
+.table:not(.table-sm):not(.table-md):not(.dataTable) td,
+.table:not(.table-sm):not(.table-md):not(.dataTable) th {
+  padding: 0 10px;
+  height: 40px;
+  vertical-align: middle;
+  white-space: nowrap;
+}

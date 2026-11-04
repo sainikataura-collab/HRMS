@@ -1,0 +1,139 @@
+
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+         <!--  -->
+
+      <div class="card-header bg-blue py-lg-1 mt-0">
+        <div class="row w-100 align-items-center">
+
+          <!-- Title Section -->
+          <div class="col-12 col-md-3">
+            <h4 class="text-white text-center text-md-start">Approved Leave</h4>
+          </div>
+
+         
+
+
+        </div>
+      </div>
+
+
+      <div class="card-body mt-4">
+        <form [formGroup]="leaveForm">
+
+        <div class="row row-cols-1 row-cols-md-4">
+      
+
+          <div class="col">
+            <label>Transaction Type<span style="color: red;">*</span></label>
+
+            <div class="form-group">
+              <ng-select id="year" [items]="leave" bindLabel="name" bindValue="value" formControlName="fk_leaveId"
+                placeholder="--Select --" class="w-100"></ng-select>
+              <span *ngIf="submitted &&leaveForm.controls['fk_leaveId'].invalid" class="text-danger mt-1"
+                style="font-size: 12px;">
+                Please select Transaction type.
+              </span>
+            </div>
+          </div>
+
+          <div class="col">
+            <label>Employee code<span style="color: red;">*</span></label>
+            <div class="form-group">
+              <ng-select id="Year" [items]="EmployeeList" bindLabel="name" bindValue="value" formControlName="fk_empid"
+                placeholder="--Select --" class="w-100"></ng-select>
+              <span *ngIf="submitted &&leaveForm.controls['fk_empid'].invalid" class="text-danger mt-1"
+                style="font-size: 12px;">
+                Please select employee.
+              </span>
+            </div>
+          </div>
+
+              <div class="col"><label>From Date</label>
+                <input type="date" class="form-control" formControlName="fromDate">
+              
+              </div>
+
+                 <div class="col"><label>To Date</label>
+                <input type="date" class="form-control" formControlName="toDate">
+              
+              </div>
+              
+          </div>
+          
+        </form>
+
+        <div class="row">
+          <div class="col d-flex align-items-end justify-content-end pt-4 pb-3">
+            <button type="submit" class="btn btn-primary mx-1" (click)="getList()">Veiw</button>
+              <button type="button" class="btn btn-outline-dark mx-1"(click)="resetForm()">Reset</button>
+            </div>
+        </div> 
+
+
+
+        <div  *ngIf="showList">
+
+          <div class="d-flex justify-content-between align-items-center mt-2 mb-2">
+            <p class="text-primary m-0 fw-bold ">List of Approved leave</p>
+           
+          </div>
+
+           <!-- List of Employee Salary Stopped -->
+         
+           
+           <div class="table-responsive table-invoice scrollable-table">
+            <table class="table table-bordered">
+                <thead>
+                  <tr>
+                  
+                    <th>Sr.</th>
+                    <th>Code</th>
+                    <th>Name</th>
+                    <th>Date</th>
+                    <th>Time From</th>
+                    <th>Time To</th>
+                    <th>Total Hour</th>
+                    
+                    <th>Status</th>
+                    <th>Action</th>
+
+                    						
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let emp of leaveList; let i = index">
+                   
+                    <td>{{ i + 1 }}</td>
+                    <td>{{ emp.empcode }}</td>
+                    <td>{{ emp.empname }}</td>
+                    <td>{{ emp.dated }}</td>
+                    <td>{{ emp.fromtime }}</td>
+                    <td>{{ emp.totime }}</td>
+                    <td>{{ emp.totalhours }}</td>
+                    <td>{{emp.Status}}</td>
+                    <td>
+                         <button class="btn " ><i class="fa-solid fa-trash fs-6"  (click)="rejectLeave(emp)"></i></button>
+               
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+    
+          </div>
+
+         
+      
+          
+        </div>
+
+       
+   
+      
+
+
+  </div>
+
+
+</div>   

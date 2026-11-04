@@ -1,0 +1,251 @@
+<section>
+  <div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12 ">
+      <div class="card">
+
+        <!-- Header -->
+        <div class="row w-100 card-header bg-primary ">
+            <div class="col-sm-12 col-md-4 col-lg-4">
+               <h4 class="m-0">CTC Detail List</h4>
+            </div>
+              <div class="col-sm-12 col-md-6 col-lg-6">
+              <app-common-search (filtersChanged)="handleFilters($event)"></app-common-search>
+            </div>
+         
+        </div>
+
+        <!-- Body -->
+        <!-- Body -->
+        <div class="card-body px-3">
+
+          <!-- Form -->
+          <form [formGroup]="EmployeeForm" (ngSubmit)="onSubmit()">
+            <div class="row row-cols-1 row-cols-md-4">
+              <div class="col" *ngIf="isContractApplicable">
+                <label>Contractor Name</label>
+                <div class="form-group">
+                  <ng-select [items]="CostCenter" bindLabel="name" bindValue="value" formControlName="fk_costcentreid"
+                    placeholder="--Select --" class="w-100">
+                  </ng-select>
+                </div>
+              </div>
+              <div class="col pt-4"> <button type="submit" class="btn btn-primary mx-1" [disabled]="isViewing">
+                  <i *ngIf="isViewing" class="fa fa-spinner fa-spin me-2"></i>
+                  {{ isViewing ? 'Wait...' : 'View' }}
+                </button>
+                <button type="reset" class="btn btn-outline-dark mx-1" (click)="onReset()">Reset</button>
+              </div>
+            </div>
+
+
+          </form>
+
+          <!-- ── CTC Employee Cards Section ─────────────────── -->
+          <ng-container *ngIf="groupedEmployees && groupedEmployees.length > 0">
+
+            <!-- Summary Stats -->
+            <div class="row g-3">
+
+              <!-- Total Employee -->
+              <div class="col-md-4">
+                <div class="border-start border-4 border-primary bg-white shadow-sm rounded-1 px-3 py-1 h-100">
+                  <div class="d-flex align-items-center">
+                    <div class="bg-primary text-white rounded p-1 px-2">
+                      <i class="fa fa-users"></i>
+                    </div>
+
+                    <div class="ms-3">
+                      <div class="small text-muted fw-semibold">
+                        Total Employee
+                      </div>
+
+                      <div class="fs-6 fw-bold text-primary">
+                        {{ totalItems }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Monthly CTC -->
+              <div class="col-md-4">
+                <div class="border-start border-4 border-success bg-white shadow-sm rounded-1 px-3 py-1 h-100">
+                  <div class="d-flex align-items-center">
+                    <div class="bg-success text-white rounded p-1 px-2">
+                      <i class="fa fa-calendar"></i>
+                    </div>
+
+                    <div class="ms-3">
+                      <div class="small text-muted fw-semibold">
+                        Monthly CTC
+                      </div>
+
+                      <div class="fs-6 fw-bold text-success">
+                        ₹ {{ getTotalMonthlyAll() | number:'1.2-2' }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Yearly CTC -->
+              <div class="col-md-4">
+                <div class="border-start border-4 border-warning bg-white shadow-sm rounded-1 px-3 py-1 h-100">
+                  <div class="d-flex align-items-center">
+                    <div class="bg-warning text-white rounded p-1 px-2">
+                      <i class="fa fa-calendar-check"></i>
+                    </div>
+
+                    <div class="ms-3">
+                      <div class="small text-muted fw-semibold">
+                        Yearly CTC
+                      </div>
+
+                      <div class="fs-6 fw-bold text-warning">
+                        ₹ {{ getTotalYearlyAll() | number:'1.2-2' }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Search bar -->
+
+
+
+        <div class="row align-items-center g-2">
+
+  <div class="col-md-3 py-3">
+    <div class="input-group input-group-sm">
+      <span class="input-group-text bg-white">
+        <i class="fa fa-search text-muted"></i>
+      </span>
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Search by name, code..."
+        [(ngModel)]="searchText"
+        (ngModelChange)="pageIndex = 1"
+        [ngModelOptions]="{standalone: true}" />
+    </div>
+  </div>
+
+  <div class="col-auto">
+    <button
+      class="btn btn-primary btn-sm"
+      (click)="exportToExcel()"
+      [disabled]="groupedEmployees.length === 0 || isExporting">
+      <i *ngIf="isExporting" class="fa fa-spinner fa-spin me-1"></i>
+      <i *ngIf="!isExporting" class="fa fa-download me-1"></i>
+      {{ isExporting ? 'Wait...' : 'Export Excel' }}
+    </button>
+  </div>
+  <div class="col-auto">
+    <button
+      class="btn btn-outline-dark btn-sm"
+      (click)="downloadSimple()"
+      [disabled]="groupedEmployees.length === 0 || isDownloading">
+      <i *ngIf="isDownloading" class="fa fa-spinner fa-spin me-1"></i>
+      <i *ngIf="!isDownloading" class="fa fa-download me-1"></i>
+      {{ isDownloading ? 'Wait...' : 'Download' }}
+    </button>
+  </div>
+</div>
+
+
+
+
+<!-- Scrollable Employee Cards -->
+<div class="accordion mt-3" id="ctcAccordion" >
+  <div *ngFor="let emp of filteredGrouped() | paginate: { itemsPerPage: pageSize, currentPage: pageIndex, totalItems: totalItems }; let i = index" class="accordion-item mb-2 ">
+
+    <!-- Card Header -->
+    <div class="accordion-header py-0 px-0 g-3">
+      <button type="button"
+        class="accordion-button py-2 px-3"
+        [class.collapsed]="!emp.expanded"
+        (click)="emp.expanded = !emp.expanded">
+
+        <div class="d-flex align-items-center flex-wrap gap-3 w-100">
+
+          <!-- Avatar -->
+          <div class="rounded-circle text-white d-flex align-items-center justify-content-center fw-bold flex-shrink-0 small"
+            [ngClass]="['bg-primary','bg-success','bg-warning','bg-danger','bg-info'][i % 5]"
+            style="width:38px; height:38px; ">
+            {{ getInitials(emp.emp_name) }}
+          </div>
+
+          <!-- Name + Code (left) -->
+          <div class="text-start d-flex align-items-center gap-2">
+            <span class="fw-semibold small">{{ emp.emp_name }}</span>
+            <span class="badge bg-light text-dark border">{{ emp.emp_code }}</span>
+          </div>
+
+          <!-- Amounts (right) -->
+          <div class="d-flex align-items-center gap-2 ms-auto me-3">
+            <span class="badge bg-info-subtle text-dark px-2 py-2 small">
+              ₹ {{ (emp.total_Month ?? 0) | number:'1.2-2' }} <small class="fw-normal">/mo</small>
+            </span>
+            <span class="badge bg-warning-subtle text-dark px-2 py-2 small">
+              ₹ {{ (emp.total_Year ?? 0) | number:'1.2-2' }} <small class="fw-normal">/yr</small>
+            </span>
+          </div>
+
+        </div>
+      </button>
+    </div>
+
+    <!-- Expandable Breakdown -->
+    <div class="accordion-collapse collapse" [class.show]="emp.expanded">
+      <div class="accordion-body p-0">
+        <table class="table table-sm table-striped mb-0">
+          <thead class="table-light">
+            <tr>
+              <th style="width: 50%;">Component</th>
+              <th style="width: 25%;" class="text-end">Monthly</th>
+              <th style="width: 25%;" class="text-end">Yearly</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let c of emp.components">
+              <td>{{ c.shortdesc }}</td>
+              <td class="text-end">{{ (c.amount ?? 0) | number:'1.2-2' }}</td>
+              <td class="text-end">{{ (c.amount_yearly ?? 0) | number:'1.2-2' }}</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr class="table-success fw-semibold">
+              <td>Total CTC</td>
+              <td class="text-end">{{ (emp.total_Month ?? 0) | number:'1.2-2' }}</td>
+              <td class="text-end">{{ (emp.total_Year ?? 0) | number:'1.2-2' }}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+<!-- END Scroll Area -->
+
+<!-- Pagination controls -->
+<div class="d-flex justify-content-start mt-3">
+  <pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>
+</div>
+
+          </ng-container>
+
+          <!-- Empty state -->
+          <div *ngIf="groupedEmployees.length === 0 && !isViewing" class="text-center text-muted py-5">
+            <i class="fa fa-inbox fa-2x mb-2 d-block"></i>
+            No CTC data found. Click View to load.
+          </div>
+
+        </div>
+        <!-- END card-body -->
+      </div>
+    </div>
+  </div>
+</section>

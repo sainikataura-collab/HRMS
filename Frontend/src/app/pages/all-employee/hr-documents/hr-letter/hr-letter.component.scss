@@ -1,0 +1,147 @@
+@media screen and (max-width: 767.98px) {
+
+    #exportTable thead {
+        display: none;
+    }
+
+    /* Make table rows behave like flex containers (cards) */
+    #exportTable tbody tr {
+        display: flex; 
+        flex-wrap: wrap; 
+        margin-bottom: 15px;
+        border: 1px solid #ddd; 
+        border-radius: 8px;
+        padding: 10px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
+        background-color: transparent; 
+        align-items: flex-start; 
+        overflow: hidden; 
+    }
+
+
+    #exportTable tbody td {
+        display: flex; 
+        align-items: baseline; 
+        min-width: 120px; 
+        padding: 0px 10px; /* Adjust padding for visual spacing */
+        box-sizing: border-box; /* Include padding in width calculation */
+        border-bottom: none; /* Remove individual cell borders */
+        word-break: break-word; /* Breaks words if they are too long */
+        overflow-wrap: break-word; /* Another property for word breaking */
+        hyphens: auto; /* Allow hyphenation for better text flow */
+       
+       
+    }
+
+    
+    #exportTable tbody td:nth-last-child(odd):last-child:not(:nth-of-type(6)) { /* Exclude Action column */
+        flex-basis: 100%; /* Make it full width if it's the only one left */
+        min-width: 100%; /* Ensure it spans fully */
+    }
+
+
+    /* Style the data-label (header) */
+    #exportTable tbody td::before {
+        content: attr(data-label); /* Get label from data-label attribute */
+        font-weight: 600; /* Slightly bolder for clarity */
+        color: #3080e8; /* Your specified color for the label */
+        flex-shrink: 0; /* Prevent label from shrinking */
+        margin-right: 8px; /* Space between label and value */
+        text-align: left;
+        line-height: 1; /* Adjusted line-height for better alignment with content */
+    }
+
+    /* Specific styling for the 'Action' column in card view */
+    #exportTable tbody td:nth-of-type(6) { /* Assuming 'Action' is the 4th column */
+        flex: 0 0 100%; /* Fix this column to always take 100% width and not grow/shrink */
+        justify-content: center; /* Center the buttons within their 100% width */
+        padding-top: 10px; /* Add some space above action buttons */
+        border-top: 1px dashed #eee; /* Add a subtle separator above actions */
+        margin-top: 5px;
+        flex-wrap: wrap; /* If buttons are many, allow them to wrap within this column */
+    }
+
+    #exportTable tbody td:nth-of-type(6)::before {
+        content: ""; /* Hide the pseudo-element for the action column */
+        display: none;
+    }
+
+    .table:not(.table-sm):not(.table-md):not(.dataTable) td,
+.table:not(.table-sm):not(.table-md):not(.dataTable) th {
+    height: auto;
+}
+}
+
+
+// 
+
+
+.card-header{
+  background-color: #3080e8;
+  font-weight: bold;
+}
+
+
+.bg-light-success {
+  background-color: #caf8d4; /* Light green background */
+  color: #155724; /* Dark green text */
+  padding: 5px 10px;
+  border-radius: 7px;
+}
+
+.bg-light-error {
+  background-color: #ffeaca; /* Light red background */
+  color: #721c24; /* Dark red text */
+  padding: 5px 10px;
+  border-radius: 7px;
+}
+
+@media screen and (max-width:1024px){
+  .card-header{
+  padding: 5px 0px 0px 20px;
+  }
+  }
+
+  @media screen and (max-width:1024px) {
+    .all-pickup-point-search-header{
+      margin-bottom: 7px;
+    }
+  }
+
+
+
+  /* PDF responsive */
+.pdf-frame {
+  width: 100%;
+  height: 400px;
+  border: none;
+  background: white;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .pdf-frame {
+    height: 250px;   /* smaller PDF for mobile */
+  }
+
+  .modal-dialog {
+    margin: 10px;
+  }
+
+  .modal-content {
+    border-radius: 10px;
+  }
+
+  .modal-footer {
+    flex-direction: column;
+  }
+
+  .modal-footer button {
+    width: 100%;
+  }
+}
+
+.modal-body {
+  max-height: 70vh;
+  overflow-y: auto;
+}

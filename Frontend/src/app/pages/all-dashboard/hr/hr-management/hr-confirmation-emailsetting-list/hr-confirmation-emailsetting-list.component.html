@@ -1,0 +1,65 @@
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <!-- heading -->
+      <div class="card-header bg-primary">
+        <div class="row w-100">
+          <!-- Title Section -->
+          <div class="col-sm-12 col-md-6 col-lg-4 d-flex align-items-center justify-content-start">
+            <h4 class="text-white">List of Approval Order</h4>
+          </div>
+          <!-- Search Box -->
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-center">
+            <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText" />
+          </div>
+          <!-- Action Buttons -->
+          <div class="col-sm-12 col-md-6 col-lg-4 d-flex align-items-center justify-content-end ms-auto gap-2">
+            <button class="btn btn-light" routerLink="/dash/hr/hrdashboard/HR_Confirmation_EmailSetting">
+              Add
+            </button>
+            <button class="btn btn-light" (click)="exportToExcel()">
+              Download
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table Section -->
+      <div class="mt-4">
+        <table id="exportTable" class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Sr.</th>
+              <th>Description</th>
+              <th>Order No</th>
+              <th>Days</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of filteredData() | paginate: { itemsPerPage: pageSize, currentPage: pageIndex, totalItems: totalItems }; let i = index">
+              <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+              <td>{{ item.ordernodes }}</td>
+              <td>{{ item.orderno }}</td>
+              <td>{{ item.days }}</td>
+              <td>
+                <button class="btn btn-sm btn-outline" (click)="edit(item.pk_conrequesemailtId)">
+                  <i class="fa-regular fa-pen-to-square" style="color:#3080e8; font-size: 14px;"></i>
+                </button>
+                <button class="btn btn-sm btn-outline" (click)="delete(item.pk_conrequesemailtId)">
+                  <i class="fa fa-trash" style="color:#3080e8; font-size: 14px;"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>
+        <ng-template #noData>
+          <tr>
+            <td colspan="4" class="text-center">No data available</td>
+          </tr>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</div>

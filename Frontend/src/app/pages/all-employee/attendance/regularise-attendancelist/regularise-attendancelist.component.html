@@ -1,0 +1,175 @@
+<div class="row m-0">
+  <div class="col-12 px-0 py-0">
+    <div class="card px-0 m-0">
+
+      <!-- Card Header -->
+      <!-- <div class="card-header bg-primary">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-between">
+            <h4>Regularisation Attendance List</h4>
+          </div>
+
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-center">
+            <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText" />
+          </div>
+
+          <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-md-end">
+            <button class="btn btnheader" routerLink="/dash/attendance/attendancedashboard/RegulariseAttendance">Add</button>
+           </div>
+        </div>
+      </div> -->
+
+
+
+
+      <div class="card-header bg-primary pe-0">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-12 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-between">
+            <h4 class="mb-0">Regularisation Attendance List</h4>
+
+            <div class="dropdown d-flex align-items-center justify-content-center d-md-none">
+              <button class="btn bg-transparent text-white px-0 mt-1" type="button" id="dropdownMenuButton"
+                data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fa-solid fa-bars fs-6"></i>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+
+                <li><a class="dropdown-item"
+                    routerLink="/dash/attendance/attendancedashboard/RegulariseAttendance">Add</a></li>
+                    <!-- <li><a class="dropdown-item"
+                    routerLink="/dash/attendance/attendancedashboard/cdoRequest">Add CDO</a></li> -->
+                <!-- <li><a class="dropdown-item">PDF</a></li> -->
+              </ul>
+            </div>
+          </div>
+
+
+          <div class="col-sm-12 col-md-3 col-lg-3 all-pickup-point-search-header d-flex align-items-center justify-content-md-end">
+            <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText" />
+          </div>
+
+
+          <div class="col-sm-12 col-md-5 col-lg-5 d-flex justify-content-end align-items-center mt-md-0">
+            <div class="d-none d-md-flex">
+              <button class="btn btnheader mx-2"
+                routerLink="/dash/attendance/attendancedashboard/RegulariseAttendance">Add</button>
+              <!-- <button class="btn btnheader mx-2"
+                routerLink="/dash/attendance/attendancedashboard/cdoRequest">Add CDO </button> -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card Body -->
+      <div class="card-body px-0  m-2">
+        <div class="table-responsive-md">
+          <!-- <table id="exportTable" class="table">
+            <thead>
+              <tr>
+                <th>S.No.</th>
+                <th>Apply Date</th>
+                <th>Attendance Date</th>
+                <th>Type</th>
+                <th>In Time</th>
+                <th>Out Time</th>
+                <th>Remarks</th>
+                  <th>HOD Remarks</th>
+                <th>Status</th>
+              
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of filteredData(); let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>{{ item.dated }}</td>
+                <td>{{ item.attenDate }}</td>
+                <td>{{ item.description }}</td>
+                <td>{{ item.Intime }}</td>
+                <td>{{ item.Outtime }}</td>
+                <td>{{ item.Remarks }}</td>
+                <td>{{ item.HODRemarks }}</td>
+             
+
+
+                   <td>
+  <span 
+    [ngClass]="{
+      'badge bg-success p-1 rounded-1': item.Status === 'Approved',
+      'badge bg-warning text-dark': item.Status === 'Pending',
+      'badge bg-danger': item.Status === 'Reject',
+      'badge bg-info text-dark': item.Status === 'Disapproved'
+    }">
+    {{ item.Status }}
+  </span>
+</td>
+
+              </tr>
+            </tbody>
+          </table> -->
+
+
+          <table Id="exportTable" class="table">
+            <thead>
+              <tr>
+                <th>S.No.</th>
+                <th>Apply Date</th>
+                <th>Attendance Date</th>
+                <th>Type</th>
+                <!-- <th>CDO hours</th> -->
+                <th>In Time</th>
+                <th>Out Time</th>
+                <th>Remarks</th>
+                <!-- <th>HOD Remarks</th> -->
+                <th>Status</th>
+                <th>Action</th>
+
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of filteredData(); let i = index">
+                <td data-label="S.No. : ">{{ i + 1 }}</td>
+                <td data-label="Apply Date: ">{{ item.dated }}</td>
+                <td data-label="Attendance Date : ">{{ item.attenDate }}</td>
+                <td data-label="Type: ">{{ item.description }}</td>
+                 <!-- <td data-label="CDO hours: ">{{ item.cdoHours }}</td> -->
+                <td data-label="In Time: ">{{ item.Intime }}</td>
+                <td data-label="Out Time: ">{{ item.Outtime }}</td>
+
+                <td data-label="Remarks: ">{{ item.Remarks }}</td>
+                <!-- <td data-label="HOD Remarks: ">{{ item.HODRemarks }}</td> -->
+                <td data-label="Status: "
+                  [ngClass]="{
+                  'text-success btn-success': item.Status === 'Approved',
+                  'text-warning btn-warning': item.Status === 'Pending',
+
+                  'text-danger btn-danger': item.Status === 'Disapproved'
+                  }">
+                  {{ item.Status }}
+                </td>
+
+
+
+                 <td class="pt-1 pb-0 m-0 d-flex align-items-center justify-content-center">
+                                            <button class="btn btn-sm btn-outline"  data-label="Action: "*ngIf="item.Status === 'Pending'" (click)="Delete(item.pk_inoutid)"> <i
+                      class="fa fa-trash"></i></button>
+
+
+                                </td>
+
+
+
+
+
+
+
+          
+              </tr>
+
+            </tbody>
+          </table>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

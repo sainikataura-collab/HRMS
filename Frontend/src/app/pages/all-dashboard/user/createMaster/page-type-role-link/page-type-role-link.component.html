@@ -1,0 +1,83 @@
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+      <div class="card">
+   
+    <!--  -->
+    <div class="card-header bg-blue ">
+      <div class="row w-100 ">
+    <div class="col-sm-12 col-md-6 col-lg-6  "> 
+        <h4 class="">
+            Assign Page Type rights to the Role(s)</h4></div>
+   
+            <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+                <button class="btn btnheader" routerLink="/dash/user/userdashboard/pageTypeRoleLinkList">Back
+                  </button>
+              </div>
+</div>
+
+</div>
+     
+    <!--  -->
+
+    <div class="card-body mt-4">
+      <form [formGroup]="UserDetails"class="row row-cols-1 row-cols-md-3">
+       
+       
+            <div class="col">
+                <label>Role Name</label>
+           
+                <div class="form-group">
+                  <ng-select id="year" [items]="selects" bindLabel="name" bindValue="value"
+                  formControlName="roleName" placeholder="--Select --"
+                  class="w-100"></ng-select>
+                  <span *ngIf="showError && UserDetails.controls['roleName'].invalid" class="text-danger mt-1" style="font-size: 12px;">
+                    Please enter Role Name.
+                  </span>
+                </div>  
+            </div>
+
+                <div class="table-responsive table-invoice">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Sr.</th>
+                                <th>Page Type</th>
+                                <th>
+                                    <input type="checkbox" class="form-check-input fs-6"
+                                        [checked]="UserDetails.get('all')?.value"
+                                        (change)="toggleAllSelection($event)">
+                                    All
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let item of pageTypes; let i = index">
+                                <td>{{ i + 1 }}</td>
+                                <td>{{ item.name }}</td>
+                                <td>
+                                    <input type="checkbox" class="form-check-input fs-6"
+                                        [checked]="UserDetails.get(item.controlName)?.value"
+                                        (change)="toggleSelection($event, item.controlName)">
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                     
+                </div>         
+      </form>
+      <div class="row">
+        <div class="col d-flex align-items-end justify-content-end pt-4 pb-3">
+       
+            <button type="button" class="btn btn-outline-dark mx-1"(click)="resetForm()">Reset</button>
+            <button type="button" class="btn btn-primary  mx-1"(click)="onSubmit()">{{ id ? 'Update' : 'Save' }}</button>                   
+        </div>
+    </div>
+    </div>
+
+   
+   
+
+      
+</div>
+</div>
+</div> 

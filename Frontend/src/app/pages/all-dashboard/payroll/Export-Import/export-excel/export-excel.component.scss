@@ -1,0 +1,330 @@
+.scroll-active {
+  max-height: 600px;
+  /* or any height */
+  overflow-y: auto;
+  position: relative;
+}
+
+
+.table {
+  margin-bottom: 0.2rem;
+}
+
+.table-invoice.scroll-active {
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.table thead th {
+
+  position: sticky;
+  top: 0;
+  background: #f8f9fa;
+  /* Or match your theme */
+  z-index: 2;
+  text-align: start !important;
+  padding-top: 0px !important;
+  padding-bottom: 0px !important;
+  height: 35px !important;
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+.table td {
+  white-space: nowrap;
+  text-align: start !important;
+  height: 20px !important;
+}
+
+.table th {
+  white-space: nowrap;
+  height: 30px !important;
+}
+
+tbody td {
+  border: none !important;
+}
+
+//
+
+/* src/app/pay-slip/pay-slip.component.css */
+
+/* Ensure no extra space on the body */
+body,
+html {
+  margin: 0;
+  padding: 0;
+}
+
+/* Reset spacing on the PDF container */
+#pdf-content {
+  margin-left: 20px !important;
+  margin-top: 20px !important;
+  margin-right: 20px !important;
+  padding: 0 !important;
+  position: relative;
+
+  border: 1px solid #2b2e41 dashed !important;
+
+}
+
+// 
+/* Optional: remove padding from the card if needed */
+.card {
+  margin: 0 !important;
+  // padding: 10px; /* Adjust if needed */
+}
+
+/* HTML page par hide karna */
+
+
+/* Print aur PDF generate karte waqt display karna */
+@media print {
+  #pdf-content {
+    display: block;
+  }
+}
+
+.p-0 {
+  padding: 0px !important;
+
+}
+
+.l-small {
+  font-size: 13px;
+}
+
+.small {
+  font-size: 12px;
+}
+
+.Personal-details p {
+  border-bottom: 1px solid rgb(238, 240, 243) !important;
+}
+
+.Personal-details p span {
+  font-size: 12px;
+}
+
+.modal-body {
+  padding-bottom: 0px;
+  padding-top: 8px;
+}
+
+.fa-eye:hover {
+  color: #3080e8;
+}
+
+.fa-download:hover {
+  color: #3080e8;
+}
+
+.TotalDeductions p {
+  margin-bottom: 0rem !important;
+}
+
+.mat-typography p {
+  margin: 0em !important;
+}
+
+.mat-typography p {
+  margin: 0rem !important;
+}
+
+.mat-typography span {
+  margin: 0em !important;
+}
+
+.mat-typography span {
+  margin: 0rem !important;
+}
+
+.s-small {
+  font-size: 8px;
+}
+
+.lh-sm-custom {
+  line-height: 0.7 !important;
+}
+
+
+
+
+.salary-slip th {
+  text-align: start;
+  padding: 0px 5px;
+}
+
+.salary-slip td {
+  text-align: start;
+  padding: 0px 5px;
+}
+
+
+
+.search-employee {
+  width: 25%;
+}
+
+@media screen and (max-width:768px) {
+  .search-employee {
+    width: 100%;
+  }
+
+
+}
+
+/* Salary Slip PDF Modal (Matching staticBackdrop feel and layout) */
+#salarySlipPdfModal {
+  z-index: 10550 !important;
+
+  .modal-dialog {
+    max-width: 840px;
+  }
+
+  .modal-content {
+    border-radius: 6px;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.25);
+    background-color: #fff;
+    overflow: hidden;
+  }
+}
+
+::ng-deep .modal-backdrop {
+  z-index: 10540 !important;
+}
+
+// Navigation Tabs Styling
+.nav-tabs-custom {
+  border-bottom: 2px solid #e2e8f0;
+
+  .nav-link {
+    border: none;
+    border-bottom: 3px solid transparent;
+    color: #64748b;
+    font-weight: 600;
+    padding: 0.6rem 1.25rem;
+    transition: all 0.2s ease-in-out;
+    background: transparent;
+
+    &:hover {
+      border-color: transparent;
+      color: #3080e8;
+    }
+
+    &.active {
+      color: #3080e8;
+      border-bottom: 3px solid #3080e8;
+      background: transparent;
+    }
+  }
+}
+
+// Pure white table header styling for comparison table
+.custom-comp-table {
+  thead {
+    th {
+      background-color: #ffffff !important;
+      color: #334155 !important;
+      font-weight: 600 !important;
+      border-bottom: 2px solid #e2e8f0 !important;
+      vertical-align: middle;
+    }
+  }
+}
+
+// Soft Subtle Badges for Status & Comparison Variance
+.badge-subtle-success {
+  background-color: #ecfdf5 !important;
+  color: #059669 !important;
+  border: 1px solid #a7f3d0 !important;
+}
+
+.badge-subtle-danger {
+  background-color: #fef2f2 !important;
+  color: #dc2626 !important;
+  border: 1px solid #fecaca !important;
+}
+
+.badge-subtle-warning {
+  background-color: #fffbeb !important;
+  color: #d97706 !important;
+  border: 1px solid #fde68a !important;
+}
+
+.badge-subtle-info {
+  background-color: #eff6ff !important;
+  color: #2563eb !important;
+  border: 1px solid #bfdbfe !important;
+}
+
+.bg-success-subtle {
+  background-color: #ecfdf5 !important;
+}
+
+.bg-danger-subtle {
+  background-color: #fef2f2 !important;
+}
+
+.bg-warning-subtle {
+  background-color: #fffbeb !important;
+}
+
+.bg-primary-subtle {
+  background-color: #eff6ff !important;
+}
+
+// Inline Diff Indicators (Increase on left green, Decrease on left red)
+.diff-indicator-inc {
+  color: #15803d;
+  background-color: #dcfce7;
+  border: 1px solid #bbf7d0;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  white-space: nowrap;
+}
+
+.diff-indicator-dec {
+  color: #b91c1c;
+  background-color: #fee2e2;
+  border: 1px solid #fecaca;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  white-space: nowrap;
+}
+
+
+.badge-subtle-neutral {
+  background-color: #f8fafc !important;
+  color: #64748b !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+// Icon box inside stat cards (Standard HRBook dashboard style)
+.icon-box {
+  font-size: 14px;
+  min-width: 28px;
+  text-align: center;
+}
+
+// Custom legend dots for chart (Standard HRBook dashboard style)
+.legend-dot {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  margin-right: 4px;
+  vertical-align: middle;
+}

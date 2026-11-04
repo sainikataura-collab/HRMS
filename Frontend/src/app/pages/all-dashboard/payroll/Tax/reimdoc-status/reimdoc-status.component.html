@@ -1,0 +1,164 @@
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+         <!--  -->
+         <!-- <div class="card-header bg-blue py-lg-2 mt-0">
+            <div class="col-sm-12 col-md-12 col-lg-3 col-12">
+          
+                <div class="row w-100">
+                    <div class="col-sm-12 col-md-12 col-lg-12 ">
+                      <h4 class="text-white">Perquisite Assignment</h4>
+                    </div>
+                </div>
+          
+            </div>
+          
+            <div class="col-sm-12 col-md-12 col-lg-7 col-12">
+                <div class="row w-100">
+                    <div class="col-sm-12 col-md-12 col-lg-12">
+                        <app-common-search (filtersChanged)="handleFilters($event)"></app-common-search>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-12 col-md-12 col-lg-7 col-12">
+                <div class="row w-100">
+                    <div class="col-sm-12 col-md-12 col-lg-12 col-xxl-6 d-flex align-items-center justify-content-md-end">
+                        <button class="btn btnheader" routerLink="/dash/payroll/payrolldashboard/assignPerquisiteList"> Back
+                        </button>
+                    </div>
+                </div>
+            </div>
+            </div>
+     -->
+     <div class="card-header bg-blue py-lg-2 mt-0">
+        <div class="row w-100 align-items-center">
+    
+            <!-- Title Section -->
+            <div class="col-12 col-md-3">
+                <h4 class="text-white text-center text-md-start"> {{Isedit? 'Update Employee Reim. Doc Status':'Employee Reim. Doc Status'}}</h4>
+            </div>
+    
+            <!-- Search Section -->
+            <div class="col-12 col-md-7 mt-2 mt-md-0">
+                <app-common-search (filtersChanged)="handleFilters($event)"></app-common-search>
+            </div>
+    
+            <!-- Button Section -->
+            <div class="col-12 col-md-2 mt-2 mt-md-0 d-flex justify-content-center justify-content-md-end">
+                <button class="btn btnheader" routerLink="/dash/payroll/payrolldashboard/reimdocStatus_list">
+                    Back
+                </button>
+            </div>
+    
+        </div>
+    </div>
+    
+    <div class="card-body mt-4">
+     <form [formGroup]="ReimDocForm">
+        <div class="row">
+            <div class="col-md-4">
+                <label for="employeeCode">Employee Code<span style="color: red;">*</span></label>
+                <ng-select  [items]="EmployeeList" bindLabel="name" bindValue="value" formControlName="fk_empid" (change)="onEmpCodeChange($event)"></ng-select>
+                <span *ngIf="submitted   && ReimDocForm.get('fk_empid')?.invalid" class="text-danger mt-1" style="font-size: 12px;">
+                  Please choose employee.
+                </span>
+              </div>
+              <div class="col-md-4">
+                <label for="employeeName">Employee Name</label>
+                <input id="employeeName" type="text" formControlName="empname" class="form-control"  />
+
+              </div>
+              <div class="col-md-4">
+                <label for="designation">Designation</label>
+                <input id="designation" type="text" formControlName="designation" class="form-control" />
+
+              </div>
+              <div class="col-md-4">
+                <label for="department">Department:</label>
+                <input id="department" type="text" formControlName="dept" class="form-control" />
+
+              </div>
+          <div class="col-md-4">
+                <label>Reimbursement Type<span style="color: red;">*</span></label>
+                <div class="form-group">
+                    <ng-select id="year"  [items]="ReimType" bindLabel="name" bindValue="value"
+                  formControlName="fk_headid" placeholder="--Select --"
+                  class="w-100"></ng-select>
+                    <span *ngIf="submitted   && ReimDocForm.get('fk_headid')?.invalid" class="text-danger mt-1" style="font-size: 12px;">
+                        Please select  Reimbursement Type .
+                      </span> 
+                </div>
+            </div>
+            <div class="col-md-4">
+                <label>Document Status<span style="color: red;">*</span></label>
+                <div class="form-group">
+                    <ng-select id="year"  [items]="DocumentStatus" bindLabel="name" bindValue="value"
+                  formControlName="docsub_status" placeholder="--Select --"
+                  class="w-100"></ng-select>
+                    <span *ngIf="submitted   && ReimDocForm.get('docsub_status')?.invalid" class="text-danger mt-1" style="font-size: 12px;">
+                        Please select  Document Status .
+                      </span> 
+                </div>
+            </div>
+            <div class="col-md-4">
+                <label>Submit Date<span style="color: red;">*</span></label>
+                <div class="form-group">
+                    <input type="date"class="form-control"formControlName="submitdate" >
+                    <span *ngIf="submitted   && ReimDocForm.get('submitdate')?.invalid" class="text-danger mt-1" style="font-size: 12px;">
+                        Please enter  dated .
+                      </span> 
+                </div> 
+            </div>
+            <div class="col-md-4">
+                <label>Document Amount<span style="color: red;">*</span></label>
+                <div class="form-group">
+                    <input type="text"class="form-control"formControlName="docsub_Amt" (keypress)="validateNumber($event)" maxlength="18">
+                   <span *ngIf="submitted   && ReimDocForm.get('docsub_Amt')?.invalid" class="text-danger mt-1" style="font-size: 12px;">
+                        Please enter  Document Amount .
+                      </span> 
+                </div> 
+            </div>
+            <div class="col-md-4">
+                <label>Bill Date</label>
+                <div class="form-group">
+                    <input type="date"class="form-control"formControlName="billdate" >
+                    </div> 
+            </div>
+            <div class="col-md-4">
+                <label>Bill Number</label>
+                <div class="form-group">
+                    <input type="text"class="form-control"formControlName="billno">
+                </div> 
+            </div>
+          
+    
+        
+            <div class="col-md-4">
+                <label>Remarks</label>           
+                <div class="form-group">
+                    <textarea type="text"class="form-control"formControlName="remarks"></textarea>
+                </div>  
+            </div>
+        
+           
+        
+     
+         <!-- Buttons -->
+         <div class="modal-footer">
+
+             <button type="submit" class="btn btn-primary mx-1" (click)="submit()">{{Isedit? 'Update':'Save'}}</button>
+             <button type="reset" class="btn btn-outline-dark mx-1">Reset</button>
+           
+       
+          </div> 
+
+          </div> 
+
+        </form>
+
+      </div>
+     
+</div>
+</div>    
+</div>

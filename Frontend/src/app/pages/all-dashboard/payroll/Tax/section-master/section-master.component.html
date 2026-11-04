@@ -1,0 +1,98 @@
+
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+        
+      <!--header -->
+      <div class="card-header bg-primary">
+        <div class="row w-100">
+          <!-- Title Section -->
+          <div class="col-sm-7 col-md-7 col-lg-5 d-flex align-items-center justify-content-start"> 
+            <h4 class="text-white">{{ Isedit ? 'Update Section Master' : 'Section Master' }}</h4>
+          </div>
+       
+         
+          <!-- Back Button -->
+          
+          <div class="col-sm-6 col-md-6 col-lg-2 d-flex align-items-center justify-content-end ms-auto gap-2">
+            <button class="btn btnheader" routerLink="/dash/payroll/payrolldashboard/sectionMaster_list">
+               Back
+            </button>
+          </div>
+        </div>
+      </div>
+   
+      <div class="card-body mt-4">
+        <form [formGroup]="SectionMasterForm" (ngSubmit)="submitForm()">
+        <div class="row">
+           
+            <div class="col-md-4">
+                <label>Description<span style="color: red;">*</span></label>
+                <div class="form-group">
+                    <input  id="description" type="text"class="form-control"formControlName="description" maxlength="100"
+                     (blur)="checkSectionAvailability(SectionMasterForm.get('description')?.value)">
+                    <span *ngIf="showError && SectionMasterForm.controls['description'].invalid && !SectionMasterForm.get('description')?.errors?.['duplicate']" class="text-danger mt-1" style="font-size: 12px;">
+                        Please enter  description
+                    </span>
+                     <!-- Show validation error message from API only if it exists -->
+                  <div *ngIf="SectionMasterForm.get('description')?.errors?.['duplicate']" 
+                  class="text-danger" style="font-size:10px;">
+                  {{ SectionMasterForm.get('description')?.errors?.['duplicate'] }}
+              </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <label>Section Code<span style="color: red;">*</span></label>
+                <div class="form-group">
+                    <input type="text"class="form-control"formControlName="code" maxlength="15" 
+                    (blur)="checkCodeAvailability(SectionMasterForm.get('code')?.value)">
+                    <span *ngIf="showError && SectionMasterForm.controls['code'].invalid && !SectionMasterForm.get('code')?.errors?.['duplicate']" class="text-danger mt-1" style="font-size: 12px;">
+                        Please enter sectionCode  
+                    </span>
+                    <!-- Show validation error message from API only if it exists -->
+                   <div *ngIf="SectionMasterForm.get('code')?.errors?.['duplicate']" 
+                   class="text-danger" style="font-size:10px;">
+                   {{ SectionMasterForm.get('code')?.errors?.['duplicate'] }}
+                  </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <label>Max Limit<span style="color: red;">*</span></label>
+                <div class="form-group">
+                    <input type="text"class="form-control"formControlName="maxlimit" (keypress)="validateNumber($event)" maxlength="8">
+                    <span *ngIf="showError   && SectionMasterForm.get('maxlimit')?.invalid" class="text-danger mt-1" style="font-size: 12px;">
+                        Please enter maxLimit   
+                    </span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            
+            <div class="col-md-4">
+                <label>Part of 1 Lakh</label>
+                <div class="form-group">
+                    <input type="checkbox"class="form-check-input fs-6 mx-1" formControlName="partof" >
+                </div>
+            </div>
+            <div class="col-md-4">
+                <label>Active</label>
+                <div class="form-group">
+                    <input type="checkbox"class="form-check-input fs-6 mx-1" formControlName="active" >
+                </div>
+            </div>
+           
+          </div>
+           <div class="modal-footer"> 
+              <button type="submit" class="btn btn-primary mx-1">{{ Isedit? 'Update':'Save'}}</button>
+              <button type="reset" class="btn btn-outline-dark mx-1">Reset</button>
+           
+          </div>
+        </form>
+      </div>
+
+      
+  </div>
+</div>    
+
+</div>

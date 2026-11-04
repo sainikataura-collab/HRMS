@@ -1,0 +1,101 @@
+ <div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card small">
+
+      <div class="card-header bg-primary text-white">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-4 d-flex align-items-center justify-content-between">
+            <h4> Employee Appraisal Approval Details</h4>
+          </div>
+
+          <div class="col-sm-12 col-md-4 d-flex align-items-center justify-content-end">
+            <button class="btn btnheader" routerLink="/dash/performance/performancedashboard/AppraisalApprovalList">
+                Go To Appraisal Approval List
+            </button>
+          </div>
+        </div>
+      </div>
+
+
+  <div class="card-body">
+ <div class="row mb-3">
+  <div class="col-md-4">
+    Employee Name: {{ appraisalData.EmployeeName }}
+  </div>
+  <div class="col-md-4">
+    Appraisal Year: {{ appraisalData.AppraisalYear }}
+  </div>
+  <div class="col-md-4">
+    Dated: {{ appraisalData.dated | date:'short' }}
+  </div>
+</div>
+
+<div class="row mb-3">
+  <div class="col-md-4">
+    Final KRA Score: {{ appraisalData.kraScore }}
+  </div>
+  <div class="col-md-4">
+    Behavioral Score: {{ appraisalData.behavioralScore }}
+  </div>
+  <div class="col-md-4">
+    Final Weighted Score: {{ appraisalData.FinalWeightedScore }}
+  </div>
+</div>
+
+<div class="row mb-3">
+  <div class="col-md-6">
+    Manager Comment: {{ appraisalData.managerComments }}
+  </div>
+  <div class="col-md-6">
+    Employee Comment: {{ appraisalData.employeeComments }}
+  </div>
+</div>
+
+
+    <p class="text-primary">KRA Details</p>
+    <div class="table-responsive">
+      <table class="table table-bordered table-sm">
+        <thead class="table-light">
+          <tr>
+            <th class="text-start">Description</th>
+            <th class="text-start">Target</th>
+            <th class="text-start">Achievement</th>
+            <th class="text-start">Weight</th>
+            <th class="text-start">Rating</th>
+          </tr>
+        </thead>
+        <tbody class="text-start">
+          <tr *ngFor="let kra of kraList">
+            <td class="text-start" [innerHTML]="kra.Description | safeHtml"></td>
+            <td class="text-start" [innerHTML]="kra.Target | safeHtml"></td>
+            <td class="text-start">{{ kra.Achievement }}</td>
+            <td class="text-start">{{ kra.weight }}</td>
+            <td class="text-start">{{ kra.rating }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p  class="text-primary">Behavioral Attributes</p>
+    <div class="table-responsive">
+      <table class="table table-bordered table-sm">
+        <thead class="table-light">
+          <tr>
+            <th>Name</th>
+            <th>Rating</th>
+            <th>Comment</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let beh of behavioralList">
+            <td>{{ beh.Name }}</td>
+            <td>{{ beh.Rating }}</td>
+            <td>{{ beh.Comment }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+</div>
+</div>

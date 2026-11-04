@@ -1,0 +1,432 @@
+<!-- first section -->
+<section>
+  <div class="container-fluid">
+    <!-- header section -->
+    <div class="row border-bottom">
+      <div class="col-sm-12 col-md-12 col-lg-8 col-xxl-8">
+        <p class="small mb-0">
+          <span>HR Management</span><br>
+          <span class="fw-bold text-success">
+            <i class="fa-solid fa-user fw-bold"></i> Total Employee -
+          </span>
+          <span class="fw-bold text-success">{{ dashboardSummary.TotalEmployee}}</span>
+        </p>
+      </div>
+
+      <div class="col-sm-12 col-md-12 col-lg-4 col-xxl-4">
+         <form [formGroup]="form">
+        <div class="row row-cols-2 g-2 pt-lg-2 small">
+          <div class="col">
+            <!-- <select id="inputState" class="form-select form-select-sm small">
+              <option selected>Month</option>
+              <option>Jan</option>
+            </select> -->
+              <ng-select [items]="months" bindLabel="name" bindValue="value" formControlName="month"
+              placeholder="Select Month"
+               (change)="onSelectionChange()"
+          [clearable]="false">
+
+            </ng-select>
+
+          </div>
+
+          <div class="col">
+            <ng-select id="fk_yearId" [items]="years" bindLabel="name" bindValue="value" formControlName="year"
+              placeholder="--Year --" class="w-100"
+               (change)="onSelectionChange()"
+          [clearable]="false"></ng-select>
+
+          </div>
+
+          <!-- <div class="col">
+            <select id="inputState" class="form-select form-select-sm small">
+              <option selected>Export</option>
+              <option>Export PDF</option>
+              <option>Export Excel</option>
+            </select>
+          </div> -->
+
+
+        </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- second list -->
+<section>
+  <div class="container">
+    <div class="row pt-4">
+      <!-- Left side -->
+      <div class="col-sm-12 col-md-12 col-lg-8">
+        <!-- Cards -->
+        <div class="row row-cols-2 row-cols-md-4 g-3 small">
+          <div class="col animate-fade-in">
+            <div class="card rounded pt-2 custom-card">
+              <h4 class="text-center">
+                <span class="badge text-bg-primary rounded">
+                  <i class="fa-solid fa-users fs-5 text-light"></i>
+                </span>
+              </h4>
+              <p class="small text-center">Total Employees<br><span class="text-primary fw-semibold">{{ dashboardSummary.TotalEmployee}}</span></p>
+            </div>
+          </div>
+
+          <div class="col animate-fade-in">
+            <div class="card rounded pt-2 custom-card">
+              <h4 class="text-center">
+                <span class="badge text-bg-success rounded">
+                  <i class="fa-solid fa-user-plus fs-5"></i>
+                </span>
+              </h4>
+              <p class="small text-center">New Joining<br><span class="text-success fw-semibold">{{ dashboardSummary.NewJoining}}</span></p>
+            </div>
+          </div>
+
+          <div class="col animate-fade-in">
+            <div class="card rounded pt-2">
+              <h4 class="text-center">
+                <span class="badge text-bg-danger rounded">
+                  <i class="fa-solid fa-user-minus fs-5"></i>
+                </span>
+              </h4>
+              <p class="small text-center">Left Employee<br><span class="text-danger fw-semibold">{{ dashboardSummary.leftemployee}}</span></p>
+            </div>
+          </div>
+
+          <div class="col animate-fade-in">
+            <div class="card rounded pt-2">
+              <h4 class="text-center">
+                <span class="badge text-bg-warning rounded">
+                  <i class="fa-solid fa-envelope-open-text fs-5 text-white"></i>
+                </span>
+              </h4>
+              <p class="small text-center">Pending Letters<br><span class="text-warning fw-semibold">{{ dashboardSummary.PendingLetters}}</span></p>
+            </div>
+          </div>
+
+          <div class="col animate-fade-in">
+            <div class="card rounded pt-2">
+              <h4 class="text-center">
+                <span class="badge text-bg-success rounded">
+                  <i class="fa-solid fa-check-circle fs-5"></i>
+                </span>
+              </h4>
+              <p class="small text-center">Appointment Letters<br><span class="text-success fw-semibold">{{ dashboardSummary.SuccessLetters}}</span></p>
+            </div>
+          </div>
+
+          <div class="col animate-fade-in">
+            <div class="card rounded pt-2">
+              <h4 class="text-center">
+                <span class="badge text-bg-danger rounded">
+                  <i class="fa-solid fa-exclamation-circle fs-5"></i>
+                </span>
+              </h4>
+              <p class="small text-center">Warning Letters<br><span class="text-danger fw-semibold">{{ dashboardSummary.WarningLetters}}</span></p>
+            </div>
+          </div>
+
+          <div class="col animate-fade-in">
+            <div class="card rounded pt-2">
+              <h4 class="text-center">
+                <span class="badge text-bg-info rounded">
+                  <i class="fa-solid fa-file-arrow-up fs-5 text-white"></i>
+                  
+                </span>
+              </h4>
+              <p class="small text-center">Increment Letters<br><span class="fw-semibold text-info">{{ dashboardSummary.IncrementLetters}}</span></p>
+            </div>
+          </div>
+
+          <div class="col animate-fade-in">
+            <div class="card rounded pt-2">
+              <h4 class="text-center">
+                <span class="badge text-bg-primary rounded">
+                  <i class="fa-regular fa-share-from-square fs-5 text-white"></i>
+                  
+                </span>
+              </h4>
+              <p class="small text-center">
+                
+                Transfer letter <br><span class="fw-semibold text-warning">{{ dashboardSummary.TransferLetters}}</span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Side -->
+     <div class="col-sm-12 col-md-12 col-lg-4">
+  <div class="card d-flex align-items-center justify-content-center animate-fade-in">
+    <div class="card-body w-100">
+      <!-- Title -->
+      <p class="text-primary fw-semibold small text-center mb-2">
+        Attrition Rate
+      </p>
+
+      <!-- Chart container -->
+      <div
+        id="chartdiv"
+        style="width: 100%; height: 200px; font-size: 13px;"
+        class="my-0 py-0"
+      ></div>
+
+      <!-- Joining and Left Rate -->
+      <div class="text-center d-flex align-items-center justify-content-between mt-2">
+        <small>
+          <span class="fw-semibold">Joining Rate:</span>
+          <span class="text-success fw-semibold">
+            {{ dashboardSummary.JoiningRate }}
+          </span>
+        </small>
+        <small>
+          <span class="fw-semibold">Left Rate:</span>
+          <span class="text-warning fw-semibold">
+            {{ dashboardSummary.leftAttritionRate }}
+          </span>
+        </small>
+      </div>
+    </div>
+  </div>
+</div>
+
+    </div>
+  </div>
+</section>
+
+<!-- Employee Details -->
+<section>
+  <div class="container">
+    <div class="row" >
+      <!-- left recent activities -->
+      <div class="col-sm-12 col-md-12 col-lg-5" >
+        <div class="card shadow-sm animate-fade-in mt-3"  >
+          <div class="card-body p-3" >
+            <div class="d-flex justify-content-between align-items-center">
+              <p class="card-title mb-0 small fw-bold">Recent Activities</p>
+            
+            </div>
+            <ul class="list-group mt-3 small"  style="max-height: 307px; overflow-y: auto; scrollbar-width: thin;
+                   scrollbar-color: #c5c5c5 transparent;" >
+              <!-- <li class="list-group-item d-flex align-items-lg-center justify-content-lg-between" *ngFor="let emp of RecentActivity">
+                <div class="d-flex align-items-lg-center">
+                 
+                  <div class="ms-3 lh-sm">
+                    <span class="small fw-semibold">💬 &nbsp;{{emp.DisplayText}}</span>
+                   </div>
+                </div>
+                <p class="small mb-0">{{emp.SentAt | date: 'dd-MMM-yyyy, hh:mm:ss a'}}</p>
+              </li> -->
+
+              <ul class="list-group border-0">
+  
+<ul class="list-group border-0 recent-activity-list">
+  <li 
+    class="list-group-item activity-item d-flex align-items-center justify-content-between" 
+    *ngFor="let emp of RecentActivity"
+  >
+    <div class="d-flex align-items-center">
+      <!-- <div class="icon-circle me-3">
+        <i class="fa-solid fa-message"></i>
+      </div> -->
+      <div>
+        <!-- <span class="activity-text">{{ emp.DisplayText }}</span> -->
+          <span 
+    [style.color]="emp.DisplayText.includes('↪') ? 'blue' : emp.DisplayText.includes('↩') ? 'green' : 'inherit'">
+    {{ emp.DisplayText.charAt(0) }}
+  </span>
+  <span >
+    {{ emp.DisplayText.substring(2) }}
+  </span>
+      </div>
+    </div>
+
+    <small class="activity-time">
+      <i class="fa-regular fa-clock me-1"></i>
+      {{ emp.SentAt | date: 'dd-MMM-yyyy, hh:mm a' }}
+    </small>
+  </li>
+</ul>
+
+
+</ul>
+
+
+             
+             
+                            <!-- <li class="list-group-item d-flex align-items-lg-center justify-content-lg-between">
+                <div class="d-flex align-items-lg-center">
+                  <img src="assets/img/users/user-3.png" class="rounded-circle user-img" alt="">
+                  <div class="ms-3 lh-sm">
+                    <span class="small fw-bold">Anupam Mittal</span>
+                    <small><span class="text-muted small-sm">Approved Task Projects</span></small>
+                  </div>
+                </div>
+                <p class="small mb-0">8:37pm</p>
+              
+              </li> -->
+
+
+
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right blank area -->
+   
+<div class="col-sm-12 col-md-12 col-lg-7">
+  <div class="card shadow-sm animate-fade-in mt-3">
+    <div class="card-body py-lg-0 px-2 px-lg-4">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+                            <p class="card-title mb-0 fw-bold small text-primary">Events</p>
+                            <!-- <p class="badge badge-success"><span>Unread : <span>10</span></span></p> -->
+                            <p class="badge unread-badge-3 d-flex align-items-center"
+                                routerLink="/dash/hr/hrdashboard/hr-chatboat">
+
+                                <i class="fa-regular fa-bell unread-dot me-1"></i>
+                                Chat : <span>{{ unreadCount }}</span>
+                            </p>
+
+
+
+
+                        </div>
+
+      <!-- Tabs -->
+      <ul class="nav nav-tabs nav-tabs-custom small fw-semibold" id="highlightTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="today-tab" data-bs-toggle="tab" data-bs-target="#today" type="button" role="tab">
+            🎂 Today's Birthday
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="upcoming-tab" data-bs-toggle="tab" data-bs-target="#upcoming" type="button" role="tab">
+            📅 Upcoming Birthdays
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="anniversary-tab" data-bs-toggle="tab" data-bs-target="#anniversary" type="button" role="tab">
+            💍 Anniversary
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="events-tab" data-bs-toggle="tab" data-bs-target="#events" type="button" role="tab">
+            🎉 Events
+          </button>
+        </li>
+      </ul>
+
+      <!-- Tab Content -->
+      <div class="tab-content mt-3 small" id="highlightTabsContent">
+
+        <!-- 🎂 Today's Birthdays -->
+        <div class="tab-pane fade show active" id="today" role="tabpanel">
+          <ul class="list-group scrollable-list">
+            <li *ngFor="let emp of todayBirthdays" class="list-group-item d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center">
+                <img [src]="emp.img" class="rounded-circle user-img" alt="">
+                <div class="ms-3 lh-sm">
+                  <span class="fw-bold small">{{ emp.name }}</span>
+                  <p class="text-muted mb-0 small-sm">{{ emp.dept }}</p>
+                </div>
+              </div>
+              <button class="btn btn-sm btn-outline-primary rounded-circle shadow-sm" 
+                      (click)="openChatbot(emp.pk_empid, 'today')">
+                <i class="fa-solid fa-paper-plane"></i>
+              </button>
+            </li>
+          </ul>
+        </div>
+
+        <!-- 📅 Upcoming Birthdays -->
+        <div class="tab-pane fade" id="upcoming" role="tabpanel">
+          <ul class="list-group scrollable-list">
+            <li *ngFor="let emp of upcomingBirthdays" class="list-group-item d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center">
+                <img [src]="emp.img" class="rounded-circle user-img" alt="">
+                <div class="ms-3 lh-sm">
+                  <span class="fw-bold small">{{ emp.name }}</span>
+                  <p class="text-muted mb-0 small-sm">{{ emp.dept }}</p>
+                </div>
+              </div>
+              <span class="badge bg-light text-dark small">{{ emp.date }}</span>
+           
+              <button class="btn btn-sm btn-outline-primary rounded-circle shadow-sm" 
+                      (click)="openChatbot(emp.pk_empid, 'upcoming')">
+                <i class="fa-solid fa-paper-plane"></i>
+              </button>
+            </li>
+          </ul>
+        </div>
+
+        <!-- 💍 Anniversaries -->
+        <div class="tab-pane fade" id="anniversary" role="tabpanel">
+          <ul class="list-group scrollable-list">
+            <li *ngFor="let emp of anniversaries" class="list-group-item d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center">
+                <img [src]="emp.img" class="rounded-circle user-img" alt="">
+                <div class="ms-3 lh-sm">
+                  <span class="fw-bold small">{{ emp.name }}</span>
+                  <p class="text-muted mb-0 small-sm">
+                    <span class="small-sm">{{ emp.dept }}</span>
+                    <span 
+                      class="badge ms-3 small"
+                      [ngClass]="{
+                        'bg-danger-subtle text-danger': emp.AnniversaryDisplay === 'Today',
+                        'bg-secondary text-dark': emp.AnniversaryDisplay !== 'Today' && emp.AnniversaryDisplay !== null
+                      }">
+                      {{ emp.AnniversaryDisplay }}
+                    </span>
+                    <span class="text-success ms-4 small">{{ emp.years }}</span>
+                  </p>
+                </div>
+              </div>
+              <button class="btn btn-sm btn-outline-primary rounded-circle shadow-sm" 
+                      (click)="openChatbot(emp.pk_empid, 'anniversary')">
+                <i class="fa-solid fa-paper-plane"></i>
+              </button>
+            </li>
+          </ul>
+        </div>
+
+        <!-- 🎉 Events -->
+        <div class="tab-pane fade" id="events" role="tabpanel">
+          <ul class="list-group scrollable-list">
+            <li *ngFor="let e of events" class="list-group-item d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center">
+                <img [src]="e.img" class="rounded-circle user-img" alt="">
+                <div class="ms-3 lh-sm">
+                  <span class="fw-bold small">{{ e.name }}</span>
+                  <p class="text-muted mb-0 small">
+                    <span class="text-success small">{{ e.eventVenue }}</span>
+                    <span 
+                      class="badge ms-3 small"
+                      [ngClass]="{
+                        'bg-danger-subtle text-danger': e.date === 'Today',
+                        'bg-secondary text-dark': e.date !== 'Today' && e.date !== null
+                      }">
+                      {{ e.date }}
+                    </span>
+                  </p>
+                </div>
+              </div>
+               <button class="btn btn-sm btn-outline-primary rounded-circle shadow-sm" 
+                      (click)="openChatbot(e.pk_empid, 'event')">
+                <i class="fa-solid fa-paper-plane"></i>
+              </button>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    </div>
+  </div>
+</section>

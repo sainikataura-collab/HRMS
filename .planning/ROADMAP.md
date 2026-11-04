@@ -9,6 +9,7 @@ This roadmap delivers end-to-end duplicate Aadhaar card prevention across HRBook
 - [x] **Phase 1: Centralized Backend Aadhaar Deduplication Engine** - Unified stored procedure, repository, and REST API validation service with server-side guards.
 - [x] **Phase 2: Sourcing Surfaces Deduplication & Document Submission Stage Progression** - Real-time client feedback and submission blocks for Manpower Public Apply, Vendor Portal registration, and automatic progression to Docs_Submitted.
 - [x] **Phase 3: Onboarding Dossier & Talent Pool Integration** - Statutory dossier uniqueness checks, candidate hire deduplication, clean UI, sequential code generation, and Talent Bench re-allocation.
+- [x] **Phase 4: Multi-Email Vendor Master & ATS Communication Engine** - VARCHAR(MAX) comma-separated vendor emails, Vendor Master Lite List table column integration, and dual-touchpoint ATS email delivery.
 
 ## Phase Details
 
@@ -52,6 +53,20 @@ Plans:
 Plans:
 - [x] 03-01: Candidate Hire Deduplication, Clean UI Labels & Robust Employee Code Generation
 - [x] 03-02: Talent Bench Aadhaar Detection & Seamless Re-Allocation Integration
+
+### Phase 4: Multi-Email Vendor Master & ATS Communication Engine
+**Goal**: Store comma-separated vendor emails in VARCHAR(MAX), display Email ID column in Vendor Master Lite list (preserving existing Excel export untouched), and ensure both vendor recruitment email workflows send to all vendor emails.
+**Depends on**: Phase 3
+**Success Criteria**:
+  1. `dbo.REC_Candidate_Details` `EmailID` and `email` altered to `VARCHAR(MAX)`.
+  2. `VendorLite_Ins` and `VendorLite_Upd` handle `VARCHAR(MAX)` multi-email strings without truncation.
+  3. `vendor-master-lite-form` permits comma/semicolon-separated emails with validation.
+  4. `vendor-master-lite-list` displays the Email ID column between Contact No and Bank Name; Excel export remains untouched.
+  5. Both recruitment vendor email touchpoints (Requisition Intimation and Offer Letter Dispatch) successfully dispatch to all comma-separated addresses.
+**Plans**: 1 plan
+
+Plans:
+- [x] 04-01: Multi-Email Vendor Master & ATS Communication Engine
 
 ---
 *Roadmap generated: 2026-11-03*

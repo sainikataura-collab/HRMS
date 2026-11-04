@@ -1,0 +1,311 @@
+// ============================================================================
+// CJ DARCL Recruitment Architecture: Job Requisition & MRF Directory List
+// Strictly Component-Scoped Styles (Global styles.scss untouched)
+// ============================================================================
+
+.ats-mrf-list-page {
+  font-family: "Work Sans", sans-serif !important;
+  background-color: #f6f8fa !important;
+  padding: 0.6rem 0.85rem;
+  font-size: 11.5px !important;
+
+  .header-strip {
+    border-color: #e2e8f0 !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+
+    .page-title {
+      font-size: 13px;
+    }
+
+    .btn-back {
+      width: 24px;
+      height: 24px;
+      background-color: #f1f5f9;
+      font-size: 11px;
+      transition: all 0.15s;
+      &:hover {
+        background-color: #e2e8f0;
+      }
+    }
+  }
+
+  // Primary Action Button (#3080e8)
+  .btn-primary-action {
+    font-size: 11px !important;
+    padding: 3px 12px !important;
+    background-color: #3080e8 !important;
+    color: #ffffff !important;
+    border: 1px solid #3080e8 !important;
+    border-radius: 4px !important;
+    box-shadow: 0 2px 6px #acb5f6 !important;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition: all 0.15s ease-in-out;
+    &:hover {
+      background-color: #2b2b41 !important;
+      border-color: #2b2b41 !important;
+      color: #ffffff !important;
+    }
+  }
+
+  .badge-chip {
+    font-size: 9.5px;
+    font-weight: 600;
+    padding: 1px 6px;
+    border-radius: 3px;
+  }
+
+  // Bento KPI Metric Cards
+  .bento-kpi-card {
+    background-color: #ffffff !important;
+    transition: all 0.15s ease-in-out;
+    border-color: #e2e8f0 !important;
+
+    &:hover,
+    &.active {
+      border-color: #3080e8 !important;
+      background-color: #f8faff !important;
+      box-shadow: 0 2px 4px rgba(48, 128, 232, 0.08);
+    }
+
+    .kpi-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: #64748b;
+    }
+
+    .kpi-val {
+      font-size: 16px;
+      line-height: 1.2;
+      margin: 2px 0;
+    }
+  }
+
+  // Filter Strip
+  .filter-strip {
+    border-color: #e2e8f0 !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+  }
+
+  // Table Styles
+  .table {
+    .requisition-row {
+      transition: background-color 0.15s;
+      &:hover {
+        background-color: #f8fafc;
+      }
+    }
+
+    .mrf-badge {
+      font-size: 11px;
+      font-weight: 700;
+      color: #3080e8;
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  // Slide-Over Full Details Drawer (Fitted cleanly between top navbar and portal footer)
+  .drawer-backdrop {
+    position: fixed !important;
+    top: 65px !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 40px !important;
+    width: 100vw !important;
+    height: calc(100vh - 105px) !important;
+    background-color: rgba(15, 23, 42, 0.45) !important;
+    backdrop-filter: blur(1.5px);
+    z-index: 1035 !important;
+    animation: fadeIn 0.15s ease-in;
+  }
+
+  .details-drawer {
+    position: fixed !important;
+    top: 65px !important;
+    right: 0 !important;
+    bottom: 40px !important;
+    width: 550px !important;
+    max-width: 95vw !important;
+    height: calc(100vh - 105px) !important;
+    z-index: 1040 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    background-color: #ffffff !important;
+    box-shadow: -6px 0 28px rgba(15, 23, 42, 0.25) !important;
+    animation: slideInRight 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+    border-left: 1px solid #cbd5e1 !important;
+    overflow: hidden !important;
+
+    .drawer-header {
+      background-color: #ffffff !important;
+      border-bottom: 2px solid #e2e8f0 !important;
+      padding: 0.85rem 1.15rem !important;
+      flex-shrink: 0 !important;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .drawer-body {
+      overflow-y: auto !important;
+      flex: 1 1 auto !important;
+      padding: 1rem !important;
+      background-color: #f8fafc !important;
+    }
+
+    .drawer-footer {
+      background-color: #ffffff !important;
+      border-top: 2px solid #e2e8f0 !important;
+      padding: 0.75rem 1.15rem !important;
+      flex-shrink: 0 !important;
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+    }
+  }
+
+  .btn-close-custom {
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #334155;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.15s;
+    &:hover {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+  }
+
+  // Drawer Card and Field Labels (Ultra-High Contrast)
+  .drawer-card {
+    background-color: #ffffff !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+  }
+
+  .drawer-card-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: #0f172a !important;
+    letter-spacing: 0.2px;
+  }
+
+  .drawer-field-label {
+    display: block;
+    font-size: 10.5px;
+    font-weight: 700;
+    color: #334155 !important; // Deep slate, never washed out
+    margin-bottom: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.25px;
+  }
+
+  .drawer-field-value {
+    font-size: 12px;
+    font-weight: 700;
+    color: #0f172a !important;
+  }
+
+  // Table Light Header & High Visibility Borders (Clean, Crisp, Light Themed)
+  .table-light-header {
+    background-color: #f1f5f9 !important;
+    border-bottom: 2px solid #cbd5e1 !important;
+
+    th {
+      background-color: #f1f5f9 !important;
+      color: #0f172a !important; // Crisp, deep slate-900 (ultra legible)
+      font-size: 11px !important;
+      font-weight: 700 !important;
+      text-transform: uppercase !important;
+      letter-spacing: 0.4px !important;
+      border-bottom: 2px solid #cbd5e1 !important;
+      border-top: none !important;
+      padding: 0.65rem 0.75rem !important;
+    }
+  }
+
+  .border-slate-300 {
+    border-color: #cbd5e1 !important;
+  }
+
+  .bg-slate-100 {
+    background-color: #f1f5f9 !important;
+  }
+
+  .text-slate-800 {
+    color: #0f172a !important;
+  }
+
+  .text-slate-700 {
+    color: #334155 !important;
+  }
+
+  .shadow-xs {
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  }
+
+  .cursor-pointer {
+    cursor: pointer;
+  }
+
+  // KPI Color Utilities
+  .kpi-indigo {
+    border-top: 3px solid #4f46e5 !important;
+    .kpi-label { color: #4338ca !important; }
+    .kpi-val { color: #312e81 !important; }
+  }
+  .kpi-green {
+    border-top: 3px solid #16a34a !important;
+    .kpi-label { color: #15803d !important; }
+    .kpi-val { color: #14532d !important; }
+  }
+  .kpi-amber {
+    border-top: 3px solid #d97706 !important;
+    .kpi-label { color: #b45309 !important; }
+    .kpi-val { color: #78350f !important; }
+  }
+  .kpi-red {
+    border-top: 3px solid #dc2626 !important;
+    .kpi-label { color: #dc2626 !important; }
+    .kpi-val { color: #dc2626 !important; }
+  }
+  .kpi-slate {
+    border-top: 3px solid #475569 !important;
+    .kpi-label { color: #334155 !important; }
+    .kpi-val { color: #0f172a !important; }
+  }
+  .kpi-cyan {
+    border-top: 3px solid #0891b2 !important;
+    .kpi-label { color: #0e7490 !important; }
+    .kpi-val { color: #164e63 !important; }
+  }
+  .kpi-purple {
+    border-top: 3px solid #7c3aed !important;
+    .kpi-label { color: #6d28d9 !important; }
+    .kpi-val { color: #4c1d95 !important; }
+  }
+
+  .text-purple { color: #6d28d9 !important; }
+  .text-indigo { color: #4338ca !important; }
+  .bg-purple-subtle { background-color: #f3e8ff !important; }
+  .border-purple-subtle { border-color: #d8b4fe !important; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}

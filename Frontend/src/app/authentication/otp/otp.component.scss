@@ -1,0 +1,49 @@
+@media only screen and (max-width:500px){
+    .input-group-text, select.form-control:not([size]):not([multiple]), .form-control:not(.form-control-sm):not(.form-control-lg) {
+        font-size: 14px !important;
+        padding: 10px 0px !important;
+        height: 40px !important;
+    }
+}
+
+@media only screen and (max-width:500px){
+   .otp_verification_col{
+    padding-top: 50px !important;
+    margin-top: 0px !important;
+   }
+}
+
+.otp_verification_font{
+    color: #3080e8 !important;
+    font-size: 2.8rem !important;
+}
+
+@media only screen and (max-width:1200px){
+    .otp_verification_font{
+        font-size: 2.2rem !important;
+        padding-top: 0px !important;
+    }
+}
+
+@media only screen and (max-width:500px){
+    .otp_verification_font{
+        font-size: 1.9rem !important;
+        padding-top: 0px !important;
+    }
+}
+
+
+.otp-section{
+    position: fixed;
+  }
+  
+  @media only screen and (max-width:800px) {
+    .otp-section{
+      position: sticky;
+    }
+  }
+
+  .form-control{
+    font-size: 14px !important;
+  }
+  

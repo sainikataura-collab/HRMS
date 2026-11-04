@@ -1,0 +1,1002 @@
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card ctc-config-card">
+      <!-- HEADER -->
+      <div class="card-header bg-blue">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-6 col-lg-6">
+            <h4 class="text-white">
+              {{
+                pk_ctcConfigId
+                  ? "Update CTC Configuration"
+                  : "CTC Configuration"
+              }}
+            </h4>
+          </div>
+          <div
+            class="col-sm-12 col-md-6 col-lg-6 d-flex align-items-center justify-content-md-end"
+          >
+            <button
+              class="btn btnheader"
+              routerLink="/dash/user/userdashboard/CtcConfiguration_list"
+            >
+              Back
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONFIGURATION DETAILS -->
+      <div class="card-body">
+        <div class="config-section" *ngIf="activeTab === 'components'">
+          <h6 class="section-title">
+            <i class="fa fa-file-text-o me-2"></i>Configuration Details
+          </h6>
+          <form
+            [formGroup]="configForm"
+            class="row row-cols-1 row-cols-md-4 g-3"
+          >
+            <!-- Effective From -->
+            <div class="col">
+              <label>Effective From <span class="text-danger">*</span></label>
+              <input
+                type="date"
+                class="form-control"
+                formControlName="effectiveFrom"
+              />
+              <span
+                *ngIf="
+                  submitted && configForm.controls['effectiveFrom'].invalid
+                "
+                class="text-danger mt-1"
+                style="font-size: 12px"
+              >
+                Please select effective date.
+              </span>
+            </div>
+
+            <!-- Configuration Name -->
+            <div class="col">
+              <label
+                >Configuration Name <span class="text-danger">*</span></label
+              >
+              <input
+                type="text"
+                class="form-control"
+                formControlName="configName"
+                placeholder="e.g. CTC Structure FY 2026-27"
+              />
+              <span
+                *ngIf="submitted && configForm.controls['configName'].invalid"
+                class="text-danger mt-1"
+                style="font-size: 12px"
+              >
+                Please enter configuration name.
+              </span>
+            </div>
+
+            <!-- Location (Multi-select) -->
+            <div class="col">
+              <label>Location</label>
+              <ng-select
+                [items]="locationList"
+                bindLabel="name"
+                bindValue="value"
+                formControlName="fk_locationIds"
+                [multiple]="true"
+                [closeOnSelect]="false"
+                placeholder="All Locations"
+              >
+                <ng-template
+                  ng-multi-label-tmp
+                  let-items="items"
+                  let-clear="clear"
+                >
+                  <div
+                    class="ng-value"
+                    *ngIf="
+                      locationList.length > 0 &&
+                      items.length === locationList.length
+                    "
+                  >
+                    <span class="ng-value-label">All</span>
+                  </div>
+                  <ng-container
+                    *ngIf="
+                      locationList.length === 0 ||
+                      items.length !== locationList.length
+                    "
+                  >
+                    <div
+                      class="ng-value"
+                      *ngFor="let item of items | slice : 0 : 2"
+                    >
+                      <span
+                        class="ng-value-icon left"
+                        (click)="clear(item)"
+                        aria-hidden="true"
+                        >×</span
+                      >
+                      <span class="ng-value-label">{{ $any(item).name }}</span>
+                    </div>
+                    <div class="ng-value" *ngIf="items.length > 2">
+                      <span class="ng-value-label"
+                        >... (+{{ items.length - 2 }})</span
+                      >
+                    </div>
+                  </ng-container>
+                </ng-template>
+                <ng-template ng-header-tmp>
+                  <div class="p-2 border-bottom d-flex align-items-center">
+                    <input
+                      type="checkbox"
+                      class="form-check-input me-2"
+                      [checked]="isAllLocationsSelected()"
+                      (change)="toggleAllLocations($event)"
+                    />
+                    <strong>Select All</strong>
+                  </div>
+                </ng-template>
+                <ng-template ng-option-tmp let-item="item" let-item$="item$">
+                  <div class="d-flex align-items-center">
+                    <input
+                      type="checkbox"
+                      class="form-check-input me-2"
+                      [checked]="item$.selected"
+                    />
+                    <span>{{ item.name }}</span>
+                  </div>
+                </ng-template>
+              </ng-select>
+            </div>
+
+            <!-- Department (Multi-select) -->
+            <div class="col">
+              <label>Department</label>
+              <ng-select
+                [items]="departmentList"
+                bindLabel="name"
+                bindValue="value"
+                formControlName="fk_departmentIds"
+                [multiple]="true"
+                [closeOnSelect]="false"
+                placeholder="All Departments"
+              >
+                <ng-template
+                  ng-multi-label-tmp
+                  let-items="items"
+                  let-clear="clear"
+                >
+                  <div
+                    class="ng-value"
+                    *ngIf="
+                      departmentList.length > 0 &&
+                      items.length === departmentList.length
+                    "
+                  >
+                    <span class="ng-value-label">All</span>
+                  </div>
+                  <ng-container
+                    *ngIf="
+                      departmentList.length === 0 ||
+                      items.length !== departmentList.length
+                    "
+                  >
+                    <div
+                      class="ng-value"
+                      *ngFor="let item of items | slice : 0 : 2"
+                    >
+                      <span
+                        class="ng-value-icon left"
+                        (click)="clear(item)"
+                        aria-hidden="true"
+                        >×</span
+                      >
+                      <span class="ng-value-label">{{ $any(item).name }}</span>
+                    </div>
+                    <div class="ng-value" *ngIf="items.length > 2">
+                      <span class="ng-value-label"
+                        >... (+{{ items.length - 2 }})</span
+                      >
+                    </div>
+                  </ng-container>
+                </ng-template>
+                <ng-template ng-header-tmp>
+                  <div class="p-2 border-bottom d-flex align-items-center">
+                    <input
+                      type="checkbox"
+                      class="form-check-input me-2"
+                      [checked]="isAllDepartmentsSelected()"
+                      (change)="toggleAllDepartments($event)"
+                    />
+                    <strong>Select All</strong>
+                  </div>
+                </ng-template>
+                <ng-template ng-option-tmp let-item="item" let-item$="item$">
+                  <div class="d-flex align-items-center">
+                    <input
+                      type="checkbox"
+                      class="form-check-input me-2"
+                      [checked]="item$.selected"
+                    />
+                    <span>{{ item.name }}</span>
+                  </div>
+                </ng-template>
+              </ng-select>
+            </div>
+
+            <!-- Employee Category (Multi-select) -->
+            <div class="col">
+              <label
+                >Employee Category <span class="text-danger">*</span></label
+              >
+              <ng-select
+                [items]="categoryList"
+                bindLabel="name"
+                bindValue="value"
+                formControlName="fk_categoryIds"
+                [multiple]="true"
+                [closeOnSelect]="false"
+                placeholder="All Categories"
+              >
+                <ng-template
+                  ng-multi-label-tmp
+                  let-items="items"
+                  let-clear="clear"
+                >
+                  <div
+                    class="ng-value"
+                    *ngIf="
+                      categoryList.length > 0 &&
+                      items.length === categoryList.length
+                    "
+                  >
+                    <span class="ng-value-label">All</span>
+                  </div>
+                  <ng-container
+                    *ngIf="
+                      categoryList.length === 0 ||
+                      items.length !== categoryList.length
+                    "
+                  >
+                    <div
+                      class="ng-value"
+                      *ngFor="let item of items | slice : 0 : 2"
+                    >
+                      <span
+                        class="ng-value-icon left"
+                        (click)="clear(item)"
+                        aria-hidden="true"
+                        >×</span
+                      >
+                      <span class="ng-value-label">{{ $any(item).name }}</span>
+                    </div>
+                    <div class="ng-value" *ngIf="items.length > 2">
+                      <span class="ng-value-label"
+                        >... (+{{ items.length - 2 }})</span
+                      >
+                    </div>
+                  </ng-container>
+                </ng-template>
+                <ng-template ng-header-tmp>
+                  <div class="p-2 border-bottom d-flex align-items-center">
+                    <input
+                      type="checkbox"
+                      class="form-check-input me-2"
+                      [checked]="isAllCategoriesSelected()"
+                      (change)="toggleAllCategories($event)"
+                    />
+                    <strong>Select All</strong>
+                  </div>
+                </ng-template>
+                <ng-template ng-option-tmp let-item="item" let-item$="item$">
+                  <div class="d-flex align-items-center">
+                    <input
+                      type="checkbox"
+                      class="form-check-input me-2"
+                      [checked]="item$.selected"
+                    />
+                    <span>{{ item.name }}</span>
+                  </div>
+                </ng-template>
+              </ng-select>
+              <span
+                *ngIf="
+                  submitted && configForm.controls['fk_categoryIds'].invalid
+                "
+                class="text-danger mt-1"
+                style="font-size: 12px"
+              >
+                Please select at least one category.
+              </span>
+            </div>
+
+            <!-- Grade (Multi-select) -->
+            <div class="col">
+              <label>Grade</label>
+              <ng-select
+                [items]="gradeList"
+                bindLabel="name"
+                bindValue="value"
+                formControlName="fk_gradeIds"
+                [multiple]="true"
+                [closeOnSelect]="false"
+                placeholder="All Grades"
+              >
+                <ng-template
+                  ng-multi-label-tmp
+                  let-items="items"
+                  let-clear="clear"
+                >
+                  <div
+                    class="ng-value"
+                    *ngIf="
+                      gradeList.length > 0 && items.length === gradeList.length
+                    "
+                  >
+                    <span class="ng-value-label">All</span>
+                  </div>
+                  <ng-container
+                    *ngIf="
+                      gradeList.length === 0 ||
+                      items.length !== gradeList.length
+                    "
+                  >
+                    <div
+                      class="ng-value"
+                      *ngFor="let item of items | slice : 0 : 2"
+                    >
+                      <span
+                        class="ng-value-icon left"
+                        (click)="clear(item)"
+                        aria-hidden="true"
+                        >×</span
+                      >
+                      <span class="ng-value-label">{{ $any(item).name }}</span>
+                    </div>
+                    <div class="ng-value" *ngIf="items.length > 2">
+                      <span class="ng-value-label"
+                        >... (+{{ items.length - 2 }})</span
+                      >
+                    </div>
+                  </ng-container>
+                </ng-template>
+                <ng-template ng-header-tmp>
+                  <div class="p-2 border-bottom d-flex align-items-center">
+                    <input
+                      type="checkbox"
+                      class="form-check-input me-2"
+                      [checked]="isAllGradesSelected()"
+                      (change)="toggleAllGrades($event)"
+                    />
+                    <strong>Select All</strong>
+                  </div>
+                </ng-template>
+                <ng-template ng-option-tmp let-item="item" let-item$="item$">
+                  <div class="d-flex align-items-center">
+                    <input
+                      type="checkbox"
+                      class="form-check-input me-2"
+                      [checked]="item$.selected"
+                    />
+                    <span>{{ item.name }}</span>
+                  </div>
+                </ng-template>
+              </ng-select>
+            </div>
+
+            <!-- CTC Type (Dropdown) -->
+            <div class="col">
+              <label>CTC Type <span class="text-danger">*</span></label>
+              <ng-select
+                [items]="ctcTypeList"
+                bindLabel="name"
+                bindValue="value"
+                formControlName="ctcType"
+                placeholder="Select CTC Type"
+                [clearable]="false"
+              >
+              </ng-select>
+            </div>
+
+            <!-- Description -->
+            <div class="col">
+              <label>Description</label>
+              <input
+                type="text"
+                class="form-control"
+                formControlName="description"
+                placeholder="Standard CTC structure for FY 2026-27"
+              />
+            </div>
+          </form>
+        </div>
+
+        <!-- TABS -->
+        <div class="tabs-container mt-3">
+          <ul class="nav nav-tabs custom-tabs">
+            <li class="nav-item">
+              <a
+                class="nav-link"
+                [class.active]="activeTab === 'components'"
+                (click)="activeTab = 'components'"
+              >
+                <i class="fa fa-th-list me-1"></i> CTC Components
+              </a>
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link"
+                [class.active]="activeTab === 'summary'"
+                (click)="activeTab = 'summary'"
+              >
+                <i class="fa fa-pie-chart me-1"></i> Summary
+              </a>
+            </li>
+          </ul>
+
+          <!-- TAB 1: CTC COMPONENTS -->
+          <div class="tab-content" *ngIf="activeTab === 'components'">
+            <div class="table-section mt-3">
+              <h6 class="section-title">CTC Components</h6>
+
+              <div class="table-responsive">
+                <table class="table table-bordered table-hover ctc-table">
+                  <thead>
+                    <tr>
+                      <th class="text-center" style="width: 40px">#</th>
+                      <th>Component Name</th>
+                      <th style="width: 120px">Component Type</th>
+                      <th style="width: 200px">Calculation Type</th>
+                      <th style="width: 120px" class="text-end">Value</th>
+                      <th style="width: 100px" class="text-end">% of CTC</th>
+                      <th style="width: 130px">Tax Treatment</th>
+                      <th class="text-center" style="width: 110px">
+                        Consider for PF
+                      </th>
+                      <th class="text-center" style="width: 80px">Status</th>
+                      <th class="text-center" style="width: 100px">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr
+                      *ngFor="let comp of components; let i = index"
+                      [class.row-disabled]="!comp.isActive"
+                      [class.row-editing]="comp.isEditing"
+                    >
+                      <td class="text-center">{{ i + 1 }}</td>
+                      <td class="fw-semibold">{{ comp.headName }}</td>
+                      <td>
+                        <span
+                          class="component-badge"
+                          [ngClass]="
+                            getComponentTypeBadgeClass(comp.componentType)
+                          "
+                        >
+                          {{ comp.componentType }}
+                        </span>
+                      </td>
+
+                      <!-- Calculation Type -->
+                      <td>
+                        <div *ngIf="comp.isEditing; else calcTypeRead">
+                          <ng-select
+                            [items]="calculationTypes"
+                            bindLabel="name"
+                            bindValue="value"
+                            [(ngModel)]="comp.calculationType"
+                            placeholder="Select"
+                            [clearable]="true"
+                            (change)="onCalculationTypeChange(comp)"
+                            class="calc-type-select"
+                            [disabled]="!comp.isActive"
+                          >
+                          </ng-select>
+                          <!-- Show head dropdown when "Percentage of Head" is selected -->
+                          <ng-select
+                            *ngIf="comp.calculationType === 'PercentageOfHead'"
+                            [items]="headList"
+                            bindLabel="headName"
+                            bindValue="fk_headId"
+                            [(ngModel)]="comp.calcHeadId"
+                            placeholder="Select Head"
+                            (change)="onCalcHeadChange(comp)"
+                            class="mt-1 calc-head-select"
+                            [disabled]="!comp.isActive"
+                          >
+                          </ng-select>
+                        </div>
+                        <ng-template #calcTypeRead>
+                          <div>
+                            <span>{{
+                              getCalcTypeLabel(comp.calculationType)
+                            }}</span>
+                            <span
+                              *ngIf="
+                                comp.calculationType === 'PercentageOfHead' &&
+                                comp.calcHeadName
+                              "
+                              class="text-muted d-block font-xs"
+                            >
+                              of {{ comp.calcHeadName }}
+                            </span>
+                          </div>
+                        </ng-template>
+                      </td>
+
+                      <!-- Value -->
+                      <td>
+                        <div *ngIf="comp.isEditing; else valueRead">
+                          <input
+                            type="number"
+                            class="form-control form-control-sm text-end"
+                            [(ngModel)]="comp.value"
+                            placeholder="0.00"
+                            (ngModelChange)="updateCalculations()"
+                            [disabled]="
+                              !comp.isActive ||
+                              comp.calculationType === 'BalanceAmount' ||
+                              comp.calculationType === 'AsPerSlab'
+                            "
+                          />
+                        </div>
+                        <ng-template #valueRead>
+                          <span class="text-end d-block fw-semibold">{{
+                            comp.value !== null
+                              ? (comp.value | number : "1.2-2")
+                              : "-"
+                          }}</span>
+                        </ng-template>
+                      </td>
+
+                      <!-- % of CTC -->
+                      <td class="text-end fw-semibold">
+                        {{
+                          comp.percentOfCTC !== null
+                            ? (comp.percentOfCTC | number : "1.2-2") + "%"
+                            : "0.00%"
+                        }}
+                      </td>
+
+                      <!-- Tax Treatment -->
+                      <td>
+                        <div *ngIf="comp.isEditing; else taxRead">
+                          <ng-select
+                            [items]="taxTreatments"
+                            bindLabel="name"
+                            bindValue="value"
+                            [(ngModel)]="comp.taxTreatment"
+                            [clearable]="false"
+                            class="tax-select"
+                            [disabled]="!comp.isActive"
+                          >
+                          </ng-select>
+                        </div>
+                        <ng-template #taxRead>
+                          <span>{{ comp.taxTreatment || "Taxable" }}</span>
+                        </ng-template>
+                      </td>
+
+                      <!-- Consider for PF -->
+                      <td class="text-center">
+                        <div *ngIf="comp.isEditing; else pfRead">
+                          <input
+                            type="checkbox"
+                            class="form-check-input"
+                            [(ngModel)]="comp.considerForPF"
+                            [disabled]="!comp.isActive"
+                            (change)="updateCalculations()"
+                          />
+                        </div>
+                        <ng-template #pfRead>
+                          <i
+                            class="fa"
+                            [ngClass]="
+                              comp.considerForPF
+                                ? 'fa-check-square text-success'
+                                : 'fa-square-o text-muted'
+                            "
+                            style="font-size: 16px"
+                          ></i>
+                        </ng-template>
+                      </td>
+
+                      <td>
+                        <div class="form-check form-switch">
+                          <input
+                            class="form-check-input"
+                            type="checkbox"
+                            [id]="'flexSwitchCheckChecked' + i"
+                            [(ngModel)]="comp.isActive"
+                            (ngModelChange)="updateCalculations()"
+                          />
+                          <label
+                            class="form-check-label"
+                            [for]="'flexSwitchCheckChecked' + i"
+                            >&nbsp;</label
+                          >
+                        </div>
+                      </td>
+
+                      <!-- Action -->
+                      <td class="text-center">
+                        <div class="action-buttons">
+                          <button
+                            class="btn btn-link btn-sm p-0 me-2"
+                            (click)="toggleEdit(i)"
+                            [title]="comp.isEditing ? 'Save Row' : 'Edit Row'"
+                          >
+                            <i
+                              class="fa"
+                              [ngClass]="
+                                comp.isEditing
+                                  ? 'fa-check text-success'
+                                  : 'fa-pencil text-muted'
+                              "
+                              style="font-size: 15px"
+                            ></i>
+                          </button>
+                          <button
+                            class="btn btn-link btn-sm p-0"
+                            (click)="deleteComponent(i)"
+                            title="Delete Row"
+                          >
+                            <i
+                              class="fa fa-trash text-danger"
+                              style="font-size: 15px"
+                            ></i>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr *ngIf="components.length === 0">
+                      <td colspan="10" class="text-center text-muted py-4">
+                        <i class="fa fa-info-circle me-1"></i> No head
+                        components found. Please check Head Master
+                        configuration.
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- FOOTER TOTALS -->
+              <div class="totals-bar mt-3">
+                <div class="total-item">
+                  <span class="total-label">Total CTC</span>
+                  <span class="total-value text-primary"
+                    >{{ totalCTCPercent | number : "1.2-2" }}%</span
+                  >
+                </div>
+                <div class="total-item">
+                  <span class="total-label">Total Earnings</span>
+                  <span class="total-value text-success"
+                    >{{ totalEarningsPercent | number : "1.2-2" }}%</span
+                  >
+                </div>
+                <div class="total-item">
+                  <span class="total-label">Total Deductions</span>
+                  <span class="total-value text-danger"
+                    >{{ totalDeductionsPercent | number : "1.2-2" }}%</span
+                  >
+                </div>
+                <div class="total-item">
+                  <span class="total-label">Employee PF Contribution</span>
+                  <span class="total-value text-info"
+                    >{{ pfContributionPercent | number : "1.2-2" }}%</span
+                  >
+                </div>
+                <div class="total-item">
+                  <span class="total-label">Net Pay (Approx.)</span>
+                  <span class="total-value text-warning">Not Calculated</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 2: SUMMARY -->
+          <div class="tab-content" *ngIf="activeTab === 'summary'">
+            <div class="summary-section mt-3">
+              <!-- Configuration Overview -->
+              <div class="overview-card">
+                <h6 class="section-title">
+                  <i class="fa fa-info-circle me-2"></i>Configuration Overview
+                </h6>
+                <div class="row mt-2">
+                  <div class="col-md-3">
+                    <small class="text-muted">Configuration Name</small
+                    ><br /><strong>{{
+                      configForm.get("configName")?.value || "-"
+                    }}</strong>
+                  </div>
+                  <div class="col-md-2">
+                    <small class="text-muted">CTC Type</small><br /><strong
+                      >Annual CTC</strong
+                    >
+                  </div>
+                  <div class="col-md-2">
+                    <small class="text-muted">Effective From</small
+                    ><br /><strong>{{
+                      configForm.get("effectiveFrom")?.value || "-"
+                    }}</strong>
+                  </div>
+                  <div class="col-md-2">
+                    <small class="text-muted">Description</small
+                    ><br /><strong>{{
+                      configForm.get("description")?.value || "-"
+                    }}</strong>
+                  </div>
+                  <div class="col-md-3">
+                    <small class="text-muted">Employee Category</small
+                    ><br /><strong>{{
+                      configForm.get("fk_categoryIds")?.value?.length
+                        ? configForm.get("fk_categoryIds")?.value?.length +
+                          " Selected"
+                        : "All Categories"
+                    }}</strong>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Summary Stats -->
+              <div class="stats-row mt-4">
+                <div class="stat-card">
+                  <div class="stat-icon bg-primary-light">
+                    <i class="fa fa-cubes"></i>
+                  </div>
+                  <div>
+                    <div class="stat-label">Total CTC Components</div>
+                    <div class="stat-value">{{ activeComponents.length }}</div>
+                    <small class="text-muted"
+                      >Earnings: {{ earningCount }} | Deductions:
+                      {{ deductionCount }}</small
+                    >
+                  </div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-icon bg-success-light">
+                    <i class="fa fa-arrow-up"></i>
+                  </div>
+                  <div>
+                    <div class="stat-label">Total Earnings</div>
+                    <div class="stat-value text-success">
+                      {{ totalEarningsPercent | number : "1.2-2" }}%
+                    </div>
+                    <small class="text-muted">of Total CTC</small>
+                  </div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-icon bg-danger-light">
+                    <i class="fa fa-arrow-down"></i>
+                  </div>
+                  <div>
+                    <div class="stat-label">Total Deductions</div>
+                    <div class="stat-value text-danger">
+                      {{ totalDeductionsPercent | number : "1.2-2" }}%
+                    </div>
+                    <small class="text-muted">of Total CTC</small>
+                  </div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-icon bg-info-light">
+                    <i class="fa fa-shield"></i>
+                  </div>
+                  <div>
+                    <div class="stat-label">Employee PF Contribution</div>
+                    <div class="stat-value text-info">
+                      {{ pfContributionPercent | number : "1.2-2" }}%
+                    </div>
+                    <small class="text-muted">of Basic</small>
+                  </div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-icon bg-warning-light">
+                    <i class="fa fa-inr"></i>
+                  </div>
+                  <div>
+                    <div class="stat-label">Net Pay (Approx.)</div>
+                    <div class="stat-value text-warning">Not Calculated</div>
+                    <small class="text-muted"
+                      >Variable Components Present</small
+                    >
+                  </div>
+                </div>
+              </div>
+
+              <!-- Summary Details + Breakup -->
+              <div class="row mt-4">
+                <div class="col-md-6">
+                  <div class="summary-table-card">
+                    <h6 class="section-title">CTC Summary Details</h6>
+                    <table class="table table-sm summary-table">
+                      <thead>
+                        <tr>
+                          <th>Category</th>
+                          <th>Count</th>
+                          <th>Amount / % of CTC</th>
+                          <th>Tax Treatment</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>
+                            <span class="dot bg-success"></span> Total Earnings
+                          </td>
+                          <td>{{ earningCount }}</td>
+                          <td>
+                            {{ totalEarningsPercent | number : "1.2-2" }}%
+                          </td>
+                          <td>-</td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <span class="dot bg-info"></span> Total
+                            Reimbursements
+                          </td>
+                          <td>{{ reimbursementCount }}</td>
+                          <td>
+                            {{ totalReimbursementPercent | number : "1.2-2" }}%
+                          </td>
+                          <td>-</td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <span class="dot bg-danger"></span> Total Deductions
+                            (Employee)
+                          </td>
+                          <td>{{ deductionCount }}</td>
+                          <td>
+                            {{ totalDeductionsPercent | number : "1.2-2" }}%
+                          </td>
+                          <td>-</td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <span class="dot bg-primary"></span> Taxable
+                            Components
+                          </td>
+                          <td>{{ taxableCount }}</td>
+                          <td>-</td>
+                          <td>Taxable</td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <span class="dot bg-secondary"></span> Tax Exempted
+                            Components
+                          </td>
+                          <td>{{ taxExemptedCount }}</td>
+                          <td>-</td>
+                          <td>Tax Exempted</td>
+                        </tr>
+                        <tr class="total-row">
+                          <td><strong>Total CTC</strong></td>
+                          <td>-</td>
+                          <td class="text-primary">
+                            <strong
+                              >{{ totalCTCPercent | number : "1.2-2" }}%</strong
+                            >
+                          </td>
+                          <td>-</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <!-- Top 5 Components -->
+                  <div class="summary-table-card">
+                    <h6 class="section-title">Top 5 Components by % of CTC</h6>
+                    <table class="table table-sm summary-table">
+                      <thead>
+                        <tr>
+                          <th>#</th>
+                          <th>Component Name</th>
+                          <th>Component Type</th>
+                          <th>% of CTC</th>
+                          <th>Value / Type</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let comp of top5Components; let i = index">
+                          <td>{{ i + 1 }}</td>
+                          <td>{{ comp.headName }}</td>
+                          <td>
+                            <span
+                              class="component-badge"
+                              [ngClass]="
+                                getComponentTypeBadgeClass(comp.componentType)
+                              "
+                            >
+                              {{ comp.componentType }}
+                            </span>
+                          </td>
+                          <td>{{ comp.percentOfCTC | number : "1.2-2" }}%</td>
+                          <td>{{ getCalcTypeLabel(comp.calculationType) }}</td>
+                        </tr>
+                        <tr *ngIf="top5Components.length === 0">
+                          <td colspan="5" class="text-center text-muted">
+                            No data available
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <!-- CTC Calculation Flow -->
+              <div class="flow-section mt-4">
+                <h6 class="section-title">CTC Calculation Flow</h6>
+                <div class="flow-container">
+                  <div class="flow-step bg-success-light">
+                    <div class="flow-label">Gross Earnings</div>
+                    <div class="flow-value">
+                      ({{ totalEarningsPercent | number : "1.2-2" }}%)
+                    </div>
+                  </div>
+                  <div class="flow-arrow"><i class="fa fa-minus"></i></div>
+                  <div class="flow-step bg-danger-light">
+                    <div class="flow-label">Employee Deductions</div>
+                    <div class="flow-value">
+                      ({{ totalDeductionsPercent | number : "1.2-2" }}%)
+                    </div>
+                  </div>
+                  <div class="flow-arrow">
+                    <i class="fa fa-arrow-right"></i>
+                  </div>
+                  <div class="flow-step bg-primary-light">
+                    <div class="flow-label">Gross CTC</div>
+                    <div class="flow-value">
+                      ({{
+                        totalCTCPercent - totalDeductionsPercent
+                          | number : "1.2-2"
+                      }}%)
+                    </div>
+                  </div>
+                  <div class="flow-arrow"><i class="fa fa-minus"></i></div>
+                  <div class="flow-step bg-info-light">
+                    <div class="flow-label">Employer Deductions</div>
+                    <div class="flow-value">
+                      ({{ pfContributionPercent | number : "1.2-2" }}%)
+                    </div>
+                  </div>
+                  <div class="flow-arrow">
+                    <i class="fa fa-arrow-right"></i>
+                  </div>
+                  <div class="flow-step bg-warning-light">
+                    <div class="flow-label">Net Pay</div>
+                    <div class="flow-value">(Not Calculated)</div>
+                  </div>
+                </div>
+                <small class="text-muted mt-2 d-block">
+                  <i class="fa fa-info-circle me-1"></i> Note: Net Pay is not
+                  calculated as some components are fixed amounts and may vary.
+                </small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row" *ngIf="activeTab === 'components'">
+          <div class="col d-flex align-items-end justify-content-end pt-4 pb-3">
+            <button
+              type="submit"
+              class="btn btn-primary mx-1"
+              (click)="onSave()"
+            >
+              {{ pk_ctcConfigId ? "Update" : "Save" }}
+            </button>
+            <button
+              type="reset"
+              class="btn btn-outline-dark mx-1"
+              (click)="onReset()"
+            >
+              Reset
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

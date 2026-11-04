@@ -1,0 +1,62 @@
+.card-header{
+    background-color: #3080e8;
+  
+    font-weight: bold;
+  }
+  .ngx-pagination .current {
+  padding: .1875rem .625rem;
+  background:  #3080e8 !important;
+  color: #fefefe;
+  cursor: default;
+  }
+
+
+ .table-invoice {
+  overflow: auto;
+  max-height: 580px;
+  position: relative;
+}
+
+.table-invoice table tbody td {
+overflow-y: auto !important;
+}
+
+.ngx-timepicker-control__input{
+font-size:12px !important;
+}
+
+// .image-modal {
+//   position: fixed;
+//   top: 0;
+//   left: 0;
+//   width: 50%;
+//   height: 50%;
+//   //background-color: rgba(0, 0, 0, 0.7);
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+//   z-index: 1000;
+// }
+
+// .modal-content {
+//   position: absolute;
+//   background: white;
+//   padding: 10px;
+//   border-radius: 8px;
+//   max-width: 90%;
+//   max-height: 90%;
+// }
+
+// .modal-content img {
+//   max-width: 100%;
+//   max-height: 80vh;
+// }
+
+// .close-btn {
+//   position: absolute;
+//   top: 5px;
+//   right: 10px;
+//   font-size: 24px;
+//   cursor: pointer;
+// }
+

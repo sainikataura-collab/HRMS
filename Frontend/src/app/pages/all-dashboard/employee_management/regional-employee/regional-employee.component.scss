@@ -1,0 +1,9 @@
+.btnheader {
+  background-color: #0d6efd;
+  color: white;
+  border: none;
+  &:hover {
+    background-color: #0b5ed7;
+    color: white;
+  }
+}

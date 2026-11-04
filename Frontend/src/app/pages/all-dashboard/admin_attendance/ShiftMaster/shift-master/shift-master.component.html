@@ -1,0 +1,132 @@
+<div class="row">
+  <div class="col-sm-12">
+    <div class="card">
+      <!-- Card Header -->
+      <div class="card-header bg-primary">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-between">
+            <h4>{{Isedit? 'Edit ShiftMaster':'Shift Master'}}</h4>
+          </div>
+          <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+            <button class="btn btnheader" routerLink="/dash/adminAttendance/adminAttendancedashboard/shiftmaster_list">
+              Back
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Card Body -->
+      <div class="card-body mt-4">
+        <form [formGroup]="ShiftForm" (ngSubmit)="submitForm()">
+          <div class="row" class="row row-cols-1 row-cols-md-4 g-4">
+            <!-- Zone Code -->
+            <div class="col">
+              <label for="name">Name<span class="text-danger">*</span></label>
+              <input id="name" type="text" class="form-control" formControlName="shiftName"
+                (blur)="checkDesignationAvailability(ShiftForm.get('shiftName')?.value)">
+
+              <span
+                *ngIf="showError && ShiftForm.controls['shiftName'].invalid && !ShiftForm.get('shiftName')?.errors?.['duplicate']"
+                class="text-danger mt-1" style="font-size: 12px;">Please enter shift name. </span>
+
+              <!-- Show validation error message from API only if it exists -->
+              <div *ngIf="ShiftForm.get('shiftName')?.errors?.['duplicate']" class="text-danger"
+                style="font-size:10px;">
+                {{ ShiftForm.get('shiftName')?.errors?.['duplicate'] }}
+              </div>
+            </div>
+
+            <!-- Zone Description -->
+            <!-- <div class="col">
+                <label for="zoneDescription" class="form-label">Zone Description:</label>
+                <input id="zoneDescription" type="text" class="form-control" formControlName="zoneDescription">
+              </div> -->
+
+            <div class="col">
+              <label>Start Time <span class="text-danger">*</span></label>
+              <input type="time" class="form-control" formControlName="startHrs">
+              <span *ngIf="showError && ShiftForm.controls['startHrs'].invalid" class="text-danger mt-1"
+                style="font-size: 12px;">
+                Please enter Start Time.
+              </span>
+            </div>
+
+            <div class="col">
+              <label>End Time <span class="text-danger">*</span></label>
+              <input type="time" class="form-control" formControlName="endHrs">
+              <span *ngIf="showError && ShiftForm.controls['endHrs'].invalid" class="text-danger mt-1"
+                style="font-size: 12px;">
+                Please enter end Time.
+              </span>
+            </div>
+            <div class="col">
+              <label>Duration</label>
+              <input type="text" class="form-control" formControlName="duration" placeholder="HH:mm" readonly>
+            </div>
+            <div class="col">
+              <label>Grace Time</label>
+              <input type="text" class="form-control" formControlName="graceTime" placeholder="HH:mm" list="graceTimeList" maxlength="5"
+                (blur)="formatTimeOnBlur('graceTime')" (keypress)="restrictTimeInput($event)">
+              <datalist id="graceTimeList">
+                <option value="00:05">
+                <option value="00:10">
+                <option value="00:15">
+                <option value="00:20">
+                <option value="00:30">
+                <option value="00:45">
+                <option value="01:00">
+              </datalist>
+            </div>
+
+
+            <div class="col">
+              <label for="category" class="">Category</label>
+              <ng-select id="category" [items]="Category" bindLabel="name" bindValue="value" formControlName="fk_catid"
+                placeholder="--Select Category--" class="w-100 small"></ng-select>
+
+            </div>
+
+            <div class="col">
+              <label for="shifttype" class="">Shift Type</label>
+              <ng-select id="shifttype" [items]="ShiftType" bindLabel="name" bindValue="value"
+                formControlName="fk_shifttype" placeholder="--Select Shift Type--" class="w-100 small"></ng-select>
+
+            </div>
+
+            <div class="col">
+              <label>Compensation TIme</label>
+              <input type="text" class="form-control" formControlName="compenstationTime" placeholder="HH:mm" list="compensationTimeList" maxlength="5"
+                (blur)="formatTimeOnBlur('compenstationTime')" (keypress)="restrictTimeInput($event)">
+              <datalist id="compensationTimeList">
+                <option value="00:15">
+                <option value="00:30">
+                <option value="00:45">
+                <option value="01:00">
+                <option value="01:30">
+                <option value="02:00">
+              </datalist>
+            </div>
+
+            <div class="col">
+              <label for="isActive">Active</label>
+              <div class="form-group">
+                <input type="checkbox" formControlName="isActive">
+              </div>
+            </div>
+          </div>
+
+          <!-- Footer buttons -->
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary mx-1">
+              {{ Isedit ? 'Update' : 'Save' }}
+            </button>
+            <button type="button" class="btn btn-outline-dark mx-1" (click)="resetForm()">Reset</button>
+          </div>
+
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

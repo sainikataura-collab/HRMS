@@ -1,0 +1,800 @@
+<div class="vendor-candidates-container px-2 px-md-3 pt-0 pb-3" style="background-color: #f6f8fa; font-family: 'Work Sans', sans-serif;">
+
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <!-- 1. MOBILE-ONLY LAYOUT (d-md-none)                                       -->
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <div class="d-md-none">
+
+    <!-- Mobile Top Header -->
+    <div class="mob-header">
+      <div class="mob-header-top">
+        <button (click)="goBackToVendorPortal()" class="mob-back-btn">
+          <i class="fa-solid fa-arrow-left me-1"></i>Back
+        </button>
+        <div class="mob-title-chip">
+          <span class="fw-bold fs-7 text-dark"><i class="fa-solid fa-users text-primary me-1"></i>All Candidates</span>
+        </div>
+        <button (click)="loadCandidates()" class="mob-refresh-btn" title="Refresh">
+          <i class="fa-solid fa-rotate-right" [class.spin-anim]="loadingCandidates"></i>
+        </button>
+      </div>
+
+      <!-- Partner row -->
+      <div class="mob-partner-row">
+        <span class="mob-partner-label">Partner:</span>
+        <select *ngIf="!isVendorUser && vendors.length > 0"
+                class="form-select form-select-sm mob-partner-select shadow-none"
+                [(ngModel)]="selectedVendorId"
+                (ngModelChange)="onVendorChange($event)">
+          <option *ngFor="let v of vendors" [value]="v.vendorId">
+            {{ v.vendorName }} ({{ v.assignedJobsCount }} Jobs)
+          </option>
+        </select>
+        <span *ngIf="isVendorUser || vendors.length === 0" class="badge bg-light text-dark border px-2 py-1 fw-bold text-truncate" style="font-size: 11px; max-width: 250px;">
+          {{ selectedVendor?.vendorName || vendorProfile?.vendorName || 'My Organization' }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Mobile Top Hero Card: Action to Add Candidate -->
+    <div class="mob-add-hero-card">
+      <div class="mob-hero-content">
+        <div class="mob-hero-icon">
+          <i class="fa-solid fa-user-plus"></i>
+        </div>
+        <div class="mob-hero-text">
+          <div class="mob-hero-title">Add Candidate (Pre-Register)</div>
+          <div class="mob-hero-sub">Add candidates beforehand into Talent Bench</div>
+        </div>
+      </div>
+      <button (click)="openMobileAddModal()" class="mob-hero-add-btn">
+        <i class="fa-solid fa-plus me-1.5"></i>Add New Candidate
+      </button>
+    </div>
+
+    <!-- Mobile Bento Metric Chips -->
+    <div class="mob-metric-grid">
+      <div class="mob-metric-chip" (click)="stageFilter = 'ALL'">
+        <span class="mob-metric-num text-primary">{{ metrics.totalSourced }}</span>
+        <span class="mob-metric-txt">Total Sourced</span>
+      </div>
+      <div class="mob-metric-chip" (click)="stageFilter = 'BENCH'">
+        <span class="mob-metric-num text-indigo">{{ metrics.benchPool }}</span>
+        <span class="mob-metric-txt">Talent Bench</span>
+      </div>
+      <div class="mob-metric-chip" (click)="stageFilter = 'INTERVIEW_PASSED'">
+        <span class="mob-metric-num text-success">{{ metrics.passedInterview }}</span>
+        <span class="mob-metric-txt">Passed</span>
+      </div>
+      <div class="mob-metric-chip" (click)="stageFilter = 'REJECTED'">
+        <span class="mob-metric-num text-danger">{{ metrics.rejected }}</span>
+        <span class="mob-metric-txt">Rejected</span>
+      </div>
+    </div>
+
+    <!-- Mobile Section Header & Controls -->
+    <div class="mob-section">
+      <div class="mob-section-header">
+        <span><i class="fa-solid fa-address-book text-primary me-1.5"></i>Candidate Roster</span>
+        <span class="mob-count-badge">{{ filteredCandidates.length }} Profiles</span>
+      </div>
+
+      <!-- Mobile Search & Filter -->
+      <div class="mob-search-row">
+        <i class="fa-solid fa-magnifying-glass text-muted"></i>
+        <input type="text" class="mob-search-input" [(ngModel)]="searchQuery" placeholder="Search name, phone, Aadhaar...">
+      </div>
+
+      <div class="mob-filter-select-row">
+        <select class="form-select form-select-sm" [(ngModel)]="stageFilter">
+          <option value="ALL">All Stages</option>
+          <option value="BENCH">Talent Bench Only</option>
+          <option value="APPLIED">Applied / Pipeline</option>
+          <option value="INTERVIEW_PASSED">Passed Interview</option>
+          <option value="REJECTED">Rejected / Ineligible</option>
+        </select>
+        <select class="form-select form-select-sm" [(ngModel)]="mrfFilter">
+          <option value="ALL">All Jobs & Bench</option>
+          <option value="BENCH">Bench Only</option>
+          <option *ngFor="let j of assignedJobs" [value]="j.mrfCode">{{ j.mrfCode }}</option>
+        </select>
+      </div>
+
+      <!-- Loading State -->
+      <div *ngIf="loadingCandidates" class="text-center py-4 small text-muted">
+        <span class="spinner-border spinner-border-sm me-1 text-primary"></span>Loading candidates...
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="!loadingCandidates && filteredCandidates.length === 0" class="mob-empty-state">
+        <i class="fa-solid fa-folder-open fs-2 mb-2 d-block text-secondary"></i>
+        No candidates found matching the filters.
+      </div>
+
+      <!-- Candidate Cards (Mobile) -->
+      <div *ngIf="!loadingCandidates && filteredCandidates.length > 0" class="mob-cand-list">
+        <div *ngFor="let cand of filteredCandidates"
+             class="mob-cand-card"
+             (click)="openCandidateDetails(cand)">
+          
+          <div class="mob-cand-top">
+            <span class="mob-app-no">{{ cand.applicationNo }}</span>
+            <span class="badge mob-stage-badge"
+                  [ngClass]="{
+                    'bg-success text-white': cand.stage === 'Hired' || cand.stage === 'Selected',
+                    'bg-info text-white': cand.stage === 'Bench' || cand.mrfCode === 'BENCH',
+                    'bg-primary text-white': cand.stage === 'Applied' && !cand.isRejected && cand.mrfCode !== 'BENCH',
+                    'bg-warning text-dark': cand.stage === 'Interview' || cand.stage === 'Interview_Scheduled',
+                    'bg-danger text-white': cand.isRejected || cand.stage === 'Rejected'
+                  }">
+              {{ cand.isRejected ? 'Rejected' : (cand.mrfCode === 'BENCH' ? 'Bench Pool' : cand.stage) }}
+            </span>
+          </div>
+
+          <div class="mob-cand-name">{{ cand.candidateName }}</div>
+          <div class="mob-cand-meta">
+            <span><i class="fa-solid fa-phone text-muted me-1"></i>{{ cand.mobile }}</span>
+            <span class="mx-1 text-muted">·</span>
+            <span><i class="fa-solid fa-id-card text-muted me-1"></i>{{ cand.aadhaarNo || 'No Aadhaar' }}</span>
+          </div>
+
+          <div class="mob-cand-meta mt-1">
+            <span class="badge bg-light text-dark border">
+              <i class="fa-solid fa-briefcase text-primary me-1"></i>
+              {{ cand.mrfCode === 'BENCH' ? 'Talent Bench' : cand.mrfCode }}
+            </span>
+            <span class="ms-1 text-muted">{{ cand.jobTitle || 'General Pool' }}</span>
+          </div>
+
+          <div class="mob-cand-footer-action">
+            <span class="small text-muted" style="font-size: 10px;">
+              Added: {{ cand.submittedDate | date:'dd MMM yyyy' }}
+            </span>
+            <span class="mob-see-details-link">
+              View Profile <i class="fa-solid fa-chevron-right ms-1"></i>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <!-- 2. DESKTOP LAYOUT (d-none d-md-block)                                   -->
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <div class="d-none d-md-block">
+
+    <!-- Top Header Bar (Matching Portal Theme) -->
+    <div class="bg-white border-bottom shadow-sm py-2 px-3 mb-3 rounded-2">
+      <div class="row align-items-center">
+
+        <!-- Back Button & Page Title -->
+        <div class="col-md-7 d-flex align-items-center gap-2">
+          <button (click)="goBackToVendorPortal()" class="btn btn-sm btn-neutral-action" title="Return to Allocated Jobs">
+            <i class="fa-solid fa-arrow-left me-1.5"></i>
+            <span>Back to Allocated Jobs</span>
+          </button>
+          <div class="vr my-1"></div>
+          <div>
+            <h6 class="mb-0 fw-bold text-dark fs-6" style="letter-spacing: -0.2px;">
+              <i class="fa-solid fa-users text-primary me-1.5"></i>Vendor Candidates & Sourcing Pool
+            </h6>
+            <div style="font-size: 11.5px; color: #475569; font-weight: 500;">
+              All candidates sourced to date plus pre-registered talent pool candidates.
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Side: Partner Selector & Controls -->
+        <div class="col-md-5 d-flex justify-content-end align-items-center gap-2">
+          <div class="d-flex align-items-center gap-1.5">
+            <span class="small fw-semibold text-secondary text-nowrap" style="font-size: 11.5px;">
+              <i class="fa-solid fa-handshake text-primary me-1"></i>Active Partner:
+            </span>
+            <select *ngIf="!isVendorUser"
+                    class="form-select form-select-sm"
+                    style="min-width: 220px; font-size: 11.5px; font-weight: 600;"
+                    [(ngModel)]="selectedVendorId"
+                    (ngModelChange)="onVendorChange($event)">
+              <option *ngFor="let v of vendors" [value]="v.vendorId">
+                {{ v.vendorName }} ({{ v.assignedJobsCount }} Jobs)
+              </option>
+            </select>
+            <span *ngIf="isVendorUser" class="badge bg-primary text-white px-3 py-2 fs-7 fw-semibold shadow-sm">
+              <i class="fa-solid fa-building me-1"></i>
+              {{ selectedVendor?.vendorName || vendorProfile?.vendorName || 'My Organization' }}
+            </span>
+          </div>
+
+          <button (click)="loadCandidates()" class="btn btn-outline-secondary btn-sm" title="Refresh List">
+            <i class="fa-solid fa-rotate-right" [class.spin-anim]="loadingCandidates"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bento Metric Cards (Small, sleek, premium) -->
+    <div class="row g-2 mb-3">
+      <div class="col-md-3">
+        <div class="bento-metric-card" (click)="stageFilter = 'ALL'" [class.active-bento]="stageFilter === 'ALL'">
+          <div class="bento-icon-wrapper bg-blue-subtle text-primary">
+            <i class="fa-solid fa-users"></i>
+          </div>
+          <div>
+            <div class="bento-metric-value">{{ metrics.totalSourced }}</div>
+            <div class="bento-metric-label">Total Sourced Candidates</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="bento-metric-card" (click)="stageFilter = 'BENCH'" [class.active-bento]="stageFilter === 'BENCH'">
+          <div class="bento-icon-wrapper bg-indigo-subtle text-indigo">
+            <i class="fa-solid fa-layer-group"></i>
+          </div>
+          <div>
+            <div class="bento-metric-value">{{ metrics.benchPool }}</div>
+            <div class="bento-metric-label">Talent Bench (Pre-Registered)</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="bento-metric-card" (click)="stageFilter = 'INTERVIEW_PASSED'" [class.active-bento]="stageFilter === 'INTERVIEW_PASSED'">
+          <div class="bento-icon-wrapper bg-green-subtle text-success">
+            <i class="fa-solid fa-user-check"></i>
+          </div>
+          <div>
+            <div class="bento-metric-value">{{ metrics.passedInterview }}</div>
+            <div class="bento-metric-label">Passed Interview / Dossiers</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="bento-metric-card" (click)="stageFilter = 'REJECTED'" [class.active-bento]="stageFilter === 'REJECTED'">
+          <div class="bento-icon-wrapper bg-red-subtle text-danger">
+            <i class="fa-solid fa-user-xmark"></i>
+          </div>
+          <div>
+            <div class="bento-metric-value">{{ metrics.rejected }}</div>
+            <div class="bento-metric-label">Rejected / Ineligible</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filter Bar & Action Section -->
+    <div class="bg-white border rounded-2 p-2 mb-3 shadow-sm">
+      <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+
+        <!-- Search & Dropdown Filters -->
+        <div class="d-flex flex-wrap align-items-center gap-2 flex-grow-1">
+          <div class="position-relative" style="min-width: 260px;">
+            <i class="fa-solid fa-magnifying-glass position-absolute top-50 translate-middle-y text-muted ms-2.5" style="font-size: 11.5px;"></i>
+            <input type="text"
+                   class="form-control form-control-sm ps-4 field-contrast"
+                   [(ngModel)]="searchQuery"
+                   placeholder="Search candidate name, mobile, Aadhaar, MRF...">
+          </div>
+
+          <!-- Stage Filter -->
+          <div class="d-flex align-items-center gap-1">
+            <span class="small text-muted fw-semibold" style="font-size: 11px;">Stage:</span>
+            <select class="form-select form-select-sm field-contrast" style="min-width: 140px;" [(ngModel)]="stageFilter">
+              <option value="ALL">All Stages</option>
+              <option value="BENCH">Talent Bench Only</option>
+              <option value="APPLIED">Applied (Assigned)</option>
+              <option value="INTERVIEW_PASSED">Passed Interview</option>
+              <option value="REJECTED">Rejected</option>
+            </select>
+          </div>
+
+          <!-- Allocation / MRF Filter -->
+          <div class="d-flex align-items-center gap-1">
+            <span class="small text-muted fw-semibold" style="font-size: 11px;">Allocation:</span>
+            <select class="form-select form-select-sm field-contrast" style="min-width: 150px;" [(ngModel)]="mrfFilter">
+              <option value="ALL">All Jobs & Bench</option>
+              <option value="BENCH">Bench Only</option>
+              <option *ngFor="let j of assignedJobs" [value]="j.mrfCode">{{ j.mrfCode }} - {{ j.jobTitle }}</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Corporate Action: Add Candidate (Pre-Registration) -->
+        <div>
+          <button (click)="openAddModal()" class="btn btn-sm btn-primary-corporate">
+            <i class="fa-solid fa-user-plus me-1.5"></i>
+            <span>+ Add Candidate (Pre-Register)</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Candidate Roster Table -->
+    <div class="bg-white border rounded-2 shadow-sm overflow-hidden">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="bg-light">
+            <tr>
+              <th class="ps-3" style="width: 50px;">SR.</th>
+              <th style="min-width: 130px;">APPLICATION NO</th>
+              <th style="min-width: 180px;">CANDIDATE INFO</th>
+              <th style="min-width: 130px;">CONTACT</th>
+              <th style="min-width: 130px;">AADHAAR NO</th>
+              <th style="min-width: 150px;">TARGET / JOB</th>
+              <th style="min-width: 110px;">STAGE</th>
+              <th style="min-width: 110px;">SUBMISSION DATE</th>
+              <th class="text-end pe-3" style="width: 100px;">ACTION</th>
+            </tr>
+          </thead>
+          <tbody>
+
+            <!-- Loading Spinner -->
+            <tr *ngIf="loadingCandidates">
+              <td colspan="9" class="text-center py-5">
+                <span class="spinner-border spinner-border-sm text-primary me-2"></span>
+                <span class="text-muted fw-semibold">Loading vendor candidates...</span>
+              </td>
+            </tr>
+
+            <!-- Empty Row -->
+            <tr *ngIf="!loadingCandidates && filteredCandidates.length === 0">
+              <td colspan="9" class="text-center py-5 text-muted">
+                <i class="fa-solid fa-users fs-2 mb-2 d-block text-secondary"></i>
+                <div>No candidates found matching the selected criteria.</div>
+              </td>
+            </tr>
+
+            <!-- Candidate Rows -->
+            <tr *ngFor="let c of filteredCandidates; let i = index">
+              <td class="ps-3 text-muted fw-semibold" style="font-size: 11px;">{{ i + 1 }}</td>
+              <td>
+                <span class="mono-val text-primary candidate-name-link" (click)="openCandidateDetails(c)" title="Click to view candidate details">{{ c.applicationNo }}</span>
+              </td>
+              <td>
+                <div class="fw-bold text-dark candidate-name-link" (click)="openCandidateDetails(c)" style="font-size: 12.5px;" title="Click to view candidate details">{{ c.candidateName }}</div>
+                <div class="text-muted small" style="font-size: 10.5px;">
+                  {{ c.gender || 'Male' }}
+                  <span *ngIf="c.dateOfBirth">· DOB: {{ c.dateOfBirth | date:'dd MMM yyyy' }}</span>
+                </div>
+              </td>
+              <td>
+                <div class="fw-semibold text-dark">{{ c.mobile }}</div>
+                <div *ngIf="c.email" class="text-muted small text-truncate" style="font-size: 10.5px; max-width: 140px;">
+                  {{ c.email }}
+                </div>
+              </td>
+              <td>
+                <span class="mono-val" style="color: #334155;">{{ c.aadhaarNo || '—' }}</span>
+              </td>
+              <td>
+                <span *ngIf="c.mrfCode === 'BENCH' || !c.reqId" class="badge bg-indigo-subtle text-indigo px-2 py-1 border border-indigo">
+                  <i class="fa-solid fa-layer-group me-1"></i>Talent Bench
+                </span>
+                <div *ngIf="c.mrfCode !== 'BENCH' && c.reqId">
+                  <span class="badge bg-light text-dark border fw-bold">{{ c.mrfCode }}</span>
+                  <div class="small text-muted text-truncate" style="max-width: 140px; font-size: 10.5px;">
+                    {{ c.jobTitle }}
+                  </div>
+                </div>
+              </td>
+              <td>
+                <span class="badge px-2 py-1"
+                      [ngClass]="{
+                        'bg-success text-white': c.stage === 'Hired' || c.stage === 'Selected',
+                        'bg-info text-white': c.stage === 'Bench' || c.mrfCode === 'BENCH',
+                        'bg-primary text-white': c.stage === 'Applied' && !c.isRejected && c.mrfCode !== 'BENCH',
+                        'bg-warning text-dark': c.stage === 'Interview' || c.stage === 'Interview_Scheduled',
+                        'bg-danger text-white': c.isRejected || c.stage === 'Rejected'
+                      }">
+                  {{ c.isRejected ? 'Rejected' : (c.mrfCode === 'BENCH' ? 'Bench Pool' : c.stage) }}
+                </span>
+              </td>
+              <td class="text-muted" style="font-size: 11.5px;">
+                {{ c.submittedDate | date:'dd MMM yyyy' }}
+              </td>
+              <td class="text-end pe-3">
+                <button (click)="openCandidateDetails(c)" class="btn btn-sm btn-neutral-action py-1 px-2" title="View Candidate Details">
+                  <i class="fa-solid fa-eye me-1"></i>View
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Table Footer / Count -->
+      <div class="px-3 py-2 border-top bg-light d-flex justify-content-between align-items-center">
+        <span class="small text-muted fw-semibold" style="font-size: 11px;">
+          Showing {{ filteredCandidates.length }} of {{ candidates.length }} total candidate records
+        </span>
+        <span class="small text-secondary" style="font-size: 11px;">
+          100% Tenant Scoped ({{ companyId || 'Active' }})
+        </span>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <!-- 3. DESKTOP MODAL: ADD CANDIDATE (PRE-REGISTER / BENCH)                  -->
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <div *ngIf="showAddModal" class="modal-backdrop-custom" (click)="closeAddModal()">
+    <div class="modal-dialog-custom" (click)="$event.stopPropagation()" style="max-width: 820px;">
+      
+      <!-- Modal Header -->
+      <div class="modal-header-custom px-3 py-2.5 border-bottom bg-white d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center gap-2">
+          <div class="modal-header-icon bg-primary text-white rounded-2 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+            <i class="fa-solid fa-user-plus"></i>
+          </div>
+          <div>
+            <h6 class="mb-0 fw-bold text-dark fs-6">Pre-Register Candidates beforehand</h6>
+            <div class="modal-subtitle" style="font-size: 11.5px; color: #475569; font-weight: 500;">Add candidates into Talent Bench or allocate to an assigned job</div>
+          </div>
+        </div>
+        <button type="button" (click)="closeAddModal()" class="btn-close-custom" title="Close"><i class="bi bi-x-lg"></i></button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="modal-body-custom p-3" style="max-height: calc(85vh - 120px); overflow-y: auto;">
+
+        <!-- Feedback Alert -->
+        <div *ngIf="submissionFeedback" class="alert py-2 px-3 mb-3 border-0 rounded-2 small"
+             [ngClass]="submissionFeedback.failed === 0 ? 'alert-success' : 'alert-warning'">
+          <div class="fw-bold mb-1">
+            <i class="me-1" [class]="submissionFeedback.failed === 0 ? 'fa-solid fa-circle-check text-success' : 'fa-solid fa-triangle-exclamation text-warning'"></i>
+            {{ submissionFeedback.message }}
+          </div>
+        </div>
+
+        <!-- Target Allocation Dropdown (Applies to batch or per-row) -->
+        <div class="bg-light p-2.5 rounded-2 border mb-3" style="border-color: #cbd5e1 !important;">
+          <div class="row align-items-center g-2">
+            <div class="col-md-4">
+              <label class="form-label fw-bold text-dark mb-1" style="font-size: 12px; color: #0f172a !important;">
+                <i class="fa-solid fa-bullseye text-primary me-1"></i>Target Allocation:
+              </label>
+            </div>
+            <div class="col-md-8">
+              <select class="form-select form-select-sm field-contrast"
+                      [(ngModel)]="batchRows[0].targetReqId"
+                      (ngModelChange)="onBatchTargetReqIdChange($event)">
+                <option [ngValue]="null">★ Talent Bench / General Pool (Pre-Register)</option>
+                <option *ngFor="let j of assignedJobs" [ngValue]="j.reqId">
+                  {{ j.mrfCode }} - {{ j.jobTitle }} ({{ j.location }})
+                </option>
+              </select>
+              <div class="allocation-help-text mt-1" style="font-size: 11px; color: #334155; font-weight: 500;">
+                Leaving as <strong class="text-dark">Talent Bench</strong> allows pre-registering candidates beforehand for future job assignments.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Candidate Rows (Clean compact grid - Only basic info, NO Father's name, NO Location, NO Skill Classification) -->
+        <div class="mb-2 d-flex justify-content-between align-items-center">
+          <span class="fw-bold text-dark" style="font-size: 12.5px; color: #0f172a !important;">Candidate Details (Basic Information):</span>
+          <button (click)="addBatchRow()" class="btn btn-sm btn-outline-primary py-1 px-2.5 fw-semibold" style="font-size: 11.5px;">
+            <i class="fa-solid fa-plus me-1"></i>Add Another Row
+          </button>
+        </div>
+
+        <div *ngFor="let row of batchRows; let idx = index" class="candidate-row-card p-3 mb-2 border rounded-2 bg-white" style="border-color: #cbd5e1 !important;">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="badge bg-dark text-white px-2 py-1 fw-bold" style="font-size: 11px;">Candidate #{{ idx + 1 }}</span>
+            <button *ngIf="batchRows.length > 1" (click)="removeBatchRow(idx)" class="btn btn-link text-danger p-0 small" title="Remove Row">
+              <i class="fa-solid fa-trash-can"></i>
+            </button>
+          </div>
+
+          <div class="row g-2">
+            <!-- Full Name -->
+            <div class="col-md-4">
+              <label class="form-label fw-bold text-dark mb-1" style="font-size: 12px; color: #0f172a !important;">Full Name *</label>
+              <input type="text" class="form-control form-control-sm field-contrast" [(ngModel)]="row.candidateName" placeholder="Candidate full name">
+            </div>
+
+            <!-- Mobile -->
+            <div class="col-md-4">
+              <label class="form-label fw-bold text-dark mb-1" style="font-size: 12px; color: #0f172a !important;">Mobile (10 digits) *</label>
+              <input type="text" class="form-control form-control-sm mono-input field-contrast"
+                     [(ngModel)]="row.mobile"
+                     (input)="onMobileInput(row)"
+                     maxlength="10"
+                     placeholder="9876543210">
+            </div>
+
+            <!-- Aadhaar -->
+            <div class="col-md-4">
+              <label class="form-label fw-bold text-dark mb-1" style="font-size: 12px; color: #0f172a !important;">Aadhaar (12 digits) *</label>
+              <input type="text" class="form-control form-control-sm mono-input field-contrast"
+                     [(ngModel)]="row.aadhaarNo"
+                     (input)="onAadhaarInput(row)"
+                     maxlength="12"
+                     placeholder="123456789012">
+            </div>
+
+            <!-- Email -->
+            <div class="col-md-4">
+              <label class="form-label fw-bold text-dark mb-1" style="font-size: 12px; color: #0f172a !important;">Email (Optional)</label>
+              <input type="email" class="form-control form-control-sm field-contrast" [(ngModel)]="row.email" placeholder="name@email.com">
+            </div>
+
+            <!-- Gender -->
+            <div class="col-md-4">
+              <label class="form-label fw-bold text-dark mb-1" style="font-size: 12px; color: #0f172a !important;">Gender</label>
+              <select class="form-select form-select-sm field-contrast" [(ngModel)]="row.gender">
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+
+            <!-- Date of Birth -->
+            <div class="col-md-4">
+              <label class="form-label fw-bold text-dark mb-1" style="font-size: 12px; color: #0f172a !important;">Date of Birth</label>
+              <input type="date" class="form-control form-control-sm field-contrast" [(ngModel)]="row.dateOfBirth">
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="modal-footer-custom px-3 py-2.5 border-top bg-white d-flex justify-content-between align-items-center">
+        <button (click)="closeAddModal()" class="btn btn-sm btn-neutral-action">
+          Cancel
+        </button>
+        <button (click)="submitBatchCandidates()"
+                [disabled]="submittingCandidates"
+                class="btn btn-sm btn-primary-corporate">
+          <span *ngIf="submittingCandidates" class="spinner-border spinner-border-sm me-1"></span>
+          <i *ngIf="!submittingCandidates" class="fa-solid fa-check me-1"></i>
+          Register Candidate(s)
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <!-- 4. MOBILE MODAL: ADD CANDIDATE (BOTTOM SHEET)                           -->
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <div *ngIf="showMobileAddModal" class="mob-modal-backdrop" (click)="closeMobileAddModal()">
+    <div class="mob-modal" (click)="$event.stopPropagation()">
+
+      <div class="mob-modal-header">
+        <div class="mob-modal-title">
+          <i class="fa-solid fa-user-plus text-primary me-1.5"></i>Add Candidate (Pre-Register)
+        </div>
+        <button (click)="closeMobileAddModal()" class="mob-modal-close-btn" aria-label="Close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="mob-modal-body">
+
+        <!-- Target Allocation -->
+        <div class="mb-2">
+          <label class="mob-label">Target Allocation:</label>
+          <select class="form-select form-select-sm mob-input" [(ngModel)]="mobileRow.targetReqId">
+            <option [ngValue]="null">★ Talent Bench / General Pool</option>
+            <option *ngFor="let j of assignedJobs" [ngValue]="j.reqId">
+              {{ j.mrfCode }} - {{ j.jobTitle }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Name -->
+        <div class="mb-2">
+          <label class="mob-label">Full Name *</label>
+          <input type="text" class="mob-input" [(ngModel)]="mobileRow.candidateName" placeholder="Enter candidate full name">
+        </div>
+
+        <!-- Mobile -->
+        <div class="mb-2">
+          <label class="mob-label">Mobile (10 digits) *</label>
+          <input type="tel" class="mob-input"
+                 [(ngModel)]="mobileRow.mobile"
+                 (input)="onMobileInput(mobileRow)"
+                 maxlength="10"
+                 placeholder="9876543210">
+        </div>
+
+        <!-- Aadhaar -->
+        <div class="mb-2">
+          <label class="mob-label">Aadhaar Card No (12 digits) *</label>
+          <input type="tel" class="mob-input"
+                 [(ngModel)]="mobileRow.aadhaarNo"
+                 (input)="onAadhaarInput(mobileRow)"
+                 maxlength="12"
+                 placeholder="123456789012">
+        </div>
+
+        <!-- Email -->
+        <div class="mb-2">
+          <label class="mob-label">Email (Optional)</label>
+          <input type="email" class="mob-input" [(ngModel)]="mobileRow.email" placeholder="name@email.com">
+        </div>
+
+        <div class="row g-2 mb-2">
+          <div class="col-6">
+            <label class="mob-label">Gender</label>
+            <select class="form-select form-select-sm mob-input" [(ngModel)]="mobileRow.gender">
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="col-6">
+            <label class="mob-label">Date of Birth</label>
+            <input type="date" class="mob-input" [(ngModel)]="mobileRow.dateOfBirth">
+          </div>
+        </div>
+
+      </div>
+
+      <div class="mob-modal-footer">
+        <button (click)="closeMobileAddModal()" class="mob-btn-cancel">Cancel</button>
+        <button (click)="saveMobileCandidate()" [disabled]="submittingCandidates" class="mob-btn-submit">
+          <span *ngIf="submittingCandidates" class="spinner-border spinner-border-sm me-1"></span>
+          Save & Register
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <!-- 5. CANDIDATE DETAILS MODAL (ENTERPRISE ATS DOSSIER)                      -->
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <div *ngIf="showDetailsModal && selectedCandidateForDetails" class="modal-backdrop-custom" (click)="closeCandidateDetails()">
+    <div class="modal-dialog-custom" (click)="$event.stopPropagation()" style="max-width: 600px;">
+
+      <!-- Modal Header (Clean White, Branded) -->
+      <div class="modal-header-custom px-3 py-2.5 border-bottom bg-white d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center gap-2.5">
+          <div style="width: 36px; height: 36px; border-radius: 8px; background: #eff6ff; display: flex; align-items: center; justify-content: center; border: 1px solid #dbeafe;">
+            <i class="bi bi-person-badge-fill text-primary" style="font-size: 18px;"></i>
+          </div>
+          <div>
+            <div class="d-flex align-items-center gap-2">
+              <h6 class="mb-0 fw-bold text-dark fs-6">{{ selectedCandidateForDetails.candidateName }}</h6>
+              <span class="badge font-monospace" style="background-color: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; font-size: 10px; padding: 2px 7px;">
+                {{ selectedCandidateForDetails.applicationNo }}
+              </span>
+            </div>
+            <div class="d-flex align-items-center gap-2 mt-0.5" style="font-size: 11px; color: #64748b;">
+              <span><i class="bi bi-calendar3 me-1"></i>Sourced: {{ selectedCandidateForDetails.submittedDate | date:'dd MMM yyyy' }}</span>
+              <span>&bull;</span>
+              <span><i class="bi bi-building me-1"></i>Vendor Sourced</span>
+            </div>
+          </div>
+        </div>
+        <button type="button" class="btn-close-custom" (click)="closeCandidateDetails()" title="Close Dossier">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body (Elevated White Cards, Zero Dull Grey) -->
+      <div class="modal-body-custom p-3 bg-white">
+        
+        <!-- Rejection Alert Banner (if rejected) -->
+        <div *ngIf="selectedCandidateForDetails.isRejected" class="p-2.5 mb-3 rounded-2 border" style="background: #fef2f2; border-color: #fecaca !important; color: #991b1b; font-size: 11.5px;">
+          <div class="d-flex align-items-center justify-content-between mb-1">
+            <span class="fw-bold"><i class="bi bi-x-octagon-fill me-1 text-danger"></i>Candidate Rejected</span>
+            <span class="badge bg-danger text-white" style="font-size: 8.5px;">Status: Terminated</span>
+          </div>
+          <div style="font-size: 11px;">
+            <strong>Reason:</strong> {{ selectedCandidateForDetails.rejectionReason || 'Duplicate or Skill mismatch' }}
+          </div>
+        </div>
+
+        <!-- Section 1: Personal & Contact Information -->
+        <div class="border rounded-2 mb-3 bg-white shadow-xs overflow-hidden" style="border-color: #e2e8f0 !important;">
+          <div class="px-3 py-2 border-bottom d-flex align-items-center justify-content-between" style="background: #f8fafc;">
+            <span class="fw-bold text-dark d-flex align-items-center gap-1.5" style="font-size: 11.5px;">
+              <i class="bi bi-person-lines-fill text-primary"></i>Personal &amp; Contact Profile
+            </span>
+            <span class="badge" style="background-color: #f1f5f9; color: #475569; font-size: 9.5px; border: 1px solid #cbd5e1;">
+              {{ selectedCandidateForDetails.skillClassification || 'Semi-Skilled' }}
+            </span>
+          </div>
+          <div class="p-3 bg-white">
+            <div class="row g-2.5">
+              <div class="col-6">
+                <div style="font-size: 10px; font-weight: 600; text-transform: uppercase; color: #64748b; letter-spacing: 0.3px;" class="mb-0.5">
+                  <i class="bi bi-telephone text-primary me-1"></i>Mobile Number
+                </div>
+                <div class="fw-bold text-dark" style="font-size: 12px;">{{ selectedCandidateForDetails.mobile || '—' }}</div>
+              </div>
+              <div class="col-6">
+                <div style="font-size: 10px; font-weight: 600; text-transform: uppercase; color: #64748b; letter-spacing: 0.3px;" class="mb-0.5">
+                  <i class="bi bi-person-vcard text-primary me-1"></i>Aadhaar Card No
+                </div>
+                <div class="fw-bold text-dark font-monospace" style="font-size: 11.5px;">{{ selectedCandidateForDetails.aadhaarNo || 'Not provided' }}</div>
+              </div>
+              <div class="col-6">
+                <div style="font-size: 10px; font-weight: 600; text-transform: uppercase; color: #64748b; letter-spacing: 0.3px;" class="mb-0.5">
+                  <i class="bi bi-envelope text-primary me-1"></i>Email Address
+                </div>
+                <div class="fw-bold text-dark text-truncate" style="font-size: 11.5px;">{{ selectedCandidateForDetails.email || '—' }}</div>
+              </div>
+              <div class="col-6">
+                <div style="font-size: 10px; font-weight: 600; text-transform: uppercase; color: #64748b; letter-spacing: 0.3px;" class="mb-0.5">
+                  <i class="bi bi-gender-ambiguous text-primary me-1"></i>Gender &amp; DOB
+                </div>
+                <div class="fw-bold text-dark" style="font-size: 11.5px;">
+                  {{ selectedCandidateForDetails.gender || 'Male' }}
+                  <span *ngIf="selectedCandidateForDetails.dateOfBirth" class="fw-normal text-muted"> &bull; {{ selectedCandidateForDetails.dateOfBirth | date:'dd MMM yyyy' }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 2: Requisition & Allocation -->
+        <div class="border rounded-2 mb-3 bg-white shadow-xs overflow-hidden" style="border-color: #e2e8f0 !important; border-left: 3px solid #3080e8 !important;">
+          <div class="px-3 py-2 border-bottom d-flex align-items-center justify-content-between" style="background: #f8fafc;">
+            <span class="fw-bold text-dark d-flex align-items-center gap-1.5" style="font-size: 11.5px;">
+              <i class="bi bi-briefcase text-primary"></i>Requisition Allocation &amp; Role
+            </span>
+            <span class="badge" [ngClass]="selectedCandidateForDetails.mrfCode === 'BENCH' ? 'bg-indigo-subtle text-indigo border border-indigo' : 'bg-primary-subtle text-primary border border-primary-subtle'" style="font-size: 10px;">
+              {{ selectedCandidateForDetails.mrfCode === 'BENCH' ? 'Talent Bench' : selectedCandidateForDetails.mrfCode }}
+            </span>
+          </div>
+          <div class="p-3 bg-white">
+            <div class="fw-bold text-dark mb-1.5" style="font-size: 13px;">
+              {{ selectedCandidateForDetails.jobTitle || 'Talent Bench Profile' }}
+            </div>
+            <div class="d-flex flex-wrap align-items-center gap-3" style="font-size: 11px; color: #475569;">
+              <span><i class="bi bi-building text-primary me-1"></i>Dept: <strong class="text-dark">{{ selectedCandidateForDetails.department || 'Operations' }}</strong></span>
+              <span>&bull;</span>
+              <span><i class="bi bi-geo-alt-fill text-danger me-1"></i>Hub: <strong class="text-dark">{{ selectedCandidateForDetails.hub || selectedCandidateForDetails.location || 'General Hub' }}</strong></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 3: Recruitment Pipeline Stage -->
+        <div class="p-3 border rounded-2 bg-white shadow-xs d-flex align-items-center justify-content-between" style="border-color: #e2e8f0 !important;">
+          <div>
+            <div style="font-size: 10px; font-weight: 600; text-transform: uppercase; color: #64748b; letter-spacing: 0.3px;" class="mb-0.5">
+              <i class="bi bi-flag-fill text-primary me-1"></i>Current Pipeline Stage
+            </div>
+            <div class="fw-bold text-dark" style="font-size: 12px;">
+              {{ selectedCandidateForDetails.isRejected ? 'Application Rejected' : (selectedCandidateForDetails.mrfCode === 'BENCH' ? 'Talent Bench Pool' : selectedCandidateForDetails.stage) }}
+            </div>
+          </div>
+          <div class="text-end">
+            <span class="badge px-2.5 py-1 fw-semibold"
+                  [ngClass]="{
+                    'bg-success-subtle text-success border border-success-subtle': selectedCandidateForDetails.stage === 'Hired' || selectedCandidateForDetails.stage === 'Selected',
+                    'bg-info-subtle text-info border border-info-subtle': selectedCandidateForDetails.stage === 'Bench' || selectedCandidateForDetails.mrfCode === 'BENCH',
+                    'bg-warning-subtle text-warning border border-warning-subtle': selectedCandidateForDetails.stage === 'Interview' || selectedCandidateForDetails.stage === 'Interview_Scheduled',
+                    'bg-primary-subtle text-primary border border-primary-subtle': selectedCandidateForDetails.stage === 'Applied' && !selectedCandidateForDetails.isRejected && selectedCandidateForDetails.mrfCode !== 'BENCH',
+                    'bg-danger-subtle text-danger border border-danger-subtle': selectedCandidateForDetails.isRejected || selectedCandidateForDetails.stage === 'Rejected'
+                  }"
+                  style="font-size: 10.5px;">
+              {{ selectedCandidateForDetails.isRejected ? 'Rejected' : (selectedCandidateForDetails.mrfCode === 'BENCH' ? 'Bench Pool' : selectedCandidateForDetails.stage) }}
+            </span>
+            <div *ngIf="selectedCandidateForDetails.interviewStatus && selectedCandidateForDetails.interviewStatus !== 'Pending'" class="mt-1" style="font-size: 10px; color: #64748b;">
+              Interview: <strong class="text-dark">{{ selectedCandidateForDetails.interviewStatus }}</strong>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer (Clean White with Corporate Primary Action) -->
+      <div class="modal-footer-custom px-3 py-2 border-top bg-white d-flex justify-content-end">
+        <button (click)="closeCandidateDetails()" class="btn btn-sm btn-primary-corporate px-3">
+          Close Profile
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+</div>

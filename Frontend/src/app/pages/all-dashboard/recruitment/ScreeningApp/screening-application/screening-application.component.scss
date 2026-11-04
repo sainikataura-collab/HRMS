@@ -1,0 +1,43 @@
+
+
+.employee-card {
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.15);
+
+  border:1px solid #d4d8ed;
+}
+
+
+.employee-card:hover {
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.15);
+
+  border:1px #3080e8 dashed;
+  
+}
+
+
+textarea.form-control {
+    height: 50px !important;
+}
+
+
+.samll{
+  font-size:12px;
+}
+
+.animated-border {
+  border: 2px solid #28a745;
+  padding: 2px;
+  animation: pulse-border 2s infinite;
+}
+
+@keyframes pulse-border {
+  0% {
+    box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(40, 167, 69, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(40, 167, 69, 0);
+  }
+}

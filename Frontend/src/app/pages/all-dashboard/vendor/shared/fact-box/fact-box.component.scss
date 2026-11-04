@@ -1,0 +1,55 @@
+/* Shared Fact Box Styles */
+.btn-float-fact {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+  z-index: 1050;
+  transition: transform 0.2s ease-in-out;
+}
+.btn-float-fact:hover {
+  transform: scale(1.1);
+}
+
+.file-history-list {
+  max-height: 400px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+.file-history-list::-webkit-scrollbar {
+  width: 6px;
+}
+.file-history-list::-webkit-scrollbar-thumb {
+  background-color: rgba(0,0,0,0.2);
+  border-radius: 4px;
+}
+
+.fact-metric-badge {
+  font-size: 0.65rem;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  display: inline-block;
+  line-height: 1;
+  border: 1px solid transparent;
+}
+.fact-metric-total {
+  background-color: #e0f2fe;
+  color: #0369a1;
+  border-color: #bae6fd;
+}
+.fact-metric-success {
+  background-color: #dcfce7;
+  color: #15803d;
+  border-color: #bbf7d0;
+}
+.fact-metric-failed {
+  background-color: #fee2e2;
+  color: #b91c1c;
+  border-color: #fecaca;
+}

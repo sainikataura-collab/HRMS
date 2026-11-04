@@ -1,0 +1,66 @@
+<div class="row">
+    <div class="col-12">
+      <div class="card">
+        <!--  -->
+        <div class="card-header bg-primary">
+            <div class="row w-100">
+              <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-between">
+                <h4>List of Candidate Salary</h4>
+                
+              </div>
+              <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-center">
+                <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText"/>
+              </div>
+  
+              <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-md-end">
+                <button class="btn btnheader" routerLink="/dash/recruitment/recruitmentdashboard/Candidate-Salary">
+                  Add
+              </button>
+                  <button class="btn btn-light mx-1" (click)="exportToExcel()">
+                    Download
+                  </button>
+              </div>
+            
+            </div>
+          </div>  
+          <!--  -->
+          <div class="card-body">
+            <div class="table-responsive table-invoice">
+              <table Id="exportTable"  class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>Sr.No.</th>
+                    <th>Name</th>
+                    <th>Father Name</th>
+                    <th>Gender</th>
+                    <th>Mobile</th>
+                    <th>Email</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Paginate filtered data -->
+                    <tr *ngFor="let item of  filteredData() | paginate: { itemsPerPage: pageSize, currentPage: pageIndex ,totalItems:totalItems};let i = index">
+  
+                    <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+                    <td>{{item.candidate_name}}</td>
+                    <td>{{item.father_name}}</td>               
+                    <td>{{item.gender}}</td>               
+                    <td>{{item.mobile}}</td>               
+                    <td>{{item.email}}</td>   
+                    <td>
+                      <button class="btn btn-sm btn-outline"(click)="isUpdate(item.pk_recId)"><i class="fa-solid fa-pen-to-square" ></i></button>
+                      <button class="btn btn-sm btn-outline"  (click)="delete(item.pk_recId)" ><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+               <pagination-controls (pageChange)="onPageChange($event)" >
+          </pagination-controls>
+    
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  

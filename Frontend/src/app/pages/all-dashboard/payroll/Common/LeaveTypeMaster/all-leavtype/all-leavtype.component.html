@@ -1,0 +1,62 @@
+ <div class="row">
+            <div class="col-12">
+              <div class="card">
+                <!-- heading -->
+                <div class="card-header bg-blue">
+                  <div class="row w-100">
+                    <!-- Title Section -->
+                    <div class="col-sm-12 col-md-6 col-lg-4 d-flex align-items-center justify-content-start">
+                      <h4 class="text-white">All Leave Type Master</h4>
+                    </div>
+                    <div class="col-sm-12 col-md-6 col-lg-4 d-flex align-items-center justify-content-center">
+                      <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText" />
+                    </div>
+                    <!-- Back Button -->
+                    <div class="col-sm-12 col-md-6 col-lg-4 d-flex align-items-center justify-content-end ms-auto gap-2">
+                      <button class="btn btn-light" routerLink="/dash/user/userdashboard/Leave-Master">
+                        Add
+                      </button>
+                      <button class="btn btn-light" (click)="exportToExcel()">
+                        Download
+                      </button>
+                    </div>
+                  </div>
+                </div>
+        <!--  -->
+        <div class="card-body">
+          <div class="table-responsive table-invoice">
+            <table Id="exportTable"  class="table table-bordered">
+              <thead>
+                    <tr>
+                        <td>Sr.No</td>
+                        <td>LeaveType</td>
+                        <td>ShortDesc</td>
+                        <td>Action</td>
+                     </tr>
+                
+              </thead>
+             
+                <tbody>
+                  <tr *ngFor="let item of filteredData() | paginate: { itemsPerPage: pageSize, currentPage: pageIndex ,totalItems:totalItems};let i = index">
+
+                    <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+                      <td>{{ item.leavetype }}</td>
+                      <td>{{ item.shortdesc }}</td>
+                      <td><button class="btn" (click)="isUpdate(item.pk_leaveid)"> <i class="fa-regular fa-pen-to-square"></i></button>
+                      <button class="btn" (click)="deleteLeaveType(item.pk_leaveid)"> <i class="fa-solid fa-trash"></i></button></td>
+                    </tr>
+            
+               </table>
+               <pagination-controls
+               (pageChange)="onPageChange($event)">
+             </pagination-controls>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- message modal -->
+
+  
+

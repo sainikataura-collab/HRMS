@@ -1,0 +1,256 @@
+<!-- HR Policies Dashboard -->
+
+<!-- top section of form -->
+<section>
+  <div class="container">
+    <div class="row border-bottom">
+      <div class="col-lg-8">
+        <p class="small fw-semibold">
+          <span>HR Policies Dashboard</span><br>
+          <span class="fw-semibold text-primary"><i class="fa-solid fa-file-shield"></i> Total
+            Policies:</span>
+          <span class="fw-semibold text-primary ps-2">25</span>
+        </p>
+      </div>
+      <div class="col-lg-4">
+        <p class="row row-cols-3 g-2 pt-lg-3">
+          <span class="col">
+            <select class="form-select form-select-sm">
+              <option selected>Category</option>
+              <option>Leave Policy</option>
+              <option>Workplace Conduct</option>
+              <option>Compensation</option>
+              <option>Compliance</option>
+            </select>
+          </span>
+          <span class="col">
+            <select class="form-select form-select-sm">
+              <option selected>Status</option>
+              <option>Active</option>
+              <option>Draft</option>
+              <option>Archived</option>
+            </select>
+          </span>
+          <span class="col">
+            <select class="form-select form-select-sm">
+              <option selected>Export</option>
+              <option>PDF</option>
+              <option>Excel</option>
+            </select>
+          </span>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- second section -->
+<section>
+  <div class="container-fluid">
+    <div class="row">
+
+      <!-- left side col content -->
+      <div class="col-lg-8 col-md-12">
+
+        <!-- left side first row first card -->
+        <div class="row row-cols-1 row-cols-md-3 g-3 pt-lg-3">
+
+          <div class="col">
+            <div class="card rounded pt-2">
+              <h4 class="text-center">
+                <span class="badge bg-success rounded">
+                  <i class="fas fa-check-circle text-white fs-5"></i>
+                </span>
+              </h4>
+              <p class="small text-center fw-semibold">Active Policies<br><span
+                  class="text-success fw-semibold">18</span></p>
+            </div>
+          </div>
+
+          <div class="col">
+            <div class="card rounded pt-2">
+              <h4 class="text-center">
+                <span class="badge bg-warning rounded">
+                  <i class="fas fa-file-alt text-white fs-5"></i>
+                </span>
+              </h4>
+              <p class="small text-center fw-semibold">Draft Policies<br><span
+                  class="text-warning fw-semibold">5</span></p>
+            </div>
+          </div>
+
+          <div class="col">
+            <div class="card rounded pt-2">
+              <h4 class="text-center">
+                <span class="badge bg-danger rounded">
+                  <i class="fas fa-archive text-white fs-5"></i>
+                </span>
+              </h4>
+              <p class="small text-center fw-semibold">Archived Policies<br><span
+                  class="text-danger fw-semibold">2</span></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- row in second Policy Status Overview-->
+        <div class="row pt-2">
+          <div class="col-lg-12">
+            <div class="card shadow-sm px-3 py-2 border-top border-2 border-info">
+              <p class="fw-semibold text-info small">
+                <i class="fa-solid fa-chart-line"></i> Policy Status Overview
+              </p>
+              <div class="mb-3">
+                <div class="d-flex justify-content-between small mb-1">
+                  <span class="text-dark">Total Policies (Current)</span>
+                  <span class="fw-semibold">25</span>
+                </div>
+                <div class="progress" style="height: 8px;">
+                  <div class="progress-bar bg-success" style="width: 72%" title="Active 18"></div>
+                  <div class="progress-bar bg-warning" style="width: 20%" title="Draft 5"></div>
+                  <div class="progress-bar bg-danger" style="width: 8%" title="Archived 2"></div>
+                </div>
+              </div>
+
+              <div class="row row-cols-1 row-cols-md-3 g-3 text-center">
+                <div class="col">
+                  <div class="border rounded p-2">
+                    <p class="mb-1 text-dark fw-semibold small"><i
+                        class="fa-solid fa-check-circle me-1 text-success"></i> Active</p>
+                    <span class="text-success small">18 Policies</span>
+                  </div>
+                </div>
+                <div class="col">
+                  <div class="border rounded p-2">
+                    <p class="mb-1 text-dark fw-semibold small"><i class="fa-solid fa-file-alt me-1 text-warning"></i> Draft</p>
+                    <span class="text-warning small">5 Policies</span>
+                  </div>
+                </div>
+                <div class="col">
+                  <div class="border rounded p-2">
+                    <p class="mb-1 text-dark fw-semibold small"><i
+                        class="fa-solid fa-archive me-1 text-danger"></i> Archived</p>
+                    <span class="text-danger small">2 Policies</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- HR Policies Record Table -->
+        <div class="row pt-3">
+          <div class="col-md-12">
+            <div class="card shadow-sm p-3 border-top border-2 border-primary">
+              <p class="fw-semibold text-primary small mb-2">
+                <i class="fa-solid fa-table-list"></i> HR Policies Records
+              </p>
+              <div class="table-responsive small">
+                <table class="table table-bordered table-hover mb-0">
+                  <thead class="table-light">
+                    <tr>
+                      <th>Policy ID</th>
+                      <th>Policy Name</th>
+                      <th>Category</th>
+                      <th>Last Updated</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>POL101</td>
+                      <td>Leave & Attendance Policy</td>
+                      <td>Leave Policy</td>
+                      <td>01 July 2025</td>
+                      <td><span class="badge bg-success">Active</span></td>
+                    </tr>
+                    <tr>
+                      <td>POL102</td>
+                      <td>Code of Conduct</td>
+                      <td>Workplace Conduct</td>
+                      <td>15 June 2025</td>
+                      <td><span class="badge bg-success">Active</span></td>
+                    </tr>
+                    <tr>
+                      <td>POL103</td>
+                      <td>Remote Work Guidelines</td>
+                      <td>Workplace</td>
+                      <td>20 July 2025</td>
+                      <td><span class="badge bg-warning">Draft</span></td>
+                    </tr>
+                    <tr>
+                      <td>POL104</td>
+                      <td>Compensation & Benefits</td>
+                      <td>Compensation</td>
+                      <td>05 May 2025</td>
+                      <td><span class="badge bg-danger">Archived</span></td>
+                    </tr>
+                    <!-- More rows -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- right side col content -->
+      <div class="col-lg-4 col-md-12 pt-3">
+
+        <!-- Policy Updates Timeline -->
+        <div class="row pt-3">
+          <div class="col-md-12">
+            <div class="card shadow-sm p-3 border-top border-2 border-warning">
+              <p class="fw-semibold text-warning small mb-3">
+                <i class="fa-solid fa-timeline"></i> Recent Policy Updates
+              </p>
+
+              <!-- Scrollable content -->
+              <div style="max-height: 250px; overflow-y: auto;" class="pe-2">
+
+                <!-- POL101 -->
+                <div class="mb-3 small">
+                  <p class="fw-semibold text-center mb-1 border-top border-2 border-primary text-primary rounded">
+                    <i class="fa-solid fa-file-contract me-1 small"></i> POL101 - Leave Policy
+                  </p>
+                  <ul class="list-group list-group-flush mb-2">
+                    <li class="list-group-item"><i class="fa-solid fa-check text-success me-2 small"></i> Created - Jan 2023</li>
+                    <li class="list-group-item"><i class="fa-solid fa-pen text-primary me-2 small"></i> Last Updated - Jul 2025</li>
+                    <li class="list-group-item"><i class="fa-solid fa-circle-check text-success me-2 small"></i> Active</li>
+                  </ul>
+                </div>
+
+                <!-- POL102 -->
+                <div class="mb-3 small">
+                  <p class="fw-semibold text-center mb-1 border-top border-2 border-primary text-primary rounded">
+                    <i class="fa-solid fa-file-contract me-1 small"></i> POL102 - Code of Conduct
+                  </p>
+                  <ul class="list-group list-group-flush mb-2">
+                    <li class="list-group-item"><i class="fa-solid fa-check text-success me-2 small"></i> Created - Dec 2022</li>
+                    <li class="list-group-item"><i class="fa-solid fa-pen text-primary me-2 small"></i> Updated - Jun 2025</li>
+                    <li class="list-group-item"><i class="fa-solid fa-circle-check text-success me-2 small"></i> Active</li>
+                  </ul>
+                </div>
+
+                <!-- POL103 -->
+                <div class="mb-3 small">
+                  <p class="fw-semibold text-center mb-1 border-top border-2 border-primary text-primary rounded">
+                    <i class="fa-solid fa-file-contract me-1 small"></i> POL103 - Remote Work Guidelines
+                  </p>
+                  <ul class="list-group list-group-flush mb-2">
+                    <li class="list-group-item"><i class="fa-solid fa-check text-success me-2 small"></i> Draft Created - Jul 2025</li>
+                    <li class="list-group-item"><i class="fa-solid fa-pen text-warning me-2 small"></i> Under Review</li>
+                  </ul>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</section>

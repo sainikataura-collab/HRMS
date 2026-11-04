@@ -1,0 +1,87 @@
+<!-- Right Side: Fact Box Sidebar -->
+
+  <div class="card h-100 shadow-sm border-0" *ngIf="isOpen">
+
+    <!-- Fact Box Header -->
+    <div class="card-header bg-primary d-flex justify-content-between align-items-center flex-wrap px-3 ">
+      <span class="text-white mb-0 small d-flex align-items-center">
+        <i class="fa fa-info-circle me-2 fs-6 "></i>Previously Uploaded Files <span class="badge bg-white text-primary rounded-pill py-1 px-2 ms-3" *ngIf="(totalItems || files.length) > 0">
+            {{ totalItems || files.length }}
+          </span>
+      </span> 
+      <button type="button" class="btn-close btn-close-white" (click)="toggleFactBox()" aria-label="Close" title="Close Fact Box"></button>
+    </div>
+
+    <div class="card-body p-1 flex-column d-flex">
+      <!-- Section: Uploaded Files -->
+    
+
+      <!-- Scrollable Files List -->
+      <div class="file-history-list px-1 flex-grow-1">
+        <div *ngIf="isLoading" class="text-center py-3 text-muted small">
+          <i class="fa fa-spinner fa-spin me-1"></i>Loading history...
+        </div>
+
+        <div *ngIf="!isLoading && files.length === 0" class="text-muted small text-center py-3 bg-light rounded border">
+          <i class="fa fa-info-circle me-1"></i>No uploaded files found.
+        </div>
+
+        <div *ngFor="let item of files | paginate: { id: 'factbox_pagination', itemsPerPage: itemsPerPage, currentPage: currentPage, totalItems: totalItems }" class="p-2 mb-2 rounded border bg-white shadow-sm">
+          <!-- Metrics Above File Name -->
+          <div class="d-flex align-items-center justify-content-between gap-1 mb-1">
+            <span class="fact-metric-badge fact-metric-total" title="Total records in Excel">
+              Total: <strong>{{ item.totalRecords ?? item.TotalRecords ?? item.Total ?? item.total ?? item.totalCount ?? item.TotalCount ?? 0 }}</strong>
+            </span>
+            <span class="fact-metric-badge fact-metric-success" title="Uploaded successfully">
+              Uploaded: <strong>{{ item.successCount ?? item.SuccessCount ?? item.Uploaded ?? item.uploaded ?? item.success ?? item.Success ?? 0 }}</strong>
+            </span>
+            <span class="fact-metric-badge fact-metric-failed" title="Not uploaded / Failed">
+              Not Uploaded: <strong>{{ item.failedCount ?? item.FailedCount ?? item['Not Uploaded'] ?? item.notUploaded ?? item.failed ?? item.Failed ?? 0 }}</strong>
+            </span>
+          </div>
+
+        
+
+
+
+
+          <!--  -->
+
+ <div class="d-flex justify-content-between text-muted  flex-wrap pt-1" style="font-size: 0.7rem;">
+              <span> <a class="text-primary text-decoration-none fw-semibold small text-break d-block lh-sm pt-1" role="button"
+                (click)="downloadUploadedFile(item)" [title]="'Click to download file'">
+              
+                <span class="bg-primary-subtle p-1 rounded-1"><i class="fa-solid fa-download"></i></span>
+              </a></span>
+              <span>
+                Uploaded by: <strong>{{ getUploaderDisplayName(item) }}</strong>
+              </span>
+              <span>
+                <i class="fa fa-calendar me-1"></i>{{ (item.date || item.Date || item.createdDate || item.CreatedDate || item.uploadTime || item.UploadTime) | date: 'dd-MMM-yyyy hh:mm a' }}
+              </span>
+            </div>
+
+          <!--  -->
+        </div>
+
+      
+      </div>
+
+    </div>
+
+    <div class="card-footer py-0">
+        <!-- Fact Box Pagination Controls -->
+        <div class="d-flex justify-content-center " *ngIf="(totalItems || files.length) > itemsPerPage">
+          <pagination-controls id="factbox_pagination" (pageChange)="handlePageChange($event)" [maxSize]="5" [directionLinks]="true" [autoHide]="true" previousLabel="" nextLabel="">
+          </pagination-controls>
+        </div>
+    </div>
+  </div>
+<!-- Bottom-Right Floating Button to toggle Fact Box -->
+<button class="btn btn-primary btn-float-fact" type="button" (click)="toggleFactBox()" *ngIf="!isOpen" title="Open Fact Box">
+  <i class="fa fa-sitemap"></i>
+</button>
+
+
+
+

@@ -1,0 +1,78 @@
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="row w-100">
+                  <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-between">
+                    <h4>List of Loan Allotment</h4>
+                  </div>
+                  <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-center">
+                    <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText"/>
+                  </div>
+                  <div class="col-sm-12 col-md-4 col-lg-4 col-xxl-4 d-flex align-items-center justify-content-md-end">
+                    <button class="btn btnheader" routerLink="/dash/payroll/payrolldashboard/loanAllotment">
+                        Add
+                      </button>
+                  </div>
+              
+                  
+                </div>
+            </div>
+            <div class="card-body mt-2">
+             
+                <div class="row row-cols-1 row-cols-md-3">
+                  <div class="col">
+                    <label>Employee Code</label>
+                    <ng-select [items]="EmployeeList" id="fk_empid" bindLabel="name" bindValue="value"
+                        formControlName="fk_empid" placeholder="--Select Employee--" class="w-100" [(ngModel)]="fk_empid"
+                        (change)="onEmpidChange(fk_empid)">
+                    </ng-select>
+                </div>
+                </div>
+              
+            </div>
+            <div class="card-body">
+                <div class="table-responsive table-invoice">
+                    <table class="table table-bordered">
+                      <thead>
+                        <tr>
+                          <th>Sr.</th>
+                          <th>Emp Code</th>
+                          <th>Emp Name</th>
+                          <th>Order No</th>
+                          <th>Date</th>
+                          <th>Requested Amount</th>
+                          <th>Allotted Amount</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let data of filteredData() | paginate: { itemsPerPage: pageSize, currentPage: pageIndex, totalItems: totalItems }; let i = index">
+                          <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+                          <td>{{ data.empcode }}</td>
+                          <td>{{ data.empname }}</td>
+                          <td>{{ data.orderno }}</td>
+                          <td>{{ data.dated}}</td>
+                          <td>{{ data.requisitionAmt | number:'1.2-2' }}</td>
+                          <td>{{ data.allotAmt | number:'1.2-2' }}</td>
+                          <td>
+                            <button class="btn" (click)="editLoanAllotment(this.encryptionService.encryptText(data.pk_allotid))">
+                              <i class="fa-regular fa-pen-to-square"></i>
+                            </button>
+                            <button class="btn" (click)="deleteLoanAllotment(data.pk_allotid)">
+                              <i class="fa fa-trash"></i>
+                            </button>
+                          </td>
+                        </tr>
+                      </tbody>
+                      </table>
+            
+                    
+                  </div>
+            </div>
+
+          
+        </div>
+    </div>
+</div>

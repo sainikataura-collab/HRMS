@@ -1,0 +1,197 @@
+<div class="row">
+  <div class="col-sm-12">
+    <div class="card">
+      <!-- Card Header -->
+      <div class="card-header bg-primary">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-between">
+            <h4>{{ isEditMode ? 'Edit Customer Shift Rate & Bonus' : 'Customer Shift Rate & Bonus' }}</h4>
+          </div>
+          <div class="col-sm-12 col-md-6 col-lg-6 col-xxl-6 d-flex align-items-center justify-content-md-end">
+            <button class="btn btnheader" routerLink="/dash/adminAttendance/adminAttendancedashboard/customer_shift_rate_bonus_list">
+              Back
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card Body -->
+      <div class="card-body mt-3">
+        <div *ngIf="isLoading" class="text-center py-4">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+
+        <form *ngIf="!isLoading" (ngSubmit)="onSave()" novalidate>
+          <div class="row row-cols-1 row-cols-md-3 g-4">
+
+            <!-- Customer -->
+            <div class="col">
+              <label for="customer">Customer<span class="text-danger">*</span></label>
+              <ng-select id="customer" [items]="clients" bindLabel="text" bindValue="value"
+                placeholder="--Select Customer--" [(ngModel)]="formData.fk_clientId" name="fk_clientId"
+                (ngModelChange)="onCustomerChange($event)"
+                class="w-100 small" [clearable]="true" [searchable]="true" required>
+              </ng-select>
+            </div>
+
+            <!-- Location -->
+            <div class="col">
+              <label for="location">Location<span class="text-danger">*</span></label>
+              <ng-select id="location" [items]="locations" bindLabel="text" bindValue="value"
+                placeholder="--Select Location--" [(ngModel)]="formData.fk_locId" name="fk_locId"
+                (ngModelChange)="onLocationChange($event)"
+                class="w-100 small" [clearable]="true" [searchable]="true" required>
+              </ng-select>
+            </div>
+
+            <!-- Shift Type A -->
+            <div class="col">
+              <label for="shiftTypeA">Shift Type A<span class="text-danger">*</span></label>
+              <input id="shiftTypeA" type="number" step="0.01" min="0" class="form-control"
+                placeholder="Enter Shift Type A Rate" [(ngModel)]="formData.shiftTypeA" name="shiftTypeA" required />
+            </div>
+
+            <!-- Shift Type B -->
+            <div class="col">
+              <label for="shiftTypeB">Shift Type B<span class="text-danger">*</span></label>
+              <input id="shiftTypeB" type="number" step="0.01" min="0" class="form-control"
+                placeholder="Enter Shift Type B Rate" [(ngModel)]="formData.shiftTypeB" name="shiftTypeB" required />
+            </div>
+
+            <!-- Shift Type C -->
+            <div class="col">
+              <label for="shiftTypeC">Shift Type C<span class="text-danger">*</span></label>
+              <input id="shiftTypeC" type="number" step="0.01" min="0" class="form-control"
+                placeholder="Enter Shift Type C Rate" [(ngModel)]="formData.shiftTypeC" name="shiftTypeC" required />
+            </div>
+
+            <!-- Attendance Bonus -->
+            <div class="col">
+              <label for="attendanceBonus">Attendance Bonus<span class="text-danger">*</span></label>
+              <input id="attendanceBonus" type="number" step="0.01" min="0" class="form-control"
+                placeholder="Enter Attendance Bonus" [(ngModel)]="formData.attendanceBonus" name="attendanceBonus" required />
+            </div>
+
+            <!-- Attendance Applicable Days -->
+            <div class="col">
+              <label for="attendanceApplicableDays">Attendance Applicable Days</label>
+              <input id="attendanceApplicableDays" type="number" step="0.01" min="0" class="form-control"
+                placeholder="Enter Attendance Applicable Days" [(ngModel)]="formData.attendanceApplicableDays"
+                name="attendanceApplicableDays" />
+            </div>
+
+            <!-- Bonus Applicable Checkbox -->
+            <div class="col">
+              <label for="isBonusApplicable">Bonus Applicable</label>
+              <div class="form-group">
+                <input id="isBonusApplicable" type="checkbox" [(ngModel)]="formData.isBonusApplicable"
+                  name="isBonusApplicable" (ngModelChange)="onBonusApplicableChange()" />
+              </div>
+            </div>
+
+            <!-- Bonus Payout Type Dropdown (shown only when Bonus Applicable is checked) -->
+            <div class="col" *ngIf="formData.isBonusApplicable">
+              <label for="bonusPayoutType">Bonus Payout Type<span class="text-danger">*</span></label>
+              <ng-select id="bonusPayoutType" [items]="payoutTypeOptions" bindLabel="label" bindValue="value"
+                placeholder="--Select Payout Type--" [(ngModel)]="formData.bonusPayoutType"
+                name="bonusPayoutType" class="w-100 small" [clearable]="false" [searchable]="false" required>
+              </ng-select>
+            </div>
+
+            <!-- Quarterly Incentive (Conditional / Sales Incentive - Whole Number) -->
+            <div class="col">
+              <label for="quarterlyIncentive">Quarterly Incentive</label>
+              <input id="quarterlyIncentive" type="number" step="1" min="0" class="form-control"
+                placeholder="0" [(ngModel)]="formData.quarterlyIncentive"
+                name="quarterlyIncentive" (keypress)="onlyWholeNumbers($event)" />
+              <small class="text-muted" style="font-size: 11px;">Default is 0 if kept empty</small>
+            </div>
+
+            <!-- Peak Incentive Applicable Checkbox -->
+            <div class="col">
+              <label for="isPeakIncentiveApplicable">Peak Incentive Applicable</label>
+              <div class="form-group">
+                <input id="isPeakIncentiveApplicable" type="checkbox" [(ngModel)]="formData.isPeakIncentiveApplicable"
+                  name="isPeakIncentiveApplicable" (ngModelChange)="onPeakIncentiveApplicableChange()" />
+              </div>
+            </div>
+
+            <!-- Peak Incentive: From Date (inside main form) -->
+            <div class="col" *ngIf="formData.isPeakIncentiveApplicable">
+              <label for="peakFromDate">From Date<span class="text-danger">*</span></label>
+              <input id="peakFromDate" type="date" class="form-control" [(ngModel)]="tempPeakIncentive.fromDate" name="peakFromDate" />
+            </div>
+
+            <!-- Peak Incentive: To Date (inside main form) -->
+            <div class="col" *ngIf="formData.isPeakIncentiveApplicable">
+              <label for="peakToDate">To Date<span class="text-danger">*</span></label>
+              <input id="peakToDate" type="date" class="form-control" [(ngModel)]="tempPeakIncentive.toDate" name="peakToDate" />
+            </div>
+
+            <!-- Peak Incentive: Incentive Amount + Add Button (inside main form - Whole Number) -->
+            <div class="col" *ngIf="formData.isPeakIncentiveApplicable">
+              <label for="peakIncentiveAmount">Incentive Amount<span class="text-danger">*</span></label>
+              <div class="d-flex gap-2">
+                <input id="peakIncentiveAmount" type="number" step="1" min="0" class="form-control" placeholder="Enter Amount"
+                  [(ngModel)]="tempPeakIncentive.incentiveAmount" name="peakIncentiveAmount"
+                  (keypress)="onlyWholeNumbers($event)" />
+                <button type="button" class="btn btn-primary text-nowrap" (click)="addPeakIncentiveEntry()">
+                  {{ editingPeakIndex !== null ? 'Update' : 'Add' }}
+                </button>
+                <button *ngIf="editingPeakIndex !== null" type="button" class="btn btn-outline-secondary text-nowrap" (click)="cancelEditPeakIncentive()">
+                  Cancel
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Peak Incentive Dynamic Table (shown when rows exist, matching Tab 2) -->
+          <div class="row mt-3" *ngIf="formData.isPeakIncentiveApplicable && formData.peakIncentives && formData.peakIncentives.length > 0">
+            <div class="col-12">
+              <div class="table-responsive table-invoice">
+                <table class="table table-bordered align-middle mt-2">
+                  <thead>
+                    <tr>
+                      <th style="width: 70px;">#</th>
+                      <th>Peak Period</th>
+                      <th>Incentive Amount</th>
+                      <th style="width: 120px;">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let item of formData.peakIncentives; let i = index">
+                      <td>{{ i + 1 }}</td>
+                      <td>{{ item.fromDate | date: 'dd-MM-yyyy' }} to {{ item.toDate | date: 'dd-MM-yyyy' }}</td>
+                      <td>{{ item.incentiveAmount }}</td>
+                      <td>
+                        <button type="button" class="btn btn-sm btn-outline me-1" (click)="editPeakIncentiveEntry(i)" title="Edit">
+                          <i class="fa-solid fa-pen-to-square"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline text-danger" (click)="removePeakIncentiveEntry(i)" title="Remove">
+                          <i class="fa fa-trash"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Footer buttons -->
+          <div class="modal-footer mt-4">
+            <button type="submit" class="btn btn-primary mx-1" [disabled]="isSaving">
+              <i *ngIf="isSaving" class="fa fa-spinner fa-spin me-1"></i>
+              {{ isEditMode ? 'Update' : 'Save' }}
+            </button>
+            <button *ngIf="!isEditMode" type="button" class="btn btn-outline-dark mx-1" (click)="resetForm()">Reset</button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

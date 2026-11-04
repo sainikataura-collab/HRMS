@@ -1,0 +1,295 @@
+<section>
+
+  <div class="container-fluid">
+
+    <div class="row">
+      <!-- Left side col -->
+      <div class="col-sm-12 col-md-12  col-lg-12 col-xxl-12 main-dash-mobileview-gap">
+
+        <div class="row row-cols-3 row-cols-md-6 g-3 g-lg-4">
+
+
+          <!-- Task box-->
+          <a  *ngIf="isModuleActive('task box')" href="#" [routerLink]="['/dash/taskbox/taskboxdashboard']" [queryParams]="{ type: 'taskbox' }">
+
+            <div class="col pt-lg-3">
+              <div class="card">
+                <div class="card-body">
+                  <p class="text-center pt-1">
+                    <img src="assets/Image/document.png" class="card-img-top  object-fit-contain"
+                      alt="taskbox dashboard Emp" height="80px" width="100px">
+
+                  </p>
+
+                  <p class="text-center"><span class="small pt-lg-2">Task Box</span></p>
+                </div>
+              </div>
+            </div>
+          </a>
+
+
+          <!-- Attendance -->
+          <a  *ngIf="isModuleActive('attendance')" href="#" [routerLink]="['/dash/attendance/attendancedashboard']" [queryParams]="{ type: 'attendance' }">
+
+            <div class="col pt-lg-3">
+              <div class="card">
+                <div class="card-body">
+                  <p class="text-center pt-1">
+                    <img src="assets/Image/employee/time-management.png" class="card-img-top  object-fit-contain"
+                      alt="Attendance Emp" height="80px" width="100px">
+
+                  </p>
+
+                  <p class="text-center"><span class="small pt-lg-2">Attendance</span></p>
+                </div>
+              </div>
+            </div>
+          </a>
+
+
+          <!-- Leaves -->
+          <a  *ngIf="isModuleActive('leave')" href="#" [routerLink]="['/dash/leaves/leavesdashboard']" [queryParams]="{ type: 'leaves' }">
+
+            <div class="col pt-lg-3">
+              <div class="card">
+                <div class="card-body">
+                  <p class="text-center pt-1">
+                    <img src="assets/Image/employee/leaves2.png" class="card-img-top  object-fit-contain"
+                      alt="Leaves Emp" height="80px" width="100px">
+
+                  </p>
+
+                  <p class="text-center"><span class="small pt-lg-2">Leave</span></p>
+                </div>
+              </div>
+            </div>
+          </a>
+
+
+
+          <!--Compensation -->
+          <a  *ngIf="isModuleActive('compensation')" href="#" [routerLink]="['/dash/reimbursement/reimbursementdashboard']"
+            [queryParams]="{ type: 'reimbursement' }">
+
+            <div class="col pt-lg-3">
+              <div class="card">
+                <div class="card-body">
+                  <p class="text-center pt-1">
+                    <img src="assets/Image/employee/settings.png" class="card-img-top  object-fit-contain"
+                      alt="Leaves Emp" height="80px" width="100px">
+
+                  </p>
+
+                  <p class="text-center"><span class="small pt-lg-2">Compensation</span></p>
+                </div>
+              </div>
+            </div>
+          </a>
+
+
+          <!--performance -->
+          <a  *ngIf="isModuleActive('Performance')" href="#" [routerLink]="['/dash/performance/performancedashboard']" [queryParams]="{ type: 'performance' }">
+
+            <div class="col pt-lg-3">
+              <div class="card">
+                <div class="card-body">
+                  <p class="text-center pt-1">
+                    <img src="assets/Image/employee/attendance21.png" class="card-img-top  object-fit-contain"
+                      alt="performance Emp" height="80px" width="100px">
+
+                  </p>
+
+                  <p class="text-center"><span class="small pt-lg-2">Performance</span></p>
+                </div>
+              </div>
+            </div>
+          </a>
+
+
+          <!-- feedback -->
+          <a  *ngIf="isModuleActive('Feedback')" href="#" [routerLink]="['/dash/feedback/feedbackdashboard']" [queryParams]="{ type: 'feedback' }">
+
+            <div class="col pt-lg-3">
+              <div class="card">
+                <div class="card-body">
+                  <p class="text-center pt-1">
+                    <img src="assets/Image/employee/feedback.png" class="card-img-top  object-fit-contain"
+                      alt="Feedback Emp" height="80px" width="100px">
+
+                  </p>
+
+                  <p class="text-center"><span class="small pt-lg-2">Feedback</span></p>
+                </div>
+              </div>
+            </div>
+          </a>
+
+          <!-- hr document -->
+          <a  *ngIf="isModuleActive('HR Document')" href="#" [routerLink]="['/dash/hrdocument/hrdocumentdashboard']" [queryParams]="{ type: 'hrdocument' }">
+
+            <div class="col pt-lg-3">
+              <div class="card">
+                <div class="card-body">
+                  <p class="text-center pt-1">
+                    <img src="assets/Image/employee/hr-document.png" class="card-img-top  object-fit-contain"
+                      alt="hrdocument Emp" height="80px" width="100px">
+
+                  </p>
+
+                  <p class="text-center"><span class="small pt-lg-2">HR Document</span></p>
+                </div>
+              </div>
+            </div>
+          </a>
+
+
+          <!-- hr policies -->
+          <a  *ngIf="isModuleActive('HR Policies')" href="#" [routerLink]="['/dash/hrpolicies/hrpoliciesdashboard']" [queryParams]="{ type: 'hrpolicies' }">
+
+            <div class="col pt-lg-3">
+              <div class="card">
+                <div class="card-body">
+                  <p class="text-center pt-1">
+                    <img src="assets/Image/employee/approved.png" class="card-img-top  object-fit-contain"
+                      alt="hrpolicies Emp" height="80px" width="100px">
+
+                  </p>
+
+                  <p class="text-center"><span class="small pt-lg-2">HR Policies</span></p>
+                </div>
+              </div>
+            </div>
+          </a>
+
+
+          <!-- recruitment -->
+          <a  *ngIf="isModuleActive('Recruitment')" href="#" [routerLink]="['/dash/emp-recruitment/emp-recruitmentdashboard']"
+            [queryParams]="{ type: 'emp-recruitment' }">
+
+            <div class="col pt-lg-3">
+              <div class="card">
+                <div class="card-body">
+                  <p class="text-center pt-1">
+                    <img src="assets/Image/recruitment.png" class="card-img-top  object-fit-contain"
+                      alt="emp-recruitment Emp" height="80px" width="100px">
+
+                  </p>
+
+                  <p class="text-center"><span class="small pt-lg-2">Recruitment</span></p>
+                </div>
+              </div>
+            </div>
+          </a>
+
+
+
+
+
+              <!-- emp-exit -->
+
+          <a *ngIf="isModuleActive('Exit')"  href="#" [routerLink]="['/dash/emp-exit/emp-exitdashboard']"
+            [queryParams]="{ type: 'emp-exit' }">
+
+            <div class="col pt-lg-3">
+              <div class="card">
+                <div class="card-body">
+                  <p class="text-center pt-1">
+                    <img src="assets/Image/employee/emp-exit.png" class="card-img-top  object-fit-contain"
+                      alt="emp-exit Emp" height="80px" width="100px">
+                  </p>
+
+                  <p class="text-center"><span class="small pt-lg-2">Exit</span></p>
+                </div>
+              </div>
+            </div>
+          </a>
+
+
+          <!-- emp training -->
+          <a *ngIf="isModuleActive('Emp-Training')" href="#" [routerLink]="['/dash/emp-training/emp-trainingdashboard']"
+            [queryParams]="{ type: 'emp-training' }">
+
+            <div class="col pt-lg-3">
+              <div class="card">
+                <div class="card-body">
+                  <p class="text-center pt-1">
+                    <img src="assets/Image/training-hrms2.png" class="card-img-top  object-fit-contain"
+                      alt="emp-recruitment Emp" height="80px" width="100px">
+
+                  </p>
+
+                  <p class="text-center"><span class="small pt-lg-2">Training</span></p>
+                </div>
+              </div>
+            </div>
+          </a>
+
+
+          <!-- Emp Event Module  -->
+
+          
+          <!-- event & alert   -->
+
+        <a *ngIf="isModuleActive('Event')"  href="#" [routerLink]="['/dash/event/eventdashboard']"
+            [queryParams]="{ type: 'emp-event' }">
+
+            <div class="col pt-lg-3">
+              <div class="card">
+                <div class="card-body">
+                  <p class="text-center pt-1">
+                    <img src="assets/Image/employee/event.png" class="card-img-top  object-fit-contain"
+                      alt="emp-exit Emp" height="80px" width="100px">
+                  </p>
+                  <p class="text-center"><span class="small pt-lg-2">Event & Alert</span></p>
+                </div>
+              </div>
+            </div>
+          </a>
+
+   <!-- Travel-expence & alert   -->
+
+        <a *ngIf="isModuleActive('Travel-Expence-Emp')"    href="#" [routerLink]="['/dash/travelexpence_emp/travelexpence_empdashboard']"
+            [queryParams]="{ type: 'travelexpence_emp' }">
+
+            <div class="col pt-lg-3">
+              <div class="card">
+                <div class="card-body">
+                  <p class="text-center pt-1">
+                    <img src="assets/Image/employee/travel-expence-emp.png" class="card-img-top  object-fit-contain"
+                      alt="emp-exit Emp" height="80px" width="100px">
+                  </p>
+                  <p class="text-center"><span class="small pt-lg-2">Travel Expence</span></p>
+                </div>
+              </div>
+            </div>
+          </a>
+
+
+
+
+
+        </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+
+
+    </div>
+
+
+
+
+  </div>
+</section>
