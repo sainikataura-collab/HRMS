@@ -4,9 +4,9 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(15, 23, 42, 0.45);
-  backdrop-filter: blur(2px);
-  z-index: 1045;
+  background-color: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(3px);
+  z-index: 100040 !important;
 }
 
 .drawer-panel {
@@ -14,15 +14,16 @@
   top: 0;
   right: 0;
   width: 100%;
-  max-width: 540px;
+  max-width: 580px;
   height: 100vh;
   background: #ffffff;
-  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.12);
-  z-index: 1050;
+  box-shadow: -8px 0 32px rgba(15, 23, 42, 0.22);
+  z-index: 100050 !important;
   display: flex;
   flex-direction: column;
   font-family: "Work Sans", sans-serif !important;
-  animation: slideInRight 0.22s ease-out;
+  animation: slideInRight 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  border-left: 1px solid #cbd5e1;
 }
 
 @keyframes slideInRight {

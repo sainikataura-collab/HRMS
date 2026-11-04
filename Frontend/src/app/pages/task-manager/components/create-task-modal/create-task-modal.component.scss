@@ -1,651 +1,673 @@
-.pane-backdrop-custom {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(15, 23, 42, 0.45);
-  backdrop-filter: blur(3px);
-  z-index: 1050;
-  transition: opacity 0.2s ease;
+// =============================================================================
+// CJ DARCL / HRBook Enterprise Task Manager — Big Centered Create Task Modal
+// Design System: Work Sans · #f6f8fa · #3080e8 · #2b2e41 · Bento Wizard
+// =============================================================================
+
+.modal-backdrop-custom {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background: rgba(15, 23, 42, 0.62) !important;
+  backdrop-filter: blur(4px) !important;
+  display: flex !important;
+  align-items: flex-start !important; /* Prevents top clipping under navbar */
+  justify-content: center !important;
+  z-index: 100000 !important;
+  padding: 68px 20px 20px 85px !important; /* Clears fixed top navbar (65px) and fixed left sidebar (75px) */
+  overflow-y: auto !important;
+  box-sizing: border-box !important;
+  margin: 0 !important;
+  font-family: "Work Sans", -apple-system, BlinkMacSystemFont, sans-serif !important;
+
+  @media (max-width: 991px) {
+    padding: 65px 12px 15px 12px !important;
+  }
 }
 
-.create-task-pane {
-  position: fixed;
-  top: 0;
-  right: 0;
-  width: 620px;
-  max-width: 96vw;
-  height: 100vh;
-  background: #ffffff;
-  z-index: 1055;
-  box-shadow: -10px 0 35px rgba(15, 23, 42, 0.18), -2px 0 8px rgba(0, 0, 0, 0.05);
-  font-family: "Work Sans", sans-serif !important;
-  display: flex;
-  flex-direction: column;
-  animation: slideInRight 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+.create-task-big-dialog {
+  width: 100% !important;
+  max-width: 1050px !important;
+  max-height: calc(100vh - 90px) !important;
+  margin: 0 auto !important;
+  animation: modalFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: 0 !important;
 
-  @keyframes slideInRight {
+  @keyframes modalFadeIn {
     from {
-      transform: translateX(100%);
+      opacity: 0;
+      transform: scale(0.96) translateY(-10px);
     }
     to {
-      transform: translateX(0);
+      opacity: 1;
+      transform: scale(1) translateY(0);
     }
   }
 }
 
-.pane-container {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  overflow: hidden;
+.modal-content-custom {
+  max-height: calc(100vh - 90px) !important;
+  min-height: 0 !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.28), 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+  overflow: hidden !important;
 }
 
-// ----------------------------------------------------
-// 1. Sticky Pane Header
-// ----------------------------------------------------
-.pane-header {
-  padding: 14px 20px;
-  background: #f8fafc;
-  border-bottom: 1px solid #e2e8f0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-shrink: 0;
+// -----------------------------------------------------------------------------
+// 1. MODAL HEADER STRIP
+// -----------------------------------------------------------------------------
+.modal-header-custom {
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0 !important;
 
-  .pane-header-icon {
-    width: 32px;
-    height: 32px;
+  .header-icon-box {
+    width: 36px;
+    height: 36px;
     border-radius: 8px;
     background: #eff6ff;
-    color: #3080e8;
     border: 1px solid #bfdbfe;
+    color: #3080e8;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 14px;
+    flex-shrink: 0;
   }
 
-  .pane-title {
-    font-size: 15px;
-    font-weight: 700;
-    color: #0f172a;
-    letter-spacing: -0.2px;
-  }
-
-  .pane-subtitle {
-    font-size: 10.5px;
-    display: block;
-  }
-
-  .esc-hint {
+  .badge-chip {
     font-size: 9.5px;
     font-weight: 600;
-    color: #94a3b8;
-    background: #e2e8f0;
+    padding: 1.5px 7px;
+    border-radius: 4px;
+  }
+
+  .esc-badge {
+    font-size: 9px;
+    font-weight: 700;
+    color: #64748b;
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
     padding: 2px 6px;
     border-radius: 4px;
-    border: 1px solid #cbd5e1;
   }
 
-  .btn-pane-close {
-    background: transparent;
-    border: none;
-    color: #64748b;
-    font-size: 16px;
-    cursor: pointer;
-    padding: 4px 8px;
-    border-radius: 5px;
-    transition: all 0.15s ease;
-
-    &:hover {
-      background: #e2e8f0;
-      color: #0f172a;
-    }
-  }
-}
-
-// ----------------------------------------------------
-// 2. Scrollable Body
-// ----------------------------------------------------
-.pane-body {
-  padding: 18px 22px;
-  overflow-y: auto;
-  flex: 1 1 auto;
-
-  .section-label {
-    font-size: 11.5px;
-    font-weight: 600;
-    color: #334155;
-    margin-bottom: 4px;
-    display: block;
-
-    .badge-source {
-      font-size: 8.5px;
-      font-weight: 700;
-      background: #ede9fe;
-      color: #7c3aed;
-      padding: 1px 5px;
-      border-radius: 3px;
-      text-transform: uppercase;
-      letter-spacing: 0.3px;
-    }
-  }
-
-  .form-control-title {
-    height: 36px !important;
-    font-size: 13px !important;
-    font-weight: 600 !important;
-    border: 1px solid #cbd5e1 !important;
-    border-radius: 6px !important;
-    color: #0f172a !important;
-    padding: 6px 12px !important;
-
-    &::placeholder {
-      font-size: 12px;
-      font-weight: 400;
-      color: #94a3b8;
-    }
-
-    &:focus {
-      border-color: #3080e8 !important;
-      box-shadow: 0 0 0 3px rgba(48, 128, 232, 0.15) !important;
-    }
-  }
-
-  .form-control-pane {
-    height: 32px !important;
-    font-size: 11.5px !important;
-    border: 1px solid #d1d5db !important;
-    border-radius: 5px !important;
-    color: #1f2937 !important;
-    padding: 4px 10px !important;
-
-    &:focus {
-      border-color: #3080e8 !important;
-      box-shadow: 0 0 0 2px rgba(48, 128, 232, 0.12) !important;
-    }
-  }
-
-  .desc-textarea {
-    height: auto !important;
-    min-height: 68px;
-    resize: vertical;
-    line-height: 1.45;
-  }
-
-  // Task Type Chips
-  .task-type-chips-row {
-    display: flex;
-    gap: 7px;
-    flex-wrap: wrap;
-
-    .task-type-chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 5px 11px;
-      font-size: 11px;
-      font-weight: 600;
-      color: #475569;
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 20px;
-      cursor: pointer;
-      transition: all 0.15s ease;
-
-      i {
-        font-size: 12px;
-      }
-
-      &:hover {
-        background: #f1f5f9;
-        border-color: #cbd5e1;
-        color: #0f172a;
-      }
-
-      &.active {
-        background: #3080e8;
-        border-color: #3080e8;
-        color: #ffffff;
-        box-shadow: 0 2px 6px rgba(48, 128, 232, 0.3);
-
-        i {
-          color: #ffffff !important;
-        }
-      }
-    }
-  }
-
-  .btn-assign-self {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    height: 22px;
-    padding: 0 8px;
-    font-size: 9.5px;
-    font-weight: 600;
-    border-radius: 11px;
-    background: #eff6ff;
-    color: #2563eb;
-    border: 1px solid #bfdbfe;
-    cursor: pointer;
-    transition: all 0.15s ease;
-
-    &:hover {
-      background: #dbeafe;
-      border-color: #93c5fd;
-    }
-
-    &.active {
-      background: #2563eb;
-      color: #ffffff;
-      border-color: #1d4ed8;
-    }
-  }
-
-  .helper-text {
-    font-size: 10px;
-    display: block;
-    margin-top: 3px;
-  }
-
-  .deadline-presets {
-    display: flex;
-    gap: 4px;
-
-    .preset-btn {
-      background: #f1f5f9;
-      border: 1px solid #e2e8f0;
-      color: #475569;
-      font-size: 9.5px;
-      font-weight: 600;
-      padding: 1px 6px;
-      border-radius: 3px;
-      cursor: pointer;
-      transition: all 0.12s ease;
-
-      &:hover {
-        background: #e2e8f0;
-        color: #0f172a;
-      }
-    }
-  }
-
-  .compact-upload-zone {
-    border: 1px dashed #cbd5e1;
+  .btn-close-modal {
+    width: 28px;
+    height: 28px;
     border-radius: 6px;
-    background: #f8fafc;
-    padding: 9px 12px;
-    transition: all 0.15s ease;
-
-    &:hover {
-      border-color: #3080e8;
-      background: #f0f7ff;
-    }
-
-    .upload-label-inner {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin: 0;
-      cursor: pointer;
-      width: 100%;
-
-      .upload-icon {
-        font-size: 16px;
-        color: #64748b;
-      }
-
-      .upload-text-block {
-        font-size: 11px;
-        color: #475569;
-
-        strong {
-          color: #3080e8;
-        }
-      }
-    }
-  }
-
-  .uploaded-file-chip {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: #eff6ff;
-    border: 1px solid #bfdbfe;
-    border-radius: 5px;
-    padding: 6px 12px;
-    font-size: 11px;
-
-    .file-name {
-      color: #1e40af;
-      font-weight: 500;
-      max-width: 480px;
-    }
-
-    .btn-remove-file {
-      background: transparent;
-      border: none;
-      color: #ef4444;
-      font-size: 13px;
-      cursor: pointer;
-
-      &:hover {
-        color: #b91c1c;
-      }
-    }
-  }
-
-  // Recurrence Panel
-  .recurrence-panel {
-    background: #f8fafc;
     border: 1px solid #e2e8f0;
-    border-radius: 6px;
-    overflow: hidden;
-    transition: all 0.2s ease;
-
-    &.panel-open {
-      border-color: #bfdbfe;
-      background: #ffffff;
-      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.05);
-    }
-
-    .recurrence-header {
-      padding: 10px 14px;
-      background: #f8fafc;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      cursor: pointer;
-      user-select: none;
-
-      .recur-icon-box {
-        width: 26px;
-        height: 26px;
-        border-radius: 6px;
-        background: #e2e8f0;
-        color: #64748b;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 11.5px;
-        transition: all 0.2s ease;
-
-        &.active {
-          background: #3080e8;
-          color: #ffffff;
-        }
-      }
-
-      .recur-header-title {
-        font-size: 12px;
-        font-weight: 600;
-        color: #1e293b;
-      }
-
-      .recur-header-sub {
-        font-size: 9.5px;
-      }
-
-      .recur-switch {
-        cursor: pointer;
-        width: 32px;
-        height: 18px;
-
-        &:checked {
-          background-color: #3080e8;
-          border-color: #3080e8;
-        }
-      }
-    }
-
-    .recurrence-body {
-      padding: 12px 14px;
-      border-top: 1px solid #e2e8f0;
-      background: #ffffff;
-
-      .segmented-frequency-group {
-        display: flex;
-        background: #f1f5f9;
-        padding: 2px;
-        border-radius: 6px;
-        border: 1px solid #e2e8f0;
-        gap: 2px;
-
-        .seg-btn {
-          flex: 1;
-          height: 26px;
-          border: none;
-          background: transparent;
-          font-size: 11px;
-          font-weight: 600;
-          color: #64748b;
-          border-radius: 4px;
-          cursor: pointer;
-          transition: all 0.15s ease;
-
-          &:hover {
-            color: #0f172a;
-          }
-
-          &.active {
-            background: #3080e8;
-            color: #ffffff;
-            box-shadow: 0 1px 3px rgba(48, 128, 232, 0.25);
-          }
-        }
-      }
-
-      .weekday-pills-row {
-        display: flex;
-        gap: 6px;
-        flex-wrap: wrap;
-
-        .weekday-pill {
-          width: 34px;
-          height: 28px;
-          border-radius: 14px;
-          border: 1px solid #cbd5e1;
-          background: #f8fafc;
-          color: #475569;
-          font-size: 10px;
-          font-weight: 600;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          cursor: pointer;
-          transition: all 0.15s ease;
-
-          &:hover {
-            border-color: #3080e8;
-            color: #3080e8;
-          }
-
-          &.selected {
-            background: #3080e8;
-            color: #ffffff;
-            border-color: #3080e8;
-          }
-        }
-      }
-
-      .end-conditions-row {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        flex-wrap: wrap;
-
-        .end-condition-option {
-          display: inline-flex;
-          align-items: center;
-          gap: 5px;
-          font-size: 11px;
-          color: #475569;
-          cursor: pointer;
-          margin: 0;
-
-          input[type="radio"] {
-            margin: 0;
-            cursor: pointer;
-          }
-
-          &.active {
-            color: #0f172a;
-            font-weight: 600;
-          }
-        }
-      }
-
-      .recurrence-summary-box {
-        background: #eff6ff;
-        border: 1px solid #bfdbfe;
-        border-radius: 5px;
-        padding: 6px 10px;
-        font-size: 10.5px;
-        color: #1e40af;
-        display: flex;
-        align-items: center;
-
-        .summary-text {
-          font-weight: 500;
-        }
-      }
-    }
-  }
-
-  .error-banner {
-    background: #fef2f2;
-    border: 1px solid #fecaca;
-    color: #dc2626;
-    border-radius: 5px;
-    padding: 7px 12px;
-    font-size: 11.5px;
+    background: #f8fafc;
+    color: #475569;
     display: flex;
     align-items: center;
-  }
-}
-
-// ----------------------------------------------------
-// 3. Sticky Bottom Action Bar
-// ----------------------------------------------------
-.pane-footer {
-  padding: 12px 22px;
-  background: #f8fafc;
-  border-top: 1px solid #e2e8f0;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 10px;
-  flex-shrink: 0;
-
-  .btn-pane-cancel {
-    background: #ffffff;
-    border: 1px solid #d1d5db;
-    color: #475569;
-    font-size: 12px;
-    font-weight: 600;
-    height: 32px;
-    padding: 0 16px;
-    border-radius: 5px;
+    justify-content: center;
+    font-size: 13px;
     cursor: pointer;
     transition: all 0.15s ease;
 
-    &:hover {
-      background: #f1f5f9;
-      color: #0f172a;
-    }
-  }
-
-  .btn-pane-submit {
-    background: #3080e8;
-    border: 1px solid #3080e8;
-    color: #ffffff;
-    font-size: 12px;
-    font-weight: 600;
-    height: 32px;
-    padding: 0 18px;
-    border-radius: 5px;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    box-shadow: 0 2px 6px rgba(48, 128, 232, 0.25);
-    transition: all 0.15s ease;
-
-    &:hover {
-      background: #2563eb;
-      border-color: #2563eb;
-    }
-
-    &:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
+    &:hover:not(:disabled) {
+      background: #fee2e2;
+      border-color: #fecaca;
+      color: #dc2626;
     }
   }
 }
 
-// Global ng-select inside pane
-::ng-deep .clean-pane-select {
+// -----------------------------------------------------------------------------
+// 2. MODAL BODY & BENTO BOX ARCHITECTURE
+// -----------------------------------------------------------------------------
+.modal-body-custom {
+  background-color: #f6f8fa !important;
+  overflow-y: auto !important;
+  min-height: 0 !important;
+}
+
+.bento-box {
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+
+  .bento-box-header {
+    background-color: #f8fafc !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+
+    .badge-mandatory {
+      font-size: 9.5px;
+      color: #dc2626;
+      font-weight: 600;
+    }
+  }
+}
+
+.form-label-mini {
+  display: block;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: #475569 !important;
+  margin-bottom: 3px;
+
+  .badge-gm {
+    font-size: 8.5px;
+    font-weight: 700;
+    color: #0051d5;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    padding: 0.5px 5px;
+    border-radius: 3px;
+    text-transform: uppercase;
+  }
+}
+
+// Form Controls (28px Standard)
+.form-control-sm,
+.form-select-sm {
+  height: 28px !important;
+  min-height: 28px !important;
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 4px !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
   font-family: "Work Sans", sans-serif !important;
-  font-size: 11.5px !important;
+  padding: 2px 8px !important;
+  box-shadow: none !important;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+  &:focus {
+    border-color: #3080e8 !important;
+    box-shadow: 0 0 0 2px rgba(48, 128, 232, 0.14) !important;
+    outline: none !important;
+  }
+
+  &::placeholder {
+    color: #94a3b8 !important;
+    font-weight: 400 !important;
+  }
+}
+
+.task-textarea {
+  height: auto !important;
+  min-height: 62px !important;
+  padding: 6px 8px !important;
+  line-height: 1.4 !important;
+  resize: vertical;
+}
+
+.input-group-sm {
+  height: 28px !important;
+
+  .input-group-text {
+    height: 28px !important;
+    background: #f1f5f9 !important;
+    color: #475569 !important;
+    border: 1px solid #cbd5e1 !important;
+    font-size: 10px !important;
+    padding: 0 8px !important;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// 3. UNIVERSAL NG-SELECT SPECIFICATION (.custom-ng-select)
+// -----------------------------------------------------------------------------
+::ng-deep .custom-ng-select {
+  font-family: "Work Sans", sans-serif !important;
+  font-size: 11px !important;
 
   .ng-select-container {
-    min-height: 32px !important;
-    height: 32px !important;
-    border: 1px solid #d1d5db !important;
-    border-radius: 5px !important;
+    min-height: 28px !important;
+    height: 28px !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 4px !important;
     background-color: #ffffff !important;
+    padding: 0 6px !important;
+    font-size: 11px !important;
+    color: #1e293b !important;
     box-shadow: none !important;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 
-    .ng-value-container {
-      padding-left: 10px !important;
-
-      .ng-placeholder {
-        color: #9ca3af !important;
-        font-size: 11.5px !important;
-      }
-
-      .ng-value {
-        color: #1f2937 !important;
-        font-size: 11.5px !important;
-      }
+    &:hover {
+      border-color: #94a3b8 !important;
     }
+  }
+
+  &.ng-select-opened > .ng-select-container {
+    border-color: #3080e8 !important;
+    box-shadow: 0 0 0 2px rgba(48, 128, 232, 0.12) !important;
   }
 
   &.ng-select-focused:not(.ng-select-opened) > .ng-select-container {
     border-color: #3080e8 !important;
-    box-shadow: 0 0 0 2px rgba(48, 128, 232, 0.15) !important;
+  }
+
+  .ng-value-container {
+    padding: 0 !important;
+    align-items: center !important;
+
+    .ng-placeholder {
+      color: #94a3b8 !important;
+      font-size: 11px !important;
+      line-height: 26px !important;
+      top: 0 !important;
+    }
+
+    .ng-value {
+      font-size: 11px !important;
+      color: #0f172a !important;
+      font-weight: 500 !important;
+      line-height: 26px !important;
+    }
+
+    .ng-input {
+      top: 0 !important;
+      padding: 0 !important;
+      > input {
+        font-size: 11px !important;
+        font-family: "Work Sans", sans-serif !important;
+      }
+    }
+  }
+
+  .ng-arrow-wrapper {
+    width: 18px !important;
+    padding-right: 2px !important;
+    .ng-arrow {
+      border-color: #64748b transparent transparent !important;
+      border-width: 4px 4px 0 !important;
+    }
   }
 
   .ng-dropdown-panel {
-    font-size: 11.5px !important;
     border: 1px solid #cbd5e1 !important;
-    border-radius: 5px !important;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12) !important;
+    border-radius: 6px !important;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.14) !important;
+    z-index: 100020 !important;
 
     .ng-option {
-      padding: 6px 10px !important;
-      font-size: 11.5px !important;
+      padding: 5px 10px !important;
+      font-size: 11px !important;
 
       &.ng-option-marked {
-        background-color: #f1f5f9 !important;
+        background-color: #eff6ff !important;
+        color: #0051d5 !important;
       }
 
       &.ng-option-selected {
-        background-color: #eff6ff !important;
-        color: #2563eb !important;
+        background-color: #dbeafe !important;
+        color: #0051d5 !important;
         font-weight: 600 !important;
       }
     }
   }
 }
 
-.badge-hod-pill {
+.badge-hod-mini {
   font-size: 8.5px;
-  background: #ede9fe;
-  color: #7c3aed;
   font-weight: 700;
-  padding: 1px 4px;
+  background: #fef3c7;
+  color: #b45309;
+  border: 1px solid #fde68a;
+  padding: 0.5px 5px;
   border-radius: 3px;
+}
+
+// -----------------------------------------------------------------------------
+// 4. GENERAL MASTER TASK TYPE CHIPS & SELF-ASSIGN PILL
+// -----------------------------------------------------------------------------
+.task-type-selector-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+
+  .btn-type-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 28px;
+    padding: 0 11px;
+    border-radius: 5px;
+    border: 1px solid #cbd5e1;
+    background: #ffffff;
+    color: #334155;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+
+    i {
+      font-size: 11px;
+    }
+
+    .type-code {
+      font-size: 8.5px;
+      font-family: monospace;
+      font-weight: 700;
+      padding: 0.5px 4px;
+      border-radius: 3px;
+      background: #f1f5f9;
+      color: #64748b;
+    }
+
+    &:hover:not(:disabled) {
+      border-color: #3080e8;
+      background: #f8fafc;
+      color: #0f172a;
+    }
+
+    &.active {
+      background: #eff6ff !important;
+      border-color: #3080e8 !important;
+      color: #0051d5 !important;
+      box-shadow: 0 0 0 2px rgba(48, 128, 232, 0.12);
+
+      .type-code {
+        background: #3080e8;
+        color: #ffffff;
+      }
+    }
+  }
+}
+
+.btn-self-assign-chip {
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #475569;
+  font-size: 9.5px;
+  font-weight: 600;
+  padding: 1px 7px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.15s ease;
+
+  &:hover:not(:disabled) {
+    border-color: #3080e8;
+    color: #3080e8;
+    background: #eff6ff;
+  }
+
+  &.active {
+    background: #3080e8 !important;
+    border-color: #3080e8 !important;
+    color: #ffffff !important;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// 5. SLA PRESET CHIPS & UPLOAD ZONE
+// -----------------------------------------------------------------------------
+.btn-preset-chip {
+  height: 28px;
+  padding: 0 9px;
+  border-radius: 4px;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #475569;
+  font-size: 10.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover:not(:disabled) {
+    background: #eff6ff;
+    border-color: #93c5fd;
+    color: #0051d5;
+  }
+}
+
+.compact-upload-zone {
+  min-height: 62px;
+  border: 1.5px dashed #94a3b8;
+  border-radius: 6px;
+  background: #f8fafc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 10px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    border-color: #3080e8;
+    background: #eff6ff;
+  }
+}
+
+.attached-file-box {
+  min-height: 62px;
+  border: 1px solid #bbf7d0;
+  background: #f0fdf4;
+  border-radius: 6px;
+  padding: 8px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+
+  .attached-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    background: #dcfce7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+
+  .btn-remove-attachment {
+    border: none;
+    background: #fee2e2;
+    color: #dc2626;
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    font-size: 11px;
+    cursor: pointer;
+
+    &:hover {
+      background: #fecaca;
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+// 6. RECURRENCE ENGINE CONTROLS
+// -----------------------------------------------------------------------------
+.btn-mode-switch {
+  height: 24px !important;
+  padding: 0 10px !important;
+  font-size: 10.5px !important;
+  font-weight: 600 !important;
+  border: 1px solid #cbd5e1 !important;
+  background: #ffffff !important;
+  color: #475569 !important;
+  display: inline-flex;
+  align-items: center;
+
+  &.active {
+    background: #3080e8 !important;
+    border-color: #3080e8 !important;
+    color: #ffffff !important;
+  }
+}
+
+.recurrence-active-body {
+  background: #f8fafc;
+}
+
+.recurrence-freq-tabs {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+
+  .freq-tab-btn {
+    flex: 1 1 auto;
+    height: 28px;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    background: #ffffff;
+    color: #475569;
+    font-size: 10.5px;
+    font-weight: 600;
+    padding: 0 10px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    transition: all 0.15s ease;
+
+    &:hover {
+      border-color: #3080e8;
+      color: #0051d5;
+    }
+
+    &.active {
+      background: #3080e8;
+      border-color: #3080e8;
+      color: #ffffff;
+      box-shadow: 0 1px 4px rgba(48, 128, 232, 0.25);
+    }
+  }
+}
+
+.weekday-pills-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+
+  .weekday-pill-btn {
+    min-width: 44px;
+    height: 26px;
+    border-radius: 4px;
+    border: 1px solid #cbd5e1;
+    background: #ffffff;
+    color: #475569;
+    font-size: 10.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+
+    &:hover {
+      border-color: #3080e8;
+      color: #3080e8;
+    }
+
+    &.selected {
+      background: #3080e8;
+      border-color: #3080e8;
+      color: #ffffff;
+      font-weight: 700;
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+// 7. RIGHT COLUMN: DARK NAVY LIVE PREVIEW CARD & GOVERNANCE
+// -----------------------------------------------------------------------------
+.live-dossier-card {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.18);
+  border: 1px solid #334155;
+
+  .live-tag {
+    display: inline-flex;
+    align-items: center;
+    font-size: 9.5px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.12);
+    color: #f8fafc;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+
+    &.tag-type {
+      background: rgba(48, 128, 232, 0.25);
+      border-color: rgba(96, 165, 250, 0.45);
+      color: #ffffff;
+    }
+
+    &.tag-recurring {
+      background: rgba(139, 92, 246, 0.28);
+      border-color: rgba(167, 139, 250, 0.45);
+      color: #ede9fe;
+    }
+
+    &.tag-attachment {
+      background: rgba(16, 185, 129, 0.25);
+      border-color: rgba(52, 211, 153, 0.4);
+      color: #d1fae5;
+    }
+  }
+
+  .recurrence-preview-banner {
+    background: rgba(15, 23, 42, 0.55);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+  }
+}
+
+.governance-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  .gov-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    font-size: 10px;
+    color: #475569;
+    line-height: 1.35;
+
+    i {
+      margin-top: 2px;
+      font-size: 10.5px;
+      flex-shrink: 0;
+    }
+
+    strong {
+      color: #0f172a;
+    }
+
+    span {
+      color: #0051d5;
+      font-weight: 600;
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+// 8. CORPORATE PRIMARY BUTTON (.btn-primary-action)
+// -----------------------------------------------------------------------------
+.btn-primary-action {
+  height: 28px !important;
+  font-size: 11.5px !important;
+  font-weight: 600 !important;
+  padding: 3px 14px !important;
+  background-color: #3080e8 !important;
+  border: 1px solid #3080e8 !important;
+  color: #ffffff !important;
+  border-radius: 4px !important;
+  box-shadow: 0 2px 6px #acb5f6 !important;
+  transition: all 0.15s ease-in-out;
+
+  &:hover:not(:disabled) {
+    background-color: #2b2b41 !important;
+    border-color: #2b2b41 !important;
+    color: #ffffff !important;
+    transform: translateY(-1px);
+  }
+
+  &:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+  }
 }

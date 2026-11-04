@@ -1,455 +1,676 @@
-<!-- Backdrop Blur -->
-<div *ngIf="isOpen" class="pane-backdrop-custom fade show" (click)="onClose()"></div>
+<!-- ========================================================================= -->
+<!-- ENTERPRISE CREATE TASK MODAL (BIG CENTERED POPUP WITH 2-COL BENTO WIZARD) -->
+<!-- ========================================================================= -->
+<div *ngIf="isOpen" class="modal-backdrop-custom" (click)="onClose()">
+  <div class="modal-dialog-custom create-task-big-dialog" (click)="$event.stopPropagation()" role="dialog" aria-modal="true" tabindex="-1">
+    <div class="modal-content-custom bg-white rounded-3 shadow-lg border d-flex flex-column">
 
-<!-- Slide-Out Create Task Pane (Right Drawer) -->
-<div *ngIf="isOpen" class="create-task-pane show" role="dialog" aria-modal="true" tabindex="-1">
-  <div class="pane-container">
-    
-    <!-- 1. Sticky Pane Header -->
-    <div class="pane-header">
-      <div class="d-flex align-items-center gap-2">
-        <div class="pane-header-icon">
-          <i class="fa-solid fa-plus text-primary"></i>
-        </div>
-        <div>
-          <h5 class="pane-title mb-0">Create New Task</h5>
-          <span class="pane-subtitle text-muted">Set up task classification, assignment, and recurrence</span>
-        </div>
-      </div>
-      
-      <div class="d-flex align-items-center gap-2">
-        <span class="esc-hint d-none d-sm-inline-block">ESC</span>
-        <button type="button" class="btn-pane-close" aria-label="Close" (click)="onClose()" [disabled]="isSubmitting">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
-      </div>
-    </div>
-
-    <!-- 2. Scrollable Pane Content -->
-    <div class="pane-body">
-      
-      <!-- Subject / Title -->
-      <div class="pane-section mb-3">
-        <label class="section-label">
-          Task Title <span class="text-danger">*</span>
-        </label>
-        <input
-          type="text"
-          class="form-control form-control-title"
-          placeholder="e.g. FY26 Q3 GST Filing & Reconciliation, Safety Audit..."
-          [(ngModel)]="subject"
-          [disabled]="isSubmitting"
-          maxlength="200"
-          autofocus
-        />
-      </div>
-
-      <!-- Task Type from General Master (Compliance, Audit, Operations, etc.) -->
-      <div class="pane-section mb-3">
-        <div class="d-flex justify-content-between align-items-center mb-1">
-          <label class="section-label mb-0">
-            Task Type <span class="badge-source ms-1">General Master</span>
-          </label>
-          <span class="selected-type-badge text-muted small">
-            {{ (taskTypes.length > 0 ? (taskTypes | slice:0:1)[0].name : 'General') }}
-          </span>
-        </div>
-
-        <div class="task-type-chips-row">
-          <button
-            *ngFor="let t of taskTypes"
-            type="button"
-            class="task-type-chip"
-            [class.active]="taskTypeId === t.id"
-            (click)="selectTaskType(t.id)"
-          >
-            <i [class]="getTaskTypeIcon(t.name)"></i>
-            <span>{{ t.name }}</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- Priority & Department Grid -->
-      <div class="row g-2 mb-3">
-        <!-- Priority -->
-        <div class="col-sm-6">
-          <label class="section-label">Priority</label>
-          <ng-select
-            class="clean-pane-select"
-            [items]="priorityOptions"
-            bindLabel="label"
-            bindValue="id"
-            [clearable]="false"
-            [(ngModel)]="priority"
-            [disabled]="isSubmitting"
-          >
-            <ng-template ng-option-tmp let-item="item">
-              <div class="d-flex align-items-center gap-2">
-                <i [class]="item.icon"></i>
-                <span class="fw-semibold">{{ item.label }}</span>
-              </div>
-            </ng-template>
-          </ng-select>
-        </div>
-
-        <!-- Target Department -->
-        <div class="col-sm-6">
-          <label class="section-label">Target Department</label>
-          <ng-select
-            class="clean-pane-select"
-            [items]="departments"
-            bindLabel="name"
-            bindValue="id"
-            [clearable]="true"
-            [(ngModel)]="departmentId"
-            (change)="onDepartmentChange()"
-            placeholder="All / Cross-Department"
-            [disabled]="isSubmitting"
-          ></ng-select>
-        </div>
-      </div>
-
-      <!-- Assignee Row with Dynamic Filter & Self-Assign -->
-      <div class="pane-section mb-3">
-        <div class="d-flex justify-content-between align-items-center mb-1">
-          <div class="d-flex align-items-center gap-2">
-            <label class="section-label mb-0">Assign To</label>
-            <span *ngIf="isSearchingEmployees" class="spinner-border spinner-border-sm text-primary" role="status"></span>
+      <!-- ── 1. CORPORATE MODAL HEADER STRIP ────────────────────────────────── -->
+      <div class="modal-header-custom px-3 py-2.5 border-bottom d-flex justify-content-between align-items-center flex-shrink-0">
+        <div class="d-flex align-items-center gap-2.5">
+          <div class="header-icon-box">
+            <i class="fa-solid fa-layer-group"></i>
           </div>
-          <button
-            type="button"
-            class="btn-assign-self"
-            [class.active]="isAssignToSelf"
-            (click)="toggleAssignToSelf()"
-            [disabled]="isSubmitting"
-            title="Assign this task directly to yourself"
-          >
-            <i class="fa-solid" [class.fa-user-check]="isAssignToSelf" [class.fa-user-plus]="!isAssignToSelf"></i>
-            <span>{{ isAssignToSelf ? 'Assigned to Me' : 'Assign to Me' }}</span>
-          </button>
-        </div>
-
-        <ng-select
-          class="clean-pane-select"
-          [items]="displayEmployees"
-          bindLabel="name"
-          bindValue="id"
-          [clearable]="true"
-          [(ngModel)]="assignedToEmpId"
-          (search)="onEmployeeSearch($event)"
-          placeholder="Select employee or leave unassigned"
-          [disabled]="isSubmitting || isAssignToSelf"
-          [loading]="isSearchingEmployees"
-        >
-          <ng-template ng-option-tmp let-item="item">
-            <div class="d-flex justify-content-between align-items-center w-100">
-              <div class="text-truncate">
-                <span class="emp-name">{{ item.name }}</span>
-                <span *ngIf="item.departmentName" class="emp-dept text-muted ms-1">({{ item.departmentName }})</span>
-              </div>
-              <span *ngIf="item.isHod" class="badge-hod-pill ms-2">HOD</span>
-            </div>
-          </ng-template>
-        </ng-select>
-        <span class="helper-text text-muted">
-          <i class="fa-solid fa-filter me-1"></i>
-          Showing top results for this company. Select a department above or type to search.
-        </span>
-      </div>
-
-      <!-- Deadline Date & Quick Presets -->
-      <div class="pane-section mb-3">
-        <div class="d-flex justify-content-between align-items-center mb-1">
-          <label class="section-label mb-0">Deadline Date & Time</label>
-          <div class="deadline-presets">
-            <button type="button" class="preset-btn" (click)="setDeadlinePreset('TOMORROW')">Tomorrow</button>
-            <button type="button" class="preset-btn" (click)="setDeadlinePreset('3DAYS')">+3 Days</button>
-            <button type="button" class="preset-btn" (click)="setDeadlinePreset('NEXT_WEEK')">+1 Week</button>
-            <button type="button" class="preset-btn" (click)="setDeadlinePreset('END_OF_MONTH')">Month End</button>
-          </div>
-        </div>
-        <input
-          type="datetime-local"
-          class="form-control form-control-pane deadline-input"
-          [(ngModel)]="deadlineDate"
-          [disabled]="isSubmitting"
-        />
-      </div>
-
-      <!-- Description & Scope -->
-      <div class="pane-section mb-3">
-        <label class="section-label">Description & Deliverables</label>
-        <textarea
-          class="form-control form-control-pane desc-textarea"
-          rows="3"
-          placeholder="Provide context, action checklist, compliance requirements, or expectations..."
-          [(ngModel)]="description"
-          [disabled]="isSubmitting"
-        ></textarea>
-      </div>
-
-      <!-- Attachment Drop Zone -->
-      <div class="pane-section mb-3">
-        <label class="section-label">Attachment</label>
-        
-        <div *ngIf="!attachmentFileName" class="compact-upload-zone">
-          <input
-            type="file"
-            id="paneFileInput"
-            class="d-none"
-            (change)="onFileSelected($event)"
-            [disabled]="isSubmitting || isUploadingAttachment"
-          />
-          <label for="paneFileInput" class="upload-label-inner">
-            <i *ngIf="!isUploadingAttachment" class="fa-solid fa-paperclip upload-icon"></i>
-            <i *ngIf="isUploadingAttachment" class="fa-solid fa-spinner fa-spin upload-icon text-primary"></i>
-            <div class="upload-text-block">
-              <span *ngIf="!isUploadingAttachment">
-                <strong>Click to attach file</strong> or drag & drop (PDF, Excel, Word, Image up to 20MB)
+          <div>
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+              <h6 class="modal-title fw-bold text-dark mb-0" style="font-size: 13.5px;">
+                Create Enterprise Task &amp; Mandate
+              </h6>
+              <span class="badge-chip bg-primary-subtle text-primary border border-primary-subtle">
+                <i [class]="getTaskTypeIcon(selectedTaskTypeName)" class="me-1"></i>{{ selectedTaskTypeName }}
               </span>
-              <span *ngIf="isUploadingAttachment" class="text-primary fw-semibold">
-                Uploading file to server...
+              <span class="badge-chip bg-light text-secondary border">
+                {{ isRecurring ? ('Recurring • ' + recurrencePattern) : 'One-Time Mandate' }}
               </span>
             </div>
-          </label>
+            <div class="text-muted" style="font-size: 10.5px;">
+              Configure task classification from General Master, department routing, SLA deadline, and recurrence cadence
+            </div>
+          </div>
         </div>
 
-        <!-- Uploaded File Badge -->
-        <div *ngIf="attachmentFileName" class="uploaded-file-chip">
-          <div class="d-flex align-items-center gap-2 text-truncate">
-            <i class="fa-solid fa-file-lines text-primary"></i>
-            <span class="file-name text-truncate">{{ attachmentFileName }}</span>
-          </div>
+        <div class="d-flex align-items-center gap-2">
+          <span class="esc-badge d-none d-md-inline-block">ESC</span>
           <button
             type="button"
-            class="btn-remove-file"
-            (click)="removeAttachment()"
+            class="btn-close-modal"
+            aria-label="Close"
+            (click)="onClose()"
             [disabled]="isSubmitting"
-            title="Remove file"
+            title="Close Dialog"
           >
             <i class="fa-solid fa-xmark"></i>
           </button>
         </div>
       </div>
 
-      <!-- ============================================== -->
-      <!-- ADVANCED RECURRING TASK SCHEDULE PANEL         -->
-      <!-- ============================================== -->
-      <div class="recurrence-panel" [class.panel-open]="isRecurring">
-        
-        <!-- Toggle Header -->
-        <div class="recurrence-header" (click)="isRecurring = !isRecurring">
-          <div class="d-flex align-items-center gap-2">
-            <div class="recur-icon-box" [class.active]="isRecurring">
-              <i class="fa-solid fa-arrows-rotate"></i>
-            </div>
-            <div>
-              <span class="recur-header-title">Recurring Task Schedule</span>
-              <span class="recur-header-sub d-block text-muted">
-                {{ isRecurring ? 'Recurring schedule enabled' : 'One-off task (No recurrence)' }}
-              </span>
-            </div>
-          </div>
-          
-          <div class="form-check form-switch m-0" (click)="$event.stopPropagation()">
-            <input
-              class="form-check-input recur-switch"
-              type="checkbox"
-              id="paneRecurSwitch"
-              [(ngModel)]="isRecurring"
-              [disabled]="isSubmitting"
-            />
-          </div>
-        </div>
+      <!-- ── 2. SCROLLABLE 2-COLUMN BENTO WIZARD BODY ───────────────────────── -->
+      <div class="modal-body-custom p-3 flex-grow-1">
+        <div class="row g-2.5">
 
-        <!-- Recurrence Expanded Configuration -->
-        <div *ngIf="isRecurring" class="recurrence-body">
-          
-          <!-- Frequency Segmented Buttons -->
-          <div class="mb-2">
-            <label class="section-label mb-1">Repeat Frequency</label>
-            <div class="segmented-frequency-group">
-              <button
-                type="button"
-                class="seg-btn"
-                [class.active]="recurrencePattern === 'DAILY'"
-                (click)="setRecurrencePattern('DAILY')"
-              >
-                Daily
-              </button>
-              <button
-                type="button"
-                class="seg-btn"
-                [class.active]="recurrencePattern === 'WEEKLY'"
-                (click)="setRecurrencePattern('WEEKLY')"
-              >
-                Weekly
-              </button>
-              <button
-                type="button"
-                class="seg-btn"
-                [class.active]="recurrencePattern === 'MONTHLY'"
-                (click)="setRecurrencePattern('MONTHLY')"
-              >
-                Monthly
-              </button>
-              <button
-                type="button"
-                class="seg-btn"
-                [class.active]="recurrencePattern === 'YEARLY'"
-                (click)="setRecurrencePattern('YEARLY')"
-              >
-                Yearly
-              </button>
-            </div>
-          </div>
+          <!-- =============================================================== -->
+          <!-- LEFT COLUMN (8 COLS): BENTO FORM SECTIONS                       -->
+          <!-- =============================================================== -->
+          <div class="col-12 col-lg-8">
 
-          <!-- Weekly Days-of-Week Pills -->
-          <div *ngIf="recurrencePattern === 'WEEKLY'" class="mb-2">
-            <label class="section-label mb-1">Repeat On (Days of Week)</label>
-            <div class="weekday-pills-row">
-              <button
-                *ngFor="let day of recurrenceDaysOfWeek"
-                type="button"
-                class="weekday-pill"
-                [class.selected]="day.selected"
-                (click)="toggleDayOfWeek(day)"
-              >
-                {{ day.label }}
-              </button>
-            </div>
-          </div>
-
-          <!-- Monthly Day-of-Month Picker -->
-          <div *ngIf="recurrencePattern === 'MONTHLY'" class="mb-2">
-            <div class="row g-2 align-items-center">
-              <div class="col-sm-6">
-                <label class="section-label">Day of the Month</label>
-                <ng-select
-                  class="clean-pane-select"
-                  [items]="dayOfMonthOptions"
-                  [clearable]="false"
-                  [(ngModel)]="recurrenceDayOfMonth"
-                  placeholder="Select Day (1-28)"
-                ></ng-select>
+            <!-- BENTO CARD 1: CORE MANDATE, GENERAL MASTER TYPE & ASSIGNMENT -->
+            <div class="bento-box mb-2.5 bg-white rounded border">
+              <div class="bento-box-header d-flex justify-content-between align-items-center p-2 px-3 border-bottom bg-light">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="fa-solid fa-briefcase text-primary" style="font-size: 12px;"></i>
+                  <span class="fw-bold text-dark" style="font-size: 11.5px;">1. Task Mandate, Classification &amp; Ownership</span>
+                </div>
+                <span class="badge-mandatory">* Mandatory Fields</span>
               </div>
-              <div class="col-sm-6">
-                <label class="section-label">Every (Months)</label>
-                <input
-                  type="number"
-                  min="1"
-                  max="12"
-                  class="form-control form-control-pane"
-                  [(ngModel)]="recurrenceInterval"
-                />
+
+              <div class="p-2.5 px-3">
+                <div class="row g-2">
+
+                  <!-- Task Subject / Title -->
+                  <div class="col-12">
+                    <label class="form-label-mini">
+                      Task Subject / Mandate Title <span class="text-danger">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      class="form-control form-control-sm"
+                      placeholder="e.g. Monthly Statutory PF/ESIC Compliance Verification, Q3 Internal Department Audit..."
+                      [(ngModel)]="subject"
+                      [disabled]="isSubmitting"
+                      maxlength="200"
+                      autofocus
+                    />
+                  </div>
+
+                  <!-- Task Type from General Master (CodeTypeId = 24) -->
+                  <div class="col-12 mt-2">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                      <label class="form-label-mini mb-0">
+                        Task Type Classification <span class="text-danger">*</span>
+                        <span class="badge-gm ms-1">General Master</span>
+                      </label>
+                      <span class="text-muted" style="font-size: 10px;">
+                        <i class="fa-solid fa-circle-info text-primary me-1"></i>{{ selectedTaskTypeDescription }}
+                      </span>
+                    </div>
+
+                    <div class="task-type-selector-grid">
+                      <button
+                        *ngFor="let t of taskTypes"
+                        type="button"
+                        class="btn-type-pill"
+                        [class.active]="taskTypeId === t.id"
+                        (click)="selectTaskType(t.id)"
+                        [disabled]="isSubmitting"
+                      >
+                        <i [class]="getTaskTypeIcon(t.name)"></i>
+                        <span class="type-name">{{ t.name }}</span>
+                        <span class="type-code" *ngIf="t.code">{{ t.code }}</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Priority Level -->
+                  <div class="col-md-4 mt-2">
+                    <label class="form-label-mini">Priority Level <span class="text-danger">*</span></label>
+                    <ng-select
+                      class="custom-ng-select"
+                      [items]="priorityOptions"
+                      bindLabel="label"
+                      bindValue="id"
+                      [clearable]="false"
+                      [(ngModel)]="priority"
+                      [disabled]="isSubmitting"
+                    >
+                      <ng-template ng-option-tmp let-item="item">
+                        <div class="d-flex align-items-center gap-2">
+                          <i [class]="item.icon"></i>
+                          <span class="fw-semibold">{{ item.label }}</span>
+                        </div>
+                      </ng-template>
+                    </ng-select>
+                  </div>
+
+                  <!-- Target Department -->
+                  <div class="col-md-4 mt-2">
+                    <label class="form-label-mini">Target Department</label>
+                    <ng-select
+                      class="custom-ng-select"
+                      [items]="departments"
+                      bindLabel="name"
+                      bindValue="id"
+                      [clearable]="true"
+                      [(ngModel)]="departmentId"
+                      (change)="onDepartmentChange()"
+                      placeholder="-- All / Cross-Dept --"
+                      [disabled]="isSubmitting"
+                    ></ng-select>
+                  </div>
+
+                  <!-- Assign To (Top 10 Initial + Dynamic Search + Self-Assign) -->
+                  <div class="col-md-4 mt-2">
+                    <div class="d-flex justify-content-between align-items-center mb-0.5">
+                      <label class="form-label-mini mb-0">
+                        Assign To
+                        <span *ngIf="isSearchingEmployees" class="spinner-border spinner-border-sm text-primary ms-1" style="width: 10px; height: 10px;"></span>
+                      </label>
+                      <button
+                        type="button"
+                        class="btn-self-assign-chip"
+                        [class.active]="isAssignToSelf"
+                        (click)="toggleAssignToSelf()"
+                        [disabled]="isSubmitting"
+                        title="Assign this task directly to yourself"
+                      >
+                        <i class="fa-solid" [class.fa-user-check]="isAssignToSelf" [class.fa-user-plus]="!isAssignToSelf"></i>
+                        {{ isAssignToSelf ? 'Assigned to Me' : 'Assign to Me' }}
+                      </button>
+                    </div>
+
+                    <ng-select
+                      class="custom-ng-select"
+                      [items]="displayEmployees"
+                      bindLabel="name"
+                      bindValue="id"
+                      [clearable]="true"
+                      [(ngModel)]="assignedToEmpId"
+                      (search)="onEmployeeSearch($event)"
+                      placeholder="-- Select or Type Name --"
+                      [disabled]="isSubmitting || isAssignToSelf"
+                      [loading]="isSearchingEmployees"
+                    >
+                      <ng-template ng-option-tmp let-item="item">
+                        <div class="d-flex justify-content-between align-items-center w-100">
+                          <div class="text-truncate">
+                            <span class="fw-semibold text-dark">{{ item.name }}</span>
+                            <span *ngIf="item.departmentName" class="text-muted ms-1" style="font-size: 9.5px;">({{ item.departmentName }})</span>
+                          </div>
+                          <span *ngIf="item.isHod" class="badge-hod-mini ms-1">HOD</span>
+                        </div>
+                      </ng-template>
+                    </ng-select>
+                  </div>
+
+                  <!-- Dynamic Filter Hint Strip -->
+                  <div class="col-12 mt-1">
+                    <div class="px-2 py-1 rounded bg-light border d-flex justify-content-between align-items-center flex-wrap gap-1" style="font-size: 9.5px; color: #64748b;">
+                      <span>
+                        <i class="fa-solid fa-filter text-primary me-1"></i>
+                        <strong>Company-Scoped Roster:</strong> Showing top {{ displayEmployees.length }} active employees
+                        <strong *ngIf="departmentId" class="text-dark">in {{ selectedDepartmentName }}</strong>.
+                        Type 2+ characters in "Assign To" to search across company directory.
+                      </span>
+                      <span class="text-primary fw-semibold" *ngIf="!assignedToEmpId && !isAssignToSelf">
+                        Leaves in Open Unassigned Queue if blank
+                      </span>
+                    </div>
+                  </div>
+
+                </div>
               </div>
             </div>
-          </div>
 
-          <!-- Interval for Daily / Yearly -->
-          <div *ngIf="recurrencePattern === 'DAILY' || recurrencePattern === 'YEARLY'" class="mb-2">
-            <div class="row g-2 align-items-center">
-              <div class="col-sm-6">
-                <label class="section-label">
-                  Repeat Every ({{ recurrencePattern === 'DAILY' ? 'Days' : 'Years' }})
-                </label>
-                <input
-                  type="number"
-                  min="1"
-                  max="365"
-                  class="form-control form-control-pane"
-                  [(ngModel)]="recurrenceInterval"
-                />
+            <!-- BENTO CARD 2: DEADLINE SLA, DESCRIPTION & DOCUMENT ATTACHMENT -->
+            <div class="bento-box mb-2.5 bg-white rounded border">
+              <div class="bento-box-header d-flex justify-content-between align-items-center p-2 px-3 border-bottom bg-light">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="fa-regular fa-calendar-check text-primary" style="font-size: 12px;"></i>
+                  <span class="fw-bold text-dark" style="font-size: 11.5px;">2. SLA Target Deadline, Execution Scope &amp; Attachment</span>
+                </div>
+                <span class="badge bg-light text-secondary border" style="font-size: 9.5px;">SLA Tracking Enabled</span>
+              </div>
+
+              <div class="p-2.5 px-3">
+                <div class="row g-2">
+
+                  <!-- Target Deadline & Quick SLA Presets -->
+                  <div class="col-md-5">
+                    <label class="form-label-mini">Target Deadline Date &amp; Time</label>
+                    <input
+                      type="datetime-local"
+                      class="form-control form-control-sm"
+                      [(ngModel)]="deadlineDate"
+                      [disabled]="isSubmitting"
+                    />
+                  </div>
+
+                  <div class="col-md-7">
+                    <label class="form-label-mini">Quick SLA Deadline Presets</label>
+                    <div class="d-flex align-items-center gap-1.5 flex-wrap">
+                      <button type="button" class="btn-preset-chip" (click)="setDeadlinePreset('TOMORROW')" [disabled]="isSubmitting">
+                        <i class="fa-regular fa-clock me-1"></i>Tomorrow 6 PM
+                      </button>
+                      <button type="button" class="btn-preset-chip" (click)="setDeadlinePreset('3DAYS')" [disabled]="isSubmitting">
+                        <i class="fa-solid fa-bolt me-1"></i>+3 Days
+                      </button>
+                      <button type="button" class="btn-preset-chip" (click)="setDeadlinePreset('NEXT_WEEK')" [disabled]="isSubmitting">
+                        <i class="fa-regular fa-calendar-plus me-1"></i>Next Week
+                      </button>
+                      <button type="button" class="btn-preset-chip" (click)="setDeadlinePreset('END_OF_MONTH')" [disabled]="isSubmitting">
+                        <i class="fa-solid fa-calendar-day me-1"></i>Month End
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Description & Operational Scope -->
+                  <div class="col-md-7 mt-2">
+                    <label class="form-label-mini">Detailed Scope, Checklist &amp; Instructions</label>
+                    <textarea
+                      class="form-control form-control-sm task-textarea"
+                      rows="3"
+                      placeholder="Specify deliverables, verification steps, compliance references, or expected closure artifacts..."
+                      [(ngModel)]="description"
+                      [disabled]="isSubmitting"
+                      maxlength="2000"
+                    ></textarea>
+                  </div>
+
+                  <!-- Document Attachment Dropzone -->
+                  <div class="col-md-5 mt-2">
+                    <label class="form-label-mini">Reference Document / Attachment</label>
+
+                    <div *ngIf="!attachmentFileName" class="compact-upload-zone" (click)="fileInput.click()">
+                      <input
+                        #fileInput
+                        type="file"
+                        class="d-none"
+                        (change)="onFileSelected($event)"
+                        accept=".pdf,.doc,.docx,.xls,.xlsx,.csv,.png,.jpg,.jpeg,.zip"
+                      />
+                      <div *ngIf="!isUploadingAttachment" class="text-center">
+                        <i class="fa-solid fa-cloud-arrow-up text-primary mb-1" style="font-size: 16px; display: block;"></i>
+                        <div class="fw-bold text-dark" style="font-size: 10.5px;">Click to Upload Document</div>
+                        <div class="text-muted" style="font-size: 9px;">PDF, Excel, Word, Images (Max 20MB)</div>
+                      </div>
+                      <div *ngIf="isUploadingAttachment" class="text-center py-1">
+                        <i class="fa-solid fa-spinner fa-spin text-primary me-1"></i>
+                        <span class="text-muted" style="font-size: 10.5px;">Uploading file...</span>
+                      </div>
+                    </div>
+
+                    <div *ngIf="attachmentFileName" class="attached-file-box">
+                      <div class="d-flex align-items-center gap-2 text-truncate">
+                        <div class="attached-icon">
+                          <i class="fa-solid fa-file-circle-check text-success"></i>
+                        </div>
+                        <div class="text-truncate">
+                          <div class="fw-bold text-dark text-truncate" style="font-size: 10.5px;">{{ attachmentFileName }}</div>
+                          <div class="text-success" style="font-size: 9px;">Ready to attach</div>
+                        </div>
+                      </div>
+                      <button type="button" class="btn-remove-attachment" (click)="removeAttachment()" title="Remove file">
+                        <i class="fa-solid fa-trash-can"></i>
+                      </button>
+                    </div>
+                  </div>
+
+                </div>
               </div>
             </div>
+
+            <!-- BENTO CARD 3: RECURRING TASK SCHEDULE ENGINE -->
+            <div class="bento-box bg-white rounded border">
+              <div class="bento-box-header d-flex justify-content-between align-items-center p-2 px-3 border-bottom bg-light">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="fa-solid fa-arrows-rotate text-primary" style="font-size: 12px;"></i>
+                  <span class="fw-bold text-dark" style="font-size: 11.5px;">3. Task Execution Mode &amp; Recurrence Engine</span>
+                </div>
+
+                <!-- Segmented Switcher: One-Time vs Recurring (Matching create-job-wizard) -->
+                <div class="btn-group btn-group-sm" role="group">
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-mode-switch"
+                    [class.active]="!isRecurring"
+                    (click)="isRecurring = false"
+                    [disabled]="isSubmitting"
+                  >
+                    <i class="fa-regular fa-circle-check me-1"></i>One-Time Task
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-mode-switch"
+                    [class.active]="isRecurring"
+                    (click)="isRecurring = true"
+                    [disabled]="isSubmitting"
+                  >
+                    <i class="fa-solid fa-repeat me-1"></i>Recurring Schedule
+                  </button>
+                </div>
+              </div>
+
+              <!-- One-Time Mode Info Strip -->
+              <div *ngIf="!isRecurring" class="p-2 px-3 d-flex align-items-center justify-content-between text-muted" style="font-size: 10.5px;">
+                <span>
+                  <i class="fa-solid fa-bolt text-warning me-1"></i>
+                  This mandate will be dispatched as a <strong>single one-time task</strong>. Switch to <strong>Recurring Schedule</strong> for automated daily, weekly, monthly, or yearly spawning.
+                </span>
+                <button type="button" class="btn btn-link btn-sm p-0 text-primary fw-bold text-decoration-none" style="font-size: 10.5px;" (click)="isRecurring = true">
+                  Configure Recurrence &rarr;
+                </button>
+              </div>
+
+              <!-- Recurring Configuration Panel -->
+              <div *ngIf="isRecurring" class="p-2.5 px-3 recurrence-active-body">
+                <div class="row g-2 align-items-center">
+
+                  <!-- Frequency Tabs -->
+                  <div class="col-md-7">
+                    <label class="form-label-mini">Recurrence Frequency Cadence</label>
+                    <div class="recurrence-freq-tabs">
+                      <button
+                        type="button"
+                        class="freq-tab-btn"
+                        [class.active]="recurrencePattern === 'DAILY'"
+                        (click)="setRecurrencePattern('DAILY')"
+                      >
+                        <i class="fa-solid fa-sun"></i> Daily
+                      </button>
+                      <button
+                        type="button"
+                        class="freq-tab-btn"
+                        [class.active]="recurrencePattern === 'WEEKLY'"
+                        (click)="setRecurrencePattern('WEEKLY')"
+                      >
+                        <i class="fa-solid fa-calendar-week"></i> Weekly
+                      </button>
+                      <button
+                        type="button"
+                        class="freq-tab-btn"
+                        [class.active]="recurrencePattern === 'MONTHLY'"
+                        (click)="setRecurrencePattern('MONTHLY')"
+                      >
+                        <i class="fa-regular fa-calendar-days"></i> Monthly
+                      </button>
+                      <button
+                        type="button"
+                        class="freq-tab-btn"
+                        [class.active]="recurrencePattern === 'YEARLY'"
+                        (click)="setRecurrencePattern('YEARLY')"
+                      >
+                        <i class="fa-solid fa-calendar"></i> Yearly
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Interval Stepper -->
+                  <div class="col-md-5">
+                    <label class="form-label-mini">Repeat Interval</label>
+                    <div class="input-group input-group-sm">
+                      <span class="input-group-text bg-light text-muted fw-semibold">Every</span>
+                      <input
+                        type="number"
+                        class="form-control text-center fw-bold"
+                        min="1"
+                        max="99"
+                        [(ngModel)]="recurrenceInterval"
+                      />
+                      <span class="input-group-text bg-light text-muted fw-semibold">
+                        {{ recurrencePattern === 'DAILY' ? 'Day(s)' : recurrencePattern === 'WEEKLY' ? 'Week(s)' : recurrencePattern === 'MONTHLY' ? 'Month(s)' : 'Year(s)' }}
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- WEEKLY: Day of Week Pills -->
+                  <div *ngIf="recurrencePattern === 'WEEKLY'" class="col-12 mt-2">
+                    <label class="form-label-mini">Active Days of the Week</label>
+                    <div class="weekday-pills-row">
+                      <button
+                        *ngFor="let day of recurrenceDaysOfWeek"
+                        type="button"
+                        class="weekday-pill-btn"
+                        [class.selected]="day.selected"
+                        (click)="toggleDayOfWeek(day)"
+                      >
+                        {{ day.label }}
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- MONTHLY: Day of Month Selector -->
+                  <div *ngIf="recurrencePattern === 'MONTHLY'" class="col-12 mt-2">
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                      <label class="form-label-mini mb-0">Spawn on Day of Month:</label>
+                      <select
+                        class="form-select form-select-sm"
+                        style="width: 140px; height: 28px; font-size: 11px;"
+                        [(ngModel)]="recurrenceDayOfMonth"
+                      >
+                        <option *ngFor="let d of dayOfMonthOptions" [ngValue]="d">Day {{ d }} of Month</option>
+                      </select>
+                      <span class="text-muted" style="font-size: 10px;">
+                        Automatically spawns next instance on day {{ recurrenceDayOfMonth }} of each cycle
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- End Condition -->
+                  <div class="col-12 mt-2 pt-2 border-top">
+                    <div class="row g-2 align-items-center">
+                      <div class="col-md-6">
+                        <label class="form-label-mini">Schedule Termination Rule</label>
+                        <div class="btn-group w-100" role="group">
+                          <button
+                            type="button"
+                            class="btn btn-sm btn-outline-primary"
+                            [class.active]="recurrenceEndType === 'NEVER'"
+                            (click)="setEndType('NEVER')"
+                            style="font-size: 10.5px;"
+                          >
+                            Continuous
+                          </button>
+                          <button
+                            type="button"
+                            class="btn btn-sm btn-outline-primary"
+                            [class.active]="recurrenceEndType === 'ON_DATE'"
+                            (click)="setEndType('ON_DATE')"
+                            style="font-size: 10.5px;"
+                          >
+                            End By Date
+                          </button>
+                          <button
+                            type="button"
+                            class="btn btn-sm btn-outline-primary"
+                            [class.active]="recurrenceEndType === 'AFTER_COUNT'"
+                            (click)="setEndType('AFTER_COUNT')"
+                            style="font-size: 10.5px;"
+                          >
+                            Max Count
+                          </button>
+                        </div>
+                      </div>
+
+                      <div class="col-md-6" *ngIf="recurrenceEndType === 'ON_DATE'">
+                        <label class="form-label-mini">End On Date</label>
+                        <input
+                          type="date"
+                          class="form-control form-control-sm"
+                          [(ngModel)]="recurrenceEndDate"
+                        />
+                      </div>
+
+                      <div class="col-md-6" *ngIf="recurrenceEndType === 'AFTER_COUNT'">
+                        <label class="form-label-mini">Stop After Occurrences</label>
+                        <div class="input-group input-group-sm">
+                          <input
+                            type="number"
+                            class="form-control text-center fw-bold"
+                            min="1"
+                            max="365"
+                            [(ngModel)]="recurrenceOccurrencesTotal"
+                          />
+                          <span class="input-group-text">Cycles</span>
+                        </div>
+                      </div>
+
+                      <div class="col-md-6" *ngIf="recurrenceEndType === 'NEVER'">
+                        <div class="p-1.5 px-2.5 rounded bg-white border text-muted mt-3" style="font-size: 10px;">
+                          <i class="fa-solid fa-infinity text-primary me-1"></i>
+                          Spawns next task instance automatically upon cycle schedule
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+
           </div>
 
-          <!-- End Condition Section -->
-          <div class="mb-2 pt-2 border-top">
-            <label class="section-label mb-1">Ends</label>
-            <div class="end-conditions-row">
-              <label class="end-condition-option" [class.active]="recurrenceEndType === 'NEVER'">
-                <input
-                  type="radio"
-                  name="paneRecurEndType"
-                  [value]="'NEVER'"
-                  [(ngModel)]="recurrenceEndType"
-                />
-                <span>Never</span>
-              </label>
+          <!-- =============================================================== -->
+          <!-- RIGHT COLUMN (4 COLS): DARK NAVY LIVE PREVIEW & GOVERNANCE      -->
+          <!-- =============================================================== -->
+          <div class="col-12 col-lg-4">
 
-              <label class="end-condition-option" [class.active]="recurrenceEndType === 'ON_DATE'">
-                <input
-                  type="radio"
-                  name="paneRecurEndType"
-                  [value]="'ON_DATE'"
-                  [(ngModel)]="recurrenceEndType"
-                />
-                <span>On Date</span>
-              </label>
+            <!-- 1. DARK NAVY LIVE TASK DOSSIER PREVIEW CARD (Matches create-job-wizard) -->
+            <div class="live-dossier-card p-3 mb-2.5 rounded text-white">
+              <div class="d-flex justify-content-between align-items-center mb-1.5">
+                <span class="text-uppercase fw-bold text-white-50" style="font-size: 9px; letter-spacing: 0.6px;">
+                  <i class="fa-solid fa-satellite-dish text-info me-1"></i>Live Task Dossier Preview
+                </span>
+                <span
+                  class="badge"
+                  [ngClass]="priority === 'HIGH' ? 'bg-danger text-white' : priority === 'MEDIUM' ? 'bg-warning text-dark' : 'bg-info text-dark'"
+                  style="font-size: 8.5px;"
+                >
+                  {{ priority }} PRIORITY
+                </span>
+              </div>
 
-              <label class="end-condition-option" [class.active]="recurrenceEndType === 'AFTER_COUNT'">
-                <input
-                  type="radio"
-                  name="paneRecurEndType"
-                  [value]="'AFTER_COUNT'"
-                  [(ngModel)]="recurrenceEndType"
-                />
-                <span>After Occurrences</span>
-              </label>
+              <h6 class="fw-bold mb-1 text-white" style="font-size: 13px; line-height: 1.35;">
+                {{ subject || 'Task Subject / Mandate Title (Pending Input)' }}
+              </h6>
+
+              <div class="text-white-50 mb-2.5" style="font-size: 10.5px;">
+                <i class="fa-regular fa-building me-1"></i>{{ selectedDepartmentName }}
+                <span class="mx-1">•</span>
+                <i class="fa-regular fa-user me-1"></i>{{ selectedEmployeeName }}
+              </div>
+
+              <!-- High-Contrast Live Tags -->
+              <div class="d-flex flex-wrap gap-1.5 mb-2.5">
+                <span class="live-tag tag-type">
+                  <i [class]="getTaskTypeIcon(selectedTaskTypeName)" class="me-1"></i>{{ selectedTaskTypeName }}
+                </span>
+                <span class="live-tag" *ngIf="deadlineDate">
+                  <i class="fa-regular fa-clock me-1"></i>Due: {{ deadlineDate | date:'dd MMM, hh:mm a' }}
+                </span>
+                <span class="live-tag tag-recurring" *ngIf="isRecurring">
+                  <i class="fa-solid fa-arrows-rotate me-1"></i>{{ recurrencePattern }}
+                </span>
+                <span class="live-tag tag-attachment" *ngIf="attachmentFileName">
+                  <i class="fa-solid fa-paperclip me-1"></i>1 Attachment
+                </span>
+                <span class="live-tag bg-success text-white" *ngIf="isAssignToSelf">
+                  <i class="fa-solid fa-user-check me-1"></i>Self-Reminder
+                </span>
+              </div>
+
+              <!-- Live Recurrence Summary Box (When Recurring is ON) -->
+              <div *ngIf="isRecurring" class="recurrence-preview-banner p-2 rounded mb-2">
+                <div class="d-flex align-items-start gap-2">
+                  <i class="fa-solid fa-calendar-check text-info mt-0.5" style="font-size: 12px;"></i>
+                  <div>
+                    <div class="fw-bold text-white" style="font-size: 10px;">Automated Recurrence Active</div>
+                    <div class="text-white-50" style="font-size: 9.5px; line-height: 1.3;">{{ recurrenceSummary }}</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="pt-2 border-top border-white border-opacity-10 d-flex justify-content-between align-items-center" style="font-size: 10px;">
+                <span class="text-white-50">Initial Board Stage:</span>
+                <strong class="text-info">
+                  <i class="fa-solid fa-circle-dot me-1"></i>OPEN MANDATE
+                </strong>
+              </div>
             </div>
 
-            <!-- Conditional inputs for End Type -->
-            <div *ngIf="recurrenceEndType === 'ON_DATE'" class="mt-2">
-              <input
-                type="date"
-                class="form-control form-control-pane"
-                [(ngModel)]="recurrenceEndDate"
-                placeholder="Select end date"
-              />
+            <!-- 2. VISIBILITY & GOVERNANCE ROUTING MATRIX -->
+            <div class="bento-box bg-white rounded border mb-2.5 p-2.5 px-3">
+              <div class="d-flex justify-content-between align-items-center mb-1.5">
+                <span class="fw-bold text-dark" style="font-size: 11px;">
+                  <i class="fa-solid fa-sitemap text-primary me-1"></i>Visibility &amp; Access Matrix
+                </span>
+                <span class="badge bg-primary-subtle text-primary border border-primary-subtle" style="font-size: 8.5px;">
+                  Auto-Routed
+                </span>
+              </div>
+
+              <div class="governance-list">
+                <div class="gov-item">
+                  <i class="fa-solid fa-circle-check text-success"></i>
+                  <div>
+                    <strong>Creator (You):</strong> Permanent tracking &amp; audit visibility
+                  </div>
+                </div>
+                <div class="gov-item">
+                  <i class="fa-solid fa-circle-check text-primary"></i>
+                  <div>
+                    <strong>Target Dept HOD:</strong> Routed to <span>{{ selectedDepartmentName }}</span> HOD
+                  </div>
+                </div>
+                <div class="gov-item">
+                  <i class="fa-solid fa-circle-check text-primary"></i>
+                  <div>
+                    <strong>Origin Dept HOD:</strong> Visible to creator's department head
+                  </div>
+                </div>
+                <div class="gov-item">
+                  <i class="fa-solid fa-circle-check text-info"></i>
+                  <div>
+                    <strong>Assignee &amp; Manager:</strong> Visible to <span>{{ selectedEmployeeName }}</span> &amp; reporting manager
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <div *ngIf="recurrenceEndType === 'AFTER_COUNT'" class="mt-2 d-flex align-items-center gap-2">
-              <input
-                type="number"
-                min="1"
-                max="100"
-                class="form-control form-control-pane w-auto"
-                style="width: 100px !important;"
-                [(ngModel)]="recurrenceOccurrencesTotal"
-              />
-              <span class="text-muted small">total occurrences</span>
+            <!-- 3. COMPLIANCE & AUDIT TRAIL NOTICE STRIP -->
+            <div class="bg-white rounded border p-2 px-3 text-muted" style="font-size: 10px; line-height: 1.4;">
+              <i class="fa-solid fa-shield-halved text-success me-1"></i>
+              <strong>Enterprise Audit Governance:</strong> Every status transition (Open &rarr; On Hold &rarr; Closed), comment, and recurring task spawn is recorded with actor identity and timestamp.
             </div>
-          </div>
 
-          <!-- Live Natural Language Summary Pill -->
-          <div class="recurrence-summary-box mt-2">
-            <i class="fa-solid fa-circle-info me-1 text-primary"></i>
-            <span class="summary-text">{{ recurrenceSummary }}</span>
           </div>
 
         </div>
       </div>
 
-      <!-- Error Validation Message -->
-      <div *ngIf="errorMessage" class="error-banner mt-2">
-        <i class="fa-solid fa-circle-exclamation me-1"></i>
-        <span>{{ errorMessage }}</span>
+      <!-- ── 3. CORPORATE MODAL FOOTER STRIP ────────────────────────────────── -->
+      <div class="modal-footer-custom px-3 py-2 border-top bg-light d-flex justify-content-between align-items-center flex-shrink-0 flex-wrap gap-2">
+        <div>
+          <span *ngIf="errorMessage" class="badge bg-danger-subtle text-danger border border-danger-subtle px-2.5 py-1" style="font-size: 10.5px;">
+            <i class="fa-solid fa-triangle-exclamation me-1"></i>{{ errorMessage }}
+          </span>
+          <span *ngIf="!errorMessage" class="text-muted" style="font-size: 10.5px;">
+            <i class="fa-regular fa-lightbulb text-warning me-1"></i>Tip: Tasks can be transitioned across columns via drag-and-drop on the board.
+          </span>
+        </div>
+
+        <div class="d-flex align-items-center gap-2">
+          <button
+            type="button"
+            class="btn btn-outline-secondary btn-sm px-3"
+            style="font-size: 11px; height: 28px;"
+            (click)="onClose()"
+            [disabled]="isSubmitting"
+          >
+            Cancel
+          </button>
+
+          <button
+            type="button"
+            class="btn btn-primary-action btn-sm px-3 d-flex align-items-center gap-1.5"
+            (click)="onSubmit()"
+            [disabled]="isSubmitting || isUploadingAttachment"
+          >
+            <i *ngIf="isSubmitting" class="fa-solid fa-spinner fa-spin"></i>
+            <i *ngIf="!isSubmitting" class="fa-solid fa-paper-plane"></i>
+            <span>{{ isSubmitting ? 'Creating Mandate...' : (isRecurring ? 'Create Recurring Mandate' : 'Create & Dispatch Task') }}</span>
+          </button>
+        </div>
       </div>
 
     </div>
-
-    <!-- 3. Sticky Bottom Action Bar -->
-    <div class="pane-footer">
-      <button type="button" class="btn btn-pane-cancel" (click)="onClose()" [disabled]="isSubmitting">
-        Cancel
-      </button>
-      <button type="button" class="btn btn-pane-submit" (click)="onSubmit()" [disabled]="isSubmitting || isUploadingAttachment">
-        <i *ngIf="isSubmitting" class="fa-solid fa-spinner fa-spin me-1"></i>
-        <i *ngIf="!isSubmitting" class="fa-solid fa-check me-1"></i>
-        Create Task
-      </button>
-    </div>
-
   </div>
 </div>

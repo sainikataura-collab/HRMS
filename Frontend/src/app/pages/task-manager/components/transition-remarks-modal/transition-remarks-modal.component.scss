@@ -4,9 +4,9 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(15, 23, 42, 0.45);
-  backdrop-filter: blur(2px);
-  z-index: 1050;
+  background-color: rgba(15, 23, 42, 0.58);
+  backdrop-filter: blur(3px);
+  z-index: 100060 !important;
 }
 
 .modal-dialog-centered-custom {
@@ -14,9 +14,9 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  z-index: 1055;
+  z-index: 100070 !important;
   width: 92%;
-  max-width: 440px;
+  max-width: 460px;
   font-family: "Work Sans", sans-serif !important;
 }
 

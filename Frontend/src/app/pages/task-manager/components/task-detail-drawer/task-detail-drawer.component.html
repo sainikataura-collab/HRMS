@@ -18,6 +18,14 @@
       </button>
 
       <span
+        *ngIf="task && task.taskTypeName"
+        class="badge bg-primary-subtle text-primary border border-primary-subtle"
+        style="font-size: 9.5px; padding: 2px 7px;"
+      >
+        {{ task.taskTypeName }}
+      </span>
+
+      <span
         *ngIf="task"
         class="badge-status-pill"
         [ngClass]="'status-' + (task.status | lowercase | slice:0:4)"

@@ -194,6 +194,32 @@ export class CreateTaskModalComponent implements OnInit, OnChanges {
     this.taskTypeId = typeId;
   }
 
+  get selectedTaskTypeName(): string {
+    const found = this.taskTypes.find(t => t.id === this.taskTypeId);
+    return found ? found.name : 'Compliance';
+  }
+
+  get selectedTaskTypeDescription(): string {
+    const found = this.taskTypes.find(t => t.id === this.taskTypeId);
+    return found?.description || 'Statutory, legal and operational workflow mandate';
+  }
+
+  get selectedDepartmentName(): string {
+    if (!this.departmentId) return 'Cross-Department / General';
+    const found = this.departments.find(d => d.id === this.departmentId);
+    return found ? found.name : this.departmentId;
+  }
+
+  get selectedEmployeeName(): string {
+    if (this.isAssignToSelf) {
+      return `${this.taskManagerService.currentUserName} (Self)`;
+    }
+    if (!this.assignedToEmpId) return 'Unassigned (Open Queue)';
+    const found = this.displayEmployees.find(e => e.id === this.assignedToEmpId)
+      || this.employees.find(e => e.id === this.assignedToEmpId);
+    return found ? found.name : this.assignedToEmpId;
+  }
+
   getTaskTypeIcon(typeName?: string): string {
     const t = (typeName || '').toUpperCase();
     if (t.includes('COMPLIANCE')) return 'fa-solid fa-shield-halved text-success';

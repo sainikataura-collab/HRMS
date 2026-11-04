@@ -16,7 +16,8 @@ import {
   TaskCardDto,
   TaskSummaryCountDto,
   DepartmentLookupItem,
-  EmployeeLookupItem
+  EmployeeLookupItem,
+  TaskTypeLookupItem
 } from '../../shared/services/task-manager.service';
 import { TransitionRemarksModalComponent } from './components/transition-remarks-modal/transition-remarks-modal.component';
 import { CreateTaskModalComponent } from './components/create-task-modal/create-task-modal.component';
@@ -44,10 +45,14 @@ export class TaskManagerComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   private searchSubject = new Subject<string>();
 
+  // View Mode: KANBAN or TABLE Directory
+  viewMode: 'KANBAN' | 'TABLE' = 'KANBAN';
+
   // Loading states
   isLoading = false;
   isLookupsLoading = false;
   isUpdatingStatus = false;
+  isSearchingBoardEmployees = false;
 
   // KPI Summary Counts
   counts: TaskSummaryCountDto = {
@@ -74,13 +79,15 @@ export class TaskManagerComponent implements OnInit, OnDestroy {
   // Lookups data
   departments: DepartmentLookupItem[] = [];
   employees: EmployeeLookupItem[] = [];
-  taskTypes: any[] = [];
+  boardEmployees: EmployeeLookupItem[] = [];
+  taskTypes: TaskTypeLookupItem[] = [];
+  viewerContext: any = null;
 
   readonly scopeOptions = [
-    { id: 'ALL', label: 'All Viewable Tasks' },
-    { id: 'MY_ASSIGNED', label: 'My Assigned Tasks' },
-    { id: 'MY_DEPT', label: 'My Department Tasks' },
-    { id: 'CREATED_BY_ME', label: 'Created by Me' }
+    { id: 'ALL', label: 'All Viewable', icon: 'fa-solid fa-globe' },
+    { id: 'MY_ASSIGNED', label: 'Assigned to Me', icon: 'fa-solid fa-user-check' },
+    { id: 'MY_DEPT', label: 'My Department', icon: 'fa-solid fa-building-user' },
+    { id: 'CREATED_BY_ME', label: 'Created by Me', icon: 'fa-solid fa-pen-nib' }
   ];
 
   readonly priorityOptions = [
@@ -101,7 +108,7 @@ export class TaskManagerComponent implements OnInit, OnDestroy {
   closedTasks: TaskCardDto[] = [];
   onHoldTasks: TaskCardDto[] = [];
 
-  // Drag and Drop Remarks Modal State
+  // Drag and Drop / Quick Action Remarks Modal State
   isRemarksModalOpen = false;
   pendingDropEvent: CdkDragDrop<TaskCardDto[]> | null = null;
   pendingTask: TaskCardDto | null = null;
@@ -136,8 +143,25 @@ export class TaskManagerComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
+  get allFilteredTasks(): TaskCardDto[] {
+    return [...this.openTasks, ...this.onHoldTasks, ...this.closedTasks];
+  }
+
+  get hasActiveFilters(): boolean {
+    return (
+      this.activeFilterCard !== 'ALL' ||
+      this.selectedScope !== 'ALL' ||
+      !!this.selectedDepartmentId ||
+      !!this.selectedAssigneeId ||
+      !!this.selectedPriority ||
+      !!this.selectedRecurrence ||
+      !!this.selectedTaskTypeId ||
+      !!(this.searchKeyword || '').trim()
+    );
+  }
+
   /**
-   * Load departments and employees lookup lists for filter dropdowns
+   * Load departments, top 10 initial employees, and General Master task types
    */
   loadLookups(): void {
     this.isLookupsLoading = true;
@@ -146,13 +170,59 @@ export class TaskManagerComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (res) => {
           this.departments = res.departments || [];
-          this.employees = res.employees || [];
-          this.taskTypes = (res as any).taskTypes || [];
+          this.employees = (res.employees || []).slice(0, 10);
+          this.boardEmployees = [...this.employees];
+          this.taskTypes = res.taskTypes || [];
+          this.viewerContext = res.viewerContext || null;
           this.isLookupsLoading = false;
         },
         error: (err) => {
           console.error('Failed to load task lookups', err);
           this.isLookupsLoading = false;
+        }
+      });
+  }
+
+  /**
+   * When Department filter changes on board, dynamically load that department's employees & reload board
+   */
+  onBoardDepartmentChange(): void {
+    this.loadBoard();
+    this.isSearchingBoardEmployees = true;
+    this.taskManagerService.searchEmployees(this.selectedDepartmentId || undefined, undefined, 20)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (res) => {
+          if (res && res.employees) {
+            this.boardEmployees = res.employees;
+          }
+          this.isSearchingBoardEmployees = false;
+        },
+        error: () => {
+          this.isSearchingBoardEmployees = false;
+        }
+      });
+  }
+
+  /**
+   * Type-ahead employee search on the main board toolbar
+   */
+  onBoardEmployeeSearch(event: { term: string; items: any[] }): void {
+    const term = (event.term || '').trim();
+    if (term.length < 2) return;
+
+    this.isSearchingBoardEmployees = true;
+    this.taskManagerService.searchEmployees(this.selectedDepartmentId || undefined, term, 20)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (res) => {
+          if (res && res.employees) {
+            this.boardEmployees = res.employees;
+          }
+          this.isSearchingBoardEmployees = false;
+        },
+        error: () => {
+          this.isSearchingBoardEmployees = false;
         }
       });
   }
@@ -209,6 +279,25 @@ export class TaskManagerComponent implements OnInit, OnDestroy {
     this.loadBoard();
   }
 
+  selectTaskTypeChip(typeId: number | null): void {
+    this.selectedTaskTypeId = this.selectedTaskTypeId === typeId ? null : typeId;
+    this.loadBoard();
+  }
+
+  selectScopeChip(scopeId: string): void {
+    this.selectedScope = scopeId;
+    this.loadBoard();
+  }
+
+  getTaskTypeIcon(typeName?: string): string {
+    const t = (typeName || '').toUpperCase();
+    if (t.includes('COMPLIANCE')) return 'fa-solid fa-shield-halved text-success';
+    if (t.includes('AUDIT')) return 'fa-solid fa-magnifying-glass-chart text-primary';
+    if (t.includes('OPERAT')) return 'fa-solid fa-gears text-warning';
+    if (t.includes('PAYROLL')) return 'fa-solid fa-money-check-dollar text-info';
+    return 'fa-solid fa-folder-tree text-secondary';
+  }
+
   onSearchChange(): void {
     this.searchSubject.next(this.searchKeyword);
   }
@@ -226,6 +315,7 @@ export class TaskManagerComponent implements OnInit, OnDestroy {
     this.selectedTaskTypeId = null;
     this.searchKeyword = '';
     this.activeFilterCard = 'ALL';
+    this.boardEmployees = [...this.employees];
     this.loadBoard();
   }
 
@@ -234,12 +324,10 @@ export class TaskManagerComponent implements OnInit, OnDestroy {
    */
   onCardDrop(event: CdkDragDrop<TaskCardDto[]>, targetStatus: string): void {
     if (event.previousContainer === event.container) {
-      // Re-order within same column
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
       return;
     }
 
-    // Intercept cross-column status transition
     const movedTask = event.previousContainer.data[event.previousIndex];
     if (!movedTask) return;
 
@@ -251,10 +339,26 @@ export class TaskManagerComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * 1-Click Quick Status Transition from Card or Table Action Button
+   */
+  quickTransition(task: TaskCardDto, targetStatus: string, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    if (!task || task.status === targetStatus) return;
+
+    this.pendingDropEvent = null;
+    this.pendingTask = task;
+    this.pendingFromStatus = task.status || 'OPEN';
+    this.pendingToStatus = targetStatus;
+    this.isRemarksModalOpen = true;
+  }
+
+  /**
    * Confirmed transition from remarks modal
    */
   onRemarksConfirmed(result: { remarks: string }): void {
-    if (!this.pendingTask || !this.pendingDropEvent) {
+    if (!this.pendingTask) {
       this.closeRemarksModal();
       return;
     }
@@ -272,7 +376,6 @@ export class TaskManagerComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
-          // Move item in CDK array
           if (this.pendingDropEvent) {
             transferArrayItem(
               this.pendingDropEvent.previousContainer.data,
@@ -280,14 +383,13 @@ export class TaskManagerComponent implements OnInit, OnDestroy {
               this.pendingDropEvent.previousIndex,
               this.pendingDropEvent.currentIndex
             );
-            if (this.pendingTask) {
-              this.pendingTask.status = this.pendingToStatus;
-              this.pendingTask.lastRemarks = result.remarks;
-            }
+          }
+          if (this.pendingTask) {
+            this.pendingTask.status = this.pendingToStatus;
+            this.pendingTask.lastRemarks = result.remarks;
           }
           this.isUpdatingStatus = false;
           this.closeRemarksModal();
-          // Refresh KPI counts
           this.loadBoard();
         },
         error: (err) => {
