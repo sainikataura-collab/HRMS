@@ -49,3 +49,4 @@ namespace HRMSWebAPI.Repository
 ### 3. DI Registration (`WebAPI/Program.cs`)
 - Register `builder.Services.AddScoped<ITaskManagerRepository, TaskManagerRepository>();`
 - Register `builder.Services.AddHostedService<RecurringTaskHostedService>();`
+

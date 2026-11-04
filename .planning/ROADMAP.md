@@ -8,7 +8,7 @@ This roadmap delivers the complete HR Task Manager & Interactive Kanban Module i
 
 ## Phases
 
-- [ ] **Phase 5: Task Manager Backend Architecture & Database Engine** - SQL Server tables (`HR_TaskMaster`, `HR_TaskHistory`), stored procedures (`usp_HR_Task_...`), role/HOD visibility engine, attachment upload support, recurring task generator (`DAILY`, `WEEKLY`, `MONTHLY`, `YEARLY`), and WebAPI controller.
+- [x] **Phase 5: Task Manager Backend Architecture & Database Engine** - SQL Server tables (`HR_TaskMaster`, `HR_TaskHistory`), stored procedures (`usp_HR_Task_...`), role/HOD visibility engine, attachment upload support, recurring task generator (`DAILY`, `WEEKLY`, `MONTHLY`, `YEARLY`), and WebAPI controller.
 - [ ] **Phase 6: Interactive Drag-and-Drop Kanban Board, KPI Filter Cards & Remarks Workflow** - Top clickable KPI summary cards (`Open`, `Closed`, `On Hold`, `Unassigned`, `Overdue`), multi-filter bar, 3-column CDK drag-and-drop Kanban board matching reference screenshot, and mandatory transition remarks popup modal.
 - [ ] **Phase 7: Task Creation Modal, Attachment & Full History Drawer & Dual Portal Routing** - Create Task modal with recurrence & file attachment, slide-out/modal Task Detail & Full History timeline view, and navigation integration in both HR Module and Employee Task-Box.
 
@@ -30,10 +30,10 @@ This roadmap delivers the complete HR Task Manager & Interactive Kanban Module i
 **Plans**: 2 plans
 Plans:
 **Wave 1**
-- [ ] 05-01-PLAN.md — SQL schema (`HR_TaskMaster`, `HR_TaskHistory`), stored procedures (`usp_HR_Task_*`), and C# DTO/domain models.
+- [x] 05-01-PLAN.md — SQL schema (`HR_TaskMaster`, `HR_TaskHistory`), stored procedures (`usp_HR_Task_*`), and C# DTO/domain models.
 
 **Wave 2** *(blocked on Wave 1 completion)*
-- [ ] 05-02-PLAN.md — Dapper repository, attachment upload handling, recurring task hosted service, and `TaskManagerController` endpoints.
+- [x] 05-02-PLAN.md — Dapper repository, attachment upload handling, recurring task hosted service, and `TaskManagerController` endpoints.
 
 ---
 

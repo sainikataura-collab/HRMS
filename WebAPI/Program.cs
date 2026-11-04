@@ -4,6 +4,7 @@ using HRMSWebAPI.Hubs;
 using HRMSWebAPI.Middleware;
 using HRMSWebAPI.Models;
 using HRMSWebAPI.Repository;
+using HRMSWebAPI.Services;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.OpenApi.Models;
 using Microsoft.Win32;
@@ -86,6 +87,8 @@ builder.Services.AddSingleton<EncryptionHelper>();
 builder.Services.AddSignalR();
 
 builder.Services.AddScoped<IRequestLogRepository, RequestLogRepository>();
+builder.Services.AddScoped<ITaskManagerRepository, TaskManagerRepository>();
+builder.Services.AddHostedService<RecurringTaskHostedService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IBankRepository, BankRepository>();
 builder.Services.AddScoped<IGeneralRepository, GeneralRepository>();
