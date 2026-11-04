@@ -37,11 +37,20 @@ namespace HRMSWebAPI.Models
         public string? Email { get; set; }
     }
 
+    public class TaskTypeLookupDto
+    {
+        public int TaskTypeId { get; set; }
+        public string TaskTypeName { get; set; } = "";
+        public string? TaskTypeCode { get; set; }
+        public string? TaskTypeDescription { get; set; }
+    }
+
     public class TaskLookupsResponseDto
     {
         public TaskViewerRoleDto? ViewerContext { get; set; }
         public List<TaskDepartmentLookupDto> Departments { get; set; } = new();
         public List<TaskEmployeeLookupDto> Employees { get; set; } = new();
+        public List<TaskTypeLookupDto> TaskTypes { get; set; } = new();
     }
 
     // =========================================================================
@@ -60,6 +69,7 @@ namespace HRMSWebAPI.Models
         public string? Status { get; set; }
         public string? Priority { get; set; }
         public string? RecurrenceType { get; set; }
+        public int? TaskTypeId { get; set; }
         public bool OnlyUnassigned { get; set; }
         public bool OnlyOverdue { get; set; }
         public string? SearchText { get; set; }
@@ -117,6 +127,8 @@ namespace HRMSWebAPI.Models
         public int? ParentTaskId { get; set; }
         public string? ParentTaskCode { get; set; }
         public bool IsSelfTask { get; set; }
+        public int? TaskTypeId { get; set; }
+        public string TaskTypeName { get; set; } = "General";
         public DateTime? ClosedAt { get; set; }
         public string? CompanyId { get; set; }
         public DateTime CreatedAt { get; set; }
@@ -188,6 +200,8 @@ namespace HRMSWebAPI.Models
         public DateTime? RecurrenceEndDate { get; set; }
         public int? RecurrenceOccurrencesTotal { get; set; }
         public bool IsSelfTask { get; set; }
+        public int? TaskTypeId { get; set; }
+        public string? TaskTypeName { get; set; }
         public string? ActionById { get; set; }
         public string? ActionByName { get; set; }
         public string? CompanyId { get; set; }

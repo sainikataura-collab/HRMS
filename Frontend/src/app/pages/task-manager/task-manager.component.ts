@@ -68,11 +68,13 @@ export class TaskManagerComponent implements OnInit, OnDestroy {
   selectedAssigneeId: string | null = null;
   selectedPriority: string | null = null;
   selectedRecurrence: string | null = null;
+  selectedTaskTypeId: number | null = null;
   searchKeyword: string = '';
 
   // Lookups data
   departments: DepartmentLookupItem[] = [];
   employees: EmployeeLookupItem[] = [];
+  taskTypes: any[] = [];
 
   readonly scopeOptions = [
     { id: 'ALL', label: 'All Viewable Tasks' },
@@ -145,6 +147,7 @@ export class TaskManagerComponent implements OnInit, OnDestroy {
         next: (res) => {
           this.departments = res.departments || [];
           this.employees = res.employees || [];
+          this.taskTypes = (res as any).taskTypes || [];
           this.isLookupsLoading = false;
         },
         error: (err) => {
@@ -165,6 +168,7 @@ export class TaskManagerComponent implements OnInit, OnDestroy {
       assignedToEmpId: this.selectedAssigneeId || undefined,
       priority: this.selectedPriority || undefined,
       recurrencePattern: this.selectedRecurrence || undefined,
+      taskTypeId: this.selectedTaskTypeId || undefined,
       searchKeyword: (this.searchKeyword || '').trim() || undefined,
       filterCard: this.activeFilterCard || 'ALL'
     };
@@ -219,6 +223,7 @@ export class TaskManagerComponent implements OnInit, OnDestroy {
     this.selectedAssigneeId = null;
     this.selectedPriority = null;
     this.selectedRecurrence = null;
+    this.selectedTaskTypeId = null;
     this.searchKeyword = '';
     this.activeFilterCard = 'ALL';
     this.loadBoard();

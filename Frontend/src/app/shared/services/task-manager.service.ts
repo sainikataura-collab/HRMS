@@ -25,6 +25,8 @@ export interface TaskCardDto {
   createdByEmpId: string;
   priority: string;
   status: string;
+  taskTypeId?: number;
+  taskTypeName?: string;
   deadlineDate?: string;
   isOverdue: boolean;
   overdueHours: number;
@@ -53,6 +55,7 @@ export interface TaskBoardFilterDto {
   assignedToEmpId?: string;
   createdByEmpId?: string;
   priority?: string;
+  taskTypeId?: number;
   recurrencePattern?: string;
   searchKeyword?: string;
   filterCard?: string; // 'ALL' | 'OPEN' | 'CLOSED' | 'ON_HOLD' | 'UNASSIGNED' | 'OVERDUE'
@@ -74,6 +77,8 @@ export interface TaskCreateRequestDto {
   departmentId?: string;
   assignedToEmpId?: string;
   priority: string;
+  taskTypeId?: number;
+  taskTypeName?: string;
   deadlineDate?: string;
   isRecurring: boolean;
   recurrencePattern?: string;
@@ -121,9 +126,17 @@ export interface EmployeeLookupItem {
   isHod: boolean;
 }
 
+export interface TaskTypeLookupItem {
+  id: number;
+  name: string;
+  code?: string;
+  description?: string;
+}
+
 export interface TaskLookupsDto {
   departments: DepartmentLookupItem[];
   employees: EmployeeLookupItem[];
+  taskTypes?: TaskTypeLookupItem[];
 }
 
 @Injectable({
@@ -194,6 +207,17 @@ export class TaskManagerService {
     return this.http.get<TaskLookupsDto>(
       `${this.baseUrl}/TaskManager/lookups?viewerId=${encodeURIComponent(this.currentUserId)}&companyId=${encodeURIComponent(companyId)}`
     );
+  }
+
+  /**
+   * Search employees on demand by department and search text (prevents loading all at once)
+   */
+  searchEmployees(deptId?: string, search?: string, top: number = 20): Observable<{ isSuccess: boolean; employees: EmployeeLookupItem[] }> {
+    const companyId = this.currentCompanyId;
+    let url = `${this.baseUrl}/TaskManager/employees?companyId=${encodeURIComponent(companyId)}&top=${top}`;
+    if (deptId) url += `&deptId=${encodeURIComponent(deptId)}`;
+    if (search) url += `&search=${encodeURIComponent(search)}`;
+    return this.http.get<{ isSuccess: boolean; employees: EmployeeLookupItem[] }>(url);
   }
 
   /**

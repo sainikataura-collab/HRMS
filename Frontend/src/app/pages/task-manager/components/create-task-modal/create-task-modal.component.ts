@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
@@ -6,6 +6,7 @@ import {
   TaskManagerService,
   DepartmentLookupItem,
   EmployeeLookupItem,
+  TaskTypeLookupItem,
   TaskCreateRequestDto
 } from '../../../../shared/services/task-manager.service';
 
@@ -22,16 +23,18 @@ interface WeekDayItem {
   templateUrl: './create-task-modal.component.html',
   styleUrls: ['./create-task-modal.component.scss']
 })
-export class CreateTaskModalComponent implements OnInit {
+export class CreateTaskModalComponent implements OnInit, OnChanges {
   @Input() isOpen = false;
   @Input() departments: DepartmentLookupItem[] = [];
   @Input() employees: EmployeeLookupItem[] = [];
+  @Input() taskTypes: TaskTypeLookupItem[] = [];
 
   @Output() taskCreated = new EventEmitter<any>();
   @Output() cancelled = new EventEmitter<void>();
 
   isSubmitting = false;
   isUploadingAttachment = false;
+  isSearchingEmployees = false;
   errorMessage = '';
 
   // Core Form Fields
@@ -41,7 +44,11 @@ export class CreateTaskModalComponent implements OnInit {
   assignedToEmpId: string | null = null;
   isAssignToSelf = false;
   priority = 'MEDIUM';
+  taskTypeId: number = 1;
   deadlineDate = '';
+
+  // Dynamic filtered employee dropdown options (starts with top 10)
+  displayEmployees: EmployeeLookupItem[] = [];
 
   // Advanced Recurrence Controls
   isRecurring = false;
@@ -66,9 +73,9 @@ export class CreateTaskModalComponent implements OnInit {
   attachmentUrl = '';
 
   readonly priorityOptions = [
-    { id: 'HIGH', label: 'High Priority', icon: 'fa-solid fa-arrow-up text-danger' },
-    { id: 'MEDIUM', label: 'Medium Priority', icon: 'fa-solid fa-minus text-warning' },
-    { id: 'LOW', label: 'Low Priority', icon: 'fa-solid fa-arrow-down text-info' }
+    { id: 'HIGH', label: 'High Priority', icon: 'fa-solid fa-arrow-up text-danger', badgeClass: 'bg-soft-danger text-danger' },
+    { id: 'MEDIUM', label: 'Medium Priority', icon: 'fa-solid fa-minus text-warning', badgeClass: 'bg-soft-warning text-warning' },
+    { id: 'LOW', label: 'Low Priority', icon: 'fa-solid fa-arrow-down text-info', badgeClass: 'bg-soft-info text-info' }
   ];
 
   readonly dayOfMonthOptions: number[] = Array.from({ length: 28 }, (_, i) => i + 1);
@@ -77,15 +84,90 @@ export class CreateTaskModalComponent implements OnInit {
 
   ngOnInit(): void {
     this.setDefaultDeadline();
+    this.initEmployees();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['employees'] && this.employees) {
+      this.initEmployees();
+    }
+    if (changes['taskTypes'] && this.taskTypes && this.taskTypes.length > 0) {
+      if (!this.taskTypeId) {
+        this.taskTypeId = this.taskTypes[0].id;
+      }
+    }
+  }
+
+  private initEmployees(): void {
+    if (this.employees && this.employees.length > 0) {
+      this.displayEmployees = this.employees.slice(0, 10);
+    }
+  }
+
+  /**
+   * When user selects a Department, dynamically fetch employees belonging to that department
+   */
+  onDepartmentChange(): void {
+    this.isSearchingEmployees = true;
+    const dept = this.departmentId || undefined;
+    this.taskManagerService.searchEmployees(dept, undefined, 25).subscribe({
+      next: (res) => {
+        if (res && res.employees) {
+          this.displayEmployees = res.employees;
+        }
+        this.isSearchingEmployees = false;
+      },
+      error: () => {
+        this.isSearchingEmployees = false;
+      }
+    });
+  }
+
+  /**
+   * On-demand type-ahead search for employees inside ng-select
+   */
+  onEmployeeSearch(event: { term: string; items: any[] }): void {
+    const term = (event.term || '').trim();
+    if (term.length < 2) return;
+
+    this.isSearchingEmployees = true;
+    this.taskManagerService.searchEmployees(this.departmentId || undefined, term, 20).subscribe({
+      next: (res) => {
+        if (res && res.employees) {
+          this.displayEmployees = res.employees;
+        }
+        this.isSearchingEmployees = false;
+      },
+      error: () => {
+        this.isSearchingEmployees = false;
+      }
+    });
   }
 
   private setDefaultDeadline(): void {
     const nextWeek = new Date();
     nextWeek.setDate(nextWeek.getDate() + 7);
     nextWeek.setHours(18, 0, 0, 0);
-    // Format YYYY-MM-DDTHH:mm
     const pad = (n: number) => n.toString().padStart(2, '0');
     this.deadlineDate = `${nextWeek.getFullYear()}-${pad(nextWeek.getMonth() + 1)}-${pad(nextWeek.getDate())}T${pad(nextWeek.getHours())}:${pad(nextWeek.getMinutes())}`;
+  }
+
+  setDeadlinePreset(preset: 'TOMORROW' | '3DAYS' | 'NEXT_WEEK' | 'END_OF_MONTH'): void {
+    const d = new Date();
+    d.setHours(18, 0, 0, 0);
+
+    if (preset === 'TOMORROW') {
+      d.setDate(d.getDate() + 1);
+    } else if (preset === '3DAYS') {
+      d.setDate(d.getDate() + 3);
+    } else if (preset === 'NEXT_WEEK') {
+      d.setDate(d.getDate() + 7);
+    } else if (preset === 'END_OF_MONTH') {
+      d.setMonth(d.getMonth() + 1, 0);
+    }
+
+    const pad = (n: number) => n.toString().padStart(2, '0');
+    this.deadlineDate = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
   }
 
   toggleAssignToSelf(): void {
@@ -94,10 +176,31 @@ export class CreateTaskModalComponent implements OnInit {
       const currentId = this.taskManagerService.currentUserId;
       if (currentId) {
         this.assignedToEmpId = currentId;
+        // Ensure current user is in displayEmployees
+        if (!this.displayEmployees.some(e => e.id === currentId)) {
+          this.displayEmployees.unshift({
+            id: currentId,
+            name: this.taskManagerService.currentUserName,
+            isHod: false
+          });
+        }
       }
     } else {
       this.assignedToEmpId = null;
     }
+  }
+
+  selectTaskType(typeId: number): void {
+    this.taskTypeId = typeId;
+  }
+
+  getTaskTypeIcon(typeName?: string): string {
+    const t = (typeName || '').toUpperCase();
+    if (t.includes('COMPLIANCE')) return 'fa-solid fa-shield-halved text-success';
+    if (t.includes('AUDIT')) return 'fa-solid fa-magnifying-glass-chart text-primary';
+    if (t.includes('OPERAT')) return 'fa-solid fa-gears text-warning';
+    if (t.includes('PAYROLL')) return 'fa-solid fa-money-check-dollar text-info';
+    return 'fa-solid fa-folder-tree text-secondary';
   }
 
   setRecurrencePattern(pattern: 'DAILY' | 'WEEKLY' | 'MONTHLY' | 'YEARLY'): void {
@@ -106,7 +209,6 @@ export class CreateTaskModalComponent implements OnInit {
 
   toggleDayOfWeek(day: WeekDayItem): void {
     day.selected = !day.selected;
-    // Ensure at least one day is selected
     if (!this.recurrenceDaysOfWeek.some(d => d.selected)) {
       day.selected = true;
     }
@@ -116,9 +218,6 @@ export class CreateTaskModalComponent implements OnInit {
     this.recurrenceEndType = endType;
   }
 
-  /**
-   * Human-friendly live natural language summary of recurrence settings
-   */
   get recurrenceSummary(): string {
     if (!this.isRecurring) return '';
 
@@ -183,7 +282,7 @@ export class CreateTaskModalComponent implements OnInit {
   onSubmit(): void {
     const trimmedSubject = (this.subject || '').trim();
     if (!trimmedSubject) {
-      this.errorMessage = 'Please enter a task subject.';
+      this.errorMessage = 'Please enter a task subject / title.';
       return;
     }
 
@@ -195,12 +294,16 @@ export class CreateTaskModalComponent implements OnInit {
       .map(d => d.id)
       .join(',');
 
+    const selectedTypeObj = this.taskTypes.find(t => t.id === this.taskTypeId);
+
     const payload: TaskCreateRequestDto = {
       subject: trimmedSubject,
       description: (this.description || '').trim() || undefined,
       departmentId: this.departmentId || undefined,
       assignedToEmpId: this.assignedToEmpId || undefined,
       priority: this.priority || 'MEDIUM',
+      taskTypeId: this.taskTypeId || 1,
+      taskTypeName: selectedTypeObj ? selectedTypeObj.name : 'Compliance',
       deadlineDate: this.deadlineDate || undefined,
       isRecurring: this.isRecurring,
       recurrencePattern: this.isRecurring ? this.recurrencePattern : undefined,
@@ -254,5 +357,6 @@ export class CreateTaskModalComponent implements OnInit {
     this.errorMessage = '';
     this.isSubmitting = false;
     this.isUploadingAttachment = false;
+    this.initEmployees();
   }
 }

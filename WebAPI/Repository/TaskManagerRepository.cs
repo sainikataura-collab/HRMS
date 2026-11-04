@@ -32,8 +32,31 @@ namespace HRMSWebAPI.Repository
             response.ViewerContext = await multi.ReadFirstOrDefaultAsync<TaskViewerRoleDto>();
             response.Departments = (await multi.ReadAsync<TaskDepartmentLookupDto>()).ToList();
             response.Employees = (await multi.ReadAsync<TaskEmployeeLookupDto>()).ToList();
+            if (!multi.IsConsumed)
+            {
+                response.TaskTypes = (await multi.ReadAsync<TaskTypeLookupDto>()).ToList();
+            }
 
             return response;
+        }
+
+        public async Task<List<TaskEmployeeLookupDto>> SearchEmployeesAsync(string companyId, string? deptId, string? searchText, int top = 20)
+        {
+            using var conn = DataBaseFactory.ConnString();
+            var parameters = new
+            {
+                CompanyId = string.IsNullOrWhiteSpace(companyId) ? "GU-1" : companyId,
+                DeptId = string.IsNullOrWhiteSpace(deptId) ? null : deptId,
+                SearchText = string.IsNullOrWhiteSpace(searchText) ? null : searchText,
+                Top = top > 0 ? top : 20
+            };
+
+            var employees = await conn.QueryAsync<TaskEmployeeLookupDto>(
+                "dbo.usp_HR_Task_SearchEmployees",
+                parameters,
+                commandType: CommandType.StoredProcedure);
+
+            return employees.ToList();
         }
 
         public async Task<TaskBoardResponseDto> GetBoardAsync(TaskBoardFilterDto filter)
@@ -53,6 +76,7 @@ namespace HRMSWebAPI.Repository
                 Status = string.IsNullOrWhiteSpace(filter.Status) ? null : filter.Status,
                 Priority = string.IsNullOrWhiteSpace(filter.Priority) ? null : filter.Priority,
                 RecurrenceType = string.IsNullOrWhiteSpace(filter.RecurrenceType) ? null : filter.RecurrenceType,
+                TaskTypeId = filter.TaskTypeId,
                 OnlyUnassigned = filter.OnlyUnassigned,
                 OnlyOverdue = filter.OnlyOverdue,
                 SearchText = string.IsNullOrWhiteSpace(filter.SearchText) ? null : filter.SearchText,
@@ -120,6 +144,8 @@ namespace HRMSWebAPI.Repository
                 RecurrenceEndDate = dto.RecurrenceEndDate,
                 RecurrenceOccurrencesTotal = dto.RecurrenceOccurrencesTotal,
                 IsSelfTask = dto.IsSelfTask,
+                TaskTypeId = dto.TaskTypeId,
+                TaskTypeName = dto.TaskTypeName,
                 ActionById = dto.ActionById,
                 ActionByName = dto.ActionByName,
                 CompanyId = dto.CompanyId,

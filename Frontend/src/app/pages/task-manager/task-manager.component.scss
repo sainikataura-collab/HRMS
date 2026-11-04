@@ -378,6 +378,53 @@
     display: flex;
     flex-direction: column;
     min-height: 550px;
+
+    .column-header {
+      padding: 10px 14px;
+      background: #ffffff;
+      border-bottom: 1px solid #f1f5f9;
+      border-radius: 8px 8px 0 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      .column-title {
+        font-size: 12px;
+        font-weight: 700;
+        color: #0f172a;
+        letter-spacing: 0.3px;
+      }
+
+      .column-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        display: inline-block;
+
+        &.dot-open { background: #3080e8; }
+        &.dot-closed { background: #64748b; }
+        &.dot-onhold { background: #f59e0b; }
+      }
+
+      .column-badge {
+        font-size: 10.5px;
+        font-weight: 600;
+        color: #64748b;
+        background: #f1f5f9;
+        border: 1px solid #e2e8f0;
+        padding: 1px 8px;
+        border-radius: 12px;
+      }
+    }
+
+    .column-cards-list {
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      min-height: 520px;
+      overflow-y: auto;
+    }
   }
 
   @media (max-width: 860px) {
@@ -389,54 +436,6 @@
       min-width: unset;
       min-height: auto;
     }
-  }
-}
-
-  .column-header {
-    padding: 10px 14px;
-    background: #ffffff;
-    border-bottom: 1px solid #f1f5f9;
-    border-radius: 8px 8px 0 0;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    .column-title {
-      font-size: 12px;
-      font-weight: 700;
-      color: #0f172a;
-      letter-spacing: 0.3px;
-    }
-
-    .column-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      display: inline-block;
-
-      &.dot-open { background: #3080e8; }
-      &.dot-closed { background: #64748b; }
-      &.dot-onhold { background: #f59e0b; }
-    }
-
-    .column-badge {
-      font-size: 10.5px;
-      font-weight: 600;
-      color: #64748b;
-      background: #f1f5f9;
-      border: 1px solid #e2e8f0;
-      padding: 1px 8px;
-      border-radius: 12px;
-    }
-  }
-
-  .column-cards-list {
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    min-height: 520px;
-    overflow-y: auto;
   }
 }
 

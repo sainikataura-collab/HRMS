@@ -128,6 +128,8 @@ namespace HRMSWebAPI.Controllers
                 recurrenceOccurrencesTotal = t.RecurrenceOccurrencesTotal,
                 recurrenceOccurrencesCount = t.RecurrenceOccurrencesCount,
                 companyId = t.CompanyId,
+                taskTypeId = t.TaskTypeId,
+                taskTypeName = t.TaskTypeName ?? "General",
                 hasAttachments = !string.IsNullOrWhiteSpace(t.AttachmentPath),
                 attachmentUrl = t.AttachmentPath,
                 attachmentFileName = t.AttachmentName,
@@ -148,6 +150,7 @@ namespace HRMSWebAPI.Controllers
             public string? SearchKeyword { get; set; }
             public string? FilterCard { get; set; }
             public string? CompanyId { get; set; }
+            public int? TaskTypeId { get; set; }
         }
 
         [HttpGet("lookups")]
@@ -175,12 +178,49 @@ namespace HRMSWebAPI.Controllers
                         departmentId = e.DeptId,
                         departmentName = e.DeptName,
                         isHod = false
+                    }),
+                    taskTypes = lookups.TaskTypes.Select(t => new
+                    {
+                        id = t.TaskTypeId,
+                        name = t.TaskTypeName,
+                        code = t.TaskTypeCode,
+                        description = t.TaskTypeDescription
                     })
                 });
             }
             catch (Exception ex)
             {
                 return StatusCode(500, new { isSuccess = false, message = "Error loading lookups: " + ex.Message });
+            }
+        }
+
+        [HttpGet("employees")]
+        public async Task<IActionResult> SearchEmployees(
+            [FromQuery] string? deptId = null,
+            [FromQuery] string? search = null,
+            [FromQuery] string? companyId = null,
+            [FromQuery] int top = 20)
+        {
+            try
+            {
+                var resolvedCompId = ResolveCompanyId(companyId) ?? "GU-1";
+                var list = await _repository.SearchEmployeesAsync(resolvedCompId, deptId, search, top);
+                return Ok(new
+                {
+                    isSuccess = true,
+                    employees = list.Select(e => new
+                    {
+                        id = e.EmpId,
+                        name = e.EmpName,
+                        departmentId = e.DeptId,
+                        departmentName = e.DeptName,
+                        isHod = false
+                    })
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { isSuccess = false, message = "Error searching employees: " + ex.Message });
             }
         }
 
@@ -210,6 +250,7 @@ namespace HRMSWebAPI.Controllers
                     filter.CreatedByEmpId = payload.CreatedByEmpId;
                     filter.Priority = payload.Priority;
                     filter.RecurrenceType = payload.RecurrencePattern;
+                    filter.TaskTypeId = payload.TaskTypeId;
                     filter.SearchText = payload.SearchKeyword;
                     filter.CompanyId = ResolveCompanyId(payload.CompanyId);
 
@@ -308,6 +349,8 @@ namespace HRMSWebAPI.Controllers
             public string? CreatedByEmpId { get; set; }
             public string? CreatedByName { get; set; }
             public string? CompanyId { get; set; }
+            public int? TaskTypeId { get; set; }
+            public string? TaskTypeName { get; set; }
         }
 
         [HttpPost("create")]
@@ -335,6 +378,8 @@ namespace HRMSWebAPI.Controllers
                     RecurrenceEndDate = dto.RecurrenceEndDate,
                     RecurrenceOccurrencesTotal = dto.RecurrenceOccurrencesTotal,
                     CompanyId = ResolveCompanyId(dto.CompanyId),
+                    TaskTypeId = dto.TaskTypeId,
+                    TaskTypeName = dto.TaskTypeName,
                     ActionById = ResolveViewerId(dto.CreatedByEmpId)
                 };
 

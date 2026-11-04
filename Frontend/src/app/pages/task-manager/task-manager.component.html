@@ -207,6 +207,21 @@
         ></ng-select>
       </div>
 
+      <!-- Task Type Filter (General Master) -->
+      <div class="filter-col type-col">
+        <label class="filter-label">Task Type</label>
+        <ng-select
+          class="custom-ng-select"
+          [items]="taskTypes"
+          bindLabel="name"
+          bindValue="id"
+          [clearable]="true"
+          [(ngModel)]="selectedTaskTypeId"
+          (change)="onFilterChange()"
+          placeholder="All Types"
+        ></ng-select>
+      </div>
+
       <!-- Search Keyword -->
       <div class="filter-col search-col flex-grow-1">
         <label class="filter-label">Search</label>
@@ -274,11 +289,14 @@
           <!-- Drag Preview Placeholder -->
           <div *cdkDragPlaceholder class="task-card-placeholder"></div>
 
-          <!-- Top Row: Code, Overdue Badge, Priority Badge -->
+          <!-- Top Row: Code, Overdue Badge, Priority Badge, Task Type Badge -->
           <div class="card-top-row">
             <span class="task-code">{{ task.taskCode }}</span>
             <span *ngIf="task.isOverdue" class="badge-overdue">
               <i class="fa-solid fa-triangle-exclamation me-1"></i>Overdue by {{ task.overdueHours }}h
+            </span>
+            <span *ngIf="task.taskTypeName" class="badge-type-pill" [ngClass]="'type-' + (task.taskTypeName | lowercase)">
+              {{ task.taskTypeName }}
             </span>
             <span class="badge-priority" [ngClass]="'priority-' + (task.priority | lowercase)">
               {{ task.priority }}
@@ -364,6 +382,9 @@
 
           <div class="card-top-row">
             <span class="task-code">{{ task.taskCode }}</span>
+            <span *ngIf="task.taskTypeName" class="badge-type-pill" [ngClass]="'type-' + (task.taskTypeName | lowercase)">
+              {{ task.taskTypeName }}
+            </span>
             <span class="badge-priority" [ngClass]="'priority-' + (task.priority | lowercase)">
               {{ task.priority }}
             </span>
@@ -445,6 +466,9 @@
             <span *ngIf="task.isOverdue" class="badge-overdue">
               <i class="fa-solid fa-triangle-exclamation me-1"></i>Overdue by {{ task.overdueHours }}h
             </span>
+            <span *ngIf="task.taskTypeName" class="badge-type-pill" [ngClass]="'type-' + (task.taskTypeName | lowercase)">
+              {{ task.taskTypeName }}
+            </span>
             <span class="badge-priority" [ngClass]="'priority-' + (task.priority | lowercase)">
               {{ task.priority }}
             </span>
@@ -509,11 +533,12 @@
     (cancelled)="onRemarksCancelled()"
   ></app-transition-remarks-modal>
 
-  <!-- Create Task Modal -->
+  <!-- Create Task Slide-Out Pane -->
   <app-create-task-modal
     [isOpen]="isCreateModalOpen"
     [departments]="departments"
     [employees]="employees"
+    [taskTypes]="taskTypes"
     (taskCreated)="onTaskCreated($event)"
     (cancelled)="onCreateModalCancelled()"
   ></app-create-task-modal>
