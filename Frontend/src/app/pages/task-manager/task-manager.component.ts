@@ -19,6 +19,8 @@ import {
   EmployeeLookupItem
 } from '../../shared/services/task-manager.service';
 import { TransitionRemarksModalComponent } from './components/transition-remarks-modal/transition-remarks-modal.component';
+import { CreateTaskModalComponent } from './components/create-task-modal/create-task-modal.component';
+import { TaskDetailDrawerComponent } from './components/task-detail-drawer/task-detail-drawer.component';
 
 @Component({
   selector: 'app-task-manager',
@@ -28,7 +30,9 @@ import { TransitionRemarksModalComponent } from './components/transition-remarks
     FormsModule,
     NgSelectModule,
     DragDropModule,
-    TransitionRemarksModalComponent
+    TransitionRemarksModalComponent,
+    CreateTaskModalComponent,
+    TaskDetailDrawerComponent
   ],
   templateUrl: './task-manager.component.html',
   styleUrls: ['./task-manager.component.scss']
@@ -101,6 +105,13 @@ export class TaskManagerComponent implements OnInit, OnDestroy {
   pendingTask: TaskCardDto | null = null;
   pendingFromStatus = '';
   pendingToStatus = '';
+
+  // Create Task Modal State
+  isCreateModalOpen = false;
+
+  // Detail Drawer State
+  isDetailDrawerOpen = false;
+  selectedTaskId: number | null = null;
 
   constructor(public taskManagerService: TaskManagerService) {}
 
@@ -302,14 +313,34 @@ export class TaskManagerComponent implements OnInit, OnDestroy {
    * Card click to open details drawer
    */
   onTaskClick(task: TaskCardDto): void {
+    this.selectedTaskId = task.taskId;
+    this.isDetailDrawerOpen = true;
     this.taskSelected.emit(task);
+  }
+
+  onDetailDrawerClosed(): void {
+    this.isDetailDrawerOpen = false;
+    this.selectedTaskId = null;
+  }
+
+  onDetailTaskUpdated(): void {
+    this.loadBoard();
   }
 
   /**
    * Open task creation modal
    */
   onCreateTaskClick(): void {
+    this.isCreateModalOpen = true;
     this.openCreateModal.emit();
   }
-}
 
+  onTaskCreated(event: any): void {
+    this.isCreateModalOpen = false;
+    this.loadBoard();
+  }
+
+  onCreateModalCancelled(): void {
+    this.isCreateModalOpen = false;
+  }
+}

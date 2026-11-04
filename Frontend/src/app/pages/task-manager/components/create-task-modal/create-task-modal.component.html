@@ -1,0 +1,257 @@
+<div *ngIf="isOpen" class="modal-backdrop-custom fade show"></div>
+
+<div *ngIf="isOpen" class="modal-dialog-centered-custom fade show" role="dialog" aria-modal="true" tabindex="-1">
+  <div class="custom-modal-card">
+    
+    <!-- Modal Header -->
+    <div class="custom-modal-header">
+      <div class="d-flex align-items-center gap-2">
+        <div class="modal-icon-badge">
+          <i class="fa-solid fa-plus text-primary"></i>
+        </div>
+        <div>
+          <h6 class="modal-title-custom mb-0">Create New Task</h6>
+          <span class="modal-subtitle text-muted">Create standard or recurring tasks for yourself or team members</span>
+        </div>
+      </div>
+      <button type="button" class="btn-close-custom" aria-label="Close" (click)="onClose()" [disabled]="isSubmitting">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="custom-modal-body">
+      
+      <!-- Subject -->
+      <div class="mb-2">
+        <label class="form-label-mini">
+          Subject / Title <span class="text-danger">*</span>
+        </label>
+        <input
+          type="text"
+          class="form-control form-control-sm"
+          placeholder="e.g. Verify monthly payroll deductions, Client audit review..."
+          [(ngModel)]="subject"
+          [disabled]="isSubmitting"
+          maxlength="200"
+        />
+      </div>
+
+      <!-- Description -->
+      <div class="mb-2">
+        <label class="form-label-mini">Description & Scope</label>
+        <textarea
+          class="form-control form-control-sm desc-textarea"
+          rows="3"
+          placeholder="Provide detailed instructions, checklist items, or deliverables..."
+          [(ngModel)]="description"
+          [disabled]="isSubmitting"
+        ></textarea>
+      </div>
+
+      <!-- Department & Assignee Row -->
+      <div class="row g-2 mb-2">
+        <div class="col-md-6">
+          <label class="form-label-mini">Target Department</label>
+          <ng-select
+            class="custom-ng-select"
+            [items]="departments"
+            bindLabel="name"
+            bindValue="id"
+            [clearable]="true"
+            [(ngModel)]="departmentId"
+            placeholder="Select Department"
+            [disabled]="isSubmitting"
+          ></ng-select>
+        </div>
+
+        <div class="col-md-6">
+          <div class="d-flex justify-content-between align-items-center">
+            <label class="form-label-mini mb-0">Assign To</label>
+            <div class="form-check form-check-inline m-0 self-assign-toggle">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                id="assignSelfCheck"
+                [(ngModel)]="isAssignToSelf"
+                (change)="onAssignToSelfChange()"
+                [disabled]="isSubmitting"
+              />
+              <label class="form-check-label self-assign-label" for="assignSelfCheck">
+                Assign to me
+              </label>
+            </div>
+          </div>
+          <ng-select
+            class="custom-ng-select"
+            [items]="employees"
+            bindLabel="name"
+            bindValue="id"
+            [clearable]="true"
+            [(ngModel)]="assignedToEmpId"
+            placeholder="Leave blank for Unassigned"
+            [disabled]="isSubmitting || isAssignToSelf"
+          >
+            <ng-template ng-option-tmp let-item="item">
+              <div class="d-flex justify-content-between align-items-center w-100">
+                <span>{{ item.name }}</span>
+                <span *ngIf="item.isHod" class="badge-hod-pill">HOD</span>
+              </div>
+            </ng-template>
+          </ng-select>
+        </div>
+      </div>
+
+      <!-- Priority & Deadline Row -->
+      <div class="row g-2 mb-2">
+        <div class="col-md-6">
+          <label class="form-label-mini">Priority</label>
+          <ng-select
+            class="custom-ng-select"
+            [items]="priorityOptions"
+            bindLabel="label"
+            bindValue="id"
+            [clearable]="false"
+            [(ngModel)]="priority"
+            [disabled]="isSubmitting"
+          ></ng-select>
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label-mini">Deadline Date & Time</label>
+          <input
+            type="datetime-local"
+            class="form-control form-control-sm deadline-input"
+            [(ngModel)]="deadlineDate"
+            [disabled]="isSubmitting"
+          />
+        </div>
+      </div>
+
+      <!-- Attachment Upload Area -->
+      <div class="mb-3">
+        <label class="form-label-mini">Attachment</label>
+        <div *ngIf="!attachmentFileName" class="attachment-upload-box">
+          <input
+            type="file"
+            id="taskFileInput"
+            class="d-none"
+            (change)="onFileSelected($event)"
+            [disabled]="isSubmitting || isUploadingAttachment"
+          />
+          <label for="taskFileInput" class="upload-trigger-label">
+            <i *ngIf="!isUploadingAttachment" class="fa-solid fa-cloud-arrow-up upload-icon"></i>
+            <i *ngIf="isUploadingAttachment" class="fa-solid fa-spinner fa-spin upload-icon text-primary"></i>
+            <span *ngIf="!isUploadingAttachment" class="upload-text">
+              <strong>Click to upload</strong> or drag and drop document (PDF, Excel, Docx, Image up to 20MB)
+            </span>
+            <span *ngIf="isUploadingAttachment" class="upload-text text-primary">
+              Uploading file to server...
+            </span>
+          </label>
+        </div>
+
+        <!-- Uploaded File Badge -->
+        <div *ngIf="attachmentFileName" class="uploaded-file-pill">
+          <div class="d-flex align-items-center gap-2 text-truncate">
+            <i class="fa-solid fa-paperclip text-primary"></i>
+            <span class="file-name-text text-truncate">{{ attachmentFileName }}</span>
+          </div>
+          <button
+            type="button"
+            class="btn-remove-attachment"
+            (click)="removeAttachment()"
+            [disabled]="isSubmitting"
+            title="Remove attachment"
+          >
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Recurrence Accordion / Box -->
+      <div class="recurrence-box mb-2">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <div class="d-flex align-items-center gap-2">
+            <i class="fa-solid fa-arrows-rotate text-primary"></i>
+            <span class="recur-title">Recurring Task Schedule</span>
+          </div>
+          <div class="form-check form-switch m-0">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              id="recurSwitch"
+              [(ngModel)]="isRecurring"
+              [disabled]="isSubmitting"
+            />
+          </div>
+        </div>
+
+        <!-- Recurrence Sub-fields -->
+        <div *ngIf="isRecurring" class="recurrence-fields-row pt-2 border-top">
+          <div class="row g-2">
+            <div class="col-md-4">
+              <label class="form-label-mini">Pattern</label>
+              <ng-select
+                class="custom-ng-select"
+                [items]="recurrenceOptions"
+                bindLabel="label"
+                bindValue="id"
+                [clearable]="false"
+                [(ngModel)]="recurrencePattern"
+                [disabled]="isSubmitting"
+              ></ng-select>
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label-mini">Interval</label>
+              <input
+                type="number"
+                min="1"
+                max="365"
+                class="form-control form-control-sm"
+                [(ngModel)]="recurrenceInterval"
+                [disabled]="isSubmitting"
+              />
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label-mini">End Date</label>
+              <input
+                type="date"
+                class="form-control form-control-sm"
+                [(ngModel)]="recurrenceEndDate"
+                [disabled]="isSubmitting"
+              />
+            </div>
+          </div>
+          <span class="recur-hint-text text-muted mt-1 d-block">
+            <i class="fa-solid fa-circle-info me-1"></i>
+            Spawns a new task automatically based on recurrence frequency until the end date.
+          </span>
+        </div>
+      </div>
+
+      <!-- Error Validation Message -->
+      <div *ngIf="errorMessage" class="error-banner mt-2">
+        <i class="fa-solid fa-circle-exclamation me-1"></i>
+        <span>{{ errorMessage }}</span>
+      </div>
+
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="custom-modal-footer">
+      <button type="button" class="btn btn-secondary-action btn-sm" (click)="onClose()" [disabled]="isSubmitting">
+        Cancel
+      </button>
+      <button type="button" class="btn btn-primary-action btn-sm" (click)="onSubmit()" [disabled]="isSubmitting || isUploadingAttachment">
+        <i *ngIf="isSubmitting" class="fa-solid fa-spinner fa-spin me-1"></i>
+        <i *ngIf="!isSubmitting" class="fa-solid fa-check me-1"></i>
+        Create Task
+      </button>
+    </div>
+
+  </div>
+</div>
+

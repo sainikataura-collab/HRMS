@@ -509,5 +509,22 @@
     (cancelled)="onRemarksCancelled()"
   ></app-transition-remarks-modal>
 
+  <!-- Create Task Modal -->
+  <app-create-task-modal
+    [isOpen]="isCreateModalOpen"
+    [departments]="departments"
+    [employees]="employees"
+    (taskCreated)="onTaskCreated($event)"
+    (cancelled)="onCreateModalCancelled()"
+  ></app-create-task-modal>
+
+  <!-- Task Detail & Chronological History Drawer -->
+  <app-task-detail-drawer
+    [isOpen]="isDetailDrawerOpen"
+    [taskId]="selectedTaskId"
+    (closed)="onDetailDrawerClosed()"
+    (taskUpdated)="onDetailTaskUpdated()"
+  ></app-task-detail-drawer>
+
 </div>
 

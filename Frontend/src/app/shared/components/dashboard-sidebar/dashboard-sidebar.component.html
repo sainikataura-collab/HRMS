@@ -367,6 +367,11 @@
           <span>HR Management</span>
         </a>
         <ul class="dropdown-menu" id="HrManagement">
+          <li>
+            <a class="nav-link" [routerLink]="['/dash/hr/hrdashboard/task-manager']">
+              <i class="fa-solid fa-list-check me-2 text-primary"></i>Task Manager
+            </a>
+          </li>
           <li *ngFor="let item of HRManagementList">
             <a class="nav-link" [routerLink]="item.pagepath">{{ item.menucaption }}</a>
           </li>

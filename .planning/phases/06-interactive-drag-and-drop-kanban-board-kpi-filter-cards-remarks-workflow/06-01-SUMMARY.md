@@ -39,3 +39,4 @@
 ## 2. Verification
 - `npx tsc --noEmit` on all Task Manager TypeScript files exited with code 0 (zero errors).
 - Design system standards verified (`Work Sans`, `28px` inputs/dropdowns, color palette, badges).
+

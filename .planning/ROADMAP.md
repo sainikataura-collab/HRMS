@@ -10,7 +10,7 @@ This roadmap delivers the complete HR Task Manager & Interactive Kanban Module i
 
 - [x] **Phase 5: Task Manager Backend Architecture & Database Engine** - SQL Server tables (`HR_TaskMaster`, `HR_TaskHistory`), stored procedures (`usp_HR_Task_...`), role/HOD visibility engine, attachment upload support, recurring task generator (`DAILY`, `WEEKLY`, `MONTHLY`, `YEARLY`), and WebAPI controller.
 - [x] **Phase 6: Interactive Drag-and-Drop Kanban Board, KPI Filter Cards & Remarks Workflow** - Top clickable KPI summary cards (`Open`, `Closed`, `On Hold`, `Unassigned`, `Overdue`), multi-filter bar, 3-column CDK drag-and-drop Kanban board matching reference screenshot, and mandatory transition remarks popup modal.
-- [ ] **Phase 7: Task Creation Modal, Attachment & Full History Drawer & Dual Portal Routing** - Create Task modal with recurrence & file attachment, slide-out/modal Task Detail & Full History timeline view, and navigation integration in both HR Module and Employee Task-Box.
+- [x] **Phase 7: Task Creation Modal, Attachment & Full History Drawer & Dual Portal Routing** - Create Task modal with recurrence & file attachment, slide-out/modal Task Detail & Full History timeline view, and navigation integration in both HR Module and Employee Task-Box.
 
 ---
 
@@ -58,6 +58,8 @@ Plans:
 **Goal**: Deliver the Create Task modal (with recurrence, department/employee selection, self-task toggle, and attachment upload), the full Task Detail & Chronological History modal/drawer, and dual navigation in HR Module and Employee Task-Box.
 **Depends on**: Phase 6
 **Requirements**: DETAILS-01, DETAILS-02, DETAILS-03
+**Plans**: 1 plan
+- [x] 07-01: Create Task modal, attachment upload, full history drawer, and dual portal navigation.
 **Success Criteria**:
   1. Create Task modal supports Subject, Description, Attachment upload, Deadline, Priority, Department, Assignee (or Unassigned / Assign to Self), and Recurrence (`None`, `Daily`, `Weekly`, `Monthly`, `Yearly`).
   2. Clicking any card opens the Full Detail & History view showing task metadata, attachment download/preview, status/assignee update controls with remarks, and the chronological `HR_TaskHistory` audit log.
