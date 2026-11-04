@@ -29,3 +29,4 @@
   1. Auto-detect HOD & Manager status from both `Department_Mst` (`fk_depHodid`) AND `SAL_Employee_Mst` hierarchy columns (`fk_FunctionalHODempid`, `fk_AdministrativeHODempid`, `fk_rmanagerid`, `isHod`).
   2. Use only `Department_Mst.fk_depHodid` and `SAL_Employee_Mst.fk_rmanagerid`.
 - **Selected:** Option 1 — comprehensive multi-column hierarchy resolution.
+

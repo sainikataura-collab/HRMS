@@ -17,6 +17,7 @@ This roadmap delivers the complete HR Task Manager & Interactive Kanban Module i
 ## Phase Details
 
 ### Phase 5: Task Manager Backend Architecture & Database Engine
+
 **Goal**: Build the SQL Server tables, stored procedures (`usp_HR_Task_...`), Dapper repository, attachment handler, role/HOD/department visibility engine, and recurring task background processor.
 **Depends on**: Existing WebAPI & SQL Server (`HRBook`) foundation
 **Requirements**: DB-01, DB-02, DB-03, API-01, API-02
@@ -25,13 +26,19 @@ This roadmap delivers the complete HR Task Manager & Interactive Kanban Module i
   2. Role/HOD visibility logic accurately scopes tasks for Admin, Task Creator, Creator's Dept HOD, Target Dept HOD, Reporting Manager, and Assigned Employee.
   3. `TaskManagerController` serves `/lookups`, `/board`, `/{id}`, `/create` (with file attachment), `/transition`, `/comment`, and `/process-recurring`.
   4. Recurring task engine supports `DAILY`, `WEEKLY`, `MONTHLY`, and `YEARLY` schedules and logs `RECURRENCE_GENERATED` history entries.
+
 **Plans**: 2 plans
-- 05-01: SQL schema (`HR_TaskMaster`, `HR_TaskHistory`), stored procedures (`usp_HR_Task_*`), and C# DTO/domain models.
-- 05-02: Dapper repository, attachment upload handling, recurring task hosted service, and `TaskManagerController` endpoints.
+Plans:
+**Wave 1**
+- [ ] 05-01-PLAN.md — SQL schema (`HR_TaskMaster`, `HR_TaskHistory`), stored procedures (`usp_HR_Task_*`), and C# DTO/domain models.
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [ ] 05-02-PLAN.md — Dapper repository, attachment upload handling, recurring task hosted service, and `TaskManagerController` endpoints.
 
 ---
 
 ### Phase 6: Interactive Drag-and-Drop Kanban Board, KPI Filter Cards & Remarks Workflow
+
 **Goal**: Build the top clickable KPI filter cards, multi-filter bar, 3-column CDK drag-and-drop Kanban board matching the user's screenshot and `.planning/codebase/DESIGN.md`, and the mandatory transition remarks modal.
 **Depends on**: Phase 5
 **Requirements**: KANBAN-01, KANBAN-02, KANBAN-03, MODAL-01
@@ -40,12 +47,14 @@ This roadmap delivers the complete HR Task Manager & Interactive Kanban Module i
   2. Multi-filter bar supports filtering by Scope (My Tasks / Department Tasks / Created by Me), Department, Assignee, Creator, Priority, Recurrence, and Search text using `.custom-ng-select` (`28px` height).
   3. 3-column Kanban board (`● OPEN`, `● CLOSED`, `● ON HOLD`) renders cards matching the screenshot (`TaskCode`, `⚠️ Overdue by Xh`, `Priority`, `Subject`, `Department` + relative age, `● BY:` purple chip, `● TO:` blue/Unassigned chip).
   4. Dragging a card between columns opens the mandatory Remarks popup modal; confirming updates the status and logs history, while canceling reverts the card position.
+
 **Plans**: 1 plan
 - 06-01: Task Manager board layout, KPI filter cards, multi-filter bar, 3-column CDK drag-and-drop board, and drop remarks modal.
 
 ---
 
 ### Phase 7: Task Creation Modal, Attachment & Full History Drawer & Dual Portal Routing
+
 **Goal**: Deliver the Create Task modal (with recurrence, department/employee selection, self-task toggle, and attachment upload), the full Task Detail & Chronological History modal/drawer, and dual navigation in HR Module and Employee Task-Box.
 **Depends on**: Phase 6
 **Requirements**: DETAILS-01, DETAILS-02, DETAILS-03
@@ -53,6 +62,7 @@ This roadmap delivers the complete HR Task Manager & Interactive Kanban Module i
   1. Create Task modal supports Subject, Description, Attachment upload, Deadline, Priority, Department, Assignee (or Unassigned / Assign to Self), and Recurrence (`None`, `Daily`, `Weekly`, `Monthly`, `Yearly`).
   2. Clicking any card opens the Full Detail & History view showing task metadata, attachment download/preview, status/assignee update controls with remarks, and the chronological `HR_TaskHistory` audit log.
   3. Task Manager is accessible from both `/dash/hr/hrdashboard/task-manager` (HR Sidebar) and `/dash/taskbox/taskboxdashboard` (Employee Task-Box).
+
 **Plans**: 1 plan
 - 07-01: Create Task modal, Task Detail & History drawer, attachment preview/download, and HR + Employee Task-Box routing.
 
