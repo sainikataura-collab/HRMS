@@ -2,7 +2,13 @@
 -- Stored Procedure: dbo.usp_HR_Task_Create
 -- Description: Creates task and automatically spawns initial OPEN execution
 --              instance when @IsRecurring = 1
+-- Fixed: Uses UM_Users_Mst, LSP_Master_General (CodeTypeId=24), @SuppressOutput=1
 -- =============================================================================
+SET ANSI_NULLS ON;
+GO
+SET QUOTED_IDENTIFIER ON;
+GO
+
 CREATE OR ALTER PROCEDURE dbo.usp_HR_Task_Create
     @Subject                    NVARCHAR(250),
     @Description                NVARCHAR(MAX)   = NULL,
@@ -33,8 +39,6 @@ CREATE OR ALTER PROCEDURE dbo.usp_HR_Task_Create
 AS
 BEGIN
     SET NOCOUNT ON;
-    SET ANSI_NULLS ON;
-    SET QUOTED_IDENTIFIER ON;
 
     DECLARE @CreatedByEmpId    VARCHAR(50) = NULL;
     DECLARE @CreatedByUserId   VARCHAR(50) = NULL;
@@ -47,6 +51,7 @@ BEGIN
     DECLARE @NextOccurDate     DATETIME = NULL;
     DECLARE @CalculatedInitialDue DATETIME = @DueDate;
 
+    -- 1. Resolve Creator Identity
     IF EXISTS (SELECT 1 FROM dbo.SAL_Employee_Mst WHERE pk_empid = @ActionById)
     BEGIN
         SELECT TOP 1 
@@ -57,27 +62,36 @@ BEGIN
         FROM dbo.SAL_Employee_Mst e
         WHERE e.pk_empid = @ActionById;
     END
-    ELSE IF EXISTS (SELECT 1 FROM dbo.Tbl_User_Master WHERE pk_userid = @ActionById)
+    ELSE IF EXISTS (SELECT 1 FROM dbo.UM_Users_Mst WHERE pk_userId = @ActionById)
     BEGIN
         SELECT TOP 1 
-            @CreatedByUserId   = u.pk_userid,
+            @CreatedByUserId   = u.pk_userId,
+            @CreatedByEmpId    = u.fk_empId,
             @ResolvedCompanyId = ISNULL(@ResolvedCompanyId, u.fk_companyId),
-            @ResolvedName      = ISNULL(@ActionByName, u.username)
-        FROM dbo.Tbl_User_Master u
-        WHERE u.pk_userid = @ActionById;
+            @ResolvedName      = ISNULL(@ActionByName, u.name)
+        FROM dbo.UM_Users_Mst u
+        WHERE u.pk_userId = @ActionById;
+
+        IF @CreatedByEmpId IS NOT NULL AND @CreatorDeptId IS NULL
+        BEGIN
+            SELECT TOP 1 @CreatorDeptId = fk_deptid 
+            FROM dbo.SAL_Employee_Mst 
+            WHERE pk_empid = @CreatedByEmpId;
+        END
     END
 
-    IF @TaskTypeId IS NOT NULL AND @ResolvedTaskType IS NULL
+    -- 2. Resolve Task Type Name from General Master (CodeTypeId = 24)
+    IF @TaskTypeId IS NOT NULL AND (@ResolvedTaskType IS NULL OR @ResolvedTaskType = '')
     BEGIN
-        SELECT TOP 1 @ResolvedTaskType = TypeName
-        FROM dbo.HR_TaskTypes
-        WHERE TaskTypeId = @TaskTypeId;
+        SELECT TOP 1 @ResolvedTaskType = Name
+        FROM dbo.LSP_Master_General
+        WHERE CodeTypeId = 24 AND CodeId = @TaskTypeId;
     END
 
-    IF @ResolvedTaskType IS NULL SET @ResolvedTaskType = 'General';
-    IF @ResolvedCompanyId IS NULL SET @ResolvedCompanyId = 'GU-1';
+    IF @ResolvedTaskType IS NULL OR @ResolvedTaskType = '' SET @ResolvedTaskType = 'General';
+    IF @ResolvedCompanyId IS NULL OR @ResolvedCompanyId = '' SET @ResolvedCompanyId = 'GU-1';
 
-    -- Generate sequential TaskCode
+    -- 3. Generate sequential TaskCode
     DECLARE @YearStr VARCHAR(4) = CAST(YEAR(GETDATE()) AS VARCHAR(4));
     DECLARE @NextNum INT = 1;
 
@@ -88,7 +102,7 @@ BEGIN
 
     SET @TaskCode = 'HR_TSK-' + @YearStr + '-' + RIGHT('0000' + CAST(@NextNum AS VARCHAR(4)), 4);
 
-    -- Calculate NextOccurrenceDate for recurring task
+    -- 4. Calculate NextOccurrenceDate for recurring task
     IF @IsRecurring = 1
     BEGIN
         DECLARE @BaseNext DATETIME = GETDATE();
@@ -117,6 +131,7 @@ BEGIN
         SET @CalculatedInitialDue = DATEADD(HOUR, @OffHours, GETDATE());
     END
 
+    -- 5. Insert Task Master Record
     INSERT INTO dbo.HR_TaskMaster
     (
         TaskCode, Subject, Description, Priority, Status, TargetDeptId, AssignedToEmpId,
@@ -140,6 +155,7 @@ BEGIN
 
     SET @NewTaskId = SCOPE_IDENTITY();
 
+    -- 6. Insert History Record
     INSERT INTO dbo.HR_TaskHistory
     (
         TaskId, ActionType, OldStatus, NewStatus, NewAssigneeEmpId,
@@ -152,16 +168,16 @@ BEGIN
         @CreatedByEmpId, @CreatedByUserId, @ResolvedName, GETDATE()
     );
 
-    -- If recurring, automatically spawn the first active OPEN task instance!
+    -- 7. If recurring, automatically spawn the first active OPEN task instance with SuppressOutput = 1!
     IF @IsRecurring = 1
     BEGIN
-        EXEC dbo.usp_HR_Task_ProcessRecurring @TargetTaskId = @NewTaskId;
+        EXEC dbo.usp_HR_Task_ProcessRecurring @TargetTaskId = @NewTaskId, @SuppressOutput = 1;
     END
 
+    -- 8. Return created Task details
     SELECT 
         TaskId, TaskCode, Subject, Status, Priority, TaskTypeId, TaskTypeName, AssignedToEmpId, TargetDeptId, DueDate, CompanyId, CreatedAt
     FROM dbo.HR_TaskMaster
     WHERE TaskId = @NewTaskId;
 END
 GO
-
