@@ -339,9 +339,9 @@
   </div>
 
   <!-- ========================================================================= -->
-  <!-- 3A. VIEW MODE 1: BESPOKE 3-LANE SWIMLANE BOARD (LINEAR / CLICKUP CRAFT)   -->
+  <!-- 3A. VIEW MODE 1: BESPOKE 4-LANE SWIMLANE BOARD (LINEAR / CLICKUP CRAFT)   -->
   <!-- ========================================================================= -->
-  <div *ngIf="viewMode === 'KANBAN'" class="swimlane-board" cdkDropListGroup>
+  <div *ngIf="viewMode === 'KANBAN' && selectedScope !== 'RECURRING'" class="swimlane-board" cdkDropListGroup>
 
     <!-- ── LANE 1: OPEN & ACTIVE ──────────────────────────────────────────── -->
     <div class="swimlane lane-open">
@@ -702,109 +702,437 @@
           <span class="lane-name">Recurring Tasks</span>
           <span class="lane-count count-recurring">{{ recurringTasks.length }}</span>
         </div>
-        <button
-          type="button"
-          class="btn-lane-add btn-add-recurring"
-          (click)="onCreateRecurringClick()"
-          title="Create new repeating schedule"
-        >
-          <i class="fa-solid fa-plus"></i>
-        </button>
+        <div class="d-flex align-items-center gap-1.5">
+          <!-- View Switcher (List vs Cards) -->
+          <div class="rec-view-switcher">
+            <button
+              type="button"
+              class="btn-rec-toggle"
+              [class.active]="recurringViewMode === 'LIST'"
+              (click)="recurringViewMode = 'LIST'"
+              title="Compact Structured List View"
+            >
+              <i class="fa-solid fa-list-ul"></i>
+            </button>
+            <button
+              type="button"
+              class="btn-rec-toggle"
+              [class.active]="recurringViewMode === 'CARDS'"
+              (click)="recurringViewMode = 'CARDS'"
+              title="Card View"
+            >
+              <i class="fa-solid fa-table-cells-large"></i>
+            </button>
+          </div>
+          <button
+            type="button"
+            class="btn-lane-add btn-add-recurring"
+            (click)="onCreateRecurringClick()"
+            title="Create new repeating schedule"
+          >
+            <i class="fa-solid fa-plus"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick Filter Bar: Frequency Pills & Search -->
+      <div class="lane-rec-filterbar">
+        <div class="lane-rec-pills">
+          <button
+            *ngFor="let opt of recurringFrequencyOptions"
+            type="button"
+            class="pill-rec-freq"
+            [class.active]="recurringFrequencyFilter === opt.id"
+            (click)="setRecurringFrequency(opt.id)"
+          >
+            {{ opt.label }}
+          </button>
+        </div>
+        <div class="lane-rec-search">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input
+            type="text"
+            placeholder="Search cadences..."
+            [(ngModel)]="recurringSearchKeyword"
+          />
+          <button
+            *ngIf="recurringSearchKeyword"
+            type="button"
+            class="btn-clear-search"
+            (click)="recurringSearchKeyword = ''"
+          >
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
       </div>
 
       <div class="swimlane-track recurring-track">
-        <!-- Recurring Template Cards -->
-        <div
-          *ngFor="let rec of recurringTasks"
-          class="studio-task-card recurring-cadence-card"
-          (click)="onTaskClick(rec)"
-        >
-          <!-- Row 1: Ticket + Category + Frequency Badge -->
-          <div class="stc-header">
-            <div class="d-flex align-items-center gap-1.5 flex-wrap">
-              <span class="ticket-id">#{{ rec.taskCode }}</span>
-              <span *ngIf="rec.taskTypeName" class="stc-category" [ngClass]="'cat-' + (rec.taskTypeName | lowercase)">
-                <i [class]="getTaskTypeIcon(rec.taskTypeName)"></i>
+        <!-- MODE A: Structured List View -->
+        <div *ngIf="recurringViewMode === 'LIST' && filteredRecurringTasks.length > 0" class="rec-list-container">
+          <div
+            *ngFor="let rec of filteredRecurringTasks"
+            class="rec-list-row"
+            (click)="onTaskClick(rec)"
+          >
+            <div class="rec-row-header">
+              <span class="rec-row-code">#{{ rec.taskCode }}</span>
+              <span *ngIf="rec.taskTypeName" class="rec-row-type" [ngClass]="'cat-' + (rec.taskTypeName | lowercase)">
                 {{ rec.taskTypeName }}
               </span>
-            </div>
-            <span class="cadence-frequency-pill">
-              <i class="fa-solid fa-arrows-rotate"></i> {{ rec.recurrencePattern }}
-            </span>
-          </div>
-
-          <!-- Title -->
-          <h6 class="stc-title" [title]="rec.subject">{{ rec.subject }}</h6>
-
-          <!-- Cadence Metadata Badges (Next Run + SLA Window + Interval) -->
-          <div class="cadence-meta-grid">
-            <div class="cadence-meta-item" *ngIf="rec.nextOccurrenceDate">
-              <i class="fa-regular fa-calendar-check text-primary"></i>
-              <span class="meta-label">Next:</span>
-              <span class="meta-val">{{ rec.nextOccurrenceDate | date:'dd MMM, HH:mm' }}</span>
-            </div>
-            <div class="cadence-meta-item">
-              <i class="fa-regular fa-hourglass-half text-warning"></i>
-              <span class="meta-label">SLA:</span>
-              <span class="meta-val">
-                {{ rec.recurrenceDueOffsetHours ? (rec.recurrenceDueOffsetHours >= 24 ? ((rec.recurrenceDueOffsetHours / 24) + ' Days') : (rec.recurrenceDueOffsetHours + ' Hours')) : '24h' }}
+              <span class="rec-row-freq" [ngClass]="'freq-' + (rec.recurrencePattern | lowercase)">
+                <i class="fa-solid fa-arrows-rotate"></i> {{ rec.recurrencePattern }}
               </span>
             </div>
-            <div class="cadence-meta-item" *ngIf="rec.recurrenceEndType">
-              <i class="fa-solid fa-flag-checkered text-secondary"></i>
-              <span class="meta-label">Ends:</span>
-              <span class="meta-val">{{ rec.recurrenceEndType === 'NEVER' ? 'Continuous' : rec.recurrenceEndType }}</span>
-            </div>
-          </div>
 
-          <!-- Footer: Owner + Run Now CTA -->
-          <div class="stc-footer">
-            <div class="stc-owner">
-              <div class="owner-avatar" [class.unassigned]="!rec.assignedToEmpName">
-                {{ rec.assignedToEmpName ? getInitials(rec.assignedToEmpName) : '?' }}
+            <div class="rec-row-subject" [title]="rec.subject">{{ rec.subject }}</div>
+
+            <div class="rec-row-metadata">
+              <div class="rec-meta-chip" *ngIf="rec.nextOccurrenceDate" title="Next Occurrence">
+                <i class="fa-regular fa-calendar-check text-primary"></i>
+                <span>{{ rec.nextOccurrenceDate | date:'dd MMM, HH:mm' }}</span>
               </div>
-              <div class="owner-meta text-truncate">
-                <span class="owner-name text-truncate">{{ rec.assignedToEmpName || 'Unassigned' }}</span>
-                <span class="owner-dept text-truncate">{{ rec.departmentName || 'General' }}</span>
+              <div class="rec-meta-chip" title="SLA Turnaround">
+                <i class="fa-regular fa-hourglass-half text-warning"></i>
+                <span>SLA: {{ rec.recurrenceDueOffsetHours ? (rec.recurrenceDueOffsetHours >= 24 ? ((rec.recurrenceDueOffsetHours / 24) + 'd') : (rec.recurrenceDueOffsetHours + 'h')) : '24h' }}</span>
+              </div>
+              <div class="rec-meta-chip rec-owner-chip" title="Owner">
+                <div class="mini-avatar">{{ rec.assignedToEmpName ? getInitials(rec.assignedToEmpName) : '?' }}</div>
+                <span class="text-truncate">{{ rec.assignedToEmpName || 'Unassigned' }}</span>
               </div>
             </div>
 
-            <div class="stc-right-meta d-flex align-items-center gap-1.5">
+            <div class="rec-row-actions" (click)="$event.stopPropagation()">
               <button
                 type="button"
-                class="btn-edit-cadence"
+                class="btn-rec-action btn-rec-action-edit"
                 (click)="onEditTaskClick(rec, $event)"
-                title="Edit recurring schedule & parameters"
+                title="Edit recurring schedule"
               >
                 <i class="fa-solid fa-pen-to-square me-1"></i>Edit
               </button>
               <button
                 type="button"
-                class="btn-trigger-now"
+                class="btn-rec-action btn-rec-action-run"
                 (click)="onRunRecurringNow(rec, $event)"
                 [disabled]="isTriggeringRecurrence"
-                title="Generate task instance right now"
+                title="Trigger immediate execution"
               >
-                <i class="fa-solid fa-play me-1"></i>Run Now
+                <i class="fa-solid fa-play me-1"></i>Run
               </button>
             </div>
           </div>
         </div>
 
-        <!-- Empty state when no recurring schedules exist -->
-        <div *ngIf="recurringTasks.length === 0 && !isLoading" class="swimlane-empty empty-recurring-pane">
+        <!-- MODE B: Cards View -->
+        <div *ngIf="recurringViewMode === 'CARDS' && filteredRecurringTasks.length > 0" class="rec-cards-container">
+          <div
+            *ngFor="let rec of filteredRecurringTasks"
+            class="studio-task-card recurring-cadence-card"
+            (click)="onTaskClick(rec)"
+          >
+            <!-- Row 1: Ticket + Category + Frequency Badge -->
+            <div class="stc-header">
+              <div class="d-flex align-items-center gap-1.5 flex-wrap">
+                <span class="ticket-id">#{{ rec.taskCode }}</span>
+                <span *ngIf="rec.taskTypeName" class="stc-category" [ngClass]="'cat-' + (rec.taskTypeName | lowercase)">
+                  <i [class]="getTaskTypeIcon(rec.taskTypeName)"></i>
+                  {{ rec.taskTypeName }}
+                </span>
+              </div>
+              <span class="cadence-frequency-pill">
+                <i class="fa-solid fa-arrows-rotate"></i> {{ rec.recurrencePattern }}
+              </span>
+            </div>
+
+            <!-- Title -->
+            <h6 class="stc-title" [title]="rec.subject">{{ rec.subject }}</h6>
+
+            <!-- Cadence Metadata Badges (Next Run + SLA Window + Interval) -->
+            <div class="cadence-meta-grid">
+              <div class="cadence-meta-item" *ngIf="rec.nextOccurrenceDate">
+                <i class="fa-regular fa-calendar-check text-primary"></i>
+                <span class="meta-label">Next:</span>
+                <span class="meta-val">{{ rec.nextOccurrenceDate | date:'dd MMM, HH:mm' }}</span>
+              </div>
+              <div class="cadence-meta-item">
+                <i class="fa-regular fa-hourglass-half text-warning"></i>
+                <span class="meta-label">SLA:</span>
+                <span class="meta-val">
+                  {{ rec.recurrenceDueOffsetHours ? (rec.recurrenceDueOffsetHours >= 24 ? ((rec.recurrenceDueOffsetHours / 24) + ' Days') : (rec.recurrenceDueOffsetHours + ' Hours')) : '24h' }}
+                </span>
+              </div>
+              <div class="cadence-meta-item" *ngIf="rec.recurrenceEndType">
+                <i class="fa-solid fa-flag-checkered text-secondary"></i>
+                <span class="meta-label">Ends:</span>
+                <span class="meta-val">{{ rec.recurrenceEndType === 'NEVER' ? 'Continuous' : rec.recurrenceEndType }}</span>
+              </div>
+            </div>
+
+            <!-- Footer: Owner + Run Now CTA -->
+            <div class="stc-footer">
+              <div class="stc-owner">
+                <div class="owner-avatar" [class.unassigned]="!rec.assignedToEmpName">
+                  {{ rec.assignedToEmpName ? getInitials(rec.assignedToEmpName) : '?' }}
+                </div>
+                <div class="owner-meta text-truncate">
+                  <span class="owner-name text-truncate">{{ rec.assignedToEmpName || 'Unassigned' }}</span>
+                  <span class="owner-dept text-truncate">{{ rec.departmentName || 'General' }}</span>
+                </div>
+              </div>
+
+              <div class="stc-right-meta d-flex align-items-center gap-1.5">
+                <button
+                  type="button"
+                  class="btn-edit-cadence"
+                  (click)="onEditTaskClick(rec, $event)"
+                  title="Edit recurring schedule & parameters"
+                >
+                  <i class="fa-solid fa-pen-to-square me-1"></i>Edit
+                </button>
+                <button
+                  type="button"
+                  class="btn-trigger-now"
+                  (click)="onRunRecurringNow(rec, $event)"
+                  [disabled]="isTriggeringRecurrence"
+                  title="Generate task instance right now"
+                >
+                  <i class="fa-solid fa-play me-1"></i>Run Now
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Empty state when no matching recurring tasks -->
+        <div *ngIf="filteredRecurringTasks.length === 0 && !isLoading" class="swimlane-empty empty-recurring-pane">
           <div class="empty-orb" style="background: #eff6ff; color: #3080e8;">
             <i class="fa-solid fa-arrows-rotate"></i>
           </div>
-          <div class="empty-title">No Recurring Tasks</div>
-          <div class="empty-sub">Create repeating routines with automatic SLAs</div>
-          <button type="button" class="btn-create-cadence-pill mt-2" (click)="onCreateRecurringClick()">
+          <div class="empty-title">No Recurring Tasks Found</div>
+          <div class="empty-sub">
+            {{ recurringTasks.length === 0 ? 'Create repeating routines with automatic SLAs' : 'No schedules match the selected frequency or search term' }}
+          </div>
+          <button *ngIf="recurringTasks.length === 0" type="button" class="btn-create-cadence-pill mt-2" (click)="onCreateRecurringClick()">
             <i class="fa-solid fa-plus me-1"></i>New Schedule
+          </button>
+          <button *ngIf="recurringTasks.length > 0" type="button" class="btn-create-cadence-pill mt-2" (click)="recurringFrequencyFilter = 'ALL'; recurringSearchKeyword = ''">
+            <i class="fa-solid fa-rotate-left me-1"></i>Reset Filters
           </button>
         </div>
       </div>
     </div>
 
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 3D. DEDICATED FULL-WIDTH RECURRING CADENCE STUDIO (SCOPE = RECURRING)    -->
+  <!-- ========================================================================= -->
+  <div *ngIf="selectedScope === 'RECURRING'" class="recurring-studio-surface">
+    <!-- Cadence Dashboard Top KPIs -->
+    <div class="cadence-kpi-banner">
+      <div class="cadence-kpi-card total">
+        <div class="kpi-icon"><i class="fa-solid fa-arrows-rotate"></i></div>
+        <div class="kpi-info">
+          <div class="kpi-value">{{ recurringTasks.length }}</div>
+          <div class="kpi-title">Total Active Cadences</div>
+        </div>
+      </div>
+      <div class="cadence-kpi-card daily">
+        <div class="kpi-icon"><i class="fa-solid fa-calendar-day"></i></div>
+        <div class="kpi-info">
+          <div class="kpi-value">{{ dailyCount }}</div>
+          <div class="kpi-title">Daily Routines</div>
+        </div>
+      </div>
+      <div class="cadence-kpi-card weekly">
+        <div class="kpi-icon"><i class="fa-solid fa-calendar-week"></i></div>
+        <div class="kpi-info">
+          <div class="kpi-value">{{ weeklyCount }}</div>
+          <div class="kpi-title">Weekly Automations</div>
+        </div>
+      </div>
+      <div class="cadence-kpi-card monthly">
+        <div class="kpi-icon"><i class="fa-solid fa-calendar-days"></i></div>
+        <div class="kpi-info">
+          <div class="kpi-value">{{ monthlyCount }}</div>
+          <div class="kpi-title">Monthly Checkpoints</div>
+        </div>
+      </div>
+      <div class="cadence-kpi-card yearly">
+        <div class="kpi-icon"><i class="fa-solid fa-calendar"></i></div>
+        <div class="kpi-info">
+          <div class="kpi-value">{{ yearlyCount }}</div>
+          <div class="kpi-title">Yearly Audits</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filter & Action Control Strip -->
+    <div class="cadence-toolbar">
+      <div class="cadence-freq-tabs">
+        <button
+          *ngFor="let opt of recurringFrequencyOptions"
+          type="button"
+          class="cadence-tab-pill"
+          [class.active]="recurringFrequencyFilter === opt.id"
+          (click)="setRecurringFrequency(opt.id)"
+        >
+          {{ opt.label }}
+          <span class="tab-badge" *ngIf="opt.id === 'ALL'">{{ recurringTasks.length }}</span>
+          <span class="tab-badge" *ngIf="opt.id === 'DAILY'">{{ dailyCount }}</span>
+          <span class="tab-badge" *ngIf="opt.id === 'WEEKLY'">{{ weeklyCount }}</span>
+          <span class="tab-badge" *ngIf="opt.id === 'MONTHLY'">{{ monthlyCount }}</span>
+          <span class="tab-badge" *ngIf="opt.id === 'YEARLY'">{{ yearlyCount }}</span>
+        </button>
+      </div>
+
+      <div class="cadence-actions-group">
+        <div class="cadence-search-input">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input
+            type="text"
+            placeholder="Search cadences by keyword, ticket, owner..."
+            [(ngModel)]="recurringSearchKeyword"
+          />
+          <button
+            *ngIf="recurringSearchKeyword"
+            type="button"
+            class="btn-clear-search"
+            (click)="recurringSearchKeyword = ''"
+          >
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <button
+          type="button"
+          class="btn-create-cadence-hero"
+          (click)="onCreateRecurringClick()"
+        >
+          <i class="fa-solid fa-plus me-1.5"></i>Create Repeating Schedule
+        </button>
+
+        <button
+          type="button"
+          class="btn-back-board"
+          (click)="setScope('ALL')"
+          title="Return to Kanban Board"
+        >
+          <i class="fa-solid fa-table-columns me-1"></i>Board View
+        </button>
+      </div>
+    </div>
+
+    <!-- Full-Width Recurring Cadence Data Table -->
+    <div class="cadence-table-card">
+      <div class="table-responsive">
+        <table class="table cadence-table align-middle mb-0">
+          <thead>
+            <tr>
+              <th style="width: 110px;">TICKET</th>
+              <th style="min-width: 260px;">RECURRING TASK &amp; AUTOMATION PURPOSE</th>
+              <th style="width: 130px;">FREQUENCY</th>
+              <th style="width: 140px;">CATEGORY</th>
+              <th style="width: 150px;">DEPARTMENT</th>
+              <th style="width: 180px;">DEFAULT ASSIGNEE</th>
+              <th style="width: 170px;">NEXT AUTO RUN</th>
+              <th style="width: 120px;">SLA TURNAROUND</th>
+              <th class="text-end" style="width: 170px;">CADENCE ACTIONS</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              *ngFor="let rec of filteredRecurringTasks"
+              (click)="onTaskClick(rec)"
+              class="cadence-table-row"
+            >
+              <td>
+                <span class="ticket-id">#{{ rec.taskCode }}</span>
+              </td>
+              <td>
+                <div class="fw-bold text-dark fs-13">{{ rec.subject }}</div>
+                <div *ngIf="rec.lastRemarks" class="text-muted text-truncate fs-11">
+                  <i class="fa-regular fa-comment-dots text-primary me-1"></i>{{ rec.lastRemarks }}
+                </div>
+              </td>
+              <td>
+                <span class="cadence-frequency-pill" [ngClass]="'freq-' + (rec.recurrencePattern | lowercase)">
+                  <i class="fa-solid fa-arrows-rotate"></i> {{ rec.recurrencePattern }}
+                </span>
+              </td>
+              <td>
+                <span *ngIf="rec.taskTypeName" class="stc-category" [ngClass]="'cat-' + (rec.taskTypeName | lowercase)">
+                  <i [class]="getTaskTypeIcon(rec.taskTypeName)"></i>
+                  {{ rec.taskTypeName }}
+                </span>
+                <span *ngIf="!rec.taskTypeName" class="text-muted fs-11">General</span>
+              </td>
+              <td>
+                <span class="fw-semibold text-secondary fs-11">{{ rec.departmentName || 'Cross-Dept' }}</span>
+              </td>
+              <td>
+                <div class="d-flex align-items-center gap-2">
+                  <div class="owner-avatar" [class.unassigned]="!rec.assignedToEmpName">
+                    {{ rec.assignedToEmpName ? getInitials(rec.assignedToEmpName) : '?' }}
+                  </div>
+                  <div class="d-flex flex-column text-truncate">
+                    <span class="fw-semibold text-dark fs-12 text-truncate">{{ rec.assignedToEmpName || 'Unassigned' }}</span>
+                    <span class="text-muted fs-10 text-truncate">{{ rec.departmentName || 'Open Queue' }}</span>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div *ngIf="rec.nextOccurrenceDate" class="next-occurrence-cell">
+                  <i class="fa-regular fa-calendar-check text-primary me-1.5"></i>
+                  <span class="fw-bold text-dark fs-12">{{ rec.nextOccurrenceDate | date:'dd MMM yyyy, HH:mm' }}</span>
+                </div>
+                <span *ngIf="!rec.nextOccurrenceDate" class="text-muted fs-11">—</span>
+              </td>
+              <td>
+                <span class="sla-badge">
+                  <i class="fa-regular fa-hourglass-half text-warning me-1"></i>
+                  {{ rec.recurrenceDueOffsetHours ? (rec.recurrenceDueOffsetHours >= 24 ? ((rec.recurrenceDueOffsetHours / 24) + ' Days') : (rec.recurrenceDueOffsetHours + ' Hours')) : '24h' }}
+                </span>
+              </td>
+              <td class="text-end" (click)="$event.stopPropagation()">
+                <div class="d-inline-flex gap-1.5">
+                  <button
+                    type="button"
+                    class="btn-cadence-action btn-cadence-edit"
+                    (click)="onEditTaskClick(rec, $event)"
+                    title="Edit Recurring Configuration"
+                  >
+                    <i class="fa-solid fa-pen-to-square me-1"></i>Edit
+                  </button>
+                  <button
+                    type="button"
+                    class="btn-cadence-action btn-cadence-run"
+                    (click)="onRunRecurringNow(rec, $event)"
+                    [disabled]="isTriggeringRecurrence"
+                    title="Generate Task Instance Immediately"
+                  >
+                    <i class="fa-solid fa-play me-1"></i>Run Now
+                  </button>
+                </div>
+              </td>
+            </tr>
+
+            <tr *ngIf="filteredRecurringTasks.length === 0 && !isLoading">
+              <td colspan="9" class="text-center py-5">
+                <div class="empty-orb mx-auto mb-2" style="background: #eff6ff; color: #3080e8; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px;">
+                  <i class="fa-solid fa-arrows-rotate"></i>
+                </div>
+                <div class="fw-bold text-dark fs-14">No recurring cadences found</div>
+                <div class="text-muted fs-12 mt-1">Try adjusting your frequency filter or search query</div>
+                <button type="button" class="btn btn-outline-primary btn-sm mt-3" (click)="recurringFrequencyFilter = 'ALL'; recurringSearchKeyword = ''">
+                  Reset Filters
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
 
   <!-- ========================================================================= -->

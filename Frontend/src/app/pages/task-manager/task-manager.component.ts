@@ -87,7 +87,8 @@ export class TaskManagerComponent implements OnInit, OnDestroy {
     { id: 'ALL', label: 'All Viewable', icon: 'fa-solid fa-globe' },
     { id: 'MY_ASSIGNED', label: 'Assigned to Me', icon: 'fa-solid fa-user-check' },
     { id: 'MY_DEPT', label: 'My Department', icon: 'fa-solid fa-building-user' },
-    { id: 'CREATED_BY_ME', label: 'Created by Me', icon: 'fa-solid fa-pen-nib' }
+    { id: 'CREATED_BY_ME', label: 'Created by Me', icon: 'fa-solid fa-pen-nib' },
+    { id: 'RECURRING', label: 'Recurring Cadences', icon: 'fa-solid fa-arrows-rotate' }
   ];
 
   readonly priorityOptions = [
@@ -102,6 +103,64 @@ export class TaskManagerComponent implements OnInit, OnDestroy {
     { id: 'MONTHLY', label: 'Monthly Recurring' },
     { id: 'YEARLY', label: 'Yearly Recurring' }
   ];
+
+  // Dedicated Recurring Cadences View & Filter Models
+  recurringFrequencyFilter: string = 'ALL';
+  recurringSearchKeyword: string = '';
+  recurringViewMode: 'CARDS' | 'LIST' = 'LIST';
+
+  readonly recurringFrequencyOptions = [
+    { id: 'ALL', label: 'All' },
+    { id: 'DAILY', label: 'Daily' },
+    { id: 'WEEKLY', label: 'Weekly' },
+    { id: 'MONTHLY', label: 'Monthly' },
+    { id: 'YEARLY', label: 'Yearly' }
+  ];
+
+  get filteredRecurringTasks(): TaskCardDto[] {
+    return (this.recurringTasks || []).filter((task: TaskCardDto) => {
+      if (this.recurringFrequencyFilter !== 'ALL') {
+        if ((task.recurrencePattern || '').toUpperCase() !== this.recurringFrequencyFilter) {
+          return false;
+        }
+      }
+      if (this.recurringSearchKeyword && this.recurringSearchKeyword.trim()) {
+        const kw = this.recurringSearchKeyword.trim().toLowerCase();
+        const sub = (task.subject || '').toLowerCase();
+        const code = (task.taskCode || '').toLowerCase();
+        const emp = (task.assignedToEmpName || '').toLowerCase();
+        const dept = (task.departmentName || '').toLowerCase();
+        if (!sub.includes(kw) && !code.includes(kw) && !emp.includes(kw) && !dept.includes(kw)) {
+          return false;
+        }
+      }
+      return true;
+    });
+  }
+
+  get dailyCount(): number {
+    return (this.recurringTasks || []).filter(t => (t.recurrencePattern || '').toUpperCase() === 'DAILY').length;
+  }
+
+  get weeklyCount(): number {
+    return (this.recurringTasks || []).filter(t => (t.recurrencePattern || '').toUpperCase() === 'WEEKLY').length;
+  }
+
+  get monthlyCount(): number {
+    return (this.recurringTasks || []).filter(t => (t.recurrencePattern || '').toUpperCase() === 'MONTHLY').length;
+  }
+
+  get yearlyCount(): number {
+    return (this.recurringTasks || []).filter(t => (t.recurrencePattern || '').toUpperCase() === 'YEARLY').length;
+  }
+
+  setRecurringFrequency(freq: string): void {
+    this.recurringFrequencyFilter = freq;
+  }
+
+  toggleRecurringViewMode(): void {
+    this.recurringViewMode = this.recurringViewMode === 'LIST' ? 'CARDS' : 'LIST';
+  }
 
   // 3 Execution Kanban Columns + 1 Dedicated Recurring Cadence Pane
   openTasks: TaskCardDto[] = [];
@@ -236,8 +295,9 @@ export class TaskManagerComponent implements OnInit, OnDestroy {
    */
   loadBoard(): void {
     this.isLoading = true;
+    const filterScope = this.selectedScope === 'RECURRING' ? 'ALL' : (this.selectedScope || 'ALL');
     const filter: TaskBoardFilterDto = {
-      scope: this.selectedScope || 'ALL',
+      scope: filterScope,
       departmentId: this.selectedDepartmentId || undefined,
       assignedToEmpId: this.selectedAssigneeId || undefined,
       priority: this.selectedPriority || undefined,
@@ -300,6 +360,10 @@ export class TaskManagerComponent implements OnInit, OnDestroy {
   selectScopeChip(scopeId: string): void {
     this.selectedScope = scopeId;
     this.loadBoard();
+  }
+
+  setScope(scopeId: string): void {
+    this.selectScopeChip(scopeId);
   }
 
   isDueToday(deadlineStr?: string): boolean {
