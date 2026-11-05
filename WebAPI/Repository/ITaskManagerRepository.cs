@@ -12,7 +12,7 @@ namespace HRMSWebAPI.Repository
         Task<(int TaskId, string TaskCode)> CreateTaskAsync(CreateTaskRequestDto dto, string? attachmentName, string? attachmentPath);
         Task<bool> UpdateTaskAsync(int taskId, CreateTaskRequestDto dto);
         Task<bool> UpdateStatusAndRemarksAsync(TaskStatusTransitionRequestDto dto, string? attachmentName, string? attachmentPath);
-        Task<int> ProcessRecurringTasksAsync();
+        Task<int> ProcessRecurringTasksAsync(int? targetTaskId = null);
     }
 }
 

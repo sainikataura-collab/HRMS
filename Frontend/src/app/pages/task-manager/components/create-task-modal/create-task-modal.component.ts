@@ -137,7 +137,7 @@ export class CreateTaskModalComponent implements OnInit, OnChanges {
     if (task.recurrenceInterval) {
       this.recurrenceInterval = task.recurrenceInterval;
     }
-    if (task.recurrenceDays) {
+    if (task.recurrenceDays && typeof task.recurrenceDays === 'string') {
       const activeDays = task.recurrenceDays.split(',').map(d => d.trim().toUpperCase());
       this.recurrenceDaysOfWeek.forEach(d => d.selected = activeDays.includes(d.id));
     }

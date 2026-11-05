@@ -295,10 +295,10 @@ export class TaskManagerService {
   }
 
   /**
-   * Process and generate recurring task instances
+   * Process and generate recurring task instances (optionally immediate run for target task)
    */
-  processRecurringTasks(): Observable<any> {
-    return this.http.post(`${this.baseUrl}/TaskManager/process-recurring`, {});
+  processRecurringTasks(taskId?: number): Observable<any> {
+    return this.http.post(`${this.baseUrl}/TaskManager/process-recurring`, taskId ? { taskId } : {});
   }
 }
 

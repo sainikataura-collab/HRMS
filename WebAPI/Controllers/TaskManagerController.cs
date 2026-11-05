@@ -121,12 +121,16 @@ namespace HRMSWebAPI.Controllers
                 relativeAgeText = FormatRelativeAge(t.AgeMinutes, t.CreatedAt),
                 isRecurring = t.IsRecurring,
                 recurrencePattern = t.RecurrenceType,
+                recurrenceInterval = t.RecurrenceInterval,
                 recurrenceDays = t.RecurrenceDays,
                 recurrenceDayOfMonth = t.RecurrenceDayOfMonth,
                 recurrenceEndType = t.RecurrenceEndType,
                 recurrenceEndDate = t.RecurrenceEndDate,
                 recurrenceOccurrencesTotal = t.RecurrenceOccurrencesTotal,
                 recurrenceOccurrencesCount = t.RecurrenceOccurrencesCount,
+                recurrenceDueOffsetHours = t.RecurrenceDueOffsetHours,
+                recurrenceDueOffsetUnit = t.RecurrenceDueOffsetUnit,
+                nextOccurrenceDate = t.NextOccurrenceDate,
                 companyId = t.CompanyId,
                 taskTypeId = t.TaskTypeId,
                 taskTypeName = t.TaskTypeName ?? "General",
@@ -475,11 +479,11 @@ namespace HRMSWebAPI.Controllers
         }
 
         [HttpPost("process-recurring")]
-        public async Task<IActionResult> ProcessRecurring()
+        public async Task<IActionResult> ProcessRecurring([FromBody] ProcessRecurringRequestDto? req = null)
         {
             try
             {
-                int generated = await _repository.ProcessRecurringTasksAsync();
+                int generated = await _repository.ProcessRecurringTasksAsync(req?.TaskId);
                 return Ok(new { isSuccess = true, generatedCount = generated });
             }
             catch (Exception ex)

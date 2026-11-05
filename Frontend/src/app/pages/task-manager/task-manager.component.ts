@@ -482,8 +482,11 @@ export class TaskManagerComponent implements OnInit, OnDestroy {
   onEditTaskClick(task: TaskCardDto, event?: Event): void {
     if (event) {
       event.stopPropagation();
+      event.preventDefault();
     }
-    this.editingTask = task;
+    this.isDetailDrawerOpen = false;
+    this.selectedTaskId = null;
+    this.editingTask = { ...task };
     this.createModalDefaultRecurring = !!task.isRecurring;
     this.isCreateModalOpen = true;
   }
@@ -494,9 +497,10 @@ export class TaskManagerComponent implements OnInit, OnDestroy {
   onRunRecurringNow(task: TaskCardDto, event?: Event): void {
     if (event) {
       event.stopPropagation();
+      event.preventDefault();
     }
     this.isTriggeringRecurrence = true;
-    this.taskManagerService.processRecurringTasks()
+    this.taskManagerService.processRecurringTasks(task.taskId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {

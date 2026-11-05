@@ -13,7 +13,7 @@
   display: flex !important;
   align-items: flex-start !important;
   justify-content: center !important;
-  z-index: 100000 !important;
+  z-index: 100060 !important;
   padding: 68px 20px 20px 85px !important;
   overflow-y: auto !important;
   box-sizing: border-box !important;
@@ -225,12 +225,6 @@
         box-shadow: 0 0 0 3px rgba(48, 128, 232, 0.15);
         outline: none;
       }
-    }
-  }
-    font-family: inherit;
-
-    &::placeholder {
-      color: #94a3b8;
     }
   }
 
@@ -690,6 +684,7 @@
     align-items: center;
     justify-content: space-between;
     padding-bottom: 12px;
+    padding-right: 4px;
     border-bottom: 1px solid #e2e8f0;
 
     .studio-icon-badge {
@@ -725,8 +720,8 @@
     .studio-toggle-switch {
       position: relative;
       display: inline-block;
-      width: 38px;
-      height: 20px;
+      width: 40px;
+      height: 22px;
       margin: 0;
       flex-shrink: 0;
       cursor: pointer;
@@ -748,8 +743,8 @@
         &::before {
           position: absolute;
           content: "";
-          height: 14px;
-          width: 14px;
+          height: 16px;
+          width: 16px;
           left: 3px;
           bottom: 3px;
           background-color: #ffffff;

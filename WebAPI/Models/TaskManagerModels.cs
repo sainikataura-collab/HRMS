@@ -286,5 +286,10 @@ namespace HRMSWebAPI.Models
         public string? UpdatedByName { get; set; }
         public string? CompanyId { get; set; }
     }
+
+    public class ProcessRecurringRequestDto
+    {
+        public int? TaskId { get; set; }
+    }
 }
 
