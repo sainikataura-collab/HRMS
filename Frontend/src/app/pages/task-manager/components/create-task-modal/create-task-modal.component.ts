@@ -7,6 +7,7 @@ import {
   DepartmentLookupItem,
   EmployeeLookupItem,
   TaskTypeLookupItem,
+  TaskCardDto,
   TaskCreateRequestDto
 } from '../../../../shared/services/task-manager.service';
 
@@ -26,12 +27,17 @@ interface WeekDayItem {
 export class CreateTaskModalComponent implements OnInit, OnChanges {
   @Input() isOpen = false;
   @Input() defaultRecurring = false;
+  @Input() editingTask: TaskCardDto | null = null;
   @Input() departments: DepartmentLookupItem[] = [];
   @Input() employees: EmployeeLookupItem[] = [];
   @Input() taskTypes: TaskTypeLookupItem[] = [];
 
   @Output() taskCreated = new EventEmitter<any>();
   @Output() cancelled = new EventEmitter<void>();
+
+  get isEditMode(): boolean {
+    return !!(this.editingTask && this.editingTask.taskId);
+  }
 
   isSubmitting = false;
   isUploadingAttachment = false;
@@ -93,19 +99,71 @@ export class CreateTaskModalComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    if (changes['editingTask'] && this.editingTask) {
+      this.populateEditingTask(this.editingTask);
+    }
     if (changes['employees'] && this.employees) {
       this.initEmployees();
     }
     if (changes['taskTypes'] && this.taskTypes && this.taskTypes.length > 0) {
-      if (!this.taskTypeId) {
+      if (!this.taskTypeId && !this.editingTask) {
         this.taskTypeId = this.taskTypes[0].id;
       }
     }
     if (changes['isOpen'] && this.isOpen) {
-      if (this.defaultRecurring) {
-        this.isRecurring = true;
+      if (this.editingTask) {
+        this.populateEditingTask(this.editingTask);
+      } else {
+        if (this.defaultRecurring) {
+          this.isRecurring = true;
+          this.recurrencePattern = 'WEEKLY';
+        }
       }
     }
+  }
+
+  private populateEditingTask(task: TaskCardDto): void {
+    this.subject = task.subject || '';
+    this.description = task.description || '';
+    this.departmentId = task.departmentId || null;
+    this.assignedToEmpId = task.assignedToEmpId || null;
+    this.priority = task.priority || 'MEDIUM';
+    this.taskTypeId = task.taskTypeId || (this.taskTypes[0]?.id || 1);
+    this.deadlineDate = task.deadlineDate ? task.deadlineDate.slice(0, 16) : '';
+    this.isRecurring = !!task.isRecurring;
+    if (task.recurrencePattern) {
+      this.recurrencePattern = task.recurrencePattern as any;
+    }
+    if (task.recurrenceInterval) {
+      this.recurrenceInterval = task.recurrenceInterval;
+    }
+    if (task.recurrenceDays) {
+      const activeDays = task.recurrenceDays.split(',').map(d => d.trim().toUpperCase());
+      this.recurrenceDaysOfWeek.forEach(d => d.selected = activeDays.includes(d.id));
+    }
+    if (task.recurrenceDayOfMonth) {
+      this.recurrenceDayOfMonth = task.recurrenceDayOfMonth;
+    }
+    if (task.recurrenceEndType) {
+      this.recurrenceEndType = task.recurrenceEndType as any;
+    }
+    if (task.recurrenceEndDate) {
+      this.recurrenceEndDate = task.recurrenceEndDate.slice(0, 10);
+    }
+    if (task.recurrenceOccurrencesTotal) {
+      this.recurrenceOccurrencesTotal = task.recurrenceOccurrencesTotal;
+    }
+    if (task.recurrenceDueOffsetHours) {
+      if (task.recurrenceDueOffsetHours >= 24 && task.recurrenceDueOffsetHours % 24 === 0) {
+        this.recurrenceDueOffsetValue = task.recurrenceDueOffsetHours / 24;
+        this.recurrenceDueOffsetUnit = 'DAYS';
+      } else {
+        this.recurrenceDueOffsetValue = task.recurrenceDueOffsetHours;
+        this.recurrenceDueOffsetUnit = 'HOURS';
+      }
+    }
+    this.attachmentFileName = task.attachmentFileName || '';
+    this.attachmentUrl = task.attachmentUrl || '';
   }
 
   private initEmployees(): void {
@@ -371,18 +429,33 @@ export class CreateTaskModalComponent implements OnInit, OnChanges {
       attachmentFileName: this.attachmentFileName || undefined
     };
 
-    this.taskManagerService.createTask(payload).subscribe({
-      next: (res) => {
-        this.isSubmitting = false;
-        this.resetForm();
-        this.taskCreated.emit(res);
-      },
-      error: (err) => {
-        console.error('Failed to create task', err);
-        this.errorMessage = 'Could not create task. Please verify your connection.';
-        this.isSubmitting = false;
-      }
-    });
+    if (this.isEditMode && this.editingTask?.taskId) {
+      this.taskManagerService.updateTask({ ...payload, taskId: this.editingTask.taskId }).subscribe({
+        next: (res) => {
+          this.isSubmitting = false;
+          this.resetForm();
+          this.taskCreated.emit(res);
+        },
+        error: (err) => {
+          console.error('Failed to update task', err);
+          this.errorMessage = 'Could not update task. Please try again.';
+          this.isSubmitting = false;
+        }
+      });
+    } else {
+      this.taskManagerService.createTask(payload).subscribe({
+        next: (res) => {
+          this.isSubmitting = false;
+          this.resetForm();
+          this.taskCreated.emit(res);
+        },
+        error: (err) => {
+          console.error('Failed to create task', err);
+          this.errorMessage = 'Could not create task. Please verify your connection.';
+          this.isSubmitting = false;
+        }
+      });
+    }
   }
 
   onClose(): void {

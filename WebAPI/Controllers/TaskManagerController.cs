@@ -138,21 +138,6 @@ namespace HRMSWebAPI.Controllers
             };
         }
 
-        public class BoardRequestPayload
-        {
-            public string? ViewerEmpId { get; set; }
-            public string? Scope { get; set; }
-            public string? DepartmentId { get; set; }
-            public string? AssignedToEmpId { get; set; }
-            public string? CreatedByEmpId { get; set; }
-            public string? Priority { get; set; }
-            public string? RecurrencePattern { get; set; }
-            public string? SearchKeyword { get; set; }
-            public string? FilterCard { get; set; }
-            public string? CompanyId { get; set; }
-            public int? TaskTypeId { get; set; }
-        }
-
         [HttpGet("lookups")]
         public async Task<IActionResult> GetLookups(
             [FromQuery] string? viewerId = null,
@@ -264,17 +249,25 @@ namespace HRMSWebAPI.Controllers
 
                 var board = await _repository.GetBoardAsync(filter);
 
+                var allList = board.AllTasks ?? new List<TaskCardDto>();
+                var totalCount = board.Summary.TotalCount > 0 ? board.Summary.TotalCount : allList.Count;
+                var openCount = board.Summary.OpenCount > 0 ? board.Summary.OpenCount : allList.Count(t => t.Status == "OPEN");
+                var closedCount = board.Summary.ClosedCount > 0 ? board.Summary.ClosedCount : allList.Count(t => t.Status == "CLOSED");
+                var onHoldCount = board.Summary.OnHoldCount > 0 ? board.Summary.OnHoldCount : allList.Count(t => t.Status == "ON_HOLD" || t.Status == "ON HOLD");
+                var unassignedCount = board.Summary.UnassignedCount > 0 ? board.Summary.UnassignedCount : allList.Count(t => string.IsNullOrWhiteSpace(t.AssignedToEmpId));
+                var overdueCount = board.Summary.OverdueCount > 0 ? board.Summary.OverdueCount : allList.Count(t => t.IsOverdue);
+
                 return Ok(new
                 {
                     isSuccess = true,
                     counts = new
                     {
-                        allTasks = board.Summary.TotalCount,
-                        openTasks = board.Summary.OpenCount,
-                        closedTasks = board.Summary.ClosedCount,
-                        onHoldTasks = board.Summary.OnHoldCount,
-                        unassignedTasks = board.Summary.UnassignedCount,
-                        overdueTasks = board.Summary.OverdueCount
+                        allTasks = totalCount,
+                        openTasks = openCount,
+                        closedTasks = closedCount,
+                        onHoldTasks = onHoldCount,
+                        unassignedTasks = unassignedCount,
+                        overdueTasks = overdueCount
                     },
                     openTasks = board.OpenTasks.Where(t => t.TaskId > 0).Select(MapTaskCard),
                     closedTasks = board.ClosedTasks.Where(t => t.TaskId > 0).Select(MapTaskCard),
@@ -328,33 +321,6 @@ namespace HRMSWebAPI.Controllers
             }
         }
 
-        public class CreateTaskJsonDto
-        {
-            public string Subject { get; set; } = "";
-            public string? Description { get; set; }
-            public string? DepartmentId { get; set; }
-            public string? AssignedToEmpId { get; set; }
-            public string Priority { get; set; } = "MEDIUM";
-            public DateTime? DeadlineDate { get; set; }
-            public bool IsRecurring { get; set; }
-            public string? RecurrencePattern { get; set; }
-            public int? RecurrenceInterval { get; set; }
-            public string? RecurrenceDays { get; set; }
-            public int? RecurrenceDayOfMonth { get; set; }
-            public string? RecurrenceEndType { get; set; }
-            public DateTime? RecurrenceEndDate { get; set; }
-            public int? RecurrenceOccurrencesTotal { get; set; }
-            public int? RecurrenceDueOffsetHours { get; set; }
-            public string? RecurrenceDueOffsetUnit { get; set; }
-            public string? AttachmentUrl { get; set; }
-            public string? AttachmentFileName { get; set; }
-            public string? CreatedByEmpId { get; set; }
-            public string? CreatedByName { get; set; }
-            public string? CompanyId { get; set; }
-            public int? TaskTypeId { get; set; }
-            public string? TaskTypeName { get; set; }
-        }
-
         [HttpPost("create")]
         public async Task<IActionResult> CreateTask([FromBody] CreateTaskJsonDto dto)
         {
@@ -403,14 +369,55 @@ namespace HRMSWebAPI.Controllers
             }
         }
 
-        public class UpdateStatusJsonDto
+        [HttpPost("update")]
+        public async Task<IActionResult> UpdateTask([FromBody] CreateTaskJsonDto dto)
         {
-            public int TaskId { get; set; }
-            public string NewStatus { get; set; } = "";
-            public string? Remarks { get; set; }
-            public string? UpdatedByEmpId { get; set; }
-            public string? UpdatedByName { get; set; }
-            public string? CompanyId { get; set; }
+            if (dto == null || !dto.TaskId.HasValue || dto.TaskId.Value <= 0)
+                return BadRequest(new { isSuccess = false, message = "Valid TaskId is required for update." });
+
+            if (string.IsNullOrWhiteSpace(dto.Subject))
+                return BadRequest(new { isSuccess = false, message = "Task subject is required." });
+
+            try
+            {
+                var req = new CreateTaskRequestDto
+                {
+                    Subject = dto.Subject.Trim(),
+                    Description = string.IsNullOrWhiteSpace(dto.Description) ? null : dto.Description.Trim(),
+                    TargetDeptId = string.IsNullOrWhiteSpace(dto.DepartmentId) ? null : dto.DepartmentId.Trim(),
+                    AssignedToEmpId = string.IsNullOrWhiteSpace(dto.AssignedToEmpId) ? null : dto.AssignedToEmpId.Trim(),
+                    Priority = string.IsNullOrWhiteSpace(dto.Priority) ? "MEDIUM" : dto.Priority.ToUpper().Trim(),
+                    DueDate = dto.DeadlineDate ?? DateTime.Today.AddDays(1).AddHours(18),
+                    IsRecurring = dto.IsRecurring,
+                    RecurrenceType = dto.IsRecurring ? (dto.RecurrencePattern ?? "WEEKLY").ToUpper().Trim() : "NONE",
+                    RecurrenceInterval = dto.RecurrenceInterval.GetValueOrDefault(1),
+                    RecurrenceDays = dto.RecurrenceDays,
+                    RecurrenceDayOfMonth = dto.RecurrenceDayOfMonth,
+                    RecurrenceEndType = (dto.RecurrenceEndType ?? "NEVER").ToUpper().Trim(),
+                    RecurrenceEndDate = dto.RecurrenceEndDate,
+                    RecurrenceOccurrencesTotal = dto.RecurrenceOccurrencesTotal,
+                    RecurrenceDueOffsetHours = dto.RecurrenceDueOffsetHours ?? 24,
+                    RecurrenceDueOffsetUnit = dto.RecurrenceDueOffsetUnit ?? "DAYS",
+                    CompanyId = ResolveCompanyId(dto.CompanyId),
+                    TaskTypeId = dto.TaskTypeId,
+                    TaskTypeName = dto.TaskTypeName,
+                    ActionById = ResolveViewerId(dto.CreatedByEmpId),
+                    ActionByName = dto.CreatedByName ?? "Admin"
+                };
+
+                var success = await _repository.UpdateTaskAsync(dto.TaskId.Value, req);
+
+                return Ok(new
+                {
+                    isSuccess = success,
+                    message = success ? "Task updated successfully." : "Failed to update task.",
+                    taskId = dto.TaskId.Value
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { isSuccess = false, message = "Error updating task: " + ex.Message });
+            }
         }
 
         [HttpPost("update-status")]

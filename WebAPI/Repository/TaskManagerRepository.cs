@@ -94,7 +94,7 @@ namespace HRMSWebAPI.Repository
             response.AllTasks = tasks;
             response.OpenTasks = tasks.Where(t => t.Status == "OPEN").ToList();
             response.ClosedTasks = tasks.Where(t => t.Status == "CLOSED").ToList();
-            response.OnHoldTasks = tasks.Where(t => t.Status == "ON_HOLD").ToList();
+            response.OnHoldTasks = tasks.Where(t => t.Status == "ON_HOLD" || t.Status == "ON HOLD").ToList();
 
             return response;
         }
@@ -163,6 +163,76 @@ namespace HRMSWebAPI.Repository
                 throw new InvalidOperationException("Failed to create task record.");
 
             return ((int)result.TaskId, (string)result.TaskCode);
+        }
+
+        public async Task<bool> UpdateTaskAsync(int taskId, CreateTaskRequestDto dto)
+        {
+            using var conn = DataBaseFactory.ConnString();
+            var parameters = new
+            {
+                TaskId = taskId,
+                Subject = dto.Subject,
+                Description = dto.Description,
+                Priority = string.IsNullOrWhiteSpace(dto.Priority) ? "MEDIUM" : dto.Priority,
+                TargetDeptId = string.IsNullOrWhiteSpace(dto.TargetDeptId) ? null : dto.TargetDeptId,
+                AssignedToEmpId = string.IsNullOrWhiteSpace(dto.AssignedToEmpId) ? null : dto.AssignedToEmpId,
+                DueDate = dto.DueDate,
+                IsRecurring = dto.IsRecurring,
+                RecurrenceType = dto.RecurrenceType ?? "NONE",
+                RecurrenceInterval = dto.RecurrenceInterval > 0 ? dto.RecurrenceInterval : 1,
+                RecurrenceDays = dto.RecurrenceDays,
+                RecurrenceDayOfMonth = dto.RecurrenceDayOfMonth,
+                RecurrenceEndType = dto.RecurrenceEndType ?? "NEVER",
+                RecurrenceEndDate = dto.RecurrenceEndDate,
+                RecurrenceOccurrencesTotal = dto.RecurrenceOccurrencesTotal,
+                RecurrenceDueOffsetHours = dto.RecurrenceDueOffsetHours ?? 24,
+                RecurrenceDueOffsetUnit = dto.RecurrenceDueOffsetUnit ?? "DAYS",
+                TaskTypeId = dto.TaskTypeId,
+                TaskTypeName = dto.TaskTypeName ?? "General",
+                ActionByName = dto.ActionByName ?? "Admin"
+            };
+
+            var result = await conn.QueryFirstOrDefaultAsync<dynamic>(
+                "dbo.usp_HR_Task_UpdateTaskDetails",
+                parameters,
+                commandType: CommandType.StoredProcedure);
+
+            return result != null && Convert.ToInt32(result.Success) == 1;
+        }
+
+        public async Task<bool> UpdateTaskAsync(int taskId, CreateTaskRequestDto dto)
+        {
+            using var conn = DataBaseFactory.ConnString();
+            var parameters = new
+            {
+                TaskId = taskId,
+                Subject = dto.Subject,
+                Description = dto.Description,
+                Priority = string.IsNullOrWhiteSpace(dto.Priority) ? "MEDIUM" : dto.Priority,
+                TargetDeptId = string.IsNullOrWhiteSpace(dto.TargetDeptId) ? null : dto.TargetDeptId,
+                AssignedToEmpId = string.IsNullOrWhiteSpace(dto.AssignedToEmpId) ? null : dto.AssignedToEmpId,
+                DueDate = dto.DueDate,
+                IsRecurring = dto.IsRecurring,
+                RecurrenceType = dto.RecurrenceType ?? "NONE",
+                RecurrenceInterval = dto.RecurrenceInterval > 0 ? dto.RecurrenceInterval : 1,
+                RecurrenceDays = dto.RecurrenceDays,
+                RecurrenceDayOfMonth = dto.RecurrenceDayOfMonth,
+                RecurrenceEndType = dto.RecurrenceEndType ?? "NEVER",
+                RecurrenceEndDate = dto.RecurrenceEndDate,
+                RecurrenceOccurrencesTotal = dto.RecurrenceOccurrencesTotal,
+                RecurrenceDueOffsetHours = dto.RecurrenceDueOffsetHours ?? 24,
+                RecurrenceDueOffsetUnit = dto.RecurrenceDueOffsetUnit ?? "DAYS",
+                TaskTypeId = dto.TaskTypeId,
+                TaskTypeName = dto.TaskTypeName ?? "General",
+                ActionByName = dto.ActionByName ?? "Admin"
+            };
+
+            var result = await conn.QueryFirstOrDefaultAsync<dynamic>(
+                "dbo.usp_HR_Task_UpdateTaskDetails",
+                parameters,
+                commandType: CommandType.StoredProcedure);
+
+            return result != null && Convert.ToInt32(result.Success) == 1;
         }
 
         public async Task<bool> UpdateStatusAndRemarksAsync(TaskStatusTransitionRequestDto dto, string? attachmentName, string? attachmentPath)

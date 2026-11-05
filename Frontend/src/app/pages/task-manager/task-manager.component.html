@@ -403,7 +403,7 @@
           <!-- Row 1: Ticket ID, General Master Category, Recurring & Overdue -->
           <div class="stc-header">
             <div class="d-flex align-items-center gap-1.5 flex-wrap">
-              <span class="ticket-id">#{{ task.taskCode }}</span>
+              <span class="ticket-id" (click)="onTaskClick(task); $event.stopPropagation()">#{{ task.taskCode }}</span>
               <span *ngIf="task.taskTypeName" class="stc-category" [ngClass]="'cat-' + (task.taskTypeName | lowercase)">
                 <i [class]="getTaskTypeIcon(task.taskTypeName)"></i>
                 {{ task.taskTypeName }}
@@ -421,7 +421,7 @@
           </div>
 
           <!-- Row 2: Title & Description -->
-          <h6 class="stc-title" [title]="task.subject">{{ task.subject }}</h6>
+          <h6 class="stc-title" [title]="task.subject" (click)="onTaskClick(task); $event.stopPropagation()">{{ task.subject }}</h6>
           <p *ngIf="task.description" class="stc-desc">{{ task.description }}</p>
 
           <!-- Optional Latest Remark Note -->
@@ -544,7 +544,7 @@
 
           <div class="stc-header">
             <div class="d-flex align-items-center gap-1.5 flex-wrap">
-              <span class="ticket-id">#{{ task.taskCode }}</span>
+              <span class="ticket-id" (click)="onTaskClick(task); $event.stopPropagation()">#{{ task.taskCode }}</span>
               <span *ngIf="task.taskTypeName" class="stc-category" [ngClass]="'cat-' + (task.taskTypeName | lowercase)">
                 <i [class]="getTaskTypeIcon(task.taskTypeName)"></i>
                 {{ task.taskTypeName }}
@@ -561,7 +561,7 @@
             </div>
           </div>
 
-          <h6 class="stc-title" [title]="task.subject">{{ task.subject }}</h6>
+          <h6 class="stc-title" [title]="task.subject" (click)="onTaskClick(task); $event.stopPropagation()">{{ task.subject }}</h6>
           <p *ngIf="task.description" class="stc-desc">{{ task.description }}</p>
 
           <div *ngIf="task.lastRemarks" class="stc-remark-note hold-note" [title]="task.lastRemarks">
@@ -669,7 +669,7 @@
 
           <div class="stc-header">
             <div class="d-flex align-items-center gap-1.5 flex-wrap">
-              <span class="ticket-id">#{{ task.taskCode }}</span>
+              <span class="ticket-id" (click)="onTaskClick(task); $event.stopPropagation()">#{{ task.taskCode }}</span>
               <span *ngIf="task.taskTypeName" class="stc-category" [ngClass]="'cat-' + (task.taskTypeName | lowercase)">
                 <i [class]="getTaskTypeIcon(task.taskTypeName)"></i>
                 {{ task.taskTypeName }}
@@ -681,7 +681,7 @@
             </span>
           </div>
 
-          <h6 class="stc-title done-strike" [title]="task.subject">{{ task.subject }}</h6>
+          <h6 class="stc-title done-strike" [title]="task.subject" (click)="onTaskClick(task); $event.stopPropagation()">{{ task.subject }}</h6>
 
           <div *ngIf="task.lastRemarks" class="stc-remark-note done-note" [title]="task.lastRemarks">
             <i class="fa-solid fa-circle-check"></i>
@@ -798,7 +798,15 @@
               </div>
             </div>
 
-            <div class="stc-right-meta">
+            <div class="stc-right-meta d-flex align-items-center gap-1.5">
+              <button
+                type="button"
+                class="btn-edit-cadence"
+                (click)="onEditTaskClick(rec, $event)"
+                title="Edit recurring schedule & parameters"
+              >
+                <i class="fa-solid fa-pen-to-square me-1"></i>Edit
+              </button>
               <button
                 type="button"
                 class="btn-trigger-now"
@@ -972,6 +980,7 @@
 <app-create-task-modal
   [isOpen]="isCreateModalOpen"
   [defaultRecurring]="createModalDefaultRecurring"
+  [editingTask]="editingTask"
   [departments]="departments"
   [employees]="employees"
   [taskTypes]="taskTypes"

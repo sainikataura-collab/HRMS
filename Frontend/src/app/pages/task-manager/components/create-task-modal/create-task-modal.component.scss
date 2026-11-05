@@ -56,9 +56,9 @@
 // 1. TOP BREADCRUMB BAR
 // -----------------------------------------------------------------------------
 .composer-topbar {
-  padding: 12px 20px;
-  background: #fbfcfe;
-  border-bottom: 1px solid #edf2f7;
+  padding: 14px 22px;
+  background: #f1f5f9;
+  border-bottom: 1.5px solid #cbd5e1;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -76,22 +76,22 @@
       gap: 6px;
       font-size: 11px;
       font-weight: 700;
-      color: #3080e8;
-      background: #eff6ff;
-      border: 1px solid #dbeafe;
+      color: #1e40af;
+      background: #dbeafe;
+      border: 1px solid #bfdbfe;
       padding: 3px 9px;
       border-radius: 6px;
     }
 
     .breadcrumb-sep {
       font-size: 9px;
-      color: #cbd5e1;
+      color: #94a3b8;
     }
 
     .composer-step-title {
-      font-size: 12.5px;
+      font-size: 13px;
       font-weight: 700;
-      color: #1e293b;
+      color: #0f172a;
     }
 
     .selected-category-tag {
@@ -99,10 +99,10 @@
       align-items: center;
       gap: 5px;
       font-size: 10.5px;
-      font-weight: 600;
-      color: #475569;
-      background: #f1f5f9;
-      padding: 2px 8px;
+      font-weight: 700;
+      color: #334155;
+      background: #e2e8f0;
+      padding: 3px 10px;
       border-radius: 999px;
     }
   }
@@ -115,20 +115,20 @@
     .kbd-esc {
       font-size: 9.5px;
       font-weight: 700;
-      color: #94a3b8;
-      background: #f1f5f9;
-      border: 1px solid #e2e8f0;
+      color: #64748b;
+      background: #e2e8f0;
+      border: 1px solid #cbd5e1;
       padding: 2px 6px;
       border-radius: 4px;
     }
 
     .btn-composer-close {
-      width: 28px;
-      height: 28px;
+      width: 30px;
+      height: 30px;
       border-radius: 7px;
       border: 1px solid transparent;
       background: transparent;
-      color: #64748b;
+      color: #475569;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -151,48 +151,82 @@
   overflow-y: auto;
   flex: 1 1 auto;
   min-height: 0;
+  background: #f8fafc;
 }
 
 .editorial-canvas {
-  padding: 18px 22px 14px;
-  background: #ffffff;
-  border-bottom: 1px solid #edf2f7;
+  padding: 16px 22px 14px;
+  background: #f8fafc;
+  border-bottom: 1.5px solid #e2e8f0;
 
-  .editorial-title-input {
-    width: 100%;
-    border: none;
-    outline: none;
-    background: transparent;
-    font-size: 17px;
-    font-weight: 700;
-    color: #0f172a;
-    letter-spacing: -0.3px;
-    padding: 0 0 8px 0;
-    border-bottom: 1.5px solid transparent;
-    transition: border-color 0.15s ease;
-    font-family: inherit;
+  .subject-card-box {
+    background: #ffffff;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 10px;
+    padding: 14px 16px;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
 
-    &::placeholder {
-      color: #94a3b8;
-      font-weight: 500;
+    .subject-input-label,
+    .desc-input-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #475569;
+      text-transform: uppercase;
+      letter-spacing: 0.35px;
+      margin-bottom: 5px;
+      display: block;
     }
 
-    &:focus {
-      border-bottom-color: #3080e8;
+    .studio-subject-input {
+      width: 100%;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      color: #0f172a;
+      padding: 9px 12px;
+      background: #fafbfc;
+      transition: all 0.15s ease;
+      font-family: inherit;
+
+      &::placeholder {
+        color: #94a3b8;
+        font-weight: 400;
+      }
+
+      &:focus {
+        background: #ffffff;
+        border-color: #3080e8;
+        box-shadow: 0 0 0 3px rgba(48, 128, 232, 0.15);
+        outline: none;
+      }
+    }
+
+    .studio-desc-input {
+      width: 100%;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 12.5px;
+      color: #334155;
+      line-height: 1.5;
+      padding: 8px 12px;
+      background: #fafbfc;
+      resize: vertical;
+      font-family: inherit;
+      transition: all 0.15s ease;
+
+      &::placeholder {
+        color: #94a3b8;
+      }
+
+      &:focus {
+        background: #ffffff;
+        border-color: #3080e8;
+        box-shadow: 0 0 0 3px rgba(48, 128, 232, 0.15);
+        outline: none;
+      }
     }
   }
-
-  .editorial-desc-input {
-    width: 100%;
-    border: none;
-    outline: none;
-    background: transparent;
-    font-size: 12.5px;
-    font-weight: 400;
-    color: #334155;
-    line-height: 1.5;
-    padding: 8px 0 4px;
-    resize: none;
     font-family: inherit;
 
     &::placeholder {

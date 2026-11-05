@@ -88,6 +88,14 @@ namespace HRMSWebAPI.Models
         public int DeptTaskCount { get; set; }
         public int CreatedByMeCount { get; set; }
         public int SelfTaskCount { get; set; }
+
+        // SQL Stored Procedure alias properties for Dapper mapping
+        public int TotalTasks { get => TotalCount; set => TotalCount = value; }
+        public int OpenTasks { get => OpenCount; set => OpenCount = value; }
+        public int ClosedTasks { get => ClosedCount; set => ClosedCount = value; }
+        public int OnHoldTasks { get => OnHoldCount; set => OnHoldCount = value; }
+        public int UnassignedTasks { get => UnassignedCount; set => UnassignedCount = value; }
+        public int OverdueTasks { get => OverdueCount; set => OverdueCount = value; }
     }
 
     // =========================================================================
@@ -224,6 +232,59 @@ namespace HRMSWebAPI.Models
         public string? ActionById { get; set; }
         public string? ActionByName { get; set; }
         public IFormFile? Attachment { get; set; }
+    }
+
+    public class BoardRequestPayload
+    {
+        public string? ViewerEmpId { get; set; }
+        public string? Scope { get; set; }
+        public string? DepartmentId { get; set; }
+        public string? AssignedToEmpId { get; set; }
+        public string? CreatedByEmpId { get; set; }
+        public string? Priority { get; set; }
+        public string? RecurrencePattern { get; set; }
+        public string? SearchKeyword { get; set; }
+        public string? FilterCard { get; set; }
+        public string? CompanyId { get; set; }
+        public int? TaskTypeId { get; set; }
+    }
+
+    public class CreateTaskJsonDto
+    {
+        public int? TaskId { get; set; }
+        public string Subject { get; set; } = "";
+        public string? Description { get; set; }
+        public string? DepartmentId { get; set; }
+        public string? AssignedToEmpId { get; set; }
+        public string Priority { get; set; } = "MEDIUM";
+        public DateTime? DeadlineDate { get; set; }
+        public bool IsRecurring { get; set; }
+        public string? RecurrencePattern { get; set; }
+        public int? RecurrenceInterval { get; set; }
+        public string? RecurrenceDays { get; set; }
+        public int? RecurrenceDayOfMonth { get; set; }
+        public string? RecurrenceEndType { get; set; }
+        public DateTime? RecurrenceEndDate { get; set; }
+        public int? RecurrenceOccurrencesTotal { get; set; }
+        public int? RecurrenceDueOffsetHours { get; set; }
+        public string? RecurrenceDueOffsetUnit { get; set; }
+        public string? AttachmentUrl { get; set; }
+        public string? AttachmentFileName { get; set; }
+        public string? CreatedByEmpId { get; set; }
+        public string? CreatedByName { get; set; }
+        public string? CompanyId { get; set; }
+        public int? TaskTypeId { get; set; }
+        public string? TaskTypeName { get; set; }
+    }
+
+    public class UpdateStatusJsonDto
+    {
+        public int TaskId { get; set; }
+        public string NewStatus { get; set; } = "";
+        public string? Remarks { get; set; }
+        public string? UpdatedByEmpId { get; set; }
+        public string? UpdatedByName { get; set; }
+        public string? CompanyId { get; set; }
     }
 }
 

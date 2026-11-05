@@ -11,7 +11,10 @@
           <i class="fa-solid fa-cube"></i> Task Workspace
         </span>
         <i class="fa-solid fa-chevron-right breadcrumb-sep"></i>
-        <span class="composer-step-title">New Task Composer</span>
+        <span class="composer-step-title">{{ isEditMode ? 'Edit Task / Recurring Cadence' : 'New Task Composer' }}</span>
+        <span class="selected-category-tag" *ngIf="isEditMode && editingTask">
+          #{{ editingTask.taskCode }}
+        </span>
         <span class="selected-category-tag">
           <i [class]="getTaskTypeIcon(selectedTaskTypeName)"></i>
           {{ selectedTaskTypeName }}
@@ -37,24 +40,40 @@
 
       <!-- ZONE A: EDITORIAL TITLE & DESCRIPTION CANVAS -->
       <div class="editorial-canvas">
-        <input
-          type="text"
-          class="editorial-title-input"
-          placeholder="Task title — What needs to be accomplished? *"
-          [(ngModel)]="subject"
-          [disabled]="isSubmitting"
-          maxlength="200"
-          autofocus
-        />
 
-        <textarea
-          class="editorial-desc-input"
-          rows="2"
-          placeholder="Add actionable context, deliverables, checklist items, or reference notes..."
-          [(ngModel)]="description"
-          [disabled]="isSubmitting"
-          maxlength="2000"
-        ></textarea>
+        <!-- Distinct Subject & Description Box -->
+        <div class="subject-card-box">
+          <div class="subject-field-row">
+            <label class="subject-input-label">
+              <i class="fa-solid fa-pen-nib text-primary me-1"></i>
+              Task Title / Subject <span class="text-danger">*</span>
+            </label>
+            <input
+              type="text"
+              class="form-control studio-subject-input"
+              placeholder="e.g. Monthly GST Filing & Reconciliation"
+              [(ngModel)]="subject"
+              [disabled]="isSubmitting"
+              maxlength="200"
+              autofocus
+            />
+          </div>
+
+          <div class="desc-field-row mt-2.5">
+            <label class="desc-input-label">
+              <i class="fa-regular fa-file-lines text-muted me-1"></i>
+              Description &amp; Actionable Context
+            </label>
+            <textarea
+              class="form-control studio-desc-input"
+              rows="2"
+              placeholder="Add actionable context, deliverables, checklist items, or reference notes..."
+              [(ngModel)]="description"
+              [disabled]="isSubmitting"
+              maxlength="2000"
+            ></textarea>
+          </div>
+        </div>
 
         <!-- GENERAL MASTER TASK TYPE RIBBON -->
         <div class="category-selector-bar">
@@ -590,7 +609,7 @@
         >
           <i *ngIf="isSubmitting" class="fa-solid fa-spinner fa-spin"></i>
           <i *ngIf="!isSubmitting" class="fa-solid fa-paper-plane"></i>
-          <span>{{ isSubmitting ? 'Creating...' : (isRecurring ? 'Create Recurring Task' : 'Create Task') }}</span>
+          <span>{{ isSubmitting ? (isEditMode ? 'Updating...' : 'Creating...') : (isEditMode ? 'Update Task' : (isRecurring ? 'Create Recurring Task' : 'Create Task')) }}</span>
         </button>
       </div>
     </div>

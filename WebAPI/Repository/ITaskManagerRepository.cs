@@ -10,6 +10,7 @@ namespace HRMSWebAPI.Repository
         Task<TaskBoardResponseDto> GetBoardAsync(TaskBoardFilterDto filter);
         Task<TaskDetailResponseDto?> GetTaskByIdWithHistoryAsync(int taskId, string? companyId = null);
         Task<(int TaskId, string TaskCode)> CreateTaskAsync(CreateTaskRequestDto dto, string? attachmentName, string? attachmentPath);
+        Task<bool> UpdateTaskAsync(int taskId, CreateTaskRequestDto dto);
         Task<bool> UpdateStatusAndRemarksAsync(TaskStatusTransitionRequestDto dto, string? attachmentName, string? attachmentPath);
         Task<int> ProcessRecurringTasksAsync();
     }

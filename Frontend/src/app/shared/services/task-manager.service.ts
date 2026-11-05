@@ -273,6 +273,19 @@ export class TaskManagerService {
   }
 
   /**
+   * Update an existing task or recurring cadence
+   */
+  updateTask(request: TaskCreateRequestDto & { taskId: number }): Observable<any> {
+    const payload = {
+      ...request,
+      companyId: this.currentCompanyId,
+      createdByEmpId: request.createdByEmpId || this.currentUserId,
+      createdByName: request.createdByName || this.currentUserName
+    };
+    return this.http.post(`${this.baseUrl}/TaskManager/update`, payload);
+  }
+
+  /**
    * Upload an attachment file to /Uploads/Tasks
    */
   uploadAttachment(file: File): Observable<{ fileName: string; fileUrl: string }> {

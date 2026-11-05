@@ -120,6 +120,7 @@ export class TaskManagerComponent implements OnInit, OnDestroy {
 
   // Create Task Modal State
   isCreateModalOpen = false;
+  editingTask: TaskCardDto | null = null;
 
   // Detail Drawer State
   isDetailDrawerOpen = false;
@@ -459,6 +460,7 @@ export class TaskManagerComponent implements OnInit, OnDestroy {
    * Open task creation modal (standard one-time task)
    */
   onCreateTaskClick(): void {
+    this.editingTask = null;
     this.createModalDefaultRecurring = false;
     this.isCreateModalOpen = true;
     this.openCreateModal.emit();
@@ -468,9 +470,22 @@ export class TaskManagerComponent implements OnInit, OnDestroy {
    * Open task creation modal with recurring studio pre-activated
    */
   onCreateRecurringClick(): void {
+    this.editingTask = null;
     this.createModalDefaultRecurring = true;
     this.isCreateModalOpen = true;
     this.openCreateModal.emit();
+  }
+
+  /**
+   * Open task editor for a recurring task or standard task
+   */
+  onEditTaskClick(task: TaskCardDto, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    this.editingTask = task;
+    this.createModalDefaultRecurring = !!task.isRecurring;
+    this.isCreateModalOpen = true;
   }
 
   /**
@@ -498,12 +513,14 @@ export class TaskManagerComponent implements OnInit, OnDestroy {
 
   onTaskCreated(event: any): void {
     this.isCreateModalOpen = false;
+    this.editingTask = null;
     this.createModalDefaultRecurring = false;
     this.loadBoard();
   }
 
   onCreateModalCancelled(): void {
     this.isCreateModalOpen = false;
+    this.editingTask = null;
     this.createModalDefaultRecurring = false;
   }
 }
