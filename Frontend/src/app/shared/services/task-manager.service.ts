@@ -41,6 +41,7 @@ export interface TaskCardDto {
   recurrenceOccurrencesTotal?: number;
   recurrenceDueOffsetHours?: number;
   recurrenceDueOffsetUnit?: string;
+  nextOccurrenceDate?: string;
   hasAttachments: boolean;
   attachmentUrl?: string;
   attachmentFileName?: string;
@@ -100,6 +101,7 @@ export interface TaskCreateRequestDto {
   recurrenceOccurrencesTotal?: number;
   recurrenceDueOffsetHours?: number;
   recurrenceDueOffsetUnit?: string;
+  nextOccurrenceDate?: string;
   attachmentUrl?: string;
   attachmentFileName?: string;
   createdByEmpId?: string;
