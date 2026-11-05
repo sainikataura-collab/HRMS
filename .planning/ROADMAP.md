@@ -11,10 +11,28 @@ This roadmap delivers the complete HR Task Manager & Interactive Kanban Module i
 - [x] **Phase 5: Task Manager Backend Architecture & Database Engine** - SQL Server tables (`HR_TaskMaster`, `HR_TaskHistory`), stored procedures (`usp_HR_Task_...`), role/HOD visibility engine, attachment upload support, recurring task generator (`DAILY`, `WEEKLY`, `MONTHLY`, `YEARLY`), and WebAPI controller.
 - [x] **Phase 6: Interactive Drag-and-Drop Kanban Board, KPI Filter Cards & Remarks Workflow** - Top clickable KPI summary cards (`Open`, `Closed`, `On Hold`, `Unassigned`, `Overdue`), multi-filter bar, 3-column CDK drag-and-drop Kanban board matching reference screenshot, and mandatory transition remarks popup modal.
 - [x] **Phase 7: Task Creation Modal, Attachment & Full History Drawer & Dual Portal Routing** - Create Task modal with recurrence & file attachment, slide-out/modal Task Detail & Full History timeline view, and navigation integration in both HR Module and Employee Task-Box.
+- [ ] **Phase 8: Task Visibility & Role Scoping** - Shared visibility function, JWT-only identity, task-level 403 guards, creator persistence fix.
 
 ---
 
 ## Phase Details
+
+### Phase 8: Task Visibility & Role Scoping
+
+**Goal**: Role-correct task visibility (Admin / HOD / Reporting Manager / Employee) via one shared visibility function, JWT-only identity, task-level access checks, and guaranteed creator persistence.
+**Depends on**: Phase 7
+**Requirements**: VIS-01, VIS-02, VIS-03, VIS-04, SEC-01, SEC-02, DATA-01
+**Success Criteria**:
+  1. Admin (role 1/2, incl. employee-linked admins) sees all company tasks.
+  2. HOD sees own + dept-targeted + dept-created + dept-assigned + direct reports' tasks; Manager sees own + direct reports'; Employee sees only created/assigned.
+  3. Unknown viewer sees nothing; client-sent viewer IDs are ignored.
+  4. `GET /{taskId}` and update endpoints return 403 outside visibility.
+  5. No active task has a NULL creator.
+
+**Plans**: 1 plan
+- [ ] 08-01-PLAN.md — `fn_HR_Task_VisibleTasks` + SP rewiring, controller JWT hardening, DEPT chip gating, role matrix verification.
+
+---
 
 ### Phase 5: Task Manager Backend Architecture & Database Engine
 
