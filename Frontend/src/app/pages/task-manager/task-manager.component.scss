@@ -697,16 +697,17 @@
     }
   }
 
-  // Compact Studio Task Card
+  // Compact Studio Task Card (Matches user reference exactly)
   .studio-task-card {
     background: #ffffff;
     border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    padding: 8px 10px; // Compact padding
+    border-radius: 10px;
+    padding: 10px 12px;
     cursor: grab;
     position: relative;
     transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
-    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+    box-sizing: border-box;
 
     &.priority-edge-high { border-left: 3px solid #ef4444; }
     &.priority-edge-medium { border-left: 3px solid #3080e8; }
@@ -723,143 +724,222 @@
     }
 
     &.card-is-closed {
-      opacity: 0.9;
       background: #fafbfc;
+      border-color: #e2e8f0;
     }
 
-    .stc-header {
+    &.card-is-hold {
+      background: #fffdfa;
+    }
+
+    // Top Row: Code + Category on Left | Stacked Done Box / Blinking Alert on Right
+    .stc-top-row {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: space-between;
-      gap: 5px;
-      margin-bottom: 5px;
+      gap: 6px;
+      margin-bottom: 6px;
 
-      .ticket-id {
-        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-        font-size: 10px;
-        font-weight: 700;
-        color: #64748b;
-      }
-
-      .stc-category {
-        font-size: 9px;
-        font-weight: 600;
-        padding: 1px 5px;
-        border-radius: 4px;
-        display: inline-flex;
-        align-items: center;
+      .stc-left-group {
+        display: flex;
+        flex-direction: column;
         gap: 3px;
+        align-items: flex-start;
 
-        &.cat-compliance { background: #f0fdf4; color: #16a34a; }
-        &.cat-audit { background: #eff6ff; color: #2563eb; }
-        &.cat-operations { background: #fffbeb; color: #d97706; }
-        &.cat-payroll { background: #f0f9ff; color: #0284c7; }
-        &.cat-general { background: #f8fafc; color: #475569; }
+        .ticket-id {
+          font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+          font-size: 10.5px;
+          font-weight: 700;
+          color: #475569;
+          background: #f1f5f9;
+          padding: 2px 7px;
+          border-radius: 5px;
+          display: inline-block;
+          cursor: pointer;
+
+          &:hover {
+            color: #3080e8;
+            background: #eff6ff;
+          }
+        }
+
+        .stc-category {
+          font-size: 10px;
+          font-weight: 600;
+          color: #64748b;
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+
+          i {
+            font-size: 10px;
+          }
+        }
       }
 
-      .stc-recur-pill {
-        font-size: 9px;
-        font-weight: 700;
-        background: #eff6ff;
-        color: #3080e8;
-        border: 1px solid #dbeafe;
-        padding: 1px 5px;
-        border-radius: 4px;
-        display: inline-flex;
+      // Exact Done Box from user screenshot
+      .stc-done-badge {
+        border: 1.5px solid #86efac;
+        background: #f0fdf4;
+        color: #16a34a;
+        border-radius: 7px;
+        padding: 3px 10px;
+        display: flex;
+        flex-direction: column;
         align-items: center;
-        gap: 3px;
+        justify-content: center;
+        line-height: 1.15;
+        min-width: 44px;
+        flex-shrink: 0;
+
+        .done-check {
+          font-size: 11px;
+          font-weight: 900;
+          margin-bottom: 1px;
+        }
+
+        .done-label {
+          font-size: 10px;
+          font-weight: 700;
+          letter-spacing: 0.2px;
+        }
       }
 
-      .stc-priority-pill {
-        font-size: 8.5px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.3px;
-        padding: 1px 5px;
-        border-radius: 4px;
+      .stc-top-right-meta {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
 
-        &.p-high { background: #fee2e2; color: #dc2626; }
-        &.p-medium { background: #eff6ff; color: #2563eb; }
-        &.p-low { background: #f1f5f9; color: #64748b; }
-      }
+        .stc-priority-pill {
+          font-size: 8.5px;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.3px;
+          padding: 1.5px 5px;
+          border-radius: 4px;
 
-      .stc-resolved-pill {
-        font-size: 8.5px;
-        font-weight: 700;
-        background: #ecfdf5;
-        color: #059669;
-        border: 1px solid #a7f3d0;
-        padding: 1px 5px;
-        border-radius: 4px;
+          &.p-high { background: #fee2e2; color: #dc2626; }
+          &.p-medium { background: #eff6ff; color: #2563eb; }
+          &.p-low { background: #f1f5f9; color: #64748b; }
+        }
+
+        .stc-recur-pill {
+          font-size: 9px;
+          background: #eff6ff;
+          color: #3080e8;
+          border: 1px solid #dbeafe;
+          padding: 1.5px 4px;
+          border-radius: 4px;
+          display: inline-flex;
+          align-items: center;
+        }
+
+        .stc-hold-pill {
+          font-size: 9px;
+          font-weight: 700;
+          background: #fffbeb;
+          color: #d97706;
+          border: 1px solid #fde68a;
+          padding: 1.5px 6px;
+          border-radius: 4px;
+          display: inline-flex;
+          align-items: center;
+          gap: 3px;
+        }
       }
     }
 
+    // Blinking Deadline Breach Text / Badge
+    @keyframes breachBlink {
+      0%, 100% {
+        opacity: 1;
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+        transform: scale(1);
+      }
+      50% {
+        opacity: 0.35;
+        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+        transform: scale(0.97);
+      }
+    }
+
+    .breach-alert-blinking {
+      display: inline-flex;
+      align-items: center;
+      gap: 3.5px;
+      font-size: 9px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.35px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      animation: breachBlink 1.15s infinite ease-in-out;
+      border: 1px solid;
+      flex-shrink: 0;
+
+      &.due-today {
+        background: #fff7ed;
+        color: #ea580c;
+        border-color: #fdba74;
+      }
+
+      &.overdue {
+        background: #fef2f2;
+        color: #dc2626;
+        border-color: #fca5a5;
+      }
+    }
+
+    // Title / Subject
     .stc-title {
-      font-size: 11.5px;
-      font-weight: 600;
-      color: #0f172a;
-      line-height: 1.32;
-      margin: 0 0 3px 0;
+      font-size: 12px;
+      font-weight: 700;
+      color: #1e293b;
+      line-height: 1.35;
+      margin: 4px 0 8px 0;
+      cursor: pointer;
+      word-break: break-word;
       display: -webkit-box;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
+
+      &:hover {
+        color: #3080e8;
+      }
 
       &.done-strike {
         text-decoration: line-through;
         color: #94a3b8;
+        font-weight: 600;
       }
     }
 
-    .stc-desc {
-      font-size: 10px;
-      color: #64748b;
-      line-height: 1.35;
-      margin: 0 0 5px 0;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-
-    .stc-remark-note {
-      font-size: 9.5px;
-      color: #334155;
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 5px;
-      padding: 3px 6px;
-      margin-bottom: 5px;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-
-      i { color: #3080e8; font-size: 9px; }
-      &.hold-note { background: #fffbeb; border-color: #fde68a; i { color: #d97706; } }
-      &.done-note { background: #f0fdf4; border-color: #bbf7d0; i { color: #10b981; } }
-    }
-
+    // Footer with Owner Left + Actions Right
     .stc-footer {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 6px;
-      padding-top: 5px;
+      padding-top: 6px;
       border-top: 1px solid #f1f5f9;
 
       .stc-owner {
         display: flex;
         align-items: center;
-        gap: 5px;
+        gap: 6px;
         min-width: 0;
 
         .owner-avatar {
-          width: 20px;
-          height: 20px;
+          width: 25px;
+          height: 25px;
           border-radius: 50%;
-          background: #eff6ff;
-          color: #3080e8;
-          font-size: 8.5px;
+          background: #f0fdfa;
+          color: #0d9488;
+          border: 1.5px solid #ccfbf1;
+          font-size: 9.5px;
           font-weight: 700;
           display: flex;
           align-items: center;
@@ -869,6 +949,13 @@
           &.unassigned {
             background: #f1f5f9;
             color: #94a3b8;
+            border-color: #e2e8f0;
+          }
+
+          &.done-avatar {
+            background: #f0fdf4;
+            color: #16a34a;
+            border-color: #bbf7d0;
           }
         }
 
@@ -878,82 +965,83 @@
           min-width: 0;
 
           .owner-name {
-            font-size: 10px;
-            font-weight: 600;
+            font-size: 10.5px;
+            font-weight: 700;
             color: #1e293b;
             line-height: 1.2;
           }
 
           .owner-dept {
-            font-size: 8.5px;
+            font-size: 9px;
             color: #94a3b8;
-            line-height: 1.1;
+            line-height: 1.15;
           }
         }
       }
 
-      .stc-right-meta {
+      .stc-actions {
         display: flex;
         align-items: center;
         gap: 4px;
         flex-shrink: 0;
 
-        .attach-glyph {
-          font-size: 9px;
-          color: #94a3b8;
+        .btn-reopen-card {
+          height: 25px;
+          border-radius: 6px;
+          border: 1px solid #cbd5e1;
+          background: #ffffff;
+          color: #475569;
+          font-size: 10.5px;
+          font-weight: 600;
+          padding: 0 8px;
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+          cursor: pointer;
+          transition: all 0.15s ease;
+          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+
+          &:hover {
+            background: #f8fafc;
+            border-color: #94a3b8;
+            color: #1e293b;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+          }
         }
 
-        .stc-due-pill {
-          font-size: 9px;
+        .card-action-btn {
+          height: 23px;
+          border-radius: 5px;
+          border: 1px solid;
+          font-size: 9.5px;
           font-weight: 600;
-          padding: 1.5px 5px;
-          border-radius: 4px;
-          background: #f8fafc;
-          color: #64748b;
-          border: 1px solid #e2e8f0;
+          padding: 0 7px;
           display: inline-flex;
           align-items: center;
           gap: 3px;
-
-          &.is-overdue {
-            background: #fef2f2;
-            color: #dc2626;
-            border-color: #fecaca;
-          }
-        }
-      }
-    }
-
-    .stc-quick-bar {
-      margin-top: 5px;
-      padding-top: 4px;
-      border-top: 1px dashed #e2e8f0;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-
-      .created-by-hint {
-        font-size: 8.5px;
-        color: #94a3b8;
-      }
-
-      .quick-btns {
-        display: flex;
-        gap: 4px;
-
-        .q-btn {
-          height: 19px;
-          border-radius: 4px;
-          border: none;
-          font-size: 9px;
-          font-weight: 600;
-          padding: 0 6px;
           cursor: pointer;
+          transition: all 0.15s ease;
 
-          &.hold { background: #fffbeb; color: #d97706; }
-          &.done { background: #f0fdf4; color: #16a34a; }
-          &.resume { background: #eff6ff; color: #2563eb; }
-          &.reopen { background: #f8fafc; color: #475569; }
+          &.hold {
+            background: #fffbeb;
+            color: #b45309;
+            border-color: #fde68a;
+            &:hover { background: #fef3c7; }
+          }
+
+          &.resume {
+            background: #eff6ff;
+            color: #1d4ed8;
+            border-color: #bfdbfe;
+            &:hover { background: #dbeafe; }
+          }
+
+          &.complete {
+            background: #f0fdf4;
+            color: #15803d;
+            border-color: #bbf7d0;
+            &:hover { background: #dcfce7; }
+          }
         }
       }
     }

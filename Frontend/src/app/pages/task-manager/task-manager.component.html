@@ -373,15 +373,17 @@
         >
           <div *cdkDragPlaceholder class="studio-card-placeholder"></div>
 
-          <!-- Drag Floating Preview (Styled with ::ng-deep) -->
+          <!-- Drag Floating Preview -->
           <div *cdkDragPreview class="cdk-drag-preview-card studio-task-card" [ngClass]="'priority-edge-' + (task.priority | lowercase)">
-            <div class="stc-header">
-              <span class="ticket-id">#{{ task.taskCode }}</span>
-              <span *ngIf="task.taskTypeName" class="stc-category" [ngClass]="'cat-' + (task.taskTypeName | lowercase)">
-                <i [class]="getTaskTypeIcon(task.taskTypeName)"></i>
-                {{ task.taskTypeName }}
-              </span>
-              <span class="stc-priority-pill ms-auto" [ngClass]="'p-' + (task.priority | lowercase)">
+            <div class="stc-top-row">
+              <div class="stc-left-group">
+                <span class="ticket-id">#{{ task.taskCode }}</span>
+                <span *ngIf="task.taskTypeName" class="stc-category">
+                  <i [class]="getTaskTypeIcon(task.taskTypeName)"></i>
+                  {{ task.taskTypeName }}
+                </span>
+              </div>
+              <span class="stc-priority-pill" [ngClass]="'p-' + (task.priority | lowercase)">
                 {{ task.priority }}
               </span>
             </div>
@@ -393,26 +395,30 @@
                 </div>
                 <span class="owner-name text-truncate" style="max-width: 130px;">{{ task.assignedToEmpName || 'Unassigned' }}</span>
               </div>
-              <span *ngIf="task.deadlineDate" class="stc-due-pill">
-                <i class="fa-regular fa-clock"></i>
-                {{ task.deadlineDate | date:'dd MMM' }}
-              </span>
             </div>
           </div>
 
-          <!-- Row 1: Ticket ID, General Master Category, Recurring & Overdue -->
-          <div class="stc-header">
-            <div class="d-flex align-items-center gap-1.5 flex-wrap">
+          <!-- Row 1: Left (Code + Category) | Right (Blinking Breach Badge + Priority) -->
+          <div class="stc-top-row">
+            <div class="stc-left-group">
               <span class="ticket-id" (click)="onTaskClick(task); $event.stopPropagation()">#{{ task.taskCode }}</span>
-              <span *ngIf="task.taskTypeName" class="stc-category" [ngClass]="'cat-' + (task.taskTypeName | lowercase)">
+              <span *ngIf="task.taskTypeName" class="stc-category">
                 <i [class]="getTaskTypeIcon(task.taskTypeName)"></i>
                 {{ task.taskTypeName }}
               </span>
             </div>
 
-            <div class="d-flex align-items-center gap-1">
+            <div class="stc-top-right-meta">
+              <!-- Blinking Deadline Breach Text / Badge -->
+              <span *ngIf="isBreachingToday(task) && !task.isOverdue" class="breach-alert-blinking due-today" title="Deadline arrives today!">
+                <i class="fa-solid fa-triangle-exclamation"></i> Due Today
+              </span>
+              <span *ngIf="task.isOverdue" class="breach-alert-blinking overdue" title="Deadline breached!">
+                <i class="fa-solid fa-bolt"></i> Overdue
+              </span>
+
               <span *ngIf="task.isRecurring" class="stc-recur-pill" [title]="task.recurrencePattern + ' Recurring'">
-                <i class="fa-solid fa-arrows-rotate"></i> {{ task.recurrencePattern }}
+                <i class="fa-solid fa-arrows-rotate"></i>
               </span>
               <span class="stc-priority-pill" [ngClass]="'p-' + (task.priority | lowercase)">
                 {{ task.priority }}
@@ -420,17 +426,10 @@
             </div>
           </div>
 
-          <!-- Row 2: Title & Description -->
+          <!-- Row 2: Title / Subject -->
           <h6 class="stc-title" [title]="task.subject" (click)="onTaskClick(task); $event.stopPropagation()">{{ task.subject }}</h6>
-          <p *ngIf="task.description" class="stc-desc">{{ task.description }}</p>
 
-          <!-- Optional Latest Remark Note -->
-          <div *ngIf="task.lastRemarks" class="stc-remark-note" [title]="task.lastRemarks">
-            <i class="fa-regular fa-comment-dots"></i>
-            <span class="text-truncate">{{ task.lastRemarks }}</span>
-          </div>
-
-          <!-- Row 3: Avatar, Department, Due SLA & Quick Hover Actions -->
+          <!-- Row 3: Footer with Owner and Inline Quick Actions -->
           <div class="stc-footer">
             <div class="stc-owner">
               <div
@@ -446,32 +445,12 @@
               </div>
             </div>
 
-            <div class="stc-right-meta">
-              <span *ngIf="task.attachmentFileName" class="attach-glyph" [title]="task.attachmentFileName">
-                <i class="fa-solid fa-paperclip"></i>
-              </span>
-
-              <span
-                *ngIf="task.deadlineDate"
-                class="stc-due-pill"
-                [class.is-overdue]="task.isOverdue"
-                [title]="task.isOverdue ? ('Overdue by ' + task.overdueHours + 'h') : 'Target Deadline'"
-              >
-                <i class="fa-regular" [class.fa-clock]="!task.isOverdue" [class.fa-bell]="task.isOverdue"></i>
-                {{ task.isOverdue ? (task.overdueHours + 'h late') : (task.deadlineDate | date:'dd MMM') }}
-              </span>
-            </div>
-          </div>
-
-          <!-- Quick Action Strip on Card Bottom -->
-          <div class="stc-quick-bar" (click)="$event.stopPropagation()">
-            <span class="created-by-hint">By {{ task.createdByName || 'System' }}</span>
-            <div class="quick-btns">
-              <button type="button" class="q-btn hold" (click)="quickTransition(task, 'ON_HOLD', $event)">
+            <div class="stc-actions" (click)="$event.stopPropagation()">
+              <button type="button" class="card-action-btn hold" (click)="quickTransition(task, 'ON_HOLD', $event)" title="Put on Hold">
                 <i class="fa-solid fa-pause"></i> Hold
               </button>
-              <button type="button" class="q-btn done" (click)="quickTransition(task, 'CLOSED', $event)">
-                <i class="fa-solid fa-check"></i> Complete
+              <button type="button" class="card-action-btn complete" (click)="quickTransition(task, 'CLOSED', $event)" title="Mark Done">
+                <i class="fa-solid fa-check"></i> Done
               </button>
             </div>
           </div>
@@ -515,16 +494,18 @@
         >
           <div *cdkDragPlaceholder class="studio-card-placeholder"></div>
 
-          <!-- Drag Floating Preview (Styled with ::ng-deep) -->
+          <!-- Drag Floating Preview -->
           <div *cdkDragPreview class="cdk-drag-preview-card studio-task-card" [ngClass]="'priority-edge-' + (task.priority | lowercase)">
-            <div class="stc-header">
-              <span class="ticket-id">#{{ task.taskCode }}</span>
-              <span *ngIf="task.taskTypeName" class="stc-category" [ngClass]="'cat-' + (task.taskTypeName | lowercase)">
-                <i [class]="getTaskTypeIcon(task.taskTypeName)"></i>
-                {{ task.taskTypeName }}
-              </span>
-              <span class="stc-priority-pill ms-auto" [ngClass]="'p-' + (task.priority | lowercase)">
-                {{ task.priority }}
+            <div class="stc-top-row">
+              <div class="stc-left-group">
+                <span class="ticket-id">#{{ task.taskCode }}</span>
+                <span *ngIf="task.taskTypeName" class="stc-category">
+                  <i [class]="getTaskTypeIcon(task.taskTypeName)"></i>
+                  {{ task.taskTypeName }}
+                </span>
+              </div>
+              <span class="stc-hold-pill">
+                <i class="fa-solid fa-pause"></i> Paused
               </span>
             </div>
             <h6 class="stc-title">{{ task.subject }}</h6>
@@ -535,43 +516,45 @@
                 </div>
                 <span class="owner-name text-truncate" style="max-width: 130px;">{{ task.assignedToEmpName || 'Unassigned' }}</span>
               </div>
-              <span *ngIf="task.deadlineDate" class="stc-due-pill">
-                <i class="fa-regular fa-clock"></i>
-                {{ task.deadlineDate | date:'dd MMM' }}
-              </span>
             </div>
           </div>
 
-          <div class="stc-header">
-            <div class="d-flex align-items-center gap-1.5 flex-wrap">
+          <!-- Row 1: Left (Code + Category) | Right (Blinking Breach Badge + Paused pill) -->
+          <div class="stc-top-row">
+            <div class="stc-left-group">
               <span class="ticket-id" (click)="onTaskClick(task); $event.stopPropagation()">#{{ task.taskCode }}</span>
-              <span *ngIf="task.taskTypeName" class="stc-category" [ngClass]="'cat-' + (task.taskTypeName | lowercase)">
+              <span *ngIf="task.taskTypeName" class="stc-category">
                 <i [class]="getTaskTypeIcon(task.taskTypeName)"></i>
                 {{ task.taskTypeName }}
               </span>
             </div>
 
-            <div class="d-flex align-items-center gap-1">
-              <span *ngIf="task.isRecurring" class="stc-recur-pill">
-                <i class="fa-solid fa-arrows-rotate"></i> {{ task.recurrencePattern }}
+            <div class="stc-top-right-meta">
+              <!-- Blinking Deadline Breach Text / Badge -->
+              <span *ngIf="isBreachingToday(task) && !task.isOverdue" class="breach-alert-blinking due-today" title="Deadline arrives today!">
+                <i class="fa-solid fa-triangle-exclamation"></i> Due Today
               </span>
-              <span class="stc-priority-pill" [ngClass]="'p-' + (task.priority | lowercase)">
-                {{ task.priority }}
+              <span *ngIf="task.isOverdue" class="breach-alert-blinking overdue" title="Deadline breached!">
+                <i class="fa-solid fa-bolt"></i> Overdue
+              </span>
+
+              <span class="stc-hold-pill">
+                <i class="fa-solid fa-pause"></i> Paused
               </span>
             </div>
           </div>
 
+          <!-- Row 2: Title / Subject -->
           <h6 class="stc-title" [title]="task.subject" (click)="onTaskClick(task); $event.stopPropagation()">{{ task.subject }}</h6>
-          <p *ngIf="task.description" class="stc-desc">{{ task.description }}</p>
 
-          <div *ngIf="task.lastRemarks" class="stc-remark-note hold-note" [title]="task.lastRemarks">
-            <i class="fa-solid fa-circle-pause"></i>
-            <span class="text-truncate">{{ task.lastRemarks }}</span>
-          </div>
-
+          <!-- Row 3: Footer with Owner and Resume / Complete Actions -->
           <div class="stc-footer">
             <div class="stc-owner">
-              <div class="owner-avatar" [class.unassigned]="!task.assignedToEmpName">
+              <div
+                class="owner-avatar"
+                [class.unassigned]="!task.assignedToEmpName"
+                [title]="task.assignedToEmpName || 'Unassigned'"
+              >
                 {{ task.assignedToEmpName ? getInitials(task.assignedToEmpName) : '?' }}
               </div>
               <div class="owner-meta text-truncate">
@@ -580,26 +563,12 @@
               </div>
             </div>
 
-            <div class="stc-right-meta">
-              <span
-                *ngIf="task.deadlineDate"
-                class="stc-due-pill"
-                [class.is-overdue]="task.isOverdue"
-              >
-                <i class="fa-regular fa-clock"></i>
-                {{ task.deadlineDate | date:'dd MMM' }}
-              </span>
-            </div>
-          </div>
-
-          <div class="stc-quick-bar" (click)="$event.stopPropagation()">
-            <span class="created-by-hint">Paused</span>
-            <div class="quick-btns">
-              <button type="button" class="q-btn resume" (click)="quickTransition(task, 'OPEN', $event)">
-                <i class="fa-solid fa-play"></i> Resume
+            <div class="stc-actions" (click)="$event.stopPropagation()">
+              <button type="button" class="card-action-btn resume" (click)="quickTransition(task, 'OPEN', $event)" title="Resume task">
+                <i class="fa-solid fa-play"></i> Open
               </button>
-              <button type="button" class="q-btn done" (click)="quickTransition(task, 'CLOSED', $event)">
-                <i class="fa-solid fa-check"></i> Complete
+              <button type="button" class="card-action-btn complete" (click)="quickTransition(task, 'CLOSED', $event)" title="Mark Done">
+                <i class="fa-solid fa-check"></i> Done
               </button>
             </div>
           </div>
@@ -641,53 +610,54 @@
         >
           <div *cdkDragPlaceholder class="studio-card-placeholder"></div>
 
-          <!-- Drag Floating Preview (Styled with ::ng-deep) -->
-          <div *cdkDragPreview class="cdk-drag-preview-card studio-task-card" [ngClass]="'priority-edge-' + (task.priority | lowercase)">
-            <div class="stc-header">
-              <span class="ticket-id">#{{ task.taskCode }}</span>
-              <span *ngIf="task.taskTypeName" class="stc-category" [ngClass]="'cat-' + (task.taskTypeName | lowercase)">
-                <i [class]="getTaskTypeIcon(task.taskTypeName)"></i>
-                {{ task.taskTypeName }}
-              </span>
-              <span class="stc-resolved-pill ms-auto">
-                <i class="fa-solid fa-check"></i> Done
-              </span>
+          <!-- Drag Floating Preview -->
+          <div *cdkDragPreview class="cdk-drag-preview-card studio-task-card">
+            <div class="stc-top-row">
+              <div class="stc-left-group">
+                <span class="ticket-id">#{{ task.taskCode }}</span>
+                <span *ngIf="task.taskTypeName" class="stc-category">
+                  <i [class]="getTaskTypeIcon(task.taskTypeName)"></i>
+                  {{ task.taskTypeName }}
+                </span>
+              </div>
+              <div class="stc-done-badge">
+                <i class="fa-solid fa-check done-check"></i>
+                <span class="done-label">Done</span>
+              </div>
             </div>
             <h6 class="stc-title done-strike">{{ task.subject }}</h6>
             <div class="stc-footer">
               <div class="stc-owner">
-                <div class="owner-avatar" [class.unassigned]="!task.assignedToEmpName">
-                  {{ task.assignedToEmpName ? getInitials(task.assignedToEmpName) : '?' }}
+                <div class="owner-avatar">
+                  {{ task.assignedToEmpName ? getInitials(task.assignedToEmpName) : '✓' }}
                 </div>
                 <span class="owner-name text-truncate" style="max-width: 130px;">{{ task.assignedToEmpName || 'Unassigned' }}</span>
               </div>
-              <span class="stc-due-pill">
-                <i class="fa-solid fa-check-double text-success"></i> Closed
-              </span>
             </div>
           </div>
 
-          <div class="stc-header">
-            <div class="d-flex align-items-center gap-1.5 flex-wrap">
+          <!-- Row 1: Left (Code + Category) | Right (Green Stacked Done Badge) -->
+          <div class="stc-top-row">
+            <div class="stc-left-group">
               <span class="ticket-id" (click)="onTaskClick(task); $event.stopPropagation()">#{{ task.taskCode }}</span>
-              <span *ngIf="task.taskTypeName" class="stc-category" [ngClass]="'cat-' + (task.taskTypeName | lowercase)">
+              <span *ngIf="task.taskTypeName" class="stc-category">
                 <i [class]="getTaskTypeIcon(task.taskTypeName)"></i>
                 {{ task.taskTypeName }}
               </span>
             </div>
 
-            <span class="stc-resolved-pill">
-              <i class="fa-solid fa-check"></i> Done
-            </span>
+            <div class="stc-done-badge">
+              <i class="fa-solid fa-check done-check"></i>
+              <span class="done-label">Done</span>
+            </div>
           </div>
 
-          <h6 class="stc-title done-strike" [title]="task.subject" (click)="onTaskClick(task); $event.stopPropagation()">{{ task.subject }}</h6>
+          <!-- Row 2: Title / Subject with line-through -->
+          <h6 class="stc-title done-strike" [title]="task.subject" (click)="onTaskClick(task); $event.stopPropagation()">
+            {{ task.subject }}
+          </h6>
 
-          <div *ngIf="task.lastRemarks" class="stc-remark-note done-note" [title]="task.lastRemarks">
-            <i class="fa-solid fa-circle-check"></i>
-            <span class="text-truncate">{{ task.lastRemarks }}</span>
-          </div>
-
+          <!-- Row 3: Footer with Owner on Left and Reopen Button on Right -->
           <div class="stc-footer">
             <div class="stc-owner">
               <div class="owner-avatar done-avatar">
@@ -699,11 +669,12 @@
               </div>
             </div>
 
-            <div class="stc-right-meta">
+            <div class="stc-actions" (click)="$event.stopPropagation()">
               <button
                 type="button"
-                class="q-btn reopen"
+                class="btn-reopen-card"
                 (click)="quickTransition(task, 'OPEN', $event)"
+                title="Reopen task"
               >
                 <i class="fa-solid fa-rotate-left"></i> Reopen
               </button>

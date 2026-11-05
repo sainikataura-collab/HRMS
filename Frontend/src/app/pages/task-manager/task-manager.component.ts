@@ -302,6 +302,23 @@ export class TaskManagerComponent implements OnInit, OnDestroy {
     this.loadBoard();
   }
 
+  isDueToday(deadlineStr?: string): boolean {
+    if (!deadlineStr) return false;
+    const due = new Date(deadlineStr);
+    if (isNaN(due.getTime())) return false;
+    const today = new Date();
+    return (
+      due.getFullYear() === today.getFullYear() &&
+      due.getMonth() === today.getMonth() &&
+      due.getDate() === today.getDate()
+    );
+  }
+
+  isBreachingToday(task: TaskCardDto): boolean {
+    if (!task || task.status === 'CLOSED') return false;
+    return this.isDueToday(task.deadlineDate);
+  }
+
   getTaskTypeIcon(typeName?: string): string {
     const t = (typeName || '').toUpperCase();
     if (t.includes('COMPLIANCE')) return 'fa-solid fa-shield-halved text-success';
