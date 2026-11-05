@@ -264,8 +264,12 @@ export class TaskManagerComponent implements OnInit, OnDestroy {
           this.onHoldTasks = (res.onHoldTasks || []).filter(t => !t.isRecurring);
 
           // Dedicated 4th pane for Recurring Cadences / Automation rules
-          const all = res.allTasks || [];
-          this.recurringTasks = all.filter(t => t.isRecurring);
+          const all: TaskCardDto[] = res.allTasks || [
+            ...(res.openTasks || []),
+            ...(res.closedTasks || []),
+            ...(res.onHoldTasks || [])
+          ];
+          this.recurringTasks = all.filter((t: TaskCardDto) => t.isRecurring);
           this.isLoading = false;
         },
         error: (err) => {

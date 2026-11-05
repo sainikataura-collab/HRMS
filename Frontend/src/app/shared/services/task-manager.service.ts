@@ -33,6 +33,14 @@ export interface TaskCardDto {
   relativeAgeText: string;
   isRecurring: boolean;
   recurrencePattern?: string;
+  recurrenceInterval?: number;
+  recurrenceDays?: string;
+  recurrenceDayOfMonth?: number;
+  recurrenceEndType?: string;
+  recurrenceEndDate?: string;
+  recurrenceOccurrencesTotal?: number;
+  recurrenceDueOffsetHours?: number;
+  recurrenceDueOffsetUnit?: string;
   hasAttachments: boolean;
   attachmentUrl?: string;
   attachmentFileName?: string;
@@ -46,6 +54,8 @@ export interface TaskBoardResponseDto {
   openTasks: TaskCardDto[];
   closedTasks: TaskCardDto[];
   onHoldTasks: TaskCardDto[];
+  allTasks?: TaskCardDto[];
+  data?: any;
 }
 
 export interface TaskBoardFilterDto {
