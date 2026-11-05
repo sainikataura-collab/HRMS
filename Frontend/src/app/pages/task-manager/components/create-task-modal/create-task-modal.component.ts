@@ -25,6 +25,7 @@ interface WeekDayItem {
 })
 export class CreateTaskModalComponent implements OnInit, OnChanges {
   @Input() isOpen = false;
+  @Input() defaultRecurring = false;
   @Input() departments: DepartmentLookupItem[] = [];
   @Input() employees: EmployeeLookupItem[] = [];
   @Input() taskTypes: TaskTypeLookupItem[] = [];
@@ -98,6 +99,11 @@ export class CreateTaskModalComponent implements OnInit, OnChanges {
     if (changes['taskTypes'] && this.taskTypes && this.taskTypes.length > 0) {
       if (!this.taskTypeId) {
         this.taskTypeId = this.taskTypes[0].id;
+      }
+    }
+    if (changes['isOpen'] && this.isOpen) {
+      if (this.defaultRecurring) {
+        this.isRecurring = true;
       }
     }
   }

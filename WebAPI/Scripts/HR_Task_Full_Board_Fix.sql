@@ -691,3 +691,4 @@ BEGIN
     ORDER BY h.CreatedAt ASC;
 END;
 GO
+

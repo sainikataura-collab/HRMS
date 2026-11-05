@@ -373,6 +373,33 @@
         >
           <div *cdkDragPlaceholder class="studio-card-placeholder"></div>
 
+          <!-- Drag Floating Preview (Styled with ::ng-deep) -->
+          <div *cdkDragPreview class="cdk-drag-preview-card studio-task-card" [ngClass]="'priority-edge-' + (task.priority | lowercase)">
+            <div class="stc-header">
+              <span class="ticket-id">#{{ task.taskCode }}</span>
+              <span *ngIf="task.taskTypeName" class="stc-category" [ngClass]="'cat-' + (task.taskTypeName | lowercase)">
+                <i [class]="getTaskTypeIcon(task.taskTypeName)"></i>
+                {{ task.taskTypeName }}
+              </span>
+              <span class="stc-priority-pill ms-auto" [ngClass]="'p-' + (task.priority | lowercase)">
+                {{ task.priority }}
+              </span>
+            </div>
+            <h6 class="stc-title">{{ task.subject }}</h6>
+            <div class="stc-footer">
+              <div class="stc-owner">
+                <div class="owner-avatar" [class.unassigned]="!task.assignedToEmpName">
+                  {{ task.assignedToEmpName ? getInitials(task.assignedToEmpName) : '?' }}
+                </div>
+                <span class="owner-name text-truncate" style="max-width: 130px;">{{ task.assignedToEmpName || 'Unassigned' }}</span>
+              </div>
+              <span *ngIf="task.deadlineDate" class="stc-due-pill">
+                <i class="fa-regular fa-clock"></i>
+                {{ task.deadlineDate | date:'dd MMM' }}
+              </span>
+            </div>
+          </div>
+
           <!-- Row 1: Ticket ID, General Master Category, Recurring & Overdue -->
           <div class="stc-header">
             <div class="d-flex align-items-center gap-1.5 flex-wrap">
@@ -488,6 +515,33 @@
         >
           <div *cdkDragPlaceholder class="studio-card-placeholder"></div>
 
+          <!-- Drag Floating Preview (Styled with ::ng-deep) -->
+          <div *cdkDragPreview class="cdk-drag-preview-card studio-task-card" [ngClass]="'priority-edge-' + (task.priority | lowercase)">
+            <div class="stc-header">
+              <span class="ticket-id">#{{ task.taskCode }}</span>
+              <span *ngIf="task.taskTypeName" class="stc-category" [ngClass]="'cat-' + (task.taskTypeName | lowercase)">
+                <i [class]="getTaskTypeIcon(task.taskTypeName)"></i>
+                {{ task.taskTypeName }}
+              </span>
+              <span class="stc-priority-pill ms-auto" [ngClass]="'p-' + (task.priority | lowercase)">
+                {{ task.priority }}
+              </span>
+            </div>
+            <h6 class="stc-title">{{ task.subject }}</h6>
+            <div class="stc-footer">
+              <div class="stc-owner">
+                <div class="owner-avatar" [class.unassigned]="!task.assignedToEmpName">
+                  {{ task.assignedToEmpName ? getInitials(task.assignedToEmpName) : '?' }}
+                </div>
+                <span class="owner-name text-truncate" style="max-width: 130px;">{{ task.assignedToEmpName || 'Unassigned' }}</span>
+              </div>
+              <span *ngIf="task.deadlineDate" class="stc-due-pill">
+                <i class="fa-regular fa-clock"></i>
+                {{ task.deadlineDate | date:'dd MMM' }}
+              </span>
+            </div>
+          </div>
+
           <div class="stc-header">
             <div class="d-flex align-items-center gap-1.5 flex-wrap">
               <span class="ticket-id">#{{ task.taskCode }}</span>
@@ -587,6 +641,32 @@
         >
           <div *cdkDragPlaceholder class="studio-card-placeholder"></div>
 
+          <!-- Drag Floating Preview (Styled with ::ng-deep) -->
+          <div *cdkDragPreview class="cdk-drag-preview-card studio-task-card" [ngClass]="'priority-edge-' + (task.priority | lowercase)">
+            <div class="stc-header">
+              <span class="ticket-id">#{{ task.taskCode }}</span>
+              <span *ngIf="task.taskTypeName" class="stc-category" [ngClass]="'cat-' + (task.taskTypeName | lowercase)">
+                <i [class]="getTaskTypeIcon(task.taskTypeName)"></i>
+                {{ task.taskTypeName }}
+              </span>
+              <span class="stc-resolved-pill ms-auto">
+                <i class="fa-solid fa-check"></i> Done
+              </span>
+            </div>
+            <h6 class="stc-title done-strike">{{ task.subject }}</h6>
+            <div class="stc-footer">
+              <div class="stc-owner">
+                <div class="owner-avatar" [class.unassigned]="!task.assignedToEmpName">
+                  {{ task.assignedToEmpName ? getInitials(task.assignedToEmpName) : '?' }}
+                </div>
+                <span class="owner-name text-truncate" style="max-width: 130px;">{{ task.assignedToEmpName || 'Unassigned' }}</span>
+              </div>
+              <span class="stc-due-pill">
+                <i class="fa-solid fa-check-double text-success"></i> Closed
+              </span>
+            </div>
+          </div>
+
           <div class="stc-header">
             <div class="d-flex align-items-center gap-1.5 flex-wrap">
               <span class="ticket-id">#{{ task.taskCode }}</span>
@@ -637,6 +717,111 @@
           </div>
           <div class="empty-title">No completed tasks yet</div>
           <div class="empty-sub">Drag finished tasks here to log closure</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── LANE 4: DEDICATED RECURRING TASKS & AUTOMATIONS PANE ───────────── -->
+    <div class="swimlane lane-recurring">
+      <div class="swimlane-header">
+        <div class="lane-title-group">
+          <span class="lane-ring ring-recurring">
+            <i class="fa-solid fa-arrows-rotate"></i>
+          </span>
+          <span class="lane-name">Recurring Tasks</span>
+          <span class="lane-count count-recurring">{{ recurringTasks.length }}</span>
+        </div>
+        <button
+          type="button"
+          class="btn-lane-add btn-add-recurring"
+          (click)="onCreateRecurringClick()"
+          title="Create new repeating schedule"
+        >
+          <i class="fa-solid fa-plus"></i>
+        </button>
+      </div>
+
+      <div class="swimlane-track recurring-track">
+        <!-- Recurring Template Cards -->
+        <div
+          *ngFor="let rec of recurringTasks"
+          class="studio-task-card recurring-cadence-card"
+          (click)="onTaskClick(rec)"
+        >
+          <!-- Row 1: Ticket + Category + Frequency Badge -->
+          <div class="stc-header">
+            <div class="d-flex align-items-center gap-1.5 flex-wrap">
+              <span class="ticket-id">#{{ rec.taskCode }}</span>
+              <span *ngIf="rec.taskTypeName" class="stc-category" [ngClass]="'cat-' + (rec.taskTypeName | lowercase)">
+                <i [class]="getTaskTypeIcon(rec.taskTypeName)"></i>
+                {{ rec.taskTypeName }}
+              </span>
+            </div>
+            <span class="cadence-frequency-pill">
+              <i class="fa-solid fa-arrows-rotate"></i> {{ rec.recurrencePattern }}
+            </span>
+          </div>
+
+          <!-- Title -->
+          <h6 class="stc-title" [title]="rec.subject">{{ rec.subject }}</h6>
+
+          <!-- Cadence Metadata Badges (Next Run + SLA Window + Interval) -->
+          <div class="cadence-meta-grid">
+            <div class="cadence-meta-item" *ngIf="rec.nextOccurrenceDate">
+              <i class="fa-regular fa-calendar-check text-primary"></i>
+              <span class="meta-label">Next:</span>
+              <span class="meta-val">{{ rec.nextOccurrenceDate | date:'dd MMM, HH:mm' }}</span>
+            </div>
+            <div class="cadence-meta-item">
+              <i class="fa-regular fa-hourglass-half text-warning"></i>
+              <span class="meta-label">SLA:</span>
+              <span class="meta-val">
+                {{ rec.recurrenceDueOffsetHours ? (rec.recurrenceDueOffsetHours >= 24 ? ((rec.recurrenceDueOffsetHours / 24) + ' Days') : (rec.recurrenceDueOffsetHours + ' Hours')) : '24h' }}
+              </span>
+            </div>
+            <div class="cadence-meta-item" *ngIf="rec.recurrenceEndType">
+              <i class="fa-solid fa-flag-checkered text-secondary"></i>
+              <span class="meta-label">Ends:</span>
+              <span class="meta-val">{{ rec.recurrenceEndType === 'NEVER' ? 'Continuous' : rec.recurrenceEndType }}</span>
+            </div>
+          </div>
+
+          <!-- Footer: Owner + Run Now CTA -->
+          <div class="stc-footer">
+            <div class="stc-owner">
+              <div class="owner-avatar" [class.unassigned]="!rec.assignedToEmpName">
+                {{ rec.assignedToEmpName ? getInitials(rec.assignedToEmpName) : '?' }}
+              </div>
+              <div class="owner-meta text-truncate">
+                <span class="owner-name text-truncate">{{ rec.assignedToEmpName || 'Unassigned' }}</span>
+                <span class="owner-dept text-truncate">{{ rec.departmentName || 'General' }}</span>
+              </div>
+            </div>
+
+            <div class="stc-right-meta">
+              <button
+                type="button"
+                class="btn-trigger-now"
+                (click)="onRunRecurringNow(rec, $event)"
+                [disabled]="isTriggeringRecurrence"
+                title="Generate task instance right now"
+              >
+                <i class="fa-solid fa-play me-1"></i>Run Now
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Empty state when no recurring schedules exist -->
+        <div *ngIf="recurringTasks.length === 0 && !isLoading" class="swimlane-empty empty-recurring-pane">
+          <div class="empty-orb" style="background: #eff6ff; color: #3080e8;">
+            <i class="fa-solid fa-arrows-rotate"></i>
+          </div>
+          <div class="empty-title">No Recurring Tasks</div>
+          <div class="empty-sub">Create repeating routines with automatic SLAs</div>
+          <button type="button" class="btn-create-cadence-pill mt-2" (click)="onCreateRecurringClick()">
+            <i class="fa-solid fa-plus me-1"></i>New Schedule
+          </button>
         </div>
       </div>
     </div>
@@ -786,6 +971,7 @@
 <!-- 2. Bespoke Task Composer Popup Modal -->
 <app-create-task-modal
   [isOpen]="isCreateModalOpen"
+  [defaultRecurring]="createModalDefaultRecurring"
   [departments]="departments"
   [employees]="employees"
   [taskTypes]="taskTypes"

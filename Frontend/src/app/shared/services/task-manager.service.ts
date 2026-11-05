@@ -268,5 +268,12 @@ export class TaskManagerService {
     formData.append('file', file, file.name);
     return this.http.post<{ fileName: string; fileUrl: string }>(`${this.baseUrl}/TaskManager/upload-attachment`, formData);
   }
+
+  /**
+   * Process and generate recurring task instances
+   */
+  processRecurringTasks(): Observable<any> {
+    return this.http.post(`${this.baseUrl}/TaskManager/process-recurring`, {});
+  }
 }
 

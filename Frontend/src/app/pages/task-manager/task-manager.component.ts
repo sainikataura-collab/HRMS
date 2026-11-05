@@ -103,10 +103,13 @@ export class TaskManagerComponent implements OnInit, OnDestroy {
     { id: 'YEARLY', label: 'Yearly Recurring' }
   ];
 
-  // 3 Kanban Columns
+  // 3 Execution Kanban Columns + 1 Dedicated Recurring Cadence Pane
   openTasks: TaskCardDto[] = [];
   closedTasks: TaskCardDto[] = [];
   onHoldTasks: TaskCardDto[] = [];
+  recurringTasks: TaskCardDto[] = [];
+  isTriggeringRecurrence = false;
+  createModalDefaultRecurring = false;
 
   // Drag and Drop / Quick Action Remarks Modal State
   isRemarksModalOpen = false;
@@ -144,7 +147,7 @@ export class TaskManagerComponent implements OnInit, OnDestroy {
   }
 
   get allFilteredTasks(): TaskCardDto[] {
-    return [...this.openTasks, ...this.onHoldTasks, ...this.closedTasks];
+    return [...this.openTasks, ...this.onHoldTasks, ...this.closedTasks, ...this.recurringTasks];
   }
 
   get hasActiveFilters(): boolean {
@@ -255,9 +258,14 @@ export class TaskManagerComponent implements OnInit, OnDestroy {
             unassignedTasks: 0,
             overdueTasks: 0
           };
-          this.openTasks = res.openTasks || [];
-          this.closedTasks = res.closedTasks || [];
-          this.onHoldTasks = res.onHoldTasks || [];
+          // Filter 3 Kanban execution columns for standard/instance tasks
+          this.openTasks = (res.openTasks || []).filter(t => !t.isRecurring);
+          this.closedTasks = (res.closedTasks || []).filter(t => !t.isRecurring);
+          this.onHoldTasks = (res.onHoldTasks || []).filter(t => !t.isRecurring);
+
+          // Dedicated 4th pane for Recurring Cadences / Automation rules
+          const all = res.allTasks || [];
+          this.recurringTasks = all.filter(t => t.isRecurring);
           this.isLoading = false;
         },
         error: (err) => {
@@ -444,19 +452,54 @@ export class TaskManagerComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Open task creation modal
+   * Open task creation modal (standard one-time task)
    */
   onCreateTaskClick(): void {
+    this.createModalDefaultRecurring = false;
     this.isCreateModalOpen = true;
     this.openCreateModal.emit();
   }
 
+  /**
+   * Open task creation modal with recurring studio pre-activated
+   */
+  onCreateRecurringClick(): void {
+    this.createModalDefaultRecurring = true;
+    this.isCreateModalOpen = true;
+    this.openCreateModal.emit();
+  }
+
+  /**
+   * Trigger manual execution for a recurring schedule immediately
+   */
+  onRunRecurringNow(task: TaskCardDto, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    this.isTriggeringRecurrence = true;
+    this.taskManagerService.processRecurringTasks()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          this.isTriggeringRecurrence = false;
+          this.loadBoard();
+        },
+        error: (err) => {
+          console.error('Failed to trigger recurring task', err);
+          this.isTriggeringRecurrence = false;
+          this.loadBoard();
+        }
+      });
+  }
+
   onTaskCreated(event: any): void {
     this.isCreateModalOpen = false;
+    this.createModalDefaultRecurring = false;
     this.loadBoard();
   }
 
   onCreateModalCancelled(): void {
     this.isCreateModalOpen = false;
+    this.createModalDefaultRecurring = false;
   }
 }
