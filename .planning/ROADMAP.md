@@ -11,7 +11,27 @@ This roadmap delivers the complete HR Task Manager & Interactive Kanban Module i
 - [x] **Phase 5: Task Manager Backend Architecture & Database Engine** - SQL Server tables (`HR_TaskMaster`, `HR_TaskHistory`), stored procedures (`usp_HR_Task_...`), role/HOD visibility engine, attachment upload support, recurring task generator (`DAILY`, `WEEKLY`, `MONTHLY`, `YEARLY`), and WebAPI controller.
 - [x] **Phase 6: Interactive Drag-and-Drop Kanban Board, KPI Filter Cards & Remarks Workflow** - Top clickable KPI summary cards (`Open`, `Closed`, `On Hold`, `Unassigned`, `Overdue`), multi-filter bar, 3-column CDK drag-and-drop Kanban board matching reference screenshot, and mandatory transition remarks popup modal.
 - [x] **Phase 7: Task Creation Modal, Attachment & Full History Drawer & Dual Portal Routing** - Create Task modal with recurrence & file attachment, slide-out/modal Task Detail & Full History timeline view, and navigation integration in both HR Module and Employee Task-Box.
-- [ ] **Phase 8: Task Visibility & Role Scoping** - Shared visibility function, JWT-only identity, task-level 403 guards, creator persistence fix.
+- [x] **Phase 8: Task Visibility & Role Scoping** - Shared visibility function, JWT-only identity, task-level 403 guards, creator persistence fix.
+- [ ] **Phase 9: Board Pagination, Column Scrolling & Midnight Recurrence Worker** - Independent column scrolling (no full-page scroll), column-level lazy pagination (10 per batch), and 12:00 AM daily recurrence worker.
+
+---
+
+## Phase Details
+
+### Phase 9: Board Pagination, Column Scrolling & Midnight Recurrence Worker
+
+**Goal**: Implement independent column scrolling in Kanban view, column-level pagination (10 per batch with infinite scroll on track), 12:00 AM daily recurrence background worker, and decoupling premature instance generation on creation.
+**Depends on**: Phase 8
+**Requirements**: KANBAN-SCROLL-01, KANBAN-PAGINATION-01, RECURRING-WORKER-01, RECURRING-LIFECYCLE-01
+**Success Criteria**:
+  1. Scrolling inside Open, Closed, or On Hold scrolls only that column; the page header, toolbar, and other columns stay locked in place.
+  2. Initial board load returns 10 tasks per column; scrolling near the bottom of a column loads the next 10 tasks seamlessly.
+  3. Recurring background worker runs at 12:00 AM Midnight daily (with startup catch-up check).
+  4. Creating a recurring task does not prematurely dump an instance at current date/time; it awaits its scheduled date.
+
+**Plans**: 2 plans
+- [ ] 09-01-PLAN.md — Independent column scrolling CSS, column-level pagination in `usp_HR_Task_GetBoard`, and frontend scroll listeners.
+- [ ] 09-02-PLAN.md — 12:00 AM midnight background worker in `RecurringTaskHostedService.cs` and decoupling immediate creation in `usp_HR_Task_Create`.
 
 ---
 
