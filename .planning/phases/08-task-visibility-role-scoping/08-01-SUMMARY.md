@@ -83,3 +83,4 @@ Applied via `WebAPI/Scripts/HR_Task_Visibility_Phase08.sql`:
 - **Backend Build:**
   - `dotnet build WebAPI` -> Succeeded with 0 errors.
   - API daemon running and listening on `http://localhost:5128`.
+
