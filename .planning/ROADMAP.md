@@ -28,9 +28,14 @@ This roadmap delivers the complete HR Task Manager & Interactive Kanban Module i
   3. Unknown viewer sees nothing; client-sent viewer IDs are ignored.
   4. `GET /{taskId}` and update endpoints return 403 outside visibility.
   5. No active task has a NULL creator.
+  6. Every field entered in the Create Task modal (incl. self-assign, task type, SLA unit, weekly days, attachment) is saved 1:1, with the correct creator for both User and Employee logins.
 
-**Plans**: 1 plan
-- [ ] 08-01-PLAN.md — `fn_HR_Task_VisibleTasks` + SP rewiring, controller JWT hardening, DEPT chip gating, role matrix verification.
+**Plans**: 2 plans
+**Wave 1**
+- [ ] 08-01-PLAN.md — JWT login-type claim, `fn_HR_Task_VisibleTasks` + SP rewiring, controller JWT hardening, DEPT chip gating, role matrix verification.
+
+**Wave 2** *(blocked on Wave 1)*
+- [ ] 08-02-PLAN.md — Create-ticket data integrity: correct creator, all modal fields saved, recurring inheritance, atomic insert + unique TaskCode, historical data repair.
 
 ---
 
