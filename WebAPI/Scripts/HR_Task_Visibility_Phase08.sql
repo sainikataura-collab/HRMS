@@ -868,12 +868,6 @@ BEGIN
         THROW;
     END CATCH;
 
-    -- 7. If recurring, automatically spawn the first active OPEN task instance
-    IF @IsRecurring = 1
-    BEGIN
-        EXEC dbo.usp_HR_Task_ProcessRecurring @TargetTaskId = @NewTaskId, @SuppressOutput = 1;
-    END
-
     -- 8. Return created Task details
     SELECT 
         TaskId, TaskCode, Subject, Status, Priority, TaskTypeId, TaskTypeName, AssignedToEmpId, TargetDeptId, DueDate, CompanyId, CreatedAt

@@ -74,6 +74,9 @@ namespace HRMSWebAPI.Models
         public bool OnlyOverdue { get; set; }
         public string? SearchText { get; set; }
         public string? CompanyId { get; set; }
+        public string? TargetStatus { get; set; }
+        public int PageIndex { get; set; } = 1;
+        public int PageSize { get; set; } = 10;
     }
 
     public class TaskKpiSummaryDto
@@ -262,6 +265,9 @@ namespace HRMSWebAPI.Models
         public string? FilterCard { get; set; }
         public string? CompanyId { get; set; }
         public int? TaskTypeId { get; set; }
+        public string? TargetStatus { get; set; }
+        public int? PageIndex { get; set; }
+        public int? PageSize { get; set; }
     }
 
     public class CreateTaskJsonDto

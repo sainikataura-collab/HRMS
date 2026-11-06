@@ -12,7 +12,6 @@ namespace HRMSWebAPI.Services
     {
         private readonly IServiceScopeFactory _scopeFactory;
         private readonly ILogger<RecurringTaskHostedService> _logger;
-        private readonly TimeSpan _period = TimeSpan.FromMinutes(15);
 
         public RecurringTaskHostedService(
             IServiceScopeFactory scopeFactory,
@@ -26,23 +25,56 @@ namespace HRMSWebAPI.Services
         {
             _logger.LogInformation("RecurringTaskHostedService started.");
 
-            // Wait 5 seconds after startup before initial evaluation
+            // 1. Initial catch-up sweep on application startup after 5 seconds
             try
             {
                 await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
+                _logger.LogInformation("RecurringTaskHostedService executing initial startup catch-up...");
+                await ProcessDueTasksAsync();
             }
             catch (OperationCanceledException)
             {
                 return;
             }
 
-            // Run initial processing on startup
-            await ProcessDueTasksAsync();
-
-            using var timer = new PeriodicTimer(_period);
-            while (!stoppingToken.IsCancellationRequested && await timer.WaitForNextTickAsync(stoppingToken))
+            // 2. Loop targeting 12:00:00 AM Midnight daily
+            while (!stoppingToken.IsCancellationRequested)
             {
+                var now = DateTime.Now;
+                var nextMidnight = DateTime.Today.AddDays(1); // 12:00:00 AM tomorrow
+                var delayUntilMidnight = nextMidnight - now;
+
+                if (delayUntilMidnight <= TimeSpan.Zero)
+                {
+                    delayUntilMidnight = TimeSpan.FromSeconds(1);
+                }
+
+                _logger.LogInformation("RecurringTaskHostedService sleeping for {Hours}h {Minutes}m until next midnight execution at {NextMidnight}.",
+                    (int)delayUntilMidnight.TotalHours, delayUntilMidnight.Minutes, nextMidnight);
+
+                try
+                {
+                    await Task.Delay(delayUntilMidnight, stoppingToken);
+                }
+                catch (OperationCanceledException)
+                {
+                    break;
+                }
+
+                if (stoppingToken.IsCancellationRequested) break;
+
+                _logger.LogInformation("RecurringTaskHostedService triggered at 12:00 AM midnight. Processing due recurring tasks...");
                 await ProcessDueTasksAsync();
+
+                // Small buffer so we don't re-trigger in the same second
+                try
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
+                }
+                catch (OperationCanceledException)
+                {
+                    break;
+                }
             }
 
             _logger.LogInformation("RecurringTaskHostedService is stopping.");

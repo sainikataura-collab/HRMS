@@ -73,6 +73,9 @@ export interface TaskBoardFilterDto {
   searchKeyword?: string;
   filterCard?: string; // 'ALL' | 'OPEN' | 'CLOSED' | 'ON_HOLD' | 'UNASSIGNED' | 'OVERDUE'
   companyId?: string;
+  targetStatus?: string;
+  pageIndex?: number;
+  pageSize?: number;
 }
 
 export interface TaskStatusUpdateRequestDto {
@@ -241,6 +244,23 @@ export class TaskManagerService {
     return this.http.post<TaskBoardResponseDto>(`${this.baseUrl}/TaskManager/board`, payload, {
       headers: this.getHeaders()
     });
+  }
+
+  /**
+   * Fetch paginated tasks for a specific Kanban column status on scroll
+   */
+  getColumnTasks(filter: TaskBoardFilterDto): Observable<{ isSuccess: boolean; tasks: TaskCardDto[]; pageIndex: number; pageSize: number; hasMore: boolean }> {
+    const payload = {
+      ...filter,
+      viewerEmpId: this.currentUserId,
+      userType: this.currentUserType,
+      companyId: this.currentCompanyId
+    };
+    return this.http.post<{ isSuccess: boolean; tasks: TaskCardDto[]; pageIndex: number; pageSize: number; hasMore: boolean }>(
+      `${this.baseUrl}/TaskManager/column-tasks`,
+      payload,
+      { headers: this.getHeaders() }
+    );
   }
 
   /**

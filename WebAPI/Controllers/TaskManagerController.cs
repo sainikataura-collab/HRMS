@@ -264,6 +264,9 @@ namespace HRMSWebAPI.Controllers
                     filter.TaskTypeId = payload.TaskTypeId;
                     filter.SearchText = payload.SearchKeyword;
                     filter.CompanyId = ResolveCompanyId(payload.CompanyId);
+                    filter.TargetStatus = payload.TargetStatus;
+                    filter.PageIndex = payload.PageIndex.GetValueOrDefault(1);
+                    filter.PageSize = payload.PageSize.GetValueOrDefault(10);
 
                     var fc = (payload.FilterCard ?? "").ToUpper().Trim();
                     if (fc == "UNASSIGNED") filter.OnlyUnassigned = true;
@@ -311,6 +314,60 @@ namespace HRMSWebAPI.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, new { isSuccess = false, message = "Error loading task board: " + ex.Message });
+            }
+        }
+
+        [HttpPost("column-tasks")]
+        public async Task<IActionResult> GetColumnTasksPost([FromBody] BoardRequestPayload payload)
+        {
+            return await HandleGetColumnTasks(payload);
+        }
+
+        [HttpGet("column-tasks")]
+        public async Task<IActionResult> GetColumnTasksGet([FromQuery] BoardRequestPayload payload)
+        {
+            return await HandleGetColumnTasks(payload);
+        }
+
+        private async Task<IActionResult> HandleGetColumnTasks(BoardRequestPayload? payload)
+        {
+            try
+            {
+                var (viewerId, userType) = GetViewer(payload?.ViewerEmpId, payload?.UserType);
+                if (string.IsNullOrWhiteSpace(viewerId))
+                    return Unauthorized(new { isSuccess = false, message = "Session expired or user not authenticated." });
+
+                var filter = new TaskBoardFilterDto
+                {
+                    ViewerId = viewerId,
+                    UserType = userType,
+                    Scope = !string.IsNullOrWhiteSpace(payload?.Scope) ? payload.Scope : "ALL",
+                    DeptId = payload?.DepartmentId,
+                    AssignedToEmpId = payload?.AssignedToEmpId,
+                    CreatedByEmpId = payload?.CreatedByEmpId,
+                    Priority = payload?.Priority,
+                    RecurrenceType = payload?.RecurrencePattern,
+                    TaskTypeId = payload?.TaskTypeId,
+                    SearchText = payload?.SearchKeyword,
+                    CompanyId = ResolveCompanyId(payload?.CompanyId),
+                    TargetStatus = payload?.TargetStatus ?? "OPEN",
+                    PageIndex = payload?.PageIndex > 0 ? payload.PageIndex.Value : 1,
+                    PageSize = payload?.PageSize > 0 ? payload.PageSize.Value : 10
+                };
+
+                var tasks = await _repository.GetColumnTasksAsync(filter);
+                return Ok(new
+                {
+                    isSuccess = true,
+                    tasks = tasks.Where(t => t.TaskId > 0).Select(MapTaskCard),
+                    pageIndex = filter.PageIndex,
+                    pageSize = filter.PageSize,
+                    hasMore = tasks.Count >= filter.PageSize
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { isSuccess = false, message = "Error loading column tasks: " + ex.Message });
             }
         }
 

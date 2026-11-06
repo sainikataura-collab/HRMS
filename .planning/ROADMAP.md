@@ -12,7 +12,7 @@ This roadmap delivers the complete HR Task Manager & Interactive Kanban Module i
 - [x] **Phase 6: Interactive Drag-and-Drop Kanban Board, KPI Filter Cards & Remarks Workflow** - Top clickable KPI summary cards (`Open`, `Closed`, `On Hold`, `Unassigned`, `Overdue`), multi-filter bar, 3-column CDK drag-and-drop Kanban board matching reference screenshot, and mandatory transition remarks popup modal.
 - [x] **Phase 7: Task Creation Modal, Attachment & Full History Drawer & Dual Portal Routing** - Create Task modal with recurrence & file attachment, slide-out/modal Task Detail & Full History timeline view, and navigation integration in both HR Module and Employee Task-Box.
 - [x] **Phase 8: Task Visibility & Role Scoping** - Shared visibility function, JWT-only identity, task-level 403 guards, creator persistence fix.
-- [ ] **Phase 9: Board Pagination, Column Scrolling & Midnight Recurrence Worker** - Independent column scrolling (no full-page scroll), column-level lazy pagination (10 per batch), and 12:00 AM daily recurrence worker.
+- [x] **Phase 9: Board Pagination, Column Scrolling & Midnight Recurrence Worker** - Independent column scrolling (no full-page scroll), column-level lazy pagination (10 per batch), and 12:00 AM daily recurrence worker.
 
 ---
 
@@ -30,8 +30,8 @@ This roadmap delivers the complete HR Task Manager & Interactive Kanban Module i
   4. Creating a recurring task does not prematurely dump an instance at current date/time; it awaits its scheduled date.
 
 **Plans**: 2 plans
-- [ ] 09-01-PLAN.md — Independent column scrolling CSS, column-level pagination in `usp_HR_Task_GetBoard`, and frontend scroll listeners.
-- [ ] 09-02-PLAN.md — 12:00 AM midnight background worker in `RecurringTaskHostedService.cs` and decoupling immediate creation in `usp_HR_Task_Create`.
+- [x] 09-01-PLAN.md — Independent column scrolling CSS, column-level pagination in `usp_HR_Task_GetBoard`, and frontend scroll listeners.
+- [x] 09-02-PLAN.md — 12:00 AM midnight background worker in `RecurringTaskHostedService.cs` and decoupling immediate creation in `usp_HR_Task_Create`.
 
 ---
 

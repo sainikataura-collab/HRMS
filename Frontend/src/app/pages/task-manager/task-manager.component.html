@@ -362,6 +362,7 @@
         #openList="cdkDropList"
         [cdkDropListData]="openTasks"
         (cdkDropListDropped)="onCardDrop($event, 'OPEN')"
+        (scroll)="onColumnScroll('OPEN', $event)"
         id="col-OPEN"
       >
         <div
@@ -456,6 +457,11 @@
           </div>
         </div>
 
+        <!-- Inline Loading Indicator when fetching more tasks -->
+        <div *ngIf="isLoadingMoreOpen" class="column-inline-loader">
+          <i class="fa-solid fa-spinner fa-spin me-1"></i> Loading more tasks...
+        </div>
+
         <!-- Empty State -->
         <div *ngIf="openTasks.length === 0 && !isLoading" class="swimlane-empty">
           <div class="empty-orb">
@@ -483,6 +489,7 @@
         #onHoldList="cdkDropList"
         [cdkDropListData]="onHoldTasks"
         (cdkDropListDropped)="onCardDrop($event, 'ON_HOLD')"
+        (scroll)="onColumnScroll('ON_HOLD', $event)"
         id="col-ON_HOLD"
       >
         <div
@@ -574,6 +581,11 @@
           </div>
         </div>
 
+        <!-- Inline Loading Indicator when fetching more tasks -->
+        <div *ngIf="isLoadingMoreOnHold" class="column-inline-loader">
+          <i class="fa-solid fa-spinner fa-spin me-1"></i> Loading more tasks...
+        </div>
+
         <div *ngIf="onHoldTasks.length === 0 && !isLoading" class="swimlane-empty">
           <div class="empty-orb hold-orb">
             <i class="fa-regular fa-circle-pause"></i>
@@ -600,6 +612,7 @@
         #closedList="cdkDropList"
         [cdkDropListData]="closedTasks"
         (cdkDropListDropped)="onCardDrop($event, 'CLOSED')"
+        (scroll)="onColumnScroll('CLOSED', $event)"
         id="col-CLOSED"
       >
         <div
@@ -680,6 +693,11 @@
               </button>
             </div>
           </div>
+        </div>
+
+        <!-- Inline Loading Indicator when fetching more tasks -->
+        <div *ngIf="isLoadingMoreClosed" class="column-inline-loader">
+          <i class="fa-solid fa-spinner fa-spin me-1"></i> Loading more tasks...
         </div>
 
         <div *ngIf="closedTasks.length === 0 && !isLoading" class="swimlane-empty">

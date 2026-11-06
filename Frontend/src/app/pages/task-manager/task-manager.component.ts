@@ -179,6 +179,20 @@ export class TaskManagerComponent implements OnInit, OnDestroy {
   isTriggeringRecurrence = false;
   createModalDefaultRecurring = false;
 
+  // Per-column pagination & infinite scroll state
+  readonly pageSize = 10;
+  openPage = 1;
+  closedPage = 1;
+  onHoldPage = 1;
+
+  isLoadingMoreOpen = false;
+  isLoadingMoreClosed = false;
+  isLoadingMoreOnHold = false;
+
+  hasMoreOpen = true;
+  hasMoreClosed = true;
+  hasMoreOnHold = true;
+
   // Drag and Drop / Quick Action Remarks Modal State
   isRemarksModalOpen = false;
   pendingDropEvent: CdkDragDrop<TaskCardDto[]> | null = null;
@@ -304,6 +318,16 @@ export class TaskManagerComponent implements OnInit, OnDestroy {
    */
   loadBoard(): void {
     this.isLoading = true;
+    this.openPage = 1;
+    this.closedPage = 1;
+    this.onHoldPage = 1;
+    this.isLoadingMoreOpen = false;
+    this.isLoadingMoreClosed = false;
+    this.isLoadingMoreOnHold = false;
+    this.hasMoreOpen = true;
+    this.hasMoreClosed = true;
+    this.hasMoreOnHold = true;
+
     const filterScope = this.selectedScope === 'RECURRING' ? 'ALL' : (this.selectedScope || 'ALL');
     const filter: TaskBoardFilterDto = {
       scope: filterScope,
@@ -313,7 +337,8 @@ export class TaskManagerComponent implements OnInit, OnDestroy {
       recurrencePattern: this.selectedRecurrence || undefined,
       taskTypeId: this.selectedTaskTypeId || undefined,
       searchKeyword: (this.searchKeyword || '').trim() || undefined,
-      filterCard: this.activeFilterCard || 'ALL'
+      filterCard: this.activeFilterCard || 'ALL',
+      pageSize: this.pageSize
     };
 
     this.taskManagerService.getBoard(filter)
@@ -334,6 +359,11 @@ export class TaskManagerComponent implements OnInit, OnDestroy {
           this.closedTasks = (res.closedTasks || []).filter(t => !t.isRecurring);
           this.onHoldTasks = (res.onHoldTasks || []).filter(t => !t.isRecurring);
 
+          // Track whether more pages exist for each column
+          this.hasMoreOpen = (res.openTasks || []).length >= this.pageSize;
+          this.hasMoreClosed = (res.closedTasks || []).length >= this.pageSize;
+          this.hasMoreOnHold = (res.onHoldTasks || []).length >= this.pageSize;
+
           // Dedicated 4th pane for Recurring Cadences / Automation rules
           const all: TaskCardDto[] = res.allTasks || [
             ...(res.openTasks || []),
@@ -346,6 +376,99 @@ export class TaskManagerComponent implements OnInit, OnDestroy {
         error: (err) => {
           console.error('Failed to load task board', err);
           this.isLoading = false;
+        }
+      });
+  }
+
+  /**
+   * Independent Column Scroll event handler - triggers lazy-loading next 10 tasks when nearing bottom
+   */
+  onColumnScroll(column: 'OPEN' | 'CLOSED' | 'ON_HOLD', event: Event): void {
+    const el = event.target as HTMLElement;
+    if (!el) return;
+
+    const threshold = 40;
+    const reachedBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - threshold;
+    if (!reachedBottom) return;
+
+    if (column === 'OPEN') {
+      if (this.isLoadingMoreOpen || !this.hasMoreOpen || this.isLoading) return;
+      this.loadMoreColumnTasks('OPEN');
+    } else if (column === 'ON_HOLD') {
+      if (this.isLoadingMoreOnHold || !this.hasMoreOnHold || this.isLoading) return;
+      this.loadMoreColumnTasks('ON_HOLD');
+    } else if (column === 'CLOSED') {
+      if (this.isLoadingMoreClosed || !this.hasMoreClosed || this.isLoading) return;
+      this.loadMoreColumnTasks('CLOSED');
+    }
+  }
+
+  /**
+   * Fetch next page of tasks for a specific column and append
+   */
+  loadMoreColumnTasks(column: 'OPEN' | 'CLOSED' | 'ON_HOLD'): void {
+    let nextPage = 1;
+    if (column === 'OPEN') {
+      this.isLoadingMoreOpen = true;
+      nextPage = this.openPage + 1;
+    } else if (column === 'ON_HOLD') {
+      this.isLoadingMoreOnHold = true;
+      nextPage = this.onHoldPage + 1;
+    } else if (column === 'CLOSED') {
+      this.isLoadingMoreClosed = true;
+      nextPage = this.closedPage + 1;
+    }
+
+    const filterScope = this.selectedScope === 'RECURRING' ? 'ALL' : (this.selectedScope || 'ALL');
+    const filter: TaskBoardFilterDto = {
+      scope: filterScope,
+      departmentId: this.selectedDepartmentId || undefined,
+      assignedToEmpId: this.selectedAssigneeId || undefined,
+      priority: this.selectedPriority || undefined,
+      recurrencePattern: this.selectedRecurrence || undefined,
+      taskTypeId: this.selectedTaskTypeId || undefined,
+      searchKeyword: (this.searchKeyword || '').trim() || undefined,
+      filterCard: this.activeFilterCard || 'ALL',
+      targetStatus: column,
+      pageIndex: nextPage,
+      pageSize: this.pageSize
+    };
+
+    this.taskManagerService.getColumnTasks(filter)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (res) => {
+          const nonRecurring = (res?.tasks || []).filter(t => !t.isRecurring);
+          const hasMore = res?.hasMore !== undefined ? res.hasMore : (nonRecurring.length >= this.pageSize);
+
+          if (column === 'OPEN') {
+            this.openPage = nextPage;
+            this.isLoadingMoreOpen = false;
+            const existingIds = new Set(this.openTasks.map(t => t.taskId));
+            const newTasks = nonRecurring.filter(t => !existingIds.has(t.taskId));
+            this.openTasks = [...this.openTasks, ...newTasks];
+            this.hasMoreOpen = hasMore;
+          } else if (column === 'ON_HOLD') {
+            this.onHoldPage = nextPage;
+            this.isLoadingMoreOnHold = false;
+            const existingIds = new Set(this.onHoldTasks.map(t => t.taskId));
+            const newTasks = nonRecurring.filter(t => !existingIds.has(t.taskId));
+            this.onHoldTasks = [...this.onHoldTasks, ...newTasks];
+            this.hasMoreOnHold = hasMore;
+          } else if (column === 'CLOSED') {
+            this.closedPage = nextPage;
+            this.isLoadingMoreClosed = false;
+            const existingIds = new Set(this.closedTasks.map(t => t.taskId));
+            const newTasks = nonRecurring.filter(t => !existingIds.has(t.taskId));
+            this.closedTasks = [...this.closedTasks, ...newTasks];
+            this.hasMoreClosed = hasMore;
+          }
+        },
+        error: (err) => {
+          console.error(`Failed to load more ${column} tasks`, err);
+          if (column === 'OPEN') this.isLoadingMoreOpen = false;
+          if (column === 'ON_HOLD') this.isLoadingMoreOnHold = false;
+          if (column === 'CLOSED') this.isLoadingMoreClosed = false;
         }
       });
   }

@@ -80,7 +80,10 @@ namespace HRMSWebAPI.Repository
                 OnlyUnassigned = filter.OnlyUnassigned,
                 OnlyOverdue = filter.OnlyOverdue,
                 SearchText = string.IsNullOrWhiteSpace(filter.SearchText) ? null : filter.SearchText,
-                CompanyId = string.IsNullOrWhiteSpace(filter.CompanyId) ? null : filter.CompanyId
+                CompanyId = string.IsNullOrWhiteSpace(filter.CompanyId) ? null : filter.CompanyId,
+                TargetStatus = (string?)null,
+                PageIndex = filter.PageIndex > 0 ? filter.PageIndex : 1,
+                PageSize = filter.PageSize > 0 ? filter.PageSize : 10
             };
 
             using var multi = await conn.QueryMultipleAsync(
@@ -102,6 +105,39 @@ namespace HRMSWebAPI.Repository
             }
 
             return response;
+        }
+
+        public async Task<List<TaskCardDto>> GetColumnTasksAsync(TaskBoardFilterDto filter)
+        {
+            using var conn = DataBaseFactory.ConnString();
+            var parameters = new
+            {
+                ViewerId = filter.ViewerId,
+                UserType = filter.UserType,
+                RoleId = filter.RoleId,
+                Scope = string.IsNullOrWhiteSpace(filter.Scope) ? "ALL" : filter.Scope,
+                DeptId = string.IsNullOrWhiteSpace(filter.DeptId) ? null : filter.DeptId,
+                AssignedToEmpId = string.IsNullOrWhiteSpace(filter.AssignedToEmpId) ? null : filter.AssignedToEmpId,
+                CreatedByEmpId = string.IsNullOrWhiteSpace(filter.CreatedByEmpId) ? null : filter.CreatedByEmpId,
+                Status = string.IsNullOrWhiteSpace(filter.Status) ? null : filter.Status,
+                Priority = string.IsNullOrWhiteSpace(filter.Priority) ? null : filter.Priority,
+                RecurrenceType = string.IsNullOrWhiteSpace(filter.RecurrenceType) ? null : filter.RecurrenceType,
+                TaskTypeId = filter.TaskTypeId,
+                OnlyUnassigned = filter.OnlyUnassigned,
+                OnlyOverdue = filter.OnlyOverdue,
+                SearchText = string.IsNullOrWhiteSpace(filter.SearchText) ? null : filter.SearchText,
+                CompanyId = string.IsNullOrWhiteSpace(filter.CompanyId) ? null : filter.CompanyId,
+                TargetStatus = filter.TargetStatus,
+                PageIndex = filter.PageIndex > 0 ? filter.PageIndex : 1,
+                PageSize = filter.PageSize > 0 ? filter.PageSize : 10
+            };
+
+            var tasks = await conn.QueryAsync<TaskCardDto>(
+                "dbo.usp_HR_Task_GetBoard",
+                parameters,
+                commandType: CommandType.StoredProcedure);
+
+            return tasks.ToList();
         }
 
         public async Task<TaskDetailResponseDto?> GetTaskByIdWithHistoryAsync(int taskId, string? viewerId = null, string? userType = null, string? companyId = null)
