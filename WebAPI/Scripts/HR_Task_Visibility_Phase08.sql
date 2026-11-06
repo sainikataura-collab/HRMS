@@ -132,14 +132,17 @@ RETURN
             WHEN EXISTS (SELECT 1 FROM HodDepts hd WHERE t.TargetDeptId = hd.DeptId COLLATE DATABASE_DEFAULT) THEN 'HOD_TARGET'
             WHEN EXISTS (SELECT 1 FROM HodDepts hd WHERE t.CreatorDeptId = hd.DeptId COLLATE DATABASE_DEFAULT) THEN 'HOD_CREATOR_DEPT'
             WHEN EXISTS (SELECT 1 FROM DeptEmployees de WHERE t.AssignedToEmpId = de.EmpId COLLATE DATABASE_DEFAULT) THEN 'HOD_ASSIGNEE_DEPT'
+            WHEN EXISTS (SELECT 1 FROM DeptEmployees de WHERE t.CreatedByEmpId = de.EmpId COLLATE DATABASE_DEFAULT) THEN 'HOD_CREATOR_EMP'
             WHEN EXISTS (SELECT 1 FROM DirectReports dr WHERE t.AssignedToEmpId = dr.EmpId COLLATE DATABASE_DEFAULT) THEN 'MANAGER'
             ELSE 'OTHER'
         END AS VisibilityReason,
         CASE 
-            WHEN v.IsAdmin = 1 AND t.TargetDeptId IS NOT NULL THEN CAST(1 AS BIT)
             WHEN EXISTS (SELECT 1 FROM HodDepts hd WHERE t.TargetDeptId = hd.DeptId COLLATE DATABASE_DEFAULT) THEN CAST(1 AS BIT)
             WHEN EXISTS (SELECT 1 FROM HodDepts hd WHERE t.CreatorDeptId = hd.DeptId COLLATE DATABASE_DEFAULT) THEN CAST(1 AS BIT)
             WHEN EXISTS (SELECT 1 FROM DeptEmployees de WHERE t.AssignedToEmpId = de.EmpId COLLATE DATABASE_DEFAULT) THEN CAST(1 AS BIT)
+            WHEN EXISTS (SELECT 1 FROM DeptEmployees de WHERE t.CreatedByEmpId = de.EmpId COLLATE DATABASE_DEFAULT) THEN CAST(1 AS BIT)
+            WHEN v.IsAdmin = 1 AND v.IsHod = 0 AND t.TargetDeptId IS NOT NULL THEN CAST(1 AS BIT)
+            WHEN v.IsHod = 0 AND v.DeptId IS NOT NULL AND (t.TargetDeptId = v.DeptId COLLATE DATABASE_DEFAULT OR t.CreatorDeptId = v.DeptId COLLATE DATABASE_DEFAULT) THEN CAST(1 AS BIT)
             ELSE CAST(0 AS BIT)
         END AS IsDeptVisible
     FROM dbo.HR_TaskMaster t
@@ -157,10 +160,11 @@ RETURN
           -- Rule 3: Tasks assigned directly to viewer
           OR (v.EmpId IS NOT NULL AND t.AssignedToEmpId = v.EmpId COLLATE DATABASE_DEFAULT)
 
-          -- Rule 4: HOD Department visibility (Target Dept, Creator Dept, or Assigned to Dept member)
+          -- Rule 4: HOD Department visibility (Target Dept, Creator Dept, or Assigned to/Created by Dept member)
           OR EXISTS (SELECT 1 FROM HodDepts hd WHERE t.TargetDeptId = hd.DeptId COLLATE DATABASE_DEFAULT)
           OR EXISTS (SELECT 1 FROM HodDepts hd WHERE t.CreatorDeptId = hd.DeptId COLLATE DATABASE_DEFAULT)
           OR EXISTS (SELECT 1 FROM DeptEmployees de WHERE t.AssignedToEmpId = de.EmpId COLLATE DATABASE_DEFAULT)
+          OR EXISTS (SELECT 1 FROM DeptEmployees de WHERE t.CreatedByEmpId = de.EmpId COLLATE DATABASE_DEFAULT)
 
           -- Rule 5: Reporting Manager visibility over direct reports' tasks
           OR EXISTS (SELECT 1 FROM DirectReports dr WHERE t.AssignedToEmpId = dr.EmpId COLLATE DATABASE_DEFAULT)
@@ -265,16 +269,26 @@ BEGIN
     LEFT JOIN dbo.SAL_Employee_Mst e ON t.AssignedToEmpId = e.pk_empid COLLATE DATABASE_DEFAULT
     CROSS JOIN #Viewer v
     WHERE t.IsActive = 1
-      -- Scope filter
+      -- Scope filter (supporting both frontend labels and legacy keys)
       AND (
           @Scope = 'ALL'
-          OR (@Scope = 'MY_TASKS' AND v.EmpId IS NOT NULL AND t.AssignedToEmpId = v.EmpId COLLATE DATABASE_DEFAULT)
-          OR (@Scope = 'CREATED_BY_ME' AND (
+          OR (@Scope IN ('MY_ASSIGNED', 'MY_TASKS') AND v.EmpId IS NOT NULL AND t.AssignedToEmpId = v.EmpId COLLATE DATABASE_DEFAULT)
+          OR (@Scope IN ('CREATED_BY_ME', 'CREATED_BY') AND (
                 (v.EmpId IS NOT NULL AND t.CreatedByEmpId = v.EmpId COLLATE DATABASE_DEFAULT)
              OR (v.UserId IS NOT NULL AND t.CreatedByUserId = v.UserId COLLATE DATABASE_DEFAULT)
           ))
-          OR (@Scope = 'DEPT_TASKS' AND vis.IsDeptVisible = 1)
-          OR (@Scope = 'SELF_TASKS' AND t.IsSelfTask = 1 AND v.EmpId IS NOT NULL AND t.CreatedByEmpId = v.EmpId COLLATE DATABASE_DEFAULT)
+          OR (@Scope IN ('MY_DEPT', 'DEPT_TASKS') AND (
+                -- If HOD: tasks belonging to departments they are HOD of (TargetDeptId or CreatorDeptId) OR tasks assigned to/created by employees in their department
+                (v.IsHod = 1 AND (
+                     EXISTS (SELECT 1 FROM dbo.Department_Mst hd WHERE hd.fk_depHodid = v.EmpId COLLATE DATABASE_DEFAULT AND (t.TargetDeptId = hd.pk_deptid COLLATE DATABASE_DEFAULT OR t.CreatorDeptId = hd.pk_deptid COLLATE DATABASE_DEFAULT))
+                  OR EXISTS (SELECT 1 FROM dbo.SAL_Employee_Mst de JOIN dbo.Department_Mst hd ON de.fk_deptid = hd.pk_deptid COLLATE DATABASE_DEFAULT WHERE hd.fk_depHodid = v.EmpId COLLATE DATABASE_DEFAULT AND (t.AssignedToEmpId = de.pk_empid COLLATE DATABASE_DEFAULT OR t.CreatedByEmpId = de.pk_empid COLLATE DATABASE_DEFAULT))
+                ))
+                -- If regular employee: tasks targeted to or created by their department
+                OR (v.IsHod = 0 AND v.DeptId IS NOT NULL AND (t.TargetDeptId = v.DeptId COLLATE DATABASE_DEFAULT OR t.CreatorDeptId = v.DeptId COLLATE DATABASE_DEFAULT))
+                -- If Admin without HOD/department: any department-targeted task
+                OR (v.IsAdmin = 1 AND v.IsHod = 0 AND t.TargetDeptId IS NOT NULL)
+          ))
+          OR (@Scope IN ('SELF_TASKS', 'SELF') AND t.IsSelfTask = 1 AND v.EmpId IS NOT NULL AND t.CreatedByEmpId = v.EmpId COLLATE DATABASE_DEFAULT)
       )
       -- Additional Filters
       AND (@DeptId IS NULL OR t.TargetDeptId = @DeptId COLLATE DATABASE_DEFAULT)
