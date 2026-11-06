@@ -29,7 +29,7 @@
         <!-- Integrated Perspective Tabs -->
         <div class="perspective-tabs">
           <button
-            *ngFor="let s of scopeOptions"
+            *ngFor="let s of visibleScopeOptions"
             type="button"
             class="perspective-tab"
             [class.active]="selectedScope === s.id"

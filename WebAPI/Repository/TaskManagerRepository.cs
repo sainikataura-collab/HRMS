@@ -96,13 +96,24 @@ namespace HRMSWebAPI.Repository
             response.ClosedTasks = tasks.Where(t => t.Status == "CLOSED").ToList();
             response.OnHoldTasks = tasks.Where(t => t.Status == "ON_HOLD" || t.Status == "ON HOLD").ToList();
 
+            if (!multi.IsConsumed)
+            {
+                response.ViewerContext = await multi.ReadFirstOrDefaultAsync<TaskViewerContextDto>();
+            }
+
             return response;
         }
 
-        public async Task<TaskDetailResponseDto?> GetTaskByIdWithHistoryAsync(int taskId, string? companyId = null)
+        public async Task<TaskDetailResponseDto?> GetTaskByIdWithHistoryAsync(int taskId, string? viewerId = null, string? userType = null, string? companyId = null)
         {
             using var conn = DataBaseFactory.ConnString();
-            var parameters = new { TaskId = taskId, CompanyId = companyId };
+            var parameters = new
+            {
+                TaskId = taskId,
+                ViewerId = viewerId,
+                UserType = userType,
+                CompanyId = companyId
+            };
 
             using var multi = await conn.QueryMultipleAsync(
                 "dbo.usp_HR_Task_GetDetail",
@@ -110,7 +121,7 @@ namespace HRMSWebAPI.Repository
                 commandType: CommandType.StoredProcedure);
 
             var task = await multi.ReadFirstOrDefaultAsync<TaskCardDto>();
-            if (task == null) return null;
+            if (task == null || !task.IsAuthorized) return null;
 
             var history = (await multi.ReadAsync<TaskHistoryItemDto>()).ToList();
 
@@ -150,6 +161,7 @@ namespace HRMSWebAPI.Repository
                 TaskTypeName = dto.TaskTypeName,
                 ActionById = dto.ActionById,
                 ActionByName = dto.ActionByName,
+                UserType = dto.UserType,
                 CompanyId = dto.CompanyId,
                 InitialRemarks = dto.InitialRemarks
             };
@@ -189,7 +201,10 @@ namespace HRMSWebAPI.Repository
                 RecurrenceDueOffsetUnit = dto.RecurrenceDueOffsetUnit ?? "DAYS",
                 TaskTypeId = dto.TaskTypeId,
                 TaskTypeName = dto.TaskTypeName ?? "General",
-                ActionByName = dto.ActionByName ?? "Admin"
+                ActionById = dto.ActionById,
+                ActionByName = dto.ActionByName ?? "Admin",
+                UserType = dto.UserType,
+                CompanyId = dto.CompanyId
             };
 
             var result = await conn.QueryFirstOrDefaultAsync<dynamic>(
@@ -214,7 +229,8 @@ namespace HRMSWebAPI.Repository
                 AttachmentName = attachmentName,
                 AttachmentPath = attachmentPath,
                 ActionById = dto.ActionById,
-                ActionByName = dto.ActionByName
+                ActionByName = dto.ActionByName,
+                UserType = dto.UserType
             };
 
             var result = await conn.QueryFirstOrDefaultAsync<dynamic>(

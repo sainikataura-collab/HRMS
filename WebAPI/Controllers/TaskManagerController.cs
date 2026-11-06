@@ -41,16 +41,33 @@ namespace HRMSWebAPI.Controllers
             return null;
         }
 
-        private string? ResolveViewerId(string? explicitId)
+        private string GetUserType(string? explicitUserType = null)
         {
-            if (!string.IsNullOrWhiteSpace(explicitId))
-                return explicitId.Trim();
+            if (!string.IsNullOrWhiteSpace(explicitUserType))
+                return explicitUserType.Trim();
 
-            var decryptedUserId = HttpContext.Items["DecryptedUserId"]?.ToString();
-            if (!string.IsNullOrWhiteSpace(decryptedUserId))
-                return decryptedUserId.Trim();
+            if (Request.Headers.TryGetValue("X-User-Type", out var utHeader) && !string.IsNullOrWhiteSpace(utHeader))
+                return utHeader.ToString().Trim();
 
-            return null;
+            if (Request.Headers.TryGetValue("UserType", out var utHeader2) && !string.IsNullOrWhiteSpace(utHeader2))
+                return utHeader2.ToString().Trim();
+
+            if (Request.Headers.TryGetValue("usertype", out var utHeader3) && !string.IsNullOrWhiteSpace(utHeader3))
+                return utHeader3.ToString().Trim();
+
+            var fromItems = HttpContext.Items["DecryptedUserType"]?.ToString();
+            if (!string.IsNullOrWhiteSpace(fromItems))
+                return fromItems.Trim();
+
+            return "Employee";
+        }
+
+        private (string? Id, string Type) GetViewer(string? fallbackId = null, string? explicitUserType = null)
+        {
+            var userType = GetUserType(explicitUserType);
+            var decryptedUserId = HttpContext.Items["DecryptedUserId"]?.ToString()?.Trim();
+            var id = !string.IsNullOrWhiteSpace(decryptedUserId) ? decryptedUserId : fallbackId?.Trim();
+            return (id, userType);
         }
 
         private async Task<(string? FileName, string? RelativeUrl)> SaveAttachmentAsync(IFormFile? file)
@@ -151,9 +168,9 @@ namespace HRMSWebAPI.Controllers
         {
             try
             {
-                var resolvedId = ResolveViewerId(viewerId);
+                var (resolvedId, resolvedUserType) = GetViewer(viewerId, userType);
                 var resolvedCompId = ResolveCompanyId(companyId);
-                var lookups = await _repository.GetLookupsAsync(resolvedId, userType, roleId, resolvedCompId);
+                var lookups = await _repository.GetLookupsAsync(resolvedId, resolvedUserType, roleId, resolvedCompId);
 
                 return Ok(new
                 {
@@ -229,10 +246,15 @@ namespace HRMSWebAPI.Controllers
         {
             try
             {
+                var (viewerId, userType) = GetViewer(payload?.ViewerEmpId, payload?.UserType);
+                if (string.IsNullOrWhiteSpace(viewerId))
+                    return Unauthorized(new { isSuccess = false, message = "Session expired or user not authenticated." });
+
                 var filter = new TaskBoardFilterDto();
+                filter.ViewerId = viewerId;
+                filter.UserType = userType;
                 if (payload != null)
                 {
-                    filter.ViewerId = ResolveViewerId(payload.ViewerEmpId);
                     filter.Scope = !string.IsNullOrWhiteSpace(payload.Scope) ? payload.Scope : "ALL";
                     filter.DeptId = payload.DepartmentId;
                     filter.AssignedToEmpId = payload.AssignedToEmpId;
@@ -277,6 +299,12 @@ namespace HRMSWebAPI.Controllers
                     closedTasks = board.ClosedTasks.Where(t => t.TaskId > 0).Select(MapTaskCard),
                     onHoldTasks = board.OnHoldTasks.Where(t => t.TaskId > 0).Select(MapTaskCard),
                     allTasks = board.AllTasks.Where(t => t.TaskId > 0).Select(MapTaskCard),
+                    viewer = board.ViewerContext != null ? new
+                    {
+                        isAdmin = board.ViewerContext.IsAdmin,
+                        isHod = board.ViewerContext.IsHod,
+                        isManager = board.ViewerContext.IsManager
+                    } : null,
                     data = board
                 });
             }
@@ -291,10 +319,11 @@ namespace HRMSWebAPI.Controllers
         {
             try
             {
+                var (viewerId, userType) = GetViewer();
                 var resolvedCompId = ResolveCompanyId(companyId);
-                var detail = await _repository.GetTaskByIdWithHistoryAsync(taskId, resolvedCompId);
+                var detail = await _repository.GetTaskByIdWithHistoryAsync(taskId, viewerId, userType, resolvedCompId);
                 if (detail == null || detail.Task == null)
-                    return NotFound(new { isSuccess = false, message = $"Task with ID {taskId} was not found." });
+                    return StatusCode(403, new { isSuccess = false, message = "You do not have permission to access this task." });
 
                 var mappedTask = MapTaskCard(detail.Task);
                 var mappedHistory = detail.History.Select(h => new
@@ -333,6 +362,10 @@ namespace HRMSWebAPI.Controllers
 
             try
             {
+                var (actorId, userType) = GetViewer(dto.CreatedByEmpId, dto.UserType);
+                if (string.IsNullOrWhiteSpace(actorId))
+                    return Unauthorized(new { isSuccess = false, message = "User not authenticated." });
+
                 var req = new CreateTaskRequestDto
                 {
                     Subject = dto.Subject.Trim(),
@@ -351,10 +384,14 @@ namespace HRMSWebAPI.Controllers
                     RecurrenceOccurrencesTotal = dto.RecurrenceOccurrencesTotal,
                     RecurrenceDueOffsetHours = dto.RecurrenceDueOffsetHours ?? 24,
                     RecurrenceDueOffsetUnit = string.IsNullOrWhiteSpace(dto.RecurrenceDueOffsetUnit) ? "DAYS" : dto.RecurrenceDueOffsetUnit,
+                    IsSelfTask = dto.IsSelfTask,
                     CompanyId = ResolveCompanyId(dto.CompanyId),
                     TaskTypeId = dto.TaskTypeId,
                     TaskTypeName = dto.TaskTypeName,
-                    ActionById = ResolveViewerId(dto.CreatedByEmpId)
+                    ActionById = actorId,
+                    ActionByName = dto.CreatedByName,
+                    UserType = userType,
+                    InitialRemarks = dto.InitialRemarks
                 };
 
                 var (taskId, taskCode) = await _repository.CreateTaskAsync(req, dto.AttachmentFileName, dto.AttachmentUrl);
@@ -384,6 +421,10 @@ namespace HRMSWebAPI.Controllers
 
             try
             {
+                var (actorId, userType) = GetViewer(dto.CreatedByEmpId, dto.UserType);
+                if (string.IsNullOrWhiteSpace(actorId))
+                    return Unauthorized(new { isSuccess = false, message = "User not authenticated." });
+
                 var req = new CreateTaskRequestDto
                 {
                     Subject = dto.Subject.Trim(),
@@ -402,11 +443,14 @@ namespace HRMSWebAPI.Controllers
                     RecurrenceOccurrencesTotal = dto.RecurrenceOccurrencesTotal,
                     RecurrenceDueOffsetHours = dto.RecurrenceDueOffsetHours ?? 24,
                     RecurrenceDueOffsetUnit = dto.RecurrenceDueOffsetUnit ?? "DAYS",
+                    IsSelfTask = dto.IsSelfTask,
                     CompanyId = ResolveCompanyId(dto.CompanyId),
                     TaskTypeId = dto.TaskTypeId,
                     TaskTypeName = dto.TaskTypeName,
-                    ActionById = ResolveViewerId(dto.CreatedByEmpId),
-                    ActionByName = dto.CreatedByName ?? "Admin"
+                    ActionById = actorId,
+                    ActionByName = dto.CreatedByName ?? "Admin",
+                    UserType = userType,
+                    InitialRemarks = dto.InitialRemarks
                 };
 
                 var success = await _repository.UpdateTaskAsync(dto.TaskId.Value, req);
@@ -432,6 +476,10 @@ namespace HRMSWebAPI.Controllers
 
             try
             {
+                var (actorId, userType) = GetViewer(dto.UpdatedByEmpId, dto.UserType);
+                if (string.IsNullOrWhiteSpace(actorId))
+                    return Unauthorized(new { isSuccess = false, message = "User not authenticated." });
+
                 var targetStatus = (dto.NewStatus ?? "OPEN").Trim().ToUpper();
                 if (targetStatus == "ON HOLD") targetStatus = "ON_HOLD";
 
@@ -440,7 +488,9 @@ namespace HRMSWebAPI.Controllers
                     TaskId = dto.TaskId,
                     NewStatus = targetStatus,
                     Remarks = dto.Remarks ?? "",
-                    ActionById = ResolveViewerId(dto.UpdatedByEmpId)
+                    ActionById = actorId,
+                    ActionByName = dto.UpdatedByName,
+                    UserType = userType
                 };
 
                 bool success = await _repository.UpdateStatusAndRemarksAsync(transitionDto, null, null);

@@ -56,6 +56,15 @@
       <span>Loading task details and audit history...</span>
     </div>
 
+    <!-- Error State / Access Denied -->
+    <div *ngIf="!isLoading && errorMessage" class="alert alert-danger m-3 d-flex align-items-center gap-2">
+      <i class="fa-solid fa-circle-exclamation fs-5"></i>
+      <div>
+        <div class="fw-semibold">Access Restricted</div>
+        <div class="small">{{ errorMessage }}</div>
+      </div>
+    </div>
+
     <div *ngIf="!isLoading && task" class="drawer-content-flow">
 
       <!-- Overdue Banner -->

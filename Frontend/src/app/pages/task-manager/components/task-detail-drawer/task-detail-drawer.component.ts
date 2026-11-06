@@ -64,7 +64,11 @@ export class TaskDetailDrawerComponent implements OnChanges {
       },
       error: (err) => {
         console.error('Failed to load task details', err);
-        this.errorMessage = 'Could not load task details.';
+        if (err?.status === 403) {
+          this.errorMessage = 'You do not have permission to access this task.';
+        } else {
+          this.errorMessage = 'Could not load task details.';
+        }
         this.isLoading = false;
       }
     });

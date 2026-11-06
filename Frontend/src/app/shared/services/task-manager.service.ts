@@ -56,11 +56,13 @@ export interface TaskBoardResponseDto {
   closedTasks: TaskCardDto[];
   onHoldTasks: TaskCardDto[];
   allTasks?: TaskCardDto[];
+  viewer?: { isAdmin: boolean; isHod: boolean; isManager: boolean };
   data?: any;
 }
 
 export interface TaskBoardFilterDto {
   viewerEmpId?: string;
+  userType?: string;
   scope?: string; // 'ALL' | 'MY_ASSIGNED' | 'MY_DEPT' | 'CREATED_BY_ME'
   departmentId?: string;
   assignedToEmpId?: string;
@@ -79,6 +81,7 @@ export interface TaskStatusUpdateRequestDto {
   remarks?: string;
   updatedByEmpId?: string;
   updatedByName?: string;
+  userType?: string;
   companyId?: string;
 }
 
@@ -106,6 +109,9 @@ export interface TaskCreateRequestDto {
   attachmentFileName?: string;
   createdByEmpId?: string;
   createdByName?: string;
+  isSelfTask?: boolean;
+  userType?: string;
+  initialRemarks?: string;
   companyId?: string;
 }
 
@@ -204,15 +210,37 @@ export class TaskManagerService {
   }
 
   /**
+   * Helper to retrieve authenticated UserType ('User' vs 'Employee')
+   */
+  get currentUserType(): string {
+    return sessionStorage.getItem('usertype') ||
+           localStorage.getItem('usertype') ||
+           sessionStorage.getItem('UserType') ||
+           'Employee';
+  }
+
+  /**
+   * Default headers for Task Manager API requests carrying identity context
+   */
+  private getHeaders(): HttpHeaders {
+    return new HttpHeaders({
+      'X-User-Type': this.currentUserType
+    });
+  }
+
+  /**
    * Fetch Board tasks and summary counts based on active filters
    */
   getBoard(filter: TaskBoardFilterDto): Observable<TaskBoardResponseDto> {
     const payload: TaskBoardFilterDto = {
       viewerEmpId: this.currentUserId,
+      userType: this.currentUserType,
       companyId: this.currentCompanyId,
       ...filter
     };
-    return this.http.post<TaskBoardResponseDto>(`${this.baseUrl}/TaskManager/board`, payload);
+    return this.http.post<TaskBoardResponseDto>(`${this.baseUrl}/TaskManager/board`, payload, {
+      headers: this.getHeaders()
+    });
   }
 
   /**
@@ -221,7 +249,8 @@ export class TaskManagerService {
   getLookups(): Observable<TaskLookupsDto> {
     const companyId = this.currentCompanyId;
     return this.http.get<TaskLookupsDto>(
-      `${this.baseUrl}/TaskManager/lookups?viewerId=${encodeURIComponent(this.currentUserId)}&companyId=${encodeURIComponent(companyId)}`
+      `${this.baseUrl}/TaskManager/lookups?viewerId=${encodeURIComponent(this.currentUserId)}&userType=${encodeURIComponent(this.currentUserType)}&companyId=${encodeURIComponent(companyId)}`,
+      { headers: this.getHeaders() }
     );
   }
 
@@ -233,7 +262,9 @@ export class TaskManagerService {
     let url = `${this.baseUrl}/TaskManager/employees?companyId=${encodeURIComponent(companyId)}&top=${top}`;
     if (deptId) url += `&deptId=${encodeURIComponent(deptId)}`;
     if (search) url += `&search=${encodeURIComponent(search)}`;
-    return this.http.get<{ isSuccess: boolean; employees: EmployeeLookupItem[] }>(url);
+    return this.http.get<{ isSuccess: boolean; employees: EmployeeLookupItem[] }>(url, {
+      headers: this.getHeaders()
+    });
   }
 
   /**
@@ -243,10 +274,13 @@ export class TaskManagerService {
     const payload: TaskStatusUpdateRequestDto = {
       ...request,
       companyId: this.currentCompanyId,
+      userType: this.currentUserType,
       updatedByEmpId: request.updatedByEmpId || this.currentUserId,
       updatedByName: request.updatedByName || this.currentUserName
     };
-    return this.http.post(`${this.baseUrl}/TaskManager/update-status`, payload);
+    return this.http.post(`${this.baseUrl}/TaskManager/update-status`, payload, {
+      headers: this.getHeaders()
+    });
   }
 
   /**
@@ -255,7 +289,8 @@ export class TaskManagerService {
   getTaskById(taskId: number): Observable<TaskDetailDto> {
     const companyId = this.currentCompanyId;
     return this.http.get<TaskDetailDto>(
-      `${this.baseUrl}/TaskManager/${taskId}?viewerEmpId=${encodeURIComponent(this.currentUserId)}&companyId=${encodeURIComponent(companyId)}`
+      `${this.baseUrl}/TaskManager/${taskId}?viewerEmpId=${encodeURIComponent(this.currentUserId)}&companyId=${encodeURIComponent(companyId)}`,
+      { headers: this.getHeaders() }
     );
   }
 
@@ -266,10 +301,13 @@ export class TaskManagerService {
     const payload: TaskCreateRequestDto = {
       ...request,
       companyId: this.currentCompanyId,
+      userType: this.currentUserType,
       createdByEmpId: request.createdByEmpId || this.currentUserId,
       createdByName: request.createdByName || this.currentUserName
     };
-    return this.http.post(`${this.baseUrl}/TaskManager/create`, payload);
+    return this.http.post(`${this.baseUrl}/TaskManager/create`, payload, {
+      headers: this.getHeaders()
+    });
   }
 
   /**
@@ -279,10 +317,13 @@ export class TaskManagerService {
     const payload = {
       ...request,
       companyId: this.currentCompanyId,
+      userType: this.currentUserType,
       createdByEmpId: request.createdByEmpId || this.currentUserId,
       createdByName: request.createdByName || this.currentUserName
     };
-    return this.http.post(`${this.baseUrl}/TaskManager/update`, payload);
+    return this.http.post(`${this.baseUrl}/TaskManager/update`, payload, {
+      headers: this.getHeaders()
+    });
   }
 
   /**
@@ -291,14 +332,18 @@ export class TaskManagerService {
   uploadAttachment(file: File): Observable<{ fileName: string; fileUrl: string }> {
     const formData = new FormData();
     formData.append('file', file, file.name);
-    return this.http.post<{ fileName: string; fileUrl: string }>(`${this.baseUrl}/TaskManager/upload-attachment`, formData);
+    return this.http.post<{ fileName: string; fileUrl: string }>(`${this.baseUrl}/TaskManager/upload-attachment`, formData, {
+      headers: this.getHeaders()
+    });
   }
 
   /**
    * Process and generate recurring task instances (optionally immediate run for target task)
    */
   processRecurringTasks(taskId?: number): Observable<any> {
-    return this.http.post(`${this.baseUrl}/TaskManager/process-recurring`, taskId ? { taskId } : {});
+    return this.http.post(`${this.baseUrl}/TaskManager/process-recurring`, taskId ? { taskId } : {}, {
+      headers: this.getHeaders()
+    });
   }
 }
 

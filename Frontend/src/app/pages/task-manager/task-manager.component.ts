@@ -91,6 +91,15 @@ export class TaskManagerComponent implements OnInit, OnDestroy {
     { id: 'RECURRING', label: 'Recurring Cadences', icon: 'fa-solid fa-arrows-rotate' }
   ];
 
+  get visibleScopeOptions() {
+    return this.scopeOptions.filter(s => {
+      if (s.id === 'MY_DEPT') {
+        return !!(this.viewerContext?.isAdmin || this.viewerContext?.isHod);
+      }
+      return true;
+    });
+  }
+
   readonly priorityOptions = [
     { id: 'HIGH', label: 'High Priority' },
     { id: 'MEDIUM', label: 'Medium Priority' },
@@ -311,6 +320,7 @@ export class TaskManagerComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (res: TaskBoardResponseDto) => {
+          this.viewerContext = res.viewer || this.viewerContext;
           this.counts = res.counts || {
             allTasks: 0,
             openTasks: 0,

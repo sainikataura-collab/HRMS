@@ -104,6 +104,7 @@ namespace HRMSWebAPI.Models
 
     public class TaskCardDto
     {
+        public bool IsAuthorized { get; set; } = true;
         public int TaskId { get; set; }
         public string TaskCode { get; set; } = "";
         public string Subject { get; set; } = "";
@@ -149,6 +150,16 @@ namespace HRMSWebAPI.Models
         public int HistoryCount { get; set; }
     }
 
+    public class TaskViewerContextDto
+    {
+        public bool IsAdmin { get; set; }
+        public bool IsHod { get; set; }
+        public bool IsManager { get; set; }
+        public string? EmpId { get; set; }
+        public string? UserId { get; set; }
+        public string? ResolvedName { get; set; }
+    }
+
     public class TaskBoardResponseDto
     {
         public TaskKpiSummaryDto Summary { get; set; } = new();
@@ -156,6 +167,7 @@ namespace HRMSWebAPI.Models
         public List<TaskCardDto> ClosedTasks { get; set; } = new();
         public List<TaskCardDto> OnHoldTasks { get; set; } = new();
         public List<TaskCardDto> AllTasks { get; set; } = new();
+        public TaskViewerContextDto? ViewerContext { get; set; }
     }
 
     // =========================================================================
@@ -216,6 +228,7 @@ namespace HRMSWebAPI.Models
         public string? TaskTypeName { get; set; }
         public string? ActionById { get; set; }
         public string? ActionByName { get; set; }
+        public string? UserType { get; set; }
         public string? CompanyId { get; set; }
         public string? InitialRemarks { get; set; }
         public IFormFile? Attachment { get; set; }
@@ -231,12 +244,14 @@ namespace HRMSWebAPI.Models
         public DateTime? NewDueDate { get; set; }
         public string? ActionById { get; set; }
         public string? ActionByName { get; set; }
+        public string? UserType { get; set; }
         public IFormFile? Attachment { get; set; }
     }
 
     public class BoardRequestPayload
     {
         public string? ViewerEmpId { get; set; }
+        public string? UserType { get; set; }
         public string? Scope { get; set; }
         public string? DepartmentId { get; set; }
         public string? AssignedToEmpId { get; set; }
@@ -275,6 +290,9 @@ namespace HRMSWebAPI.Models
         public string? CompanyId { get; set; }
         public int? TaskTypeId { get; set; }
         public string? TaskTypeName { get; set; }
+        public bool IsSelfTask { get; set; }
+        public string? UserType { get; set; }
+        public string? InitialRemarks { get; set; }
     }
 
     public class UpdateStatusJsonDto
@@ -284,6 +302,7 @@ namespace HRMSWebAPI.Models
         public string? Remarks { get; set; }
         public string? UpdatedByEmpId { get; set; }
         public string? UpdatedByName { get; set; }
+        public string? UserType { get; set; }
         public string? CompanyId { get; set; }
     }
 

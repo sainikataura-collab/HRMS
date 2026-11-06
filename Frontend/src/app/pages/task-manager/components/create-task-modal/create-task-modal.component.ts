@@ -390,6 +390,11 @@ export class CreateTaskModalComponent implements OnInit, OnChanges {
       return;
     }
 
+    if (!this.isRecurring && !this.deadlineDate) {
+      this.errorMessage = 'Please select a deadline date for this task.';
+      return;
+    }
+
     this.isSubmitting = true;
     this.errorMessage = '';
 
@@ -411,9 +416,10 @@ export class CreateTaskModalComponent implements OnInit, OnChanges {
       description: (this.description || '').trim() || undefined,
       departmentId: this.departmentId || undefined,
       assignedToEmpId: this.assignedToEmpId || undefined,
+      isSelfTask: this.isAssignToSelf,
       priority: this.priority || 'MEDIUM',
-      taskTypeId: this.taskTypeId || 1,
-      taskTypeName: selectedTypeObj ? selectedTypeObj.name : 'Compliance',
+      taskTypeId: this.taskTypeId || (this.taskTypes[0]?.id || 1),
+      taskTypeName: selectedTypeObj ? selectedTypeObj.name : (this.taskTypes[0]?.name || 'Compliance'),
       deadlineDate: this.deadlineDate || undefined,
       isRecurring: this.isRecurring,
       recurrencePattern: this.isRecurring ? this.recurrencePattern : undefined,
