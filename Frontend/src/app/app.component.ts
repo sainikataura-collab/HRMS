@@ -1,6 +1,7 @@
 
 
 import { Component, HostListener, OnInit, inject, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { StatusBar, Style } from '@capacitor/status-bar';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { IdleService } from './idle.service';
@@ -92,6 +93,9 @@ export class AppComponent implements OnInit {
   }
 
   private initGlobalTaskSignalR(): void {
+    // SSR guard: sessionStorage/localStorage only exist in the browser
+    if (!isPlatformBrowser(this.platformId) || typeof sessionStorage === 'undefined') return;
+
     const rawId = sessionStorage.getItem('UserId') ||
                   sessionStorage.getItem('userId') ||
                   sessionStorage.getItem('empid') ||

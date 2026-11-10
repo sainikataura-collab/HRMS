@@ -46,6 +46,7 @@ export class TaskSignalRService implements OnDestroy {
   }
 
   public startConnection(empId: string): void {
+    if (typeof window === 'undefined' || typeof sessionStorage === 'undefined') return;
     if (!empId) return;
     this.currentEmpId = empId;
 
@@ -99,10 +100,12 @@ export class TaskSignalRService implements OnDestroy {
     const idSet = new Set<string>();
     if (empId) idSet.add(empId.trim());
 
-    const storageKeys = ['UserId', 'userId', 'empid', 'empId', 'loginEmpId', 'loginId'];
-    for (const k of storageKeys) {
-      const val = sessionStorage.getItem(k) || localStorage.getItem(k);
-      if (val && val.trim()) idSet.add(val.trim());
+    if (typeof sessionStorage !== 'undefined' && typeof localStorage !== 'undefined') {
+      const storageKeys = ['UserId', 'userId', 'empid', 'empId', 'loginEmpId', 'loginId'];
+      for (const k of storageKeys) {
+        const val = sessionStorage.getItem(k) || localStorage.getItem(k);
+        if (val && val.trim()) idSet.add(val.trim());
+      }
     }
 
     const compositeId = Array.from(idSet).join(',');

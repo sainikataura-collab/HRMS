@@ -462,7 +462,7 @@ namespace HRMSWebAPI.Controllers
 
                 var (taskId, taskCode) = await _repository.CreateTaskAsync(req, dto.AttachmentFileName, dto.AttachmentUrl);
 
-                _ = BroadcastTaskNotificationAsync(taskId, taskCode, req.Subject, "CREATED", req.Priority, "OPEN", req.ActionByName);
+                await BroadcastTaskNotificationAsync(taskId, taskCode, req.Subject, "CREATED", req.Priority, "OPEN", req.ActionByName);
 
                 return Ok(new
                 {
@@ -526,7 +526,7 @@ namespace HRMSWebAPI.Controllers
 
                 if (success)
                 {
-                    _ = BroadcastTaskNotificationAsync(dto.TaskId.Value, $"TSK-{dto.TaskId.Value}", req.Subject, "STATUS_CHANGED", req.Priority, "OPEN", req.ActionByName);
+                    await BroadcastTaskNotificationAsync(dto.TaskId.Value, $"TSK-{dto.TaskId.Value}", req.Subject, "STATUS_CHANGED", req.Priority, "OPEN", req.ActionByName);
                 }
 
                 return Ok(new
@@ -596,6 +596,7 @@ namespace HRMSWebAPI.Controllers
 
         private async Task BroadcastTaskNotificationAsync(int taskId, string taskCode, string subject, string eventType, string priority, string status, string? actorName)
         {
+            Console.WriteLine($"[SignalR Broadcast] START task={taskId} code={taskCode} event={eventType}");
             try
             {
                 // 1. Silent sync signal to all users on Kanban board across both hubs
@@ -681,8 +682,9 @@ namespace HRMSWebAPI.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[SignalR Broadcast Warning] {ex.Message}");
+                Console.WriteLine($"[SignalR Broadcast ERROR] {ex}");
             }
+            Console.WriteLine($"[SignalR Broadcast] END task={taskId}");
         }
 
         [HttpPost("upload-attachment")]

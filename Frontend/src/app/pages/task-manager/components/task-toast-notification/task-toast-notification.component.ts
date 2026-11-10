@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, OnInit, Output, NgZone, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { TaskToastItem, TaskToastService } from '../../../../shared/services/task-toast.service';
@@ -26,11 +26,18 @@ export class TaskToastNotificationComponent implements OnInit, OnDestroy {
   private sub: Subscription | null = null;
   private readonly DEFAULT_DURATION = 5000;
 
-  constructor(private toastService: TaskToastService) {}
+  constructor(
+    private toastService: TaskToastService,
+    private ngZone: NgZone,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     this.sub = this.toastService.toast$.subscribe(item => {
-      this.addToast(item);
+      this.ngZone.run(() => {
+        this.addToast(item);
+        this.cdr.detectChanges();
+      });
     });
   }
 
@@ -58,10 +65,13 @@ export class TaskToastNotificationComponent implements OnInit, OnDestroy {
     };
 
     toast.timerId = setTimeout(() => {
-      this.dismiss(toast);
+      this.ngZone.run(() => {
+        this.dismiss(toast);
+      });
     }, this.DEFAULT_DURATION);
 
     this.activeToasts.push(toast);
+    this.cdr.detectChanges();
   }
 
   pauseTimer(toast: ActiveToast): void {
@@ -70,6 +80,7 @@ export class TaskToastNotificationComponent implements OnInit, OnDestroy {
     toast.remainingMs -= (Date.now() - toast.timerStart);
     if (toast.remainingMs < 500) toast.remainingMs = 500;
     toast.isPaused = true;
+    this.cdr.detectChanges();
   }
 
   resumeTimer(toast: ActiveToast): void {
@@ -77,18 +88,25 @@ export class TaskToastNotificationComponent implements OnInit, OnDestroy {
     toast.isPaused = false;
     toast.timerStart = Date.now();
     toast.timerId = setTimeout(() => {
-      this.dismiss(toast);
+      this.ngZone.run(() => {
+        this.dismiss(toast);
+      });
     }, toast.remainingMs);
+    this.cdr.detectChanges();
   }
 
   dismiss(toast: ActiveToast): void {
     if (toast.isDismissing) return;
     toast.isDismissing = true;
     clearTimeout(toast.timerId);
+    this.cdr.detectChanges();
 
     // Allow CSS slide down and fade out animation
     setTimeout(() => {
-      this.activeToasts = this.activeToasts.filter(t => t !== toast);
+      this.ngZone.run(() => {
+        this.activeToasts = this.activeToasts.filter(t => t !== toast);
+        this.cdr.detectChanges();
+      });
     }, 280);
   }
 

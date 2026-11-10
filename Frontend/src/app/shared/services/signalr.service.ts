@@ -195,10 +195,13 @@ export class SignalRService {
    * ✅ FIXED: Start connection with role information
    */
   public startConnection(userId: string, userRole: string = ''): Promise<void> {
+    if (typeof window === 'undefined' || typeof sessionStorage === 'undefined') {
+      return Promise.resolve();
+    }
     // Prevent multiple connections
     if (this.hubConnection && this.hubConnection.state === signalR.HubConnectionState.Connected) {
-      console.log('Already connected to SignalR');
-      return Promise.resolve();
+      console.log('Already connected to SignalR — ensuring group membership');
+      return this.hubConnection.invoke('JoinChat', userId, userRole).catch(() => {});
     }
 
     // Get user role from session if not provided
@@ -231,12 +234,21 @@ export class SignalRService {
     // Start the connection
     return this.hubConnection
       .start()
-      .then(() => {
+      .then(async () => {
         console.log('✅ SignalR Connection Started');
         this.connectionStatus.next(true);
 
-        // ✅ Join the user's role-specific group
-        return this.hubConnection.invoke('JoinChat', userId, userRole);
+        // ✅ Join the user's role-specific group for primary userId and any alternate session EmpId/UserId
+        const idsToJoin = new Set<string>();
+        if (userId && userId.trim()) idsToJoin.add(userId.trim());
+        ['UserId', 'userId', 'empid', 'empId', 'loginEmpId'].forEach(k => {
+          const val = sessionStorage.getItem(k) || localStorage.getItem(k);
+          if (val && val.trim()) idsToJoin.add(val.trim());
+        });
+
+        for (const id of idsToJoin) {
+          await this.hubConnection.invoke('JoinChat', id, userRole);
+        }
       })
       .then(() => {
         console.log(`✅ Joined chat group for user: ${userId} (${userRole})`);

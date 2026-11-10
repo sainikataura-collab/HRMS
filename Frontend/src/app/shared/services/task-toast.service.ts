@@ -46,6 +46,7 @@ export class TaskToastService {
    * using the standard Web Audio API. Pure synthesis with zero external MP3 assets.
    */
   public playChime(): void {
+    if (typeof window === 'undefined') return;
     try {
       const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
       if (!AudioContextClass) return;
