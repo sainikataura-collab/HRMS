@@ -842,10 +842,21 @@ BEGIN
             SET @NextOccurDate = DATEADD(WEEK, @RecInterval, @BaseNext);
         ELSE IF @RecurrenceType = 'MONTHLY'
         BEGIN
-            IF @RecurrenceDayOfMonth IS NOT NULL AND @RecurrenceDayOfMonth BETWEEN 1 AND 28
-                SET @NextOccurDate = DATEFROMPARTS(YEAR(DATEADD(MONTH, @RecInterval, @BaseNext)), MONTH(DATEADD(MONTH, @RecInterval, @BaseNext)), @RecurrenceDayOfMonth);
+            DECLARE @TargetDay INT = ISNULL(@RecurrenceDayOfMonth, DAY(@BaseNext));
+            IF @TargetDay < 1 SET @TargetDay = 1;
+            IF @TargetDay > 31 SET @TargetDay = 31;
+
+            DECLARE @TargetMonthDate DATETIME;
+            -- If the target day has not passed yet this month, schedule it for THIS month!
+            IF DAY(@BaseNext) < @TargetDay
+                SET @TargetMonthDate = @BaseNext;
             ELSE
-                SET @NextOccurDate = DATEADD(MONTH, @RecInterval, @BaseNext);
+                SET @TargetMonthDate = DATEADD(MONTH, @RecInterval, @BaseNext);
+
+            DECLARE @LastDayOfTargetMonth INT = DAY(EOMONTH(@TargetMonthDate));
+            DECLARE @SafeDay INT = CASE WHEN @TargetDay > @LastDayOfTargetMonth THEN @LastDayOfTargetMonth ELSE @TargetDay END;
+
+            SET @NextOccurDate = DATEFROMPARTS(YEAR(@TargetMonthDate), MONTH(@TargetMonthDate), @SafeDay);
         END
         ELSE IF @RecurrenceType = 'YEARLY'
             SET @NextOccurDate = DATEADD(YEAR, @RecInterval, @BaseNext);
@@ -1091,10 +1102,15 @@ BEGIN
             SET @ComputedNextOccurrence = DATEADD(WEEK, @Interval, @CurNextDate);
         ELSE IF @CurRecurrenceType = 'MONTHLY'
         BEGIN
-            IF @CurRecurrenceDayOfMonth IS NOT NULL AND @CurRecurrenceDayOfMonth BETWEEN 1 AND 28
-                SET @ComputedNextOccurrence = DATEFROMPARTS(YEAR(DATEADD(MONTH, @Interval, @CurNextDate)), MONTH(DATEADD(MONTH, @Interval, @CurNextDate)), @CurRecurrenceDayOfMonth);
-            ELSE
-                SET @ComputedNextOccurrence = DATEADD(MONTH, @Interval, @CurNextDate);
+            DECLARE @TargetMDay INT = ISNULL(@CurRecurrenceDayOfMonth, DAY(@CurNextDate));
+            IF @TargetMDay < 1 SET @TargetMDay = 1;
+            IF @TargetMDay > 31 SET @TargetMDay = 31;
+
+            DECLARE @NextMonthDate DATETIME = DATEADD(MONTH, @Interval, @CurNextDate);
+            DECLARE @LastDayOfNextMonth INT = DAY(EOMONTH(@NextMonthDate));
+            DECLARE @SafeMDay INT = CASE WHEN @TargetMDay > @LastDayOfNextMonth THEN @LastDayOfNextMonth ELSE @TargetMDay END;
+
+            SET @ComputedNextOccurrence = DATEFROMPARTS(YEAR(@NextMonthDate), MONTH(@NextMonthDate), @SafeMDay);
         END
         ELSE IF @CurRecurrenceType = 'YEARLY'
             SET @ComputedNextOccurrence = DATEADD(YEAR, @Interval, @CurNextDate);
