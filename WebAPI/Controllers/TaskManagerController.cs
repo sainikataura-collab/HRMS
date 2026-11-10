@@ -1,8 +1,10 @@
+using HRMSWebAPI.Hubs;
 using HRMSWebAPI.Models;
 using HRMSWebAPI.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -17,10 +19,12 @@ namespace HRMSWebAPI.Controllers
     public class TaskManagerController : ControllerBase
     {
         private readonly ITaskManagerRepository _repository;
+        private readonly IHubContext<TaskHub> _taskHubContext;
 
-        public TaskManagerController(ITaskManagerRepository repository)
+        public TaskManagerController(ITaskManagerRepository repository, IHubContext<TaskHub> taskHubContext)
         {
             _repository = repository;
+            _taskHubContext = taskHubContext;
         }
 
         private string? ResolveCompanyId(string? explicitCompanyId = null)
@@ -453,6 +457,8 @@ namespace HRMSWebAPI.Controllers
 
                 var (taskId, taskCode) = await _repository.CreateTaskAsync(req, dto.AttachmentFileName, dto.AttachmentUrl);
 
+                _ = BroadcastTaskNotificationAsync(taskId, taskCode, req.Subject, "CREATED", req.Priority, "OPEN", req.ActionByName);
+
                 return Ok(new
                 {
                     isSuccess = true,
@@ -513,6 +519,11 @@ namespace HRMSWebAPI.Controllers
 
                 var success = await _repository.UpdateTaskAsync(dto.TaskId.Value, req);
 
+                if (success)
+                {
+                    _ = BroadcastTaskNotificationAsync(dto.TaskId.Value, $"TSK-{dto.TaskId.Value}", req.Subject, "STATUS_CHANGED", req.Priority, "OPEN", req.ActionByName);
+                }
+
                 return Ok(new
                 {
                     isSuccess = success,
@@ -552,6 +563,19 @@ namespace HRMSWebAPI.Controllers
                 };
 
                 bool success = await _repository.UpdateStatusAndRemarksAsync(transitionDto, null, null);
+
+                if (success)
+                {
+                    _ = Task.Run(async () =>
+                    {
+                        var taskDetail = await _repository.GetTaskByIdWithHistoryAsync(dto.TaskId);
+                        var code = taskDetail?.Task?.TaskCode ?? $"TSK-{dto.TaskId}";
+                        var subj = taskDetail?.Task?.Subject ?? "Task status updated";
+                        var prio = taskDetail?.Task?.Priority ?? "MEDIUM";
+                        await BroadcastTaskNotificationAsync(dto.TaskId, code, subj, "STATUS_CHANGED", prio, targetStatus, dto.UpdatedByName);
+                    });
+                }
+
                 return Ok(new
                 {
                     isSuccess = success,
@@ -562,6 +586,45 @@ namespace HRMSWebAPI.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, new { isSuccess = false, message = "Error updating status: " + ex.Message });
+            }
+        }
+
+        private async Task BroadcastTaskNotificationAsync(int taskId, string taskCode, string subject, string eventType, string priority, string status, string? actorName)
+        {
+            try
+            {
+                // 1. Silent sync signal to all users on Kanban board
+                await _taskHubContext.Clients.Group("TaskWorkspaceBoard").SendAsync("TaskBoardChanged", new
+                {
+                    taskId = taskId,
+                    eventType = eventType,
+                    newStatus = status
+                });
+
+                // 2. Fetch distinct stakeholders (Assignee, Creator, HOD, Reporting Managers)
+                var stakeholders = await _repository.GetTaskStakeholderEmpIdsAsync(taskId);
+
+                var payload = new
+                {
+                    taskId = taskId,
+                    taskCode = taskCode,
+                    subject = subject,
+                    eventType = eventType,
+                    priority = priority,
+                    status = status,
+                    actorName = actorName ?? "System",
+                    timestamp = DateTime.UtcNow
+                };
+
+                // 3. Push real-time toast notification to each stakeholder user group
+                foreach (var empId in stakeholders)
+                {
+                    await _taskHubContext.Clients.Group(empId).SendAsync("TaskNotificationReceived", payload);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[SignalR Broadcast Warning] {ex.Message}");
             }
         }
 

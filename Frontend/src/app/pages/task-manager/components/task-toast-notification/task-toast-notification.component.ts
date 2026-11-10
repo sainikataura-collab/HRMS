@@ -115,15 +115,16 @@ export class TaskToastNotificationComponent implements OnInit, OnDestroy {
   getEventIcon(item: TaskToastItem): string {
     switch (item.eventType) {
       case 'CREATED':
-        return 'fa-solid fa-sparkles text-emerald-400';
+        return 'fa-solid fa-sparkles text-emerald-600';
       case 'STATUS_CHANGED':
-        return 'fa-solid fa-arrows-rotate text-sky-400';
+        return 'fa-solid fa-arrows-rotate text-blue-600';
       case 'REASSIGNED':
-        return 'fa-solid fa-user-tag text-purple-400';
+        return 'fa-solid fa-user-tag text-purple-600';
       case 'RECURRENCE':
-        return 'fa-solid fa-repeat text-indigo-400';
+        return 'fa-solid fa-repeat text-indigo-600';
       default:
-        return 'fa-solid fa-bell text-amber-400';
+        return 'fa-solid fa-bell text-amber-600';
     }
   }
 }
+

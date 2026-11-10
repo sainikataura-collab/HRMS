@@ -448,4 +448,5 @@ app.MapControllers();
 
 // 2. Map the SignalR Hub endpoint
 app.MapHub<ChatHub>("/chatHub");
+app.MapHub<TaskHub>("/taskHub");
 app.Run();

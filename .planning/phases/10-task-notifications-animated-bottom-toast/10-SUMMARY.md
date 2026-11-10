@@ -1,7 +1,7 @@
-# Phase 10: Task Stakeholder Notifications & Animated Bottom Toast - Summary
+# Phase 10: Task Stakeholder Notifications, SignalR Real-Time Broadcast & Animated Bottom-Right Light Toast - Summary
 
 ## Execution Overview
-Phase 10 implemented end-to-end multi-stakeholder notification dispatch across database, backend API, and a custom, self-contained animated floating toast notification in the Angular frontend.
+Phase 10 implemented end-to-end multi-stakeholder notification dispatch across database, backend API, SignalR real-time websocket broadcasting, and a modern, light-themed animated popup at the bottom-right of the screen.
 
 ### 1. Database & Backend Notification Dispatch (Plan 10-01)
 - **Stored Procedure `dbo.usp_HR_Task_DispatchNotification`**:
@@ -11,49 +11,43 @@ Phase 10 implemented end-to-end multi-stakeholder notification dispatch across d
     - **Reporting Hierarchy**: (`SAL_Employee_Mst.fk_rmanagerid`, `fk_imanagerid`, `fk_FunctionalRepempid`, `fk_AdministrativeRepempid`)
     - **Creator**: (`CreatedByEmpId`)
   - Deduplicates all recipient employee IDs using `#Recipients` table.
-  - Generates event-specific titles and descriptions for `'CREATED'`, `'STATUS_CHANGED'`, `'REASSIGNED'`, and `'RECURRENCE_GENERATED'`.
   - Inserts notification master record into `dbo.LMS_Notification_Mst`.
   - Inserts recipient rows into `dbo.LMS_Notification_Employee_Map` with `diffusion = 0` (unread) and `active = 1`.
-  - Integrates seamlessly with existing in-app header notification bell counter.
-- **Hooked Into Stored Procedures**:
-  - `dbo.usp_HR_Task_Create` (invoked upon task generation)
-  - `dbo.usp_HR_Task_UpdateStatusAndRemarks` (invoked on status transition/remarks)
-  - `dbo.usp_HR_Task_ProcessRecurring` (invoked when recurring worker spawns an instance)
-  - All hooks wrapped in dedicated `TRY/CATCH` blocks so notification delivery failures never roll back core task transactions.
-- **Backend Controller**:
-  - Updated `TaskManagerController.cs` to return `notificationDispatched = true` in response payloads.
-  - Verified with `dotnet build` (0 errors).
+  - Returns stakeholder employee IDs for application-level push delivery.
+  - Hooked into `usp_HR_Task_Create`, `usp_HR_Task_UpdateStatusAndRemarks`, and `usp_HR_Task_ProcessRecurring`.
 
-### 2. Frontend Animated Bottom Toast & Chime (Plan 10-02)
-- **`TaskToastService` (`task-toast.service.ts`)**:
-  - Centralized RxJS reactive event bus (`toast$`).
-  - Pure synthetic audio chime via Web Audio API:
-    - Dual harmonic chime (C5 `523.25 Hz` transitioning 90ms later to E5 `659.25 Hz`) with exponential gain envelope decay.
-    - Zero external MP3 / audio asset dependencies.
-    - Gracefully handles browser audio policy restrictions.
-- **`TaskToastNotificationComponent` (`task-toast-notification.component.*`)**:
-  - Fixed at bottom-center (`transform: translateX(-50%)`).
-  - Keyframe spring slide-up animation (`toastRiseUp`) rising from the bottom with ease-out bounce.
-  - Keyframe slide-down fade out (`toastFadeDown`).
-  - Auto-fades after 5 seconds with an animated linear countdown progress bar.
-  - Pauses timer on mouse hover (`mouseenter` / `mouseleave`).
-  - Glowing accent border matching priority/status (Emerald for Created, Sky Blue for Status Changed, Red for Urgent).
-  - Displays `#TaskCode`, title, subject preview, and priority badge.
-  - Action button: `<button class="btn-toast-view">View Ticket</button>` with icon.
-  - Dismiss button `[X]`.
-- **Integration**:
-  - Mounted `<app-task-toast-notification>` in `task-manager.component.html`.
-  - Connected `onToastViewTicket(taskId)` to slide open the Task Detail & Chronological Audit Drawer for that ticket.
-  - Triggered in `CreateTaskModalComponent.onSubmit()` on task creation and editing.
-  - Triggered in `TaskManagerComponent.onRemarksConfirmed()` on drag-and-drop or quick status transitions.
-  - Verified with `npx tsc --noEmit` (0 errors).
+### 2. SignalR Real-Time Broadcasting & Live Board Sync (Plan 10-03)
+- **Backend Hub `TaskHub` (`WebAPI/Hubs/TaskHub.cs`)**:
+  - Mapped at `/taskHub` in `WebAPI/Program.cs`.
+  - Handles client group connections: `JoinTaskWorkspace(string empId)` and `LeaveTaskWorkspace(string empId)`.
+  - Connects users to their individual `empId` group and joins `"TaskWorkspaceBoard"` broadcast group.
+- **Controller Event Broadcasting (`TaskManagerController.cs`)**:
+  - Injects `IHubContext<TaskHub>`.
+  - When a task is created, updated, or its status changed:
+    1. Sends silent `"TaskBoardChanged"` signal to `"TaskWorkspaceBoard"` so all active Kanban viewers auto-refresh cards in real-time.
+    2. Resolves stakeholder IDs (`GetTaskStakeholderEmpIdsAsync`) and broadcasts `"TaskNotificationReceived"` to each involved stakeholder's user group (`Clients.Group(empId)`).
+- **Frontend `TaskSignalRService` (`task-signalr.service.ts`)**:
+  - Uses `@microsoft/signalr` with automatic reconnection.
+  - Connects to `/taskHub` using current user's ID.
+  - Listens to `"TaskNotificationReceived"` and automatically triggers the toast notification + synthetic chime ding.
+  - Listens to `"TaskBoardChanged"` and emits on `boardChanged$` stream, which `TaskManagerComponent` observes to silently reload board columns.
 
-## Verification Results
-- **SQL Server Verification**:
-  - `EXEC dbo.usp_HR_Task_DispatchNotification @TaskId = 24, @EventType = 'CREATED', @ActorEmpId = 'GU-305';`
-  - Created master notification `pk_notificationid = 3` and 3 recipient rows (`GU-262`, `GU-305`, `GU-5`).
-  - `EXEC dbo.usp_HR_Task_DispatchNotification @TaskId = 24, @EventType = 'STATUS_CHANGED', @ActorEmpId = 'GU-305', @Remarks = 'Completed QA validation';`
-  - Created master notification `pk_notificationid = 4` and 3 recipient rows.
-- **Frontend Verification**:
-  - TypeScript compilation `npx tsc -p tsconfig.app.json --noEmit` finished with code 0 and 0 errors.
-  - Angular dev server running and serving on port 4200.
+### 3. Bottom-Right Light-Themed Toast Popup & Chime (Plan 10-02 & Plan 10-03)
+- **Location**: Positioned at **Bottom Right** (`bottom: 24px; right: 24px;`).
+- **Aesthetic**: Modern Light SaaS Card:
+  - Solid pure white card (`#ffffff`) with subtle border (`1px solid #e2e8f0`).
+  - Soft elevation shadow (`0 10px 25px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -2px rgba(15, 23, 42, 0.03)`).
+  - High-contrast slate typography (`#0f172a` subject, `#64748b` metadata and title).
+  - Clean accent pills (Soft Emerald for Created, Electric Blue for Status Changed, Soft Red for Urgent).
+  - Primary blue action button `<button class="btn-toast-view">View Ticket</button>` with icon.
+  - Close button `[X]`.
+  - Linear countdown timer progress bar (5s duration, pauses on hover).
+- **Animations**:
+  - Spring rise-up from bottom right (`toastRiseFromBottomRight` with cubic-bezier bounce).
+  - Fade-down slide exit (`toastFadeDownExit`).
+- **Synthetic Chime Ding**: Pure mathematical dual-tone audio chime (C5 `523.25 Hz` to E5 `659.25 Hz`) using standard Web Audio API with zero external audio asset dependencies.
+
+## Verification
+- **WebAPI**: `dotnet build` succeeded with 0 errors. Daemon running on `http://localhost:5128`.
+- **SQL Server**: `usp_HR_Task_DispatchNotification` executed cleanly, tested and confirmed recipient mapping rows.
+- **Frontend**: TypeScript compilation `npx tsc -p tsconfig.app.json --noEmit` succeeded with 0 errors. Dev server listening on port 4200.

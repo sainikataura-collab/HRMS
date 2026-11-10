@@ -904,6 +904,9 @@ BEGIN
         FROM #Recipients r;
     END
 
+    -- Return recipient IDs for SignalR real-time broadcast in application layer
+    SELECT r.EmpId FROM #Recipients r;
+
     DROP TABLE #Recipients;
 END;
 GO

@@ -24,6 +24,7 @@ import { CreateTaskModalComponent } from './components/create-task-modal/create-
 import { TaskDetailDrawerComponent } from './components/task-detail-drawer/task-detail-drawer.component';
 import { TaskToastNotificationComponent } from './components/task-toast-notification/task-toast-notification.component';
 import { TaskToastService } from '../../shared/services/task-toast.service';
+import { TaskSignalRService } from '../../shared/services/task-signalr.service';
 
 @Component({
   selector: 'app-task-manager',
@@ -213,12 +214,26 @@ export class TaskManagerComponent implements OnInit, OnDestroy {
 
   constructor(
     public taskManagerService: TaskManagerService,
-    private toastService: TaskToastService
+    private toastService: TaskToastService,
+    private signalRService: TaskSignalRService
   ) {}
 
   ngOnInit(): void {
     this.loadLookups();
     this.loadBoard();
+
+    // Connect to SignalR TaskHub for live real-time stakeholder notifications & board sync
+    const currentEmp = this.taskManagerService.currentUserId;
+    if (currentEmp) {
+      this.signalRService.startConnection(currentEmp);
+    }
+
+    // Auto-refresh board columns when live board sync signals arrive
+    this.signalRService.boardChanged$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.loadBoard();
+      });
 
     // Debounce search input
     this.searchSubject.pipe(

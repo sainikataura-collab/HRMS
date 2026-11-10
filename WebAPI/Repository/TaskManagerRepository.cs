@@ -288,6 +288,36 @@ namespace HRMSWebAPI.Repository
 
             return result != null ? Convert.ToInt32(result.GeneratedCount) : 0;
         }
+
+        public async Task<List<string>> GetTaskStakeholderEmpIdsAsync(int taskId)
+        {
+            using var conn = DataBaseFactory.ConnString();
+            var sql = @"
+                SELECT DISTINCT EmpId FROM (
+                    SELECT AssignedToEmpId AS EmpId FROM dbo.HR_TaskMaster WHERE TaskId = @TaskId AND AssignedToEmpId IS NOT NULL AND AssignedToEmpId <> ''
+                    UNION
+                    SELECT CreatedByEmpId AS EmpId FROM dbo.HR_TaskMaster WHERE TaskId = @TaskId AND CreatedByEmpId IS NOT NULL AND CreatedByEmpId <> ''
+                    UNION
+                    SELECT d.fk_depHodid AS EmpId 
+                    FROM dbo.Department_Mst d
+                    INNER JOIN dbo.HR_TaskMaster t ON t.TargetDeptId = d.pk_deptid
+                    WHERE t.TaskId = @TaskId AND d.fk_depHodid IS NOT NULL AND d.fk_depHodid <> ''
+                    UNION
+                    SELECT e.fk_rmanagerid AS EmpId
+                    FROM dbo.SAL_Employee_Mst e
+                    INNER JOIN dbo.HR_TaskMaster t ON t.AssignedToEmpId = e.pk_empid
+                    WHERE t.TaskId = @TaskId AND e.fk_rmanagerid IS NOT NULL AND e.fk_rmanagerid <> ''
+                    UNION
+                    SELECT e.fk_imanagerid AS EmpId
+                    FROM dbo.SAL_Employee_Mst e
+                    INNER JOIN dbo.HR_TaskMaster t ON t.AssignedToEmpId = e.pk_empid
+                    WHERE t.TaskId = @TaskId AND e.fk_imanagerid IS NOT NULL AND e.fk_imanagerid <> ''
+                ) stakeholders
+                WHERE EmpId IS NOT NULL AND LTRIM(RTRIM(EmpId)) <> '';";
+
+            var result = await conn.QueryAsync<string>(sql, new { TaskId = taskId });
+            return result.Where(s => !string.IsNullOrWhiteSpace(s)).Distinct().ToList();
+        }
     }
 }
 
