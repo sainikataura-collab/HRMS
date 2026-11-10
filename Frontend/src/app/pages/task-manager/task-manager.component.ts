@@ -1,6 +1,7 @@
 import { Component, EventEmitter, OnInit, Output, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
 import {
   CdkDragDrop,
@@ -215,12 +216,26 @@ export class TaskManagerComponent implements OnInit, OnDestroy {
   constructor(
     public taskManagerService: TaskManagerService,
     private toastService: TaskToastService,
-    private signalRService: TaskSignalRService
+    private signalRService: TaskSignalRService,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
     this.loadLookups();
     this.loadBoard();
+
+    // Deep link or notification click to open specific task dossier
+    this.route.queryParams
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(params => {
+        if (params['openTaskId']) {
+          const tId = Number(params['openTaskId']);
+          if (tId > 0) {
+            this.selectedTaskId = tId;
+            this.isDetailDrawerOpen = true;
+          }
+        }
+      });
 
     // Connect to SignalR TaskHub for live real-time stakeholder notifications & board sync
     const currentEmp = this.taskManagerService.currentUserId;

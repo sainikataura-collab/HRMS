@@ -85,8 +85,20 @@ export class TaskSignalRService implements OnDestroy {
   private joinWorkspaceGroup(empId: string): void {
     if (!this.hubConnection || this.hubConnection.state !== signalR.HubConnectionState.Connected) return;
 
+    const idSet = new Set<string>();
+    if (empId) idSet.add(empId.trim());
+
+    const storageKeys = ['UserId', 'userId', 'empid', 'empId', 'loginEmpId', 'loginId'];
+    for (const k of storageKeys) {
+      const val = sessionStorage.getItem(k) || localStorage.getItem(k);
+      if (val && val.trim()) idSet.add(val.trim());
+    }
+
+    const compositeId = Array.from(idSet).join(',');
+
     this.hubConnection
-      .invoke('JoinTaskWorkspace', empId)
+      .invoke('JoinTaskWorkspace', compositeId)
+      .then(() => console.log(`[TaskSignalR] Successfully subscribed to groups: ${compositeId}`))
       .catch(err => console.warn('[TaskSignalR] JoinTaskWorkspace invoke warning:', err));
   }
 

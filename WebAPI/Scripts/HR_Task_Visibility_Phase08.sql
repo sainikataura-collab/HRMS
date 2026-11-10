@@ -891,6 +891,14 @@ BEGIN
         END
     END
 
+    -- Also include mapped UserIds from UM_Users_Mst so both portal logins (Employee & Admin) see the notification
+    INSERT INTO #Recipients (EmpId)
+    SELECT DISTINCT u.pk_userId
+    FROM dbo.UM_Users_Mst u
+    INNER JOIN #Recipients r ON u.fk_empId = r.EmpId COLLATE DATABASE_DEFAULT
+    WHERE u.pk_userId IS NOT NULL AND LTRIM(RTRIM(u.pk_userId)) <> ''
+      AND NOT EXISTS (SELECT 1 FROM #Recipients ex WHERE ex.EmpId = u.pk_userId COLLATE DATABASE_DEFAULT);
+
     -- 4. Insert into Notification Tables if recipients exist
     IF EXISTS (SELECT 1 FROM #Recipients)
     BEGIN

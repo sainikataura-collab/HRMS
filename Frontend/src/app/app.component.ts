@@ -2,18 +2,20 @@
 
 import { Component, HostListener, OnInit, inject, Inject, PLATFORM_ID } from '@angular/core';
 import { StatusBar, Style } from '@capacitor/status-bar';
-import { Router, RouterOutlet } from '@angular/router';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { IdleService } from './idle.service';
 import { Subscription } from 'rxjs';
 import { AuthService } from './authentication/service/auth.service';
 import { NgxUiLoaderModule } from 'ngx-ui-loader';
 import { Capacitor } from '@capacitor/core';
 import { Preferences } from '@capacitor/preferences';
+import { TaskToastNotificationComponent } from './pages/task-manager/components/task-toast-notification/task-toast-notification.component';
+import { TaskSignalRService } from './shared/services/task-signalr.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, NgxUiLoaderModule],
+  imports: [RouterOutlet, NgxUiLoaderModule, TaskToastNotificationComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
@@ -21,10 +23,16 @@ export class AppComponent implements OnInit {
   idleService = inject(IdleService);
   authService = inject(AuthService);
   router = inject(Router);
+  signalRService = inject(TaskSignalRService);
   private idleSubscription?: Subscription;
   title = 'hrms-app';
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
+
+  onGlobalToastViewTicket(taskId: number): void {
+    if (!taskId) return;
+    this.router.navigate(['/task-manager'], { queryParams: { openTaskId: taskId } });
+  }
 
   async ngOnInit() {
     if (Capacitor.isNativePlatform()) {
@@ -70,8 +78,30 @@ export class AppComponent implements OnInit {
         }
       });
     }
+
+    // Connect to global Task SignalR hub for real-time notifications
+    this.initGlobalTaskSignalR();
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationEnd) {
+        this.initGlobalTaskSignalR();
+      }
+    });
+
   // Global Label Replacer (Zero Touch to Master Components)
     this.setupGlobalLabelObserver();
+  }
+
+  private initGlobalTaskSignalR(): void {
+    const rawId = sessionStorage.getItem('UserId') ||
+                  sessionStorage.getItem('userId') ||
+                  sessionStorage.getItem('empid') ||
+                  sessionStorage.getItem('empId') ||
+                  sessionStorage.getItem('loginEmpId') ||
+                  localStorage.getItem('userId') ||
+                  localStorage.getItem('empid') || '';
+    if (rawId) {
+      this.signalRService.startConnection(rawId);
+    }
   }
 
   private labelObserver?: MutationObserver;

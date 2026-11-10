@@ -293,30 +293,82 @@ namespace HRMSWebAPI.Repository
         {
             using var conn = DataBaseFactory.ConnString();
             var sql = @"
-                SELECT DISTINCT EmpId FROM (
-                    SELECT AssignedToEmpId AS EmpId FROM dbo.HR_TaskMaster WHERE TaskId = @TaskId AND AssignedToEmpId IS NOT NULL AND AssignedToEmpId <> ''
+                WITH RawStakeholders AS (
+                    -- Assignee
+                    SELECT t.AssignedToEmpId AS Id
+                    FROM dbo.HR_TaskMaster t
+                    WHERE t.TaskId = @TaskId AND t.AssignedToEmpId IS NOT NULL AND LTRIM(RTRIM(t.AssignedToEmpId)) <> ''
                     UNION
-                    SELECT CreatedByEmpId AS EmpId FROM dbo.HR_TaskMaster WHERE TaskId = @TaskId AND CreatedByEmpId IS NOT NULL AND CreatedByEmpId <> ''
+                    -- Creator
+                    SELECT t.CreatedByEmpId AS Id
+                    FROM dbo.HR_TaskMaster t
+                    WHERE t.TaskId = @TaskId AND t.CreatedByEmpId IS NOT NULL AND LTRIM(RTRIM(t.CreatedByEmpId)) <> ''
                     UNION
-                    SELECT d.fk_depHodid AS EmpId 
+                    -- Target Dept HOD
+                    SELECT d.fk_depHodid AS Id 
                     FROM dbo.Department_Mst d
                     INNER JOIN dbo.HR_TaskMaster t ON t.TargetDeptId = d.pk_deptid
-                    WHERE t.TaskId = @TaskId AND d.fk_depHodid IS NOT NULL AND d.fk_depHodid <> ''
+                    WHERE t.TaskId = @TaskId AND d.fk_depHodid IS NOT NULL AND LTRIM(RTRIM(d.fk_depHodid)) <> ''
                     UNION
-                    SELECT e.fk_rmanagerid AS EmpId
-                    FROM dbo.SAL_Employee_Mst e
-                    INNER JOIN dbo.HR_TaskMaster t ON t.AssignedToEmpId = e.pk_empid
-                    WHERE t.TaskId = @TaskId AND e.fk_rmanagerid IS NOT NULL AND e.fk_rmanagerid <> ''
+                    -- Creator Dept HOD (if present)
+                    SELECT d.fk_depHodid AS Id 
+                    FROM dbo.Department_Mst d
+                    INNER JOIN dbo.HR_TaskMaster t ON t.CreatorDeptId = d.pk_deptid
+                    WHERE t.TaskId = @TaskId AND d.fk_depHodid IS NOT NULL AND LTRIM(RTRIM(d.fk_depHodid)) <> ''
                     UNION
-                    SELECT e.fk_imanagerid AS EmpId
-                    FROM dbo.SAL_Employee_Mst e
-                    INNER JOIN dbo.HR_TaskMaster t ON t.AssignedToEmpId = e.pk_empid
-                    WHERE t.TaskId = @TaskId AND e.fk_imanagerid IS NOT NULL AND e.fk_imanagerid <> ''
-                ) stakeholders
-                WHERE EmpId IS NOT NULL AND LTRIM(RTRIM(EmpId)) <> '';";
+                    -- Reporting Managers of Assignee
+                    SELECT mgr.Id
+                    FROM dbo.HR_TaskMaster t
+                    INNER JOIN dbo.SAL_Employee_Mst e ON t.AssignedToEmpId = e.pk_empid
+                    CROSS APPLY (
+                        SELECT e.fk_rmanagerid AS Id UNION
+                        SELECT e.fk_imanagerid AS Id UNION
+                        SELECT e.fk_FunctionalRepempid AS Id UNION
+                        SELECT e.fk_AdministrativeRepempid AS Id
+                    ) mgr
+                    WHERE t.TaskId = @TaskId AND mgr.Id IS NOT NULL AND LTRIM(RTRIM(mgr.Id)) <> ''
+                ),
+                ExpandedStakeholders AS (
+                    -- Original raw IDs
+                    SELECT Id FROM RawStakeholders
+                    UNION
+                    -- Map EmpId -> UserId from UM_Users_Mst
+                    SELECT u.pk_userId AS Id
+                    FROM dbo.UM_Users_Mst u
+                    INNER JOIN RawStakeholders r ON u.fk_empId = r.Id
+                    WHERE u.pk_userId IS NOT NULL AND LTRIM(RTRIM(u.pk_userId)) <> ''
+                    UNION
+                    -- Map UserId -> EmpId from UM_Users_Mst
+                    SELECT u.fk_empId AS Id
+                    FROM dbo.UM_Users_Mst u
+                    INNER JOIN RawStakeholders r ON u.pk_userId = r.Id
+                    WHERE u.fk_empId IS NOT NULL AND LTRIM(RTRIM(u.fk_empId)) <> ''
+                )
+                SELECT DISTINCT Id FROM ExpandedStakeholders
+                WHERE Id IS NOT NULL AND LTRIM(RTRIM(Id)) <> '';";
 
-            var result = await conn.QueryAsync<string>(sql, new { TaskId = taskId });
-            return result.Where(s => !string.IsNullOrWhiteSpace(s)).Distinct().ToList();
+            var result = (await conn.QueryAsync<string>(sql, new { TaskId = taskId })).ToList();
+            var allIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var id in result)
+            {
+                if (string.IsNullOrWhiteSpace(id)) continue;
+                var trimmed = id.Trim();
+                allIds.Add(trimmed);
+
+                // Add without "GU-" or "gu-" prefix if present
+                if (trimmed.StartsWith("GU-", StringComparison.OrdinalIgnoreCase))
+                {
+                    allIds.Add(trimmed.Substring(3));
+                }
+                // Add with "GU-" prefix if pure numeric
+                else if (int.TryParse(trimmed, out _))
+                {
+                    allIds.Add("GU-" + trimmed);
+                }
+            }
+
+            return allIds.ToList();
         }
     }
 }

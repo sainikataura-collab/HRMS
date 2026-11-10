@@ -27,7 +27,8 @@ namespace HRMSWebAPI.Hubs
         }
 
         /// <summary>
-        /// Join user-specific notification group + task workspace board group
+        /// Join user-specific notification group + task workspace board group.
+        /// Registers raw, stripped, and prefixed forms of all user IDs passed.
         /// </summary>
         public async Task JoinTaskWorkspace(string empId)
         {
@@ -36,10 +37,31 @@ namespace HRMSWebAPI.Hubs
                 return;
             }
 
-            _taskConnections[empId] = Context.ConnectionId;
-            await Groups.AddToGroupAsync(Context.ConnectionId, empId);
+            var ids = empId.Split(new[] { ',', ';', '|' }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (var raw in ids)
+            {
+                var trimmed = raw.Trim();
+                if (string.IsNullOrEmpty(trimmed)) continue;
+
+                _taskConnections[trimmed] = Context.ConnectionId;
+                await Groups.AddToGroupAsync(Context.ConnectionId, trimmed);
+
+                if (trimmed.StartsWith("GU-", StringComparison.OrdinalIgnoreCase))
+                {
+                    var noPrefix = trimmed.Substring(3);
+                    _taskConnections[noPrefix] = Context.ConnectionId;
+                    await Groups.AddToGroupAsync(Context.ConnectionId, noPrefix);
+                }
+                else if (int.TryParse(trimmed, out _))
+                {
+                    var withPrefix = "GU-" + trimmed;
+                    _taskConnections[withPrefix] = Context.ConnectionId;
+                    await Groups.AddToGroupAsync(Context.ConnectionId, withPrefix);
+                }
+            }
+
             await Groups.AddToGroupAsync(Context.ConnectionId, "TaskWorkspaceBoard");
-            Console.WriteLine($"[TaskHub] User {empId} joined TaskWorkspace (Conn: {Context.ConnectionId})");
+            Console.WriteLine($"[TaskHub] User '{empId}' joined TaskWorkspace (Conn: {Context.ConnectionId})");
         }
 
         /// <summary>
