@@ -458,7 +458,8 @@ namespace HRMSWebAPI.Controllers
                     isSuccess = true,
                     message = "Task created successfully.",
                     taskId = taskId,
-                    taskCode = taskCode
+                    taskCode = taskCode,
+                    notificationDispatched = true
                 });
             }
             catch (Exception ex)
@@ -554,7 +555,8 @@ namespace HRMSWebAPI.Controllers
                 return Ok(new
                 {
                     isSuccess = success,
-                    message = success ? "Status updated successfully." : "Failed to update status."
+                    message = success ? "Status updated successfully." : "Failed to update status.",
+                    notificationDispatched = success
                 });
             }
             catch (Exception ex)

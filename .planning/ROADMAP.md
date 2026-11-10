@@ -13,7 +13,7 @@ This roadmap delivers the complete HR Task Manager & Interactive Kanban Module i
 - [x] **Phase 7: Task Creation Modal, Attachment & Full History Drawer & Dual Portal Routing** - Create Task modal with recurrence & file attachment, slide-out/modal Task Detail & Full History timeline view, and navigation integration in both HR Module and Employee Task-Box.
 - [x] **Phase 8: Task Visibility & Role Scoping** - Shared visibility function, JWT-only identity, task-level 403 guards, creator persistence fix.
 - [x] **Phase 9: Board Pagination, Column Scrolling & Midnight Recurrence Worker** - Independent column scrolling (no full-page scroll), column-level lazy pagination (10 per batch), and 12:00 AM daily recurrence worker.
-- [ ] **Phase 10: Task Event Stakeholder Notifications & Animated Bottom Toast** - In-app database notifications for Creator, Assignee, Target Dept HOD, and Reporting Manager on Task Creation, Status Transition, and Reassignment, plus a sleek bottom animated floating toast popup with chime and 'View Ticket' action.
+- [x] **Phase 10: Task Event Stakeholder Notifications & Animated Bottom Toast** - In-app database notifications for Creator, Assignee, Target Dept HOD, and Reporting Manager on Task Creation, Status Transition, and Reassignment, plus a sleek bottom animated floating toast popup with chime and 'View Ticket' action.
 
 ---
 
@@ -31,8 +31,8 @@ This roadmap delivers the complete HR Task Manager & Interactive Kanban Module i
   4. Clicking 'View Ticket' on the toast navigates/focuses the task and slides open the Task Detail & History drawer.
 
 **Plans**: 2 plans
-- [ ] 10-01-PLAN.md — Backend notification dispatch logic in stored procedure & repository (`LMS_Notification_Mst` / mapping) on task create, transition, and reassignment.
-- [ ] 10-02-PLAN.md — Frontend bottom animated toast component, Web Audio chime synthesis, and 'View Ticket' drawer focus integration.
+- [x] 10-01-PLAN.md — Backend notification dispatch logic in stored procedure & repository (`LMS_Notification_Mst` / mapping) on task create, transition, and reassignment.
+- [x] 10-02-PLAN.md — Frontend bottom animated toast component, Web Audio chime synthesis, and 'View Ticket' drawer focus integration.
 
 ---
 

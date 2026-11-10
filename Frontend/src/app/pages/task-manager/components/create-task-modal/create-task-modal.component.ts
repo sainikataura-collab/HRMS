@@ -10,6 +10,7 @@ import {
   TaskCardDto,
   TaskCreateRequestDto
 } from '../../../../shared/services/task-manager.service';
+import { TaskToastService } from '../../../../shared/services/task-toast.service';
 
 interface WeekDayItem {
   id: string;
@@ -91,7 +92,10 @@ export class CreateTaskModalComponent implements OnInit, OnChanges {
 
   readonly dayOfMonthOptions: number[] = Array.from({ length: 28 }, (_, i) => i + 1);
 
-  constructor(public taskManagerService: TaskManagerService) {}
+  constructor(
+    public taskManagerService: TaskManagerService,
+    private toastService: TaskToastService
+  ) {}
 
   ngOnInit(): void {
     this.setDefaultDeadline();
@@ -439,8 +443,20 @@ export class CreateTaskModalComponent implements OnInit, OnChanges {
       this.taskManagerService.updateTask({ ...payload, taskId: this.editingTask.taskId }).subscribe({
         next: (res) => {
           this.isSubmitting = false;
+          const editTaskId = this.editingTask?.taskId || 0;
+          const editTaskCode = this.editingTask?.taskCode || '';
+          const savedSubject = payload.subject;
+          const savedPriority = payload.priority;
           this.resetForm();
           this.taskCreated.emit(res);
+          this.toastService.show({
+            taskId: editTaskId,
+            taskCode: editTaskCode,
+            subject: savedSubject,
+            eventType: 'STATUS_CHANGED',
+            priority: savedPriority,
+            status: 'Updated'
+          });
         },
         error: (err) => {
           console.error('Failed to update task', err);
@@ -452,8 +468,19 @@ export class CreateTaskModalComponent implements OnInit, OnChanges {
       this.taskManagerService.createTask(payload).subscribe({
         next: (res) => {
           this.isSubmitting = false;
+          const newTaskId = res?.taskId || 0;
+          const newTaskCode = res?.taskCode || '';
+          const savedSubject = payload.subject;
+          const savedPriority = payload.priority;
           this.resetForm();
           this.taskCreated.emit(res);
+          this.toastService.show({
+            taskId: newTaskId,
+            taskCode: newTaskCode,
+            subject: savedSubject,
+            eventType: 'CREATED',
+            priority: savedPriority
+          });
         },
         error: (err) => {
           console.error('Failed to create task', err);

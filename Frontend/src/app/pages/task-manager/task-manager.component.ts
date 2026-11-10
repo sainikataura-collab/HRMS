@@ -22,6 +22,8 @@ import {
 import { TransitionRemarksModalComponent } from './components/transition-remarks-modal/transition-remarks-modal.component';
 import { CreateTaskModalComponent } from './components/create-task-modal/create-task-modal.component';
 import { TaskDetailDrawerComponent } from './components/task-detail-drawer/task-detail-drawer.component';
+import { TaskToastNotificationComponent } from './components/task-toast-notification/task-toast-notification.component';
+import { TaskToastService } from '../../shared/services/task-toast.service';
 
 @Component({
   selector: 'app-task-manager',
@@ -33,7 +35,8 @@ import { TaskDetailDrawerComponent } from './components/task-detail-drawer/task-
     DragDropModule,
     TransitionRemarksModalComponent,
     CreateTaskModalComponent,
-    TaskDetailDrawerComponent
+    TaskDetailDrawerComponent,
+    TaskToastNotificationComponent
   ],
   templateUrl: './task-manager.component.html',
   styleUrls: ['./task-manager.component.scss']
@@ -208,7 +211,10 @@ export class TaskManagerComponent implements OnInit, OnDestroy {
   isDetailDrawerOpen = false;
   selectedTaskId: number | null = null;
 
-  constructor(public taskManagerService: TaskManagerService) {}
+  constructor(
+    public taskManagerService: TaskManagerService,
+    private toastService: TaskToastService
+  ) {}
 
   ngOnInit(): void {
     this.loadLookups();
@@ -624,9 +630,24 @@ export class TaskManagerComponent implements OnInit, OnDestroy {
             this.pendingTask.status = this.pendingToStatus;
             this.pendingTask.lastRemarks = result.remarks;
           }
+          const updatedTaskId = this.pendingTask?.taskId || req.taskId;
+          const updatedTaskCode = this.pendingTask?.taskCode || '';
+          const updatedSubject = this.pendingTask?.subject || 'Task Status Updated';
+          const updatedPriority = this.pendingTask?.priority;
+          const targetStatus = this.pendingToStatus;
+
           this.isUpdatingStatus = false;
           this.closeRemarksModal();
           this.loadBoard();
+
+          this.toastService.show({
+            taskId: updatedTaskId,
+            taskCode: updatedTaskCode,
+            subject: updatedSubject,
+            eventType: 'STATUS_CHANGED',
+            status: targetStatus,
+            priority: updatedPriority
+          });
         },
         error: (err) => {
           console.error('Failed to update task status', err);
@@ -659,6 +680,15 @@ export class TaskManagerComponent implements OnInit, OnDestroy {
     this.selectedTaskId = task.taskId;
     this.isDetailDrawerOpen = true;
     this.taskSelected.emit(task);
+  }
+
+  /**
+   * Action trigger from bottom animated toast to view ticket
+   */
+  onToastViewTicket(taskId: number): void {
+    if (!taskId) return;
+    this.selectedTaskId = taskId;
+    this.isDetailDrawerOpen = true;
   }
 
   onDetailDrawerClosed(): void {

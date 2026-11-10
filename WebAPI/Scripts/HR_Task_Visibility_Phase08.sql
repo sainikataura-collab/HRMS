@@ -647,6 +647,18 @@ BEGIN
 
         COMMIT TRANSACTION;
 
+        -- Dispatch notification to stakeholders
+        BEGIN TRY
+            EXEC dbo.usp_HR_Task_DispatchNotification
+                @TaskId = @TaskId,
+                @EventType = @ActionType,
+                @ActorEmpId = @ResolvedActionByEmp,
+                @ActorName = @ResolvedActorName,
+                @Remarks = @Remarks;
+        END TRY
+        BEGIN CATCH
+        END CATCH;
+
         SELECT 1 AS Success, @TaskId AS TaskId, @NewStatus AS NewStatus;
     END TRY
     BEGIN CATCH
@@ -740,6 +752,159 @@ BEGIN
     );
 
     SELECT 1 AS Success, 'Task updated successfully.' AS Message;
+END;
+GO
+
+-- --------------------------------------------------------------------------------------
+-- 6B. STORED PROCEDURE: dbo.usp_HR_Task_DispatchNotification
+-- Resolves stakeholders (Assignee, Target Dept HOD, Reporting Manager, Creator)
+-- and inserts notification records into LMS_Notification_Mst & LMS_Notification_Employee_Map.
+-- --------------------------------------------------------------------------------------
+CREATE OR ALTER PROCEDURE dbo.usp_HR_Task_DispatchNotification
+    @TaskId         INT,
+    @EventType      VARCHAR(50), -- 'CREATED', 'STATUS_CHANGED', 'REASSIGNED', 'RECURRENCE_GENERATED'
+    @ActorEmpId     VARCHAR(50)   = NULL,
+    @ActorName      NVARCHAR(150) = NULL,
+    @Remarks        NVARCHAR(MAX) = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- 1. Fetch task details
+    DECLARE @TaskCode VARCHAR(50);
+    DECLARE @Subject NVARCHAR(250);
+    DECLARE @Status VARCHAR(20);
+    DECLARE @Priority VARCHAR(20);
+    DECLARE @TargetDeptId VARCHAR(50);
+    DECLARE @CreatorDeptId VARCHAR(50);
+    DECLARE @AssignedToEmpId VARCHAR(50);
+    DECLARE @CreatedByEmpId VARCHAR(50);
+    DECLARE @CreatedByName NVARCHAR(150);
+    DECLARE @CompanyId VARCHAR(50);
+
+    SELECT TOP 1
+        @TaskCode = t.TaskCode,
+        @Subject = t.Subject,
+        @Status = t.Status,
+        @Priority = t.Priority,
+        @TargetDeptId = t.TargetDeptId,
+        @CreatorDeptId = t.CreatorDeptId,
+        @AssignedToEmpId = t.AssignedToEmpId,
+        @CreatedByEmpId = t.CreatedByEmpId,
+        @CreatedByName = t.CreatedByName,
+        @CompanyId = ISNULL(t.CompanyId, 'GU-1')
+    FROM dbo.HR_TaskMaster t
+    WHERE t.TaskId = @TaskId;
+
+    IF @TaskCode IS NULL RETURN;
+
+    -- 2. Build title and message based on event type
+    DECLARE @Title VARCHAR(100);
+    DECLARE @Description VARCHAR(255);
+    DECLARE @ActorDisplay NVARCHAR(150) = ISNULL(@ActorName, ISNULL(@CreatedByName, 'System'));
+
+    IF @EventType = 'CREATED'
+    BEGIN
+        SET @Title = CONCAT('New Task: #', @TaskCode);
+        SET @Description = CONCAT(@ActorDisplay, ' created task: "', SUBSTRING(@Subject, 1, 140), '". Priority: ', @Priority, '.');
+    END
+    ELSE IF @EventType = 'STATUS_CHANGED'
+    BEGIN
+        SET @Title = CONCAT('Task Status: #', @TaskCode);
+        SET @Description = CONCAT(@ActorDisplay, ' moved task to ', @Status, '. ', ISNULL(@Remarks, ''));
+    END
+    ELSE IF @EventType = 'REASSIGNED'
+    BEGIN
+        SET @Title = CONCAT('Task Reassigned: #', @TaskCode);
+        SET @Description = CONCAT(@ActorDisplay, ' reassigned task to ', ISNULL(@AssignedToEmpId, 'Unassigned'), '.');
+    END
+    ELSE IF @EventType = 'RECURRENCE_GENERATED'
+    BEGIN
+        SET @Title = CONCAT('Recurring Task: #', @TaskCode);
+        SET @Description = CONCAT('Automated recurrence generated: "', SUBSTRING(@Subject, 1, 140), '". Due in 24h.');
+    END
+    ELSE
+    BEGIN
+        SET @Title = CONCAT('Task Notification: #', @TaskCode);
+        SET @Description = CONCAT(@ActorDisplay, ': ', SUBSTRING(@Subject, 1, 140));
+    END
+
+    SET @Title = SUBSTRING(@Title, 1, 100);
+    SET @Description = SUBSTRING(@Description, 1, 255);
+
+    -- 3. Resolve Distinct Stakeholders
+    CREATE TABLE #Recipients (EmpId VARCHAR(50) NOT NULL PRIMARY KEY);
+
+    -- Recipient 1: Assigned Employee
+    IF @AssignedToEmpId IS NOT NULL AND LTRIM(RTRIM(@AssignedToEmpId)) <> ''
+    BEGIN
+        INSERT INTO #Recipients (EmpId)
+        VALUES (@AssignedToEmpId);
+    END
+
+    -- Recipient 2: Target Dept HOD
+    IF @TargetDeptId IS NOT NULL AND LTRIM(RTRIM(@TargetDeptId)) <> ''
+    BEGIN
+        INSERT INTO #Recipients (EmpId)
+        SELECT DISTINCT d.fk_depHodid
+        FROM dbo.Department_Mst d
+        WHERE d.pk_deptid = @TargetDeptId COLLATE DATABASE_DEFAULT
+          AND d.fk_depHodid IS NOT NULL AND LTRIM(RTRIM(d.fk_depHodid)) <> ''
+          AND NOT EXISTS (SELECT 1 FROM #Recipients r WHERE r.EmpId = d.fk_depHodid COLLATE DATABASE_DEFAULT);
+    END
+
+    -- Recipient 3: Creator's Dept HOD (if different from target dept)
+    IF @CreatorDeptId IS NOT NULL AND LTRIM(RTRIM(@CreatorDeptId)) <> '' AND @CreatorDeptId <> @TargetDeptId
+    BEGIN
+        INSERT INTO #Recipients (EmpId)
+        SELECT DISTINCT d.fk_depHodid
+        FROM dbo.Department_Mst d
+        WHERE d.pk_deptid = @CreatorDeptId COLLATE DATABASE_DEFAULT
+          AND d.fk_depHodid IS NOT NULL AND LTRIM(RTRIM(d.fk_depHodid)) <> ''
+          AND NOT EXISTS (SELECT 1 FROM #Recipients r WHERE r.EmpId = d.fk_depHodid COLLATE DATABASE_DEFAULT);
+    END
+
+    -- Recipient 4: Reporting Manager(s) of Assignee
+    IF @AssignedToEmpId IS NOT NULL AND LTRIM(RTRIM(@AssignedToEmpId)) <> ''
+    BEGIN
+        INSERT INTO #Recipients (EmpId)
+        SELECT DISTINCT mgr.EmpId
+        FROM (
+            SELECT fk_rmanagerid AS EmpId FROM dbo.SAL_Employee_Mst WHERE pk_empid = @AssignedToEmpId COLLATE DATABASE_DEFAULT AND fk_rmanagerid IS NOT NULL AND fk_rmanagerid <> ''
+            UNION
+            SELECT fk_imanagerid AS EmpId FROM dbo.SAL_Employee_Mst WHERE pk_empid = @AssignedToEmpId COLLATE DATABASE_DEFAULT AND fk_imanagerid IS NOT NULL AND fk_imanagerid <> ''
+            UNION
+            SELECT fk_FunctionalRepempid AS EmpId FROM dbo.SAL_Employee_Mst WHERE pk_empid = @AssignedToEmpId COLLATE DATABASE_DEFAULT AND fk_FunctionalRepempid IS NOT NULL AND fk_FunctionalRepempid <> ''
+            UNION
+            SELECT fk_AdministrativeRepempid AS EmpId FROM dbo.SAL_Employee_Mst WHERE pk_empid = @AssignedToEmpId COLLATE DATABASE_DEFAULT AND fk_AdministrativeRepempid IS NOT NULL AND fk_AdministrativeRepempid <> ''
+        ) mgr
+        WHERE NOT EXISTS (SELECT 1 FROM #Recipients r WHERE r.EmpId = mgr.EmpId COLLATE DATABASE_DEFAULT);
+    END
+
+    -- Recipient 5: Creator
+    IF @CreatedByEmpId IS NOT NULL AND LTRIM(RTRIM(@CreatedByEmpId)) <> ''
+    BEGIN
+        IF NOT EXISTS (SELECT 1 FROM #Recipients r WHERE r.EmpId = @CreatedByEmpId COLLATE DATABASE_DEFAULT)
+        BEGIN
+            INSERT INTO #Recipients (EmpId)
+            VALUES (@CreatedByEmpId);
+        END
+    END
+
+    -- 4. Insert into Notification Tables if recipients exist
+    IF EXISTS (SELECT 1 FROM #Recipients)
+    BEGIN
+        INSERT INTO dbo.LMS_Notification_Mst (title, description, active)
+        VALUES (@Title, @Description, 1);
+
+        DECLARE @NotificationId BIGINT = SCOPE_IDENTITY();
+
+        INSERT INTO dbo.LMS_Notification_Employee_Map (fk_empid, fk_notificationid, diffusion, diffusiondate, active)
+        SELECT r.EmpId, @NotificationId, 0, GETDATE(), 1
+        FROM #Recipients r;
+    END
+
+    DROP TABLE #Recipients;
 END;
 GO
 
@@ -925,6 +1090,18 @@ BEGIN
         );
 
         COMMIT TRANSACTION;
+
+        -- 7. Dispatch notifications to stakeholders (Assignee, HOD, Reporting Manager, Creator)
+        BEGIN TRY
+            EXEC dbo.usp_HR_Task_DispatchNotification
+                @TaskId = @NewTaskId,
+                @EventType = 'CREATED',
+                @ActorEmpId = @CreatedByEmpId,
+                @ActorName = @ResolvedName,
+                @Remarks = @InitialRemarks;
+        END TRY
+        BEGIN CATCH
+        END CATCH;
     END TRY
     BEGIN CATCH
         IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
@@ -1091,6 +1268,18 @@ BEGIN
             CONCAT('Task automatically generated from recurring schedule #', @CurTaskCode, '.'),
             @CurCreatedByEmpId, @CurCreatedByUserId, @CurCreatedByName, GETDATE()
         );
+
+        -- Dispatch notification for recurring child instance
+        BEGIN TRY
+            EXEC dbo.usp_HR_Task_DispatchNotification
+                @TaskId = @NewChildTaskId,
+                @EventType = 'RECURRENCE_GENERATED',
+                @ActorEmpId = @CurCreatedByEmpId,
+                @ActorName = @CurCreatedByName,
+                @Remarks = 'Recurring schedule instance generated';
+        END TRY
+        BEGIN CATCH
+        END CATCH;
 
         -- Calculate next occurrence date for template
         DECLARE @Interval INT = ISNULL(@CurRecurrenceInterval, 1);

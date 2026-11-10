@@ -1312,3 +1312,8 @@
   (closed)="onDetailDrawerClosed()"
   (taskUpdated)="onDetailTaskUpdated()"
 ></app-task-detail-drawer>
+
+<!-- 4. Real-time Animated Bottom Toast Notifications -->
+<app-task-toast-notification
+  (viewTicketRequested)="onToastViewTicket($event)"
+></app-task-toast-notification>
