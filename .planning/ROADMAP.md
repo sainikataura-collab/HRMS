@@ -30,9 +30,10 @@ This roadmap delivers the complete HR Task Manager & Interactive Kanban Module i
   3. Animated floating toast slides up from bottom with glowing accent border, auto-fades after 5 seconds, and plays a subtle chime sound.
   4. Clicking 'View Ticket' on the toast navigates/focuses the task and slides open the Task Detail & History drawer.
 
-**Plans**: 2 plans
+**Plans**: 3 plans
 - [x] 10-01-PLAN.md — Backend notification dispatch logic in stored procedure & repository (`LMS_Notification_Mst` / mapping) on task create, transition, and reassignment.
 - [x] 10-02-PLAN.md — Frontend bottom animated toast component, Web Audio chime synthesis, and 'View Ticket' drawer focus integration.
+- [ ] 10-03-PLAN.md — SignalR real-time stakeholder broadcast, board auto-sync, and bottom-right light-themed popup with spring animation.
 
 ---
 
