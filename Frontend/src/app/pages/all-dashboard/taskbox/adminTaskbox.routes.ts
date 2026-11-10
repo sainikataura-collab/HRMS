@@ -18,8 +18,8 @@ export const routes: Routes = [
         children: [
           {
             path: '',
-            loadComponent: () => import('./taskbox-dash/taskbox-dash.component').then( (m) => m.TaskboxDashComponent),
-            title: 'HRMS - adminTaskbox Dash'
+            loadComponent: () => import('../../task-manager/task-manager.component').then( (m) => m.TaskManagerComponent),
+            title: 'HRMS - Task Manager'
           },
           {
             path: 'task-manager',

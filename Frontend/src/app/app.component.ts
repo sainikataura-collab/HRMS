@@ -32,7 +32,11 @@ export class AppComponent implements OnInit {
 
   onGlobalToastViewTicket(taskId: number): void {
     if (!taskId) return;
-    this.router.navigate(['/task-manager'], { queryParams: { openTaskId: taskId } });
+    const usertype = typeof sessionStorage !== 'undefined' ? sessionStorage.getItem('usertype') : '';
+    const targetRoute = usertype === 'User'
+      ? '/dash/adminTaskbox/adminTaskboxdashboard'
+      : '/dash/taskbox/taskboxdashboard';
+    this.router.navigate([targetRoute], { queryParams: { openTaskId: taskId } });
   }
 
   async ngOnInit() {
