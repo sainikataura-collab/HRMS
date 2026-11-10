@@ -12,8 +12,27 @@ This roadmap delivers the complete HR Task Manager & Interactive Kanban Module i
 - [x] **Phase 6: Interactive Drag-and-Drop Kanban Board, KPI Filter Cards & Remarks Workflow** - Top clickable KPI summary cards (`Open`, `Closed`, `On Hold`, `Unassigned`, `Overdue`), multi-filter bar, 3-column CDK drag-and-drop Kanban board matching reference screenshot, and mandatory transition remarks popup modal.
 - [x] **Phase 7: Task Creation Modal, Attachment & Full History Drawer & Dual Portal Routing** - Create Task modal with recurrence & file attachment, slide-out/modal Task Detail & Full History timeline view, and navigation integration in both HR Module and Employee Task-Box.
 - [x] **Phase 8: Task Visibility & Role Scoping** - Shared visibility function, JWT-only identity, task-level 403 guards, creator persistence fix.
-- [ ] **Phase 9: Board Pagination, Column Scrolling & Midnight Recurrence Worker** - Independent column scrolling (no full-page scroll), column-level lazy pagination (10 per batch), and 12:00 AM daily recurrence worker.
 - [x] **Phase 9: Board Pagination, Column Scrolling & Midnight Recurrence Worker** - Independent column scrolling (no full-page scroll), column-level lazy pagination (10 per batch), and 12:00 AM daily recurrence worker.
+- [ ] **Phase 10: Task Event Stakeholder Notifications & Animated Bottom Toast** - In-app database notifications for Creator, Assignee, Target Dept HOD, and Reporting Manager on Task Creation, Status Transition, and Reassignment, plus a sleek bottom animated floating toast popup with chime and 'View Ticket' action.
+
+---
+
+## Phase Details
+
+### Phase 10: Task Event Stakeholder Notifications & Animated Bottom Toast
+
+**Goal**: Deliver in-app database notifications to Creator, Assignee, Target Department HOD, and Reporting Manager on task creation, transition, and reassignment, paired with a custom bottom animated floating toast with audio feedback and direct navigation/drawer access.
+**Depends on**: Phase 9
+**Requirements**: NOTIF-01, NOTIF-02, TOAST-01, TOAST-02
+**Success Criteria**:
+  1. Creating a task dispatches notification records to Assignee, Target Dept HOD, Assignee's Reporting Manager, and Creator (deduplicated).
+  2. Transitioning task status or reassigning a task dispatches update notifications to all involved stakeholders.
+  3. Animated floating toast slides up from bottom with glowing accent border, auto-fades after 5 seconds, and plays a subtle chime sound.
+  4. Clicking 'View Ticket' on the toast navigates/focuses the task and slides open the Task Detail & History drawer.
+
+**Plans**: 2 plans
+- [ ] 10-01-PLAN.md — Backend notification dispatch logic in stored procedure & repository (`LMS_Notification_Mst` / mapping) on task create, transition, and reassignment.
+- [ ] 10-02-PLAN.md — Frontend bottom animated toast component, Web Audio chime synthesis, and 'View Ticket' drawer focus integration.
 
 ---
 
@@ -31,8 +50,6 @@ This roadmap delivers the complete HR Task Manager & Interactive Kanban Module i
   4. Creating a recurring task does not prematurely dump an instance at current date/time; it awaits its scheduled date.
 
 **Plans**: 2 plans
-- [ ] 09-01-PLAN.md — Independent column scrolling CSS, column-level pagination in `usp_HR_Task_GetBoard`, and frontend scroll listeners.
-- [ ] 09-02-PLAN.md — 12:00 AM midnight background worker in `RecurringTaskHostedService.cs` and decoupling immediate creation in `usp_HR_Task_Create`.
 - [x] 09-01-PLAN.md — Independent column scrolling CSS, column-level pagination in `usp_HR_Task_GetBoard`, and frontend scroll listeners.
 - [x] 09-02-PLAN.md — 12:00 AM midnight background worker in `RecurringTaskHostedService.cs` and decoupling immediate creation in `usp_HR_Task_Create`.
 
