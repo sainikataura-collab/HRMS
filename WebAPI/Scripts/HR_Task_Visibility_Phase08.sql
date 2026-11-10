@@ -192,10 +192,18 @@ CREATE OR ALTER PROCEDURE dbo.usp_HR_Task_GetBoard
     @OnlyUnassigned     BIT             = 0,
     @OnlyOverdue        BIT             = 0,
     @SearchText         NVARCHAR(200)   = NULL,
-    @CompanyId          VARCHAR(50)     = NULL
+    @CompanyId          VARCHAR(50)     = NULL,
+    @TargetStatus       VARCHAR(20)     = NULL,
+    @PageIndex          INT             = 1,
+    @PageSize           INT             = 10
 AS
 BEGIN
     SET NOCOUNT ON;
+
+    SET @PageIndex = ISNULL(@PageIndex, 1);
+    SET @PageSize = ISNULL(@PageSize, 10);
+    IF @PageIndex < 1 SET @PageIndex = 1;
+    IF @PageSize < 1 SET @PageSize = 10;
 
     -- Automatically evaluate any due recurring schedules silently
     EXEC dbo.usp_HR_Task_ProcessRecurring @SuppressOutput = 1;
@@ -310,6 +318,32 @@ BEGIN
           OR ISNULL(d.description, '') LIKE '%' + @SearchText + '%' COLLATE DATABASE_DEFAULT
       );
 
+    -- Branch A: Paginated Column Request (Infinite Scroll on specific status)
+    IF @TargetStatus IS NOT NULL AND LTRIM(RTRIM(@TargetStatus)) <> ''
+    BEGIN
+        SELECT *
+        FROM #FilteredTasks
+        WHERE Status = @TargetStatus COLLATE DATABASE_DEFAULT
+           OR (@TargetStatus = 'ON_HOLD' AND (Status = 'ON_HOLD' OR Status = 'ON HOLD'))
+        ORDER BY 
+            CASE Priority 
+                WHEN 'URGENT' THEN 1 
+                WHEN 'HIGH' THEN 2 
+                WHEN 'MEDIUM' THEN 3 
+                WHEN 'LOW' THEN 4 
+                ELSE 5 
+            END,
+            DueDate ASC,
+            CreatedAt DESC
+        OFFSET (@PageIndex - 1) * @PageSize ROWS
+        FETCH NEXT @PageSize ROWS ONLY;
+
+        DROP TABLE #FilteredTasks;
+        DROP TABLE #Viewer;
+        RETURN;
+    END
+
+    -- Branch B: Full Board Initial Load
     -- Result Set 1: High-level KPI Counts (MUST be Exactly Result Set #1)
     SELECT 
         COUNT(*) AS TotalTasks,
@@ -320,9 +354,27 @@ BEGIN
         SUM(CASE WHEN IsOverdue = 1 THEN 1 ELSE 0 END) AS OverdueTasks
     FROM #FilteredTasks;
 
-    -- Result Set 2: Kanban Tasks (MUST be Exactly Result Set #2)
-    SELECT * 
-    FROM #FilteredTasks
+    -- Result Set 2: Top @PageSize Tasks per Status Column (MUST be Exactly Result Set #2)
+    WITH RankedTasks AS (
+        SELECT *,
+               ROW_NUMBER() OVER (
+                   PARTITION BY Status 
+                   ORDER BY 
+                       CASE Priority 
+                           WHEN 'URGENT' THEN 1 
+                           WHEN 'HIGH' THEN 2 
+                           WHEN 'MEDIUM' THEN 3 
+                           WHEN 'LOW' THEN 4 
+                           ELSE 5 
+                       END,
+                       DueDate ASC,
+                       CreatedAt DESC
+               ) AS RowNum
+        FROM #FilteredTasks
+    )
+    SELECT *
+    FROM RankedTasks
+    WHERE RowNum <= @PageSize
     ORDER BY 
         CASE Priority 
             WHEN 'URGENT' THEN 1 
