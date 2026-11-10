@@ -437,34 +437,34 @@ export class TaskManagerComponent implements OnInit, OnDestroy {
     this.taskManagerService.getColumnTasks(filter)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (res) => {
-          const nonRecurring = (res?.tasks || []).filter(t => !t.isRecurring);
-          const hasMore = res?.hasMore !== undefined ? res.hasMore : (nonRecurring.length >= this.pageSize);
+        next: (res: { isSuccess: boolean; tasks: TaskCardDto[]; pageIndex: number; pageSize: number; hasMore: boolean }) => {
+          const nonRecurring: TaskCardDto[] = (res?.tasks || []).filter((t: TaskCardDto) => !t.isRecurring);
+          const hasMore: boolean = res?.hasMore !== undefined ? res.hasMore : (nonRecurring.length >= this.pageSize);
 
           if (column === 'OPEN') {
             this.openPage = nextPage;
             this.isLoadingMoreOpen = false;
             const existingIds = new Set(this.openTasks.map(t => t.taskId));
-            const newTasks = nonRecurring.filter(t => !existingIds.has(t.taskId));
+            const newTasks = nonRecurring.filter((t: TaskCardDto) => !existingIds.has(t.taskId));
             this.openTasks = [...this.openTasks, ...newTasks];
             this.hasMoreOpen = hasMore;
           } else if (column === 'ON_HOLD') {
             this.onHoldPage = nextPage;
             this.isLoadingMoreOnHold = false;
             const existingIds = new Set(this.onHoldTasks.map(t => t.taskId));
-            const newTasks = nonRecurring.filter(t => !existingIds.has(t.taskId));
+            const newTasks = nonRecurring.filter((t: TaskCardDto) => !existingIds.has(t.taskId));
             this.onHoldTasks = [...this.onHoldTasks, ...newTasks];
             this.hasMoreOnHold = hasMore;
           } else if (column === 'CLOSED') {
             this.closedPage = nextPage;
             this.isLoadingMoreClosed = false;
             const existingIds = new Set(this.closedTasks.map(t => t.taskId));
-            const newTasks = nonRecurring.filter(t => !existingIds.has(t.taskId));
+            const newTasks = nonRecurring.filter((t: TaskCardDto) => !existingIds.has(t.taskId));
             this.closedTasks = [...this.closedTasks, ...newTasks];
             this.hasMoreClosed = hasMore;
           }
         },
-        error: (err) => {
+        error: (err: any) => {
           console.error(`Failed to load more ${column} tasks`, err);
           if (column === 'OPEN') this.isLoadingMoreOpen = false;
           if (column === 'ON_HOLD') this.isLoadingMoreOnHold = false;
