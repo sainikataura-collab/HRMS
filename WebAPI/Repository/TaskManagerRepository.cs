@@ -207,10 +207,10 @@ namespace HRMSWebAPI.Repository
                 parameters,
                 commandType: CommandType.StoredProcedure);
 
-            if (result == null)
+            if (result == null || result.TaskId == null)
                 throw new InvalidOperationException("Failed to create task record.");
 
-            return ((int)result.TaskId, (string)result.TaskCode);
+            return (Convert.ToInt32(result.TaskId), Convert.ToString(result.TaskCode) ?? "");
         }
 
         public async Task<bool> UpdateTaskAsync(int taskId, CreateTaskRequestDto dto)

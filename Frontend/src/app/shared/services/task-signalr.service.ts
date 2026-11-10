@@ -130,3 +130,4 @@ export class TaskSignalRService implements OnDestroy {
     this.stopConnection();
   }
 }
+
