@@ -149,16 +149,25 @@
 
 
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
-import { Subject, BehaviorSubject } from 'rxjs';
+import { Subject, BehaviorSubject, Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { TaskToastService } from './task-toast.service';
+
+export interface SignalRBoardChangedPayload {
+  taskId: number;
+  taskCode?: string;
+  eventType: string;
+  newStatus?: string;
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class SignalRService {
   private hubConnection!: signalR.HubConnection;
+  private toastService = inject(TaskToastService);
 
   // Observable for new messages
   private messageReceivedSubject = new Subject<any>();
@@ -171,6 +180,10 @@ export class SignalRService {
   // Observable for read receipts
   private readReceiptSubject = new Subject<any>();
   public readReceipt$ = this.readReceiptSubject.asObservable();
+
+  // Observable for silent task board changes
+  private boardChangedSubject = new Subject<SignalRBoardChangedPayload>();
+  public boardChanged$: Observable<SignalRBoardChangedPayload> = this.boardChangedSubject.asObservable();
 
   // Track connection status
   private connectionStatus = new BehaviorSubject<boolean>(false);
@@ -236,14 +249,49 @@ export class SignalRService {
   }
 
   private setupEventHandlers(userId: string, userRole: string): void {
-    // Handle incoming notifications
+    // 1. Direct Task Notification Listener (High-Priority real-time stakeholder popup)
+    this.hubConnection.on('TaskNotificationReceived', (payload: any) => {
+      console.log('🔔 [SignalRService] TaskNotificationReceived:', payload);
+      this.toastService.show({
+        taskId: payload.taskId,
+        taskCode: payload.taskCode,
+        subject: payload.subject,
+        eventType: payload.eventType || 'STATUS_CHANGED',
+        priority: payload.priority || 'MEDIUM',
+        status: payload.status,
+        actorName: payload.actorName,
+        message: payload.message
+      });
+    });
+
+    // 2. Silent Task Board Changed Listener (Auto-refreshes Kanban columns)
+    this.hubConnection.on('TaskBoardChanged', (payload: any) => {
+      console.log('🔄 [SignalRService] TaskBoardChanged:', payload);
+      this.boardChangedSubject.next(payload);
+    });
+
+    // 3. Handle incoming notifications (System & Chat)
     this.hubConnection.on('ReceiveNotification', (data: any) => {
       console.log('📩 Notification received:', data);
       
-      // ✅ IMPORTANT: Filter out messages sent by yourself
-      if (data.senderId === userId && data.senderRole === userRole) {
+      // ✅ IMPORTANT: Filter out messages sent by yourself for standard chat messages only
+      if (data.senderId === userId && data.senderRole === userRole && !data.taskPayload) {
         console.log('⚠️ Ignoring own message');
         return;
+      }
+
+      // If notification carries taskPayload, ensure toast triggers
+      if (data?.taskPayload) {
+        this.toastService.show({
+          taskId: data.taskPayload.taskId,
+          taskCode: data.taskPayload.taskCode,
+          subject: data.taskPayload.subject,
+          eventType: data.taskPayload.eventType || 'STATUS_CHANGED',
+          priority: data.taskPayload.priority || 'MEDIUM',
+          status: data.taskPayload.status,
+          actorName: data.taskPayload.actorName,
+          message: data.taskPayload.message
+        });
       }
       
       this.messageReceivedSubject.next(data);

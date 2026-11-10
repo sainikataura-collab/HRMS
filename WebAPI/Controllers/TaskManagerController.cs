@@ -19,11 +19,16 @@ namespace HRMSWebAPI.Controllers
     public class TaskManagerController : ControllerBase
     {
         private readonly ITaskManagerRepository _repository;
+        private readonly IHubContext<ChatHub> _chatHubContext;
         private readonly IHubContext<TaskHub> _taskHubContext;
 
-        public TaskManagerController(ITaskManagerRepository repository, IHubContext<TaskHub> taskHubContext)
+        public TaskManagerController(
+            ITaskManagerRepository repository,
+            IHubContext<ChatHub> chatHubContext,
+            IHubContext<TaskHub> taskHubContext)
         {
             _repository = repository;
+            _chatHubContext = chatHubContext;
             _taskHubContext = taskHubContext;
         }
 
@@ -593,13 +598,17 @@ namespace HRMSWebAPI.Controllers
         {
             try
             {
-                // 1. Silent sync signal to all users on Kanban board
-                await _taskHubContext.Clients.Group("TaskWorkspaceBoard").SendAsync("TaskBoardChanged", new
+                // 1. Silent sync signal to all users on Kanban board across both hubs
+                var boardPayload = new
                 {
                     taskId = taskId,
+                    taskCode = taskCode,
                     eventType = eventType,
                     newStatus = status
-                });
+                };
+
+                await _chatHubContext.Clients.Group("TaskWorkspaceBoard").SendAsync("TaskBoardChanged", boardPayload);
+                await _taskHubContext.Clients.Group("TaskWorkspaceBoard").SendAsync("TaskBoardChanged", boardPayload);
 
                 // 2. Fetch distinct stakeholders (Assignee, Creator, HOD, Reporting Managers)
                 var stakeholders = await _repository.GetTaskStakeholderEmpIdsAsync(taskId);
@@ -613,13 +622,61 @@ namespace HRMSWebAPI.Controllers
                     priority = priority,
                     status = status,
                     actorName = actorName ?? "System",
-                    timestamp = DateTime.UtcNow
+                    timestamp = DateTime.UtcNow.ToString("o")
                 };
 
-                // 3. Push real-time toast notification to each stakeholder user group
+                var chatNotificationPayload = new
+                {
+                    senderId = actorName ?? "System",
+                    senderName = actorName ?? "System Notification",
+                    senderRole = "System",
+                    notificationType = "Task",
+                    redirectUrl = "/task-manager",
+                    message = $"Task {taskCode}: {subject} ({status})",
+                    timestamp = DateTime.UtcNow,
+                    taskPayload = payload
+                };
+
+                Console.WriteLine($"[SignalR Broadcast] Task #{taskCode} ({taskId}) dispatching to {stakeholders.Count} stakeholder keys: {string.Join(", ", stakeholders)}");
+
+                // 3. Push real-time toast notification to each stakeholder user group on both ChatHub & TaskHub
                 foreach (var empId in stakeholders)
                 {
-                    await _taskHubContext.Clients.Group(empId).SendAsync("TaskNotificationReceived", payload);
+                    if (string.IsNullOrWhiteSpace(empId)) continue;
+                    var trimmed = empId.Trim();
+
+                    var groups = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+                    {
+                        trimmed,
+                        $"{trimmed}:EMP",
+                        $"{trimmed}:HR",
+                        $"{trimmed}:Vendor"
+                    };
+
+                    if (trimmed.StartsWith("GU-", StringComparison.OrdinalIgnoreCase))
+                    {
+                        var bare = trimmed.Substring(3);
+                        groups.Add(bare);
+                        groups.Add($"{bare}:EMP");
+                        groups.Add($"{bare}:HR");
+                    }
+                    else if (int.TryParse(trimmed, out _))
+                    {
+                        var prefixed = "GU-" + trimmed;
+                        groups.Add(prefixed);
+                        groups.Add($"{prefixed}:EMP");
+                        groups.Add($"{prefixed}:HR");
+                    }
+
+                    foreach (var grp in groups)
+                    {
+                        // ChatHub (where live application browser sessions are actively connected)
+                        await _chatHubContext.Clients.Group(grp).SendAsync("TaskNotificationReceived", payload);
+                        await _chatHubContext.Clients.Group(grp).SendAsync("ReceiveNotification", chatNotificationPayload);
+
+                        // TaskHub (where direct task listeners are connected)
+                        await _taskHubContext.Clients.Group(grp).SendAsync("TaskNotificationReceived", payload);
+                    }
                 }
             }
             catch (Exception ex)

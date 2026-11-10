@@ -1,8 +1,9 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
-import { Subject, Observable } from 'rxjs';
+import { Subject, Observable, Subscription } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { TaskToastService } from './task-toast.service';
+import { SignalRService } from './signalr.service';
 
 export interface SignalRTaskNotificationPayload {
   taskId: number;
@@ -17,6 +18,7 @@ export interface SignalRTaskNotificationPayload {
 
 export interface SignalRBoardChangedPayload {
   taskId: number;
+  taskCode?: string;
   eventType: string;
   newStatus?: string;
 }
@@ -28,11 +30,20 @@ export class TaskSignalRService implements OnDestroy {
   private hubConnection: signalR.HubConnection | null = null;
   private currentEmpId: string | null = null;
   private isConnecting = false;
+  private chatSub?: Subscription;
 
   private boardChangedSubject = new Subject<SignalRBoardChangedPayload>();
   public boardChanged$: Observable<SignalRBoardChangedPayload> = this.boardChangedSubject.asObservable();
 
-  constructor(private toastService: TaskToastService) {}
+  constructor(
+    private toastService: TaskToastService,
+    private chatSignalR: SignalRService
+  ) {
+    // Bridge board changes from universal ChatHub to TaskSignalR consumers
+    this.chatSub = this.chatSignalR.boardChanged$.subscribe(payload => {
+      this.boardChangedSubject.next(payload);
+    });
+  }
 
   public startConnection(empId: string): void {
     if (!empId) return;
@@ -139,6 +150,9 @@ export class TaskSignalRService implements OnDestroy {
   }
 
   ngOnDestroy(): void {
+    if (this.chatSub) {
+      this.chatSub.unsubscribe();
+    }
     this.stopConnection();
   }
 }

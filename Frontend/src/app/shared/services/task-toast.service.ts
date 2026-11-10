@@ -22,8 +22,16 @@ export class TaskToastService {
   public toast$: Observable<TaskToastItem> = this.toastSubject.asObservable();
 
   private audioCtx: AudioContext | null = null;
+  private recentToastKeys = new Set<string>();
 
   show(item: Omit<TaskToastItem, 'id' | 'time'>): void {
+    const dedupKey = `${item.taskId}_${item.eventType}_${item.status || ''}`;
+    if (this.recentToastKeys.has(dedupKey)) {
+      return; // Suppress duplicate triggers for the same event in 2.5s window
+    }
+    this.recentToastKeys.add(dedupKey);
+    setTimeout(() => this.recentToastKeys.delete(dedupKey), 2500);
+
     const toastItem: TaskToastItem = {
       ...item,
       id: 'tt_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),

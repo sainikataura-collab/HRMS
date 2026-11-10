@@ -171,7 +171,7 @@ namespace HRMSWebAPI.Hubs
         }
 
         /// <summary>
-        /// ✅ FIXED: Add connection to role-specific group
+        /// ✅ FIXED: Add connection to role-specific group, bare userId group, and TaskWorkspaceBoard
         /// Use composite key: userId + role to differentiate HR and Employee
         /// </summary>
         public async Task JoinChat(string userId, string userRole = "")
@@ -184,7 +184,7 @@ namespace HRMSWebAPI.Hubs
 
             // ✅ Create unique group identifier with role
             // For GU-1 HR: "GU-1:HR"
-            // For GU-1 Employee: "GU-1:EMP"
+            // For GU-305 Employee: "GU-305:EMP"
             string groupKey = string.IsNullOrEmpty(userRole)
                 ? userId
                 : $"{userId}:{userRole}";
@@ -194,7 +194,38 @@ namespace HRMSWebAPI.Hubs
 
             // Add to role-specific group
             await Groups.AddToGroupAsync(Context.ConnectionId, groupKey);
-            Console.WriteLine($"✅ User {userId} ({userRole}) joined chat group: {groupKey} (ConnectionId: {Context.ConnectionId})");
+
+            // Also join bare userId group
+            await Groups.AddToGroupAsync(Context.ConnectionId, userId);
+
+            // Also join un-prefixed / prefixed variants
+            if (userId.StartsWith("GU-", StringComparison.OrdinalIgnoreCase))
+            {
+                var noPrefix = userId.Substring(3);
+                await Groups.AddToGroupAsync(Context.ConnectionId, noPrefix);
+                if (!string.IsNullOrEmpty(userRole))
+                {
+                    await Groups.AddToGroupAsync(Context.ConnectionId, $"{noPrefix}:{userRole}");
+                }
+            }
+            else if (int.TryParse(userId, out _))
+            {
+                var withPrefix = "GU-" + userId;
+                await Groups.AddToGroupAsync(Context.ConnectionId, withPrefix);
+                if (!string.IsNullOrEmpty(userRole))
+                {
+                    await Groups.AddToGroupAsync(Context.ConnectionId, $"{withPrefix}:{userRole}");
+                }
+            }
+
+            // Join universal Task Workspace Board group
+            await Groups.AddToGroupAsync(Context.ConnectionId, "TaskWorkspaceBoard");
+            if (!string.IsNullOrEmpty(userRole))
+            {
+                await Groups.AddToGroupAsync(Context.ConnectionId, $"TaskWorkspaceBoard:{userRole}");
+            }
+
+            Console.WriteLine($"✅ User {userId} ({userRole}) joined chat group: {groupKey} & TaskWorkspaceBoard (ConnectionId: {Context.ConnectionId})");
         }
 
         /// <summary>
