@@ -57,3 +57,4 @@ When a task event occurs, notifications are routed to:
   - CSS animations: `@keyframes toastSlideUp` and `@keyframes toastFadeDown`.
   - Audio synthesizer: `AudioContext` 2-tone melodic chime (440Hz -> 880Hz sine wave, soft decay).
   - Action button: `View Ticket` with task code badge.
+
