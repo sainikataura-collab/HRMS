@@ -110,6 +110,12 @@ export class CreateTaskModalComponent implements OnInit, OnChanges {
       this.initEmployees();
     }
     if (changes['taskTypes'] && this.taskTypes && this.taskTypes.length > 0) {
+      const seen = new Set<number>();
+      this.taskTypes = this.taskTypes.filter(t => {
+        if (seen.has(t.id)) return false;
+        seen.add(t.id);
+        return true;
+      });
       if (!this.taskTypeId && !this.editingTask) {
         this.taskTypeId = this.taskTypes[0].id;
       }

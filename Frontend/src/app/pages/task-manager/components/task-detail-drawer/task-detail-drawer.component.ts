@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
@@ -16,7 +16,7 @@ import {
   templateUrl: './task-detail-drawer.component.html',
   styleUrls: ['./task-detail-drawer.component.scss']
 })
-export class TaskDetailDrawerComponent implements OnChanges {
+export class TaskDetailDrawerComponent implements OnChanges, OnDestroy {
   @Input() isOpen = false;
   @Input() taskId: number | null = null;
 
@@ -42,6 +42,14 @@ export class TaskDetailDrawerComponent implements OnChanges {
   constructor(public taskManagerService: TaskManagerService) {}
 
   ngOnChanges(changes: SimpleChanges): void {
+    if (changes['isOpen']) {
+      if (this.isOpen) {
+        document.body.classList.add('task-drawer-open');
+      } else {
+        document.body.classList.remove('task-drawer-open');
+      }
+    }
+
     if (changes['isOpen'] && this.isOpen && this.taskId) {
       this.loadDetails();
     } else if (changes['taskId'] && this.isOpen && this.taskId) {
@@ -125,11 +133,16 @@ export class TaskDetailDrawerComponent implements OnChanges {
   }
 
   onClose(): void {
+    document.body.classList.remove('task-drawer-open');
     this.task = null;
     this.history = [];
     this.errorMessage = '';
     this.statusRemarks = '';
     this.closed.emit();
+  }
+
+  ngOnDestroy(): void {
+    document.body.classList.remove('task-drawer-open');
   }
 }
 

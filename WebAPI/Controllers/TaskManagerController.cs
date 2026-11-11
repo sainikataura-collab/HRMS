@@ -34,18 +34,21 @@ namespace HRMSWebAPI.Controllers
 
         private string? ResolveCompanyId(string? explicitCompanyId = null)
         {
-            if (!string.IsNullOrWhiteSpace(explicitCompanyId))
-                return explicitCompanyId.Trim();
-
+            // 1. Highest priority: Verified CompanyId from authenticated JWT claim / middleware
             var fromItems = HttpContext.Items["DecryptedCompanyId"]?.ToString();
             if (!string.IsNullOrWhiteSpace(fromItems))
                 return fromItems.Trim();
 
+            // 2. Next priority: Request header from authenticated HTTP client
             if (Request.Headers.TryGetValue("companyId", out var compHeader) && !string.IsNullOrWhiteSpace(compHeader))
                 return compHeader.ToString().Trim();
 
             if (Request.Headers.TryGetValue("CompanyId", out var compHeader2) && !string.IsNullOrWhiteSpace(compHeader2))
                 return compHeader2.ToString().Trim();
+
+            // 3. Fallback: Explicit parameter if provided and valid
+            if (!string.IsNullOrWhiteSpace(explicitCompanyId))
+                return explicitCompanyId.Trim();
 
             return null;
         }
@@ -218,7 +221,7 @@ namespace HRMSWebAPI.Controllers
         {
             try
             {
-                var resolvedCompId = ResolveCompanyId(companyId) ?? "GU-1";
+                var resolvedCompId = ResolveCompanyId(companyId) ?? "";
                 var list = await _repository.SearchEmployeesAsync(resolvedCompId, deptId, search, top);
                 return Ok(new
                 {
@@ -311,6 +314,7 @@ namespace HRMSWebAPI.Controllers
                     closedTasks = board.ClosedTasks.Where(t => t.TaskId > 0).Select(MapTaskCard),
                     onHoldTasks = board.OnHoldTasks.Where(t => t.TaskId > 0).Select(MapTaskCard),
                     allTasks = board.AllTasks.Where(t => t.TaskId > 0).Select(MapTaskCard),
+                    recurringTasks = (board.RecurringTasks ?? new List<TaskCardDto>()).Where(t => t.TaskId > 0).Select(MapTaskCard),
                     viewer = board.ViewerContext != null ? new
                     {
                         isAdmin = board.ViewerContext.IsAdmin,
@@ -517,12 +521,12 @@ namespace HRMSWebAPI.Controllers
                     TaskTypeId = dto.TaskTypeId,
                     TaskTypeName = dto.TaskTypeName,
                     ActionById = actorId,
-                    ActionByName = dto.CreatedByName ?? "Admin",
+                    ActionByName = dto.CreatedByName,
                     UserType = userType,
                     InitialRemarks = dto.InitialRemarks
                 };
 
-                var success = await _repository.UpdateTaskAsync(dto.TaskId.Value, req);
+                var success = await _repository.UpdateTaskAsync(dto.TaskId.Value, req, dto.AttachmentFileName, dto.AttachmentUrl);
 
                 if (success)
                 {

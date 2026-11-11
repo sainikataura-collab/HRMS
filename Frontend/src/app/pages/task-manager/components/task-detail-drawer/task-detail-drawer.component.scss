@@ -1,3 +1,9 @@
+:host {
+  display: block;
+  position: relative;
+  z-index: 99999999 !important;
+}
+
 .drawer-backdrop {
   position: fixed;
   top: 0;
@@ -6,7 +12,7 @@
   height: 100vh;
   background-color: rgba(15, 23, 42, 0.55);
   backdrop-filter: blur(3px);
-  z-index: 100040 !important;
+  z-index: 99999990 !important;
   display: block !important;
   opacity: 1 !important;
 }
@@ -16,11 +22,11 @@
   top: 0;
   right: 0;
   width: 100%;
-  max-width: 580px;
+  max-width: 600px;
   height: 100vh;
   background: #ffffff;
   box-shadow: -8px 0 32px rgba(15, 23, 42, 0.22);
-  z-index: 100050 !important;
+  z-index: 99999999 !important;
   display: flex !important;
   flex-direction: column;
   opacity: 1 !important;
@@ -36,7 +42,7 @@
 }
 
 .drawer-header {
-  padding: 12px 18px;
+  padding: 14px 20px;
   background: #f8fafc;
   border-bottom: 1px solid #e2e8f0;
   display: flex;

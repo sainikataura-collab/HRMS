@@ -1,0 +1,618 @@
+<!-- ========================================================================= -->
+<!-- BESPOKE TASK COMPOSER MODAL (LINEAR + CAL.COM INSPIRED STUDIO DIALOG)     -->
+<!-- ========================================================================= -->
+<div *ngIf="isOpen" class="composer-backdrop" (click)="onClose()">
+  <div class="composer-dialog" (click)="$event.stopPropagation()" role="dialog" aria-modal="true" tabindex="-1">
+
+    <!-- ── 1. TOP WORKSPACE BREADCRUMB BAR ────────────────────────────────── -->
+    <div class="composer-topbar">
+      <div class="composer-breadcrumb">
+        <span class="workspace-badge">
+          <i class="fa-solid fa-cube"></i> Task Workspace
+        </span>
+        <i class="fa-solid fa-chevron-right breadcrumb-sep"></i>
+        <span class="composer-step-title">{{ isEditMode ? 'Edit Task / Recurring Cadence' : 'New Task Composer' }}</span>
+        <span class="selected-category-tag" *ngIf="isEditMode && editingTask">
+          #{{ editingTask.taskCode }}
+        </span>
+        <span class="selected-category-tag">
+          <i [class]="getTaskTypeIcon(selectedTaskTypeName)"></i>
+          {{ selectedTaskTypeName }}
+        </span>
+      </div>
+
+      <div class="composer-topbar-right">
+        <span class="kbd-esc d-none d-sm-inline-block">ESC</span>
+        <button
+          type="button"
+          class="btn-composer-close"
+          (click)="onClose()"
+          [disabled]="isSubmitting"
+          title="Close Composer"
+        >
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- ── 2. SCROLLABLE COMPOSER CANVAS ──────────────────────────────────── -->
+    <div class="composer-body">
+
+      <!-- ZONE A: EDITORIAL TITLE & DESCRIPTION CANVAS -->
+      <div class="editorial-canvas">
+
+        <!-- Distinct Subject & Description Box -->
+        <div class="subject-card-box">
+          <div class="subject-field-row">
+            <label class="subject-input-label">
+              <i class="fa-solid fa-pen-nib text-primary me-1"></i>
+              Task Title / Subject <span class="text-danger">*</span>
+            </label>
+            <input
+              type="text"
+              class="form-control studio-subject-input"
+              placeholder="e.g. Monthly GST Filing & Reconciliation"
+              [(ngModel)]="subject"
+              [disabled]="isSubmitting"
+              maxlength="200"
+              autofocus
+            />
+          </div>
+
+          <div class="desc-field-row mt-2.5">
+            <label class="desc-input-label">
+              <i class="fa-regular fa-file-lines text-muted me-1"></i>
+              Description &amp; Actionable Context
+            </label>
+            <textarea
+              class="form-control studio-desc-input"
+              rows="2"
+              placeholder="Add actionable context, deliverables, checklist items, or reference notes..."
+              [(ngModel)]="description"
+              [disabled]="isSubmitting"
+              maxlength="2000"
+            ></textarea>
+          </div>
+        </div>
+
+        <!-- GENERAL MASTER TASK TYPE RIBBON -->
+        <div class="category-selector-bar">
+          <div class="category-bar-label">
+            <i class="fa-solid fa-tags text-primary"></i>
+            <span>Task Type</span>
+            <span class="gm-pill">General Master</span>
+          </div>
+
+          <div class="category-chips-list">
+            <button
+              *ngFor="let t of taskTypes"
+              type="button"
+              class="category-chip-btn"
+              [class.selected]="taskTypeId === t.id"
+              (click)="selectTaskType(t.id)"
+              [disabled]="isSubmitting"
+              [title]="t.description || t.name"
+            >
+              <i [class]="getTaskTypeIcon(t.name)"></i>
+              <span class="cat-name">{{ t.name }}</span>
+              <span class="cat-code" *ngIf="t.code">{{ t.code }}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ZONE B: 2-PANEL STUDIO WORKBENCH (PROPERTIES LEFT + RECURRENCE STUDIO RIGHT) -->
+      <div class="composer-workbench">
+
+        <!-- ── LEFT PANEL: OWNERSHIP, PRIORITY, DEADLINE & ATTACHMENT ──────── -->
+        <div class="workbench-properties-panel">
+          <div class="panel-section-heading">
+            <i class="fa-solid fa-sliders"></i> Assignment &amp; SLA Parameters
+          </div>
+
+          <!-- Property 1: Target Department -->
+          <div class="prop-row">
+            <div class="prop-label">
+              <i class="fa-regular fa-building"></i>
+              <span>Department</span>
+            </div>
+            <div class="prop-control">
+              <ng-select
+                class="studio-ng-select"
+                [items]="departments"
+                bindLabel="name"
+                bindValue="id"
+                [clearable]="true"
+                [(ngModel)]="departmentId"
+                (change)="onDepartmentChange()"
+                placeholder="All / Cross-Department"
+                [disabled]="isSubmitting"
+              ></ng-select>
+            </div>
+          </div>
+
+          <!-- Property 2: Assignee (Top 10 Initial + Dynamic Search + Self-Assign) -->
+          <div class="prop-row align-items-start">
+            <div class="prop-label pt-1">
+              <i class="fa-regular fa-user"></i>
+              <span>Assign To</span>
+              <span *ngIf="isSearchingEmployees" class="spinner-border spinner-border-sm text-primary ms-1" style="width: 10px; height: 10px;"></span>
+            </div>
+            <div class="prop-control">
+              <div class="d-flex align-items-center gap-2">
+                <div class="flex-grow-1" style="min-width: 0;">
+                  <ng-select
+                    class="studio-ng-select"
+                    [items]="displayEmployees"
+                    bindLabel="name"
+                    bindValue="id"
+                    [clearable]="true"
+                    [(ngModel)]="assignedToEmpId"
+                    (search)="onEmployeeSearch($event)"
+                    placeholder="Top 10 shown — type to search..."
+                    [disabled]="isSubmitting || isAssignToSelf"
+                    [loading]="isSearchingEmployees"
+                  >
+                    <ng-template ng-option-tmp let-item="item">
+                      <div class="d-flex justify-content-between align-items-center w-100">
+                        <div class="text-truncate">
+                          <span class="fw-semibold text-dark">{{ item.name }}</span>
+                          <span *ngIf="item.departmentName" class="text-muted ms-1" style="font-size: 10px;">· {{ item.departmentName }}</span>
+                        </div>
+                        <span *ngIf="item.isHod" class="hod-tag">HOD</span>
+                      </div>
+                    </ng-template>
+                  </ng-select>
+                </div>
+
+                <button
+                  type="button"
+                  class="btn-assign-me"
+                  [class.active]="isAssignToSelf"
+                  (click)="toggleAssignToSelf()"
+                  [disabled]="isSubmitting"
+                  title="Assign directly to yourself"
+                >
+                  <i class="fa-solid" [class.fa-user-check]="isAssignToSelf" [class.fa-user-plus]="!isAssignToSelf"></i>
+                  <span>{{ isAssignToSelf ? 'Assigned to Me' : 'Assign to Me' }}</span>
+                </button>
+              </div>
+              <div class="prop-helper-note">
+                Showing {{ displayEmployees.length }} company-filtered employees{{ departmentId ? (' in ' + selectedDepartmentName) : '' }}.
+              </div>
+            </div>
+          </div>
+
+          <!-- Property 3: Visual Priority Selector (1-Click Tactile Segmented Pills) -->
+          <div class="prop-row">
+            <div class="prop-label">
+              <i class="fa-solid fa-flag"></i>
+              <span>Priority</span>
+            </div>
+            <div class="prop-control">
+              <div class="priority-segmented-bar">
+                <button
+                  type="button"
+                  class="priority-seg-btn seg-low"
+                  [class.active]="priority === 'LOW'"
+                  (click)="priority = 'LOW'"
+                  [disabled]="isSubmitting"
+                >
+                  <span class="p-dot dot-low"></span> Low
+                </button>
+                <button
+                  type="button"
+                  class="priority-seg-btn seg-medium"
+                  [class.active]="priority === 'MEDIUM'"
+                  (click)="priority = 'MEDIUM'"
+                  [disabled]="isSubmitting"
+                >
+                  <span class="p-dot dot-medium"></span> Medium
+                </button>
+                <button
+                  type="button"
+                  class="priority-seg-btn seg-high"
+                  [class.active]="priority === 'HIGH'"
+                  (click)="priority = 'HIGH'"
+                  [disabled]="isSubmitting"
+                >
+                  <span class="p-dot dot-high"></span> High Priority
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Property 4: Target Deadline + Quick SLA Chips (or First Occurrence Date when Recurring) -->
+          <div class="prop-row align-items-start">
+            <div class="prop-label pt-1">
+              <i class="fa-regular fa-clock"></i>
+              <span>{{ isRecurring ? 'First Run' : 'Due Date' }}</span>
+            </div>
+            <div class="prop-control">
+              <input
+                type="datetime-local"
+                class="studio-datetime-input mb-1.5"
+                [(ngModel)]="deadlineDate"
+                [disabled]="isSubmitting"
+              />
+              <div *ngIf="!isRecurring" class="quick-sla-chips">
+                <button type="button" class="sla-chip" (click)="setDeadlinePreset('TOMORROW')">Tomorrow 6 PM</button>
+                <button type="button" class="sla-chip" (click)="setDeadlinePreset('3DAYS')">In 3 Days</button>
+                <button type="button" class="sla-chip" (click)="setDeadlinePreset('NEXT_WEEK')">Next Week</button>
+                <button type="button" class="sla-chip" (click)="setDeadlinePreset('END_OF_MONTH')">Month End</button>
+              </div>
+              <div *ngIf="isRecurring" class="first-run-helper">
+                <i class="fa-solid fa-circle-info text-primary"></i>
+                <span>Initial task run triggers at this time; future runs repeat per schedule.</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Property 5: Reference Attachment -->
+          <div class="prop-row align-items-start border-bottom-0 pb-0">
+            <div class="prop-label pt-1">
+              <i class="fa-solid fa-paperclip"></i>
+              <span>Attachment</span>
+            </div>
+            <div class="prop-control">
+              <div *ngIf="!attachmentFileName" class="studio-upload-bar" (click)="fileInput.click()">
+                <input
+                  #fileInput
+                  type="file"
+                  class="d-none"
+                  (change)="onFileSelected($event)"
+                  accept=".pdf,.doc,.docx,.xls,.xlsx,.csv,.png,.jpg,.jpeg,.zip"
+                />
+                <ng-container *ngIf="!isUploadingAttachment">
+                  <div class="upload-icon-circle">
+                    <i class="fa-solid fa-arrow-up-from-bracket"></i>
+                  </div>
+                  <div>
+                    <div class="upload-main-text">Attach supporting file or checklist</div>
+                    <div class="upload-sub-text">PDF, Excel, Word, Images up to 20MB</div>
+                  </div>
+                </ng-container>
+                <ng-container *ngIf="isUploadingAttachment">
+                  <i class="fa-solid fa-spinner fa-spin text-primary me-2"></i>
+                  <span class="upload-main-text">Uploading attachment...</span>
+                </ng-container>
+              </div>
+
+              <div *ngIf="attachmentFileName" class="studio-attached-pill">
+                <div class="d-flex align-items-center gap-2 text-truncate">
+                  <i class="fa-solid fa-file-circle-check text-success"></i>
+                  <span class="fw-semibold text-dark text-truncate" style="font-size: 11.5px;">{{ attachmentFileName }}</span>
+                </div>
+                <button type="button" class="btn-unattach" (click)="removeAttachment()" title="Remove attachment">
+                  <i class="fa-solid fa-xmark"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ── RIGHT PANEL: CAL.COM STYLE RECURRENCE & AUTOMATION STUDIO ──── -->
+        <div class="workbench-recurrence-studio" [class.studio-active]="isRecurring">
+
+          <!-- Studio Header with Mode Switch -->
+          <div class="studio-header">
+            <div class="d-flex align-items-center gap-2">
+              <div class="studio-icon-badge" [class.active]="isRecurring">
+                <i class="fa-solid fa-arrows-rotate"></i>
+              </div>
+              <div>
+                <div class="studio-title">Recurring Schedule</div>
+                <div class="studio-subtitle">Automate repeating task creation</div>
+              </div>
+            </div>
+
+            <label class="studio-toggle-switch" for="recurrenceSwitch" title="Toggle recurring schedule">
+              <input
+                type="checkbox"
+                id="recurrenceSwitch"
+                [(ngModel)]="isRecurring"
+                [disabled]="isSubmitting"
+              />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+          <!-- WHEN RECURRING IS OFF: CLEAN SUMMARY & QUICK ENABLE -->
+          <div *ngIf="!isRecurring" class="studio-idle-state">
+            <div class="idle-illustration">
+              <i class="fa-regular fa-calendar-check"></i>
+            </div>
+            <div class="idle-heading">Single Execution Task</div>
+            <p class="idle-desc">
+              This task will be created once for <strong>{{ selectedDepartmentName }}</strong> and assigned to <strong>{{ selectedEmployeeName }}</strong>.
+            </p>
+            <button type="button" class="btn-enable-recurrence" (click)="isRecurring = true">
+              <i class="fa-solid fa-repeat me-1"></i> Enable Repeating Schedule
+            </button>
+
+            <div class="routing-mini-summary mt-3 pt-2.5 border-top text-start">
+              <div class="routing-kicker">AUTOMATIC VISIBILITY ROUTING</div>
+              <div class="routing-pills">
+                <span class="r-pill"><i class="fa-solid fa-check text-success"></i> Creator</span>
+                <span class="r-pill"><i class="fa-solid fa-check text-primary"></i> Dept HOD</span>
+                <span class="r-pill"><i class="fa-solid fa-check text-info"></i> Assignee</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- WHEN RECURRING IS ON: INTERACTIVE CAL.COM SCHEDULER -->
+          <div *ngIf="isRecurring" class="studio-scheduler-body">
+
+            <!-- 1. Cadence Segmented Tabs -->
+            <div class="scheduler-block">
+              <label class="scheduler-label">Repeat Frequency</label>
+              <div class="cadence-tabs">
+                <button
+                  type="button"
+                  class="cadence-btn"
+                  [class.active]="recurrencePattern === 'DAILY'"
+                  (click)="setRecurrencePattern('DAILY')"
+                >
+                  Daily
+                </button>
+                <button
+                  type="button"
+                  class="cadence-btn"
+                  [class.active]="recurrencePattern === 'WEEKLY'"
+                  (click)="setRecurrencePattern('WEEKLY')"
+                >
+                  Weekly
+                </button>
+                <button
+                  type="button"
+                  class="cadence-btn"
+                  [class.active]="recurrencePattern === 'MONTHLY'"
+                  (click)="setRecurrencePattern('MONTHLY')"
+                >
+                  Monthly
+                </button>
+                <button
+                  type="button"
+                  class="cadence-btn"
+                  [class.active]="recurrencePattern === 'YEARLY'"
+                  (click)="setRecurrencePattern('YEARLY')"
+                >
+                  Yearly
+                </button>
+              </div>
+            </div>
+
+            <!-- 2. Interval Stepper -->
+            <div class="scheduler-block">
+              <div class="d-flex align-items-center justify-content-between">
+                <label class="scheduler-label mb-0">Repeat Every</label>
+                <div class="interval-stepper">
+                  <input
+                    type="number"
+                    class="interval-input"
+                    min="1"
+                    max="99"
+                    [(ngModel)]="recurrenceInterval"
+                  />
+                  <span class="interval-unit">
+                    {{ recurrencePattern === 'DAILY' ? 'Day(s)' : recurrencePattern === 'WEEKLY' ? 'Week(s)' : recurrencePattern === 'MONTHLY' ? 'Month(s)' : 'Year(s)' }}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 3A. WEEKLY: Circular Day Selector Buttons -->
+            <div *ngIf="recurrencePattern === 'WEEKLY'" class="scheduler-block">
+              <label class="scheduler-label">Repeat On Days</label>
+              <div class="weekday-circles-row">
+                <button
+                  *ngFor="let day of recurrenceDaysOfWeek"
+                  type="button"
+                  class="weekday-circle"
+                  [class.active]="day.selected"
+                  (click)="toggleDayOfWeek(day)"
+                >
+                  {{ day.label }}
+                </button>
+              </div>
+            </div>
+
+            <!-- 3B. MONTHLY: Day of Month Picker -->
+            <div *ngIf="recurrencePattern === 'MONTHLY'" class="scheduler-block">
+              <div class="d-flex align-items-center justify-content-between">
+                <label class="scheduler-label mb-0">Day of Month</label>
+                <select class="studio-month-select" [(ngModel)]="recurrenceDayOfMonth">
+                  <option *ngFor="let d of dayOfMonthOptions" [ngValue]="d">Day {{ d }}</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- 4. End Condition -->
+            <div class="scheduler-block">
+              <label class="scheduler-label">Ends</label>
+              <div class="end-condition-pills">
+                <button
+                  type="button"
+                  class="end-pill"
+                  [class.active]="recurrenceEndType === 'NEVER'"
+                  (click)="setEndType('NEVER')"
+                >
+                  Never
+                </button>
+                <button
+                  type="button"
+                  class="end-pill"
+                  [class.active]="recurrenceEndType === 'ON_DATE'"
+                  (click)="setEndType('ON_DATE')"
+                >
+                  On Date
+                </button>
+                <button
+                  type="button"
+                  class="end-pill"
+                  [class.active]="recurrenceEndType === 'AFTER_COUNT'"
+                  (click)="setEndType('AFTER_COUNT')"
+                >
+                  After Count
+                </button>
+              </div>
+
+              <div *ngIf="recurrenceEndType === 'ON_DATE'" class="mt-2">
+                <input
+                  type="date"
+                  class="studio-datetime-input"
+                  [(ngModel)]="recurrenceEndDate"
+                />
+              </div>
+
+              <div *ngIf="recurrenceEndType === 'AFTER_COUNT'" class="mt-2 d-flex align-items-center gap-2">
+                <input
+                  type="number"
+                  class="interval-input"
+                  style="width: 70px;"
+                  min="1"
+                  max="365"
+                  [(ngModel)]="recurrenceOccurrencesTotal"
+                />
+                <span class="text-muted" style="font-size: 11px;">total occurrences</span>
+              </div>
+            </div>
+
+            <!-- 5. Instance Completion SLA (Due window for each generated occurrence) -->
+            <div class="scheduler-block">
+              <div class="d-flex align-items-center justify-content-between mb-1.5">
+                <label class="scheduler-label mb-0">
+                  <i class="fa-regular fa-hourglass-half text-primary me-1"></i>
+                  Instance Completion SLA
+                </label>
+                <span class="text-muted" style="font-size: 9.5px; font-weight: 600;">Due after creation</span>
+              </div>
+
+              <!-- Quick SLA duration presets -->
+              <div class="recurrence-sla-pills">
+                <button
+                  type="button"
+                  class="sla-preset-btn"
+                  [class.active]="recurrenceDueOffsetValue === 4 && recurrenceDueOffsetUnit === 'HOURS'"
+                  (click)="setRecurrenceSlaPreset(4, 'HOURS')"
+                >
+                  4 Hours
+                </button>
+                <button
+                  type="button"
+                  class="sla-preset-btn"
+                  [class.active]="recurrenceDueOffsetValue === 8 && recurrenceDueOffsetUnit === 'HOURS'"
+                  (click)="setRecurrenceSlaPreset(8, 'HOURS')"
+                >
+                  Same Day (8h)
+                </button>
+                <button
+                  type="button"
+                  class="sla-preset-btn"
+                  [class.active]="recurrenceDueOffsetValue === 1 && recurrenceDueOffsetUnit === 'DAYS'"
+                  (click)="setRecurrenceSlaPreset(1, 'DAYS')"
+                >
+                  1 Day
+                </button>
+                <button
+                  type="button"
+                  class="sla-preset-btn"
+                  [class.active]="recurrenceDueOffsetValue === 2 && recurrenceDueOffsetUnit === 'DAYS'"
+                  (click)="setRecurrenceSlaPreset(2, 'DAYS')"
+                >
+                  2 Days
+                </button>
+                <button
+                  type="button"
+                  class="sla-preset-btn"
+                  [class.active]="recurrenceDueOffsetValue === 3 && recurrenceDueOffsetUnit === 'DAYS'"
+                  (click)="setRecurrenceSlaPreset(3, 'DAYS')"
+                >
+                  3 Days
+                </button>
+                <button
+                  type="button"
+                  class="sla-preset-btn"
+                  [class.active]="recurrenceDueOffsetValue === 7 && recurrenceDueOffsetUnit === 'DAYS'"
+                  (click)="setRecurrenceSlaPreset(7, 'DAYS')"
+                >
+                  1 Week
+                </button>
+              </div>
+
+              <!-- Custom SLA duration stepper -->
+              <div class="sla-custom-row mt-2 d-flex align-items-center gap-2">
+                <span style="font-size: 11px; color: #64748b; font-weight: 600;">Custom SLA:</span>
+                <input
+                  type="number"
+                  class="interval-input"
+                  style="width: 56px;"
+                  min="1"
+                  max="365"
+                  [(ngModel)]="recurrenceDueOffsetValue"
+                />
+                <select class="studio-unit-select" [(ngModel)]="recurrenceDueOffsetUnit">
+                  <option value="HOURS">Hour(s)</option>
+                  <option value="DAYS">Day(s)</option>
+                </select>
+                <span class="text-muted" style="font-size: 10px;">deadline offset</span>
+              </div>
+            </div>
+
+            <!-- 6. Live Schedule Summary Ticket -->
+            <div class="live-schedule-ticket">
+              <div class="ticket-icon">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+              </div>
+              <div class="ticket-text">
+                <div class="ticket-kicker">LIVE SCHEDULE PREVIEW</div>
+                <div class="ticket-summary">{{ recurrenceSummary }}</div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- ── 3. BOTTOM COMMAND FOOTER ───────────────────────────────────────── -->
+    <div class="composer-footer">
+      <div class="footer-left">
+        <span *ngIf="errorMessage" class="composer-error-pill">
+          <i class="fa-solid fa-circle-exclamation me-1"></i>{{ errorMessage }}
+        </span>
+        <span *ngIf="!errorMessage" class="footer-routing-hint">
+          <span class="pulse-dot"></span>
+          Routed to <strong>{{ selectedDepartmentName }}</strong> · Assignee: <strong>{{ selectedEmployeeName }}</strong>
+        </span>
+      </div>
+
+      <div class="footer-actions">
+        <button
+          type="button"
+          class="btn-composer-cancel"
+          (click)="onClose()"
+          [disabled]="isSubmitting"
+        >
+          Cancel
+        </button>
+
+        <button
+          type="button"
+          class="btn-composer-submit"
+          (click)="onSubmit()"
+          [disabled]="isSubmitting || isUploadingAttachment"
+        >
+          <i *ngIf="isSubmitting" class="fa-solid fa-spinner fa-spin"></i>
+          <i *ngIf="!isSubmitting" class="fa-solid fa-paper-plane"></i>
+          <span>{{ isSubmitting ? (isEditMode ? 'Updating...' : 'Creating...') : (isEditMode ? 'Update Task' : (isRecurring ? 'Create Recurring Task' : 'Create Task')) }}</span>
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>

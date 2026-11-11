@@ -56,6 +56,7 @@ export interface TaskBoardResponseDto {
   closedTasks: TaskCardDto[];
   onHoldTasks: TaskCardDto[];
   allTasks?: TaskCardDto[];
+  recurringTasks?: TaskCardDto[];
   viewer?: { isAdmin: boolean; isHod: boolean; isManager: boolean };
   data?: any;
 }
@@ -172,19 +173,33 @@ export class TaskManagerService {
 
   constructor(private http: HttpClient) {}
 
+  private getStorageItem(key: string): string | null {
+    if (typeof window === 'undefined') return null;
+    try {
+      if (typeof sessionStorage !== 'undefined') {
+        const val = sessionStorage.getItem(key);
+        if (val) return val;
+      }
+      if (typeof localStorage !== 'undefined') {
+        const val = localStorage.getItem(key);
+        if (val) return val;
+      }
+    } catch {
+      // Safe fallback for restricted or SSR context
+    }
+    return null;
+  }
+
   /**
    * Helper to retrieve currently authenticated user ID across available storage keys
    */
   get currentUserId(): string {
-    const raw = sessionStorage.getItem('loginEmpId') ||
-                sessionStorage.getItem('empid') ||
-                sessionStorage.getItem('empId') ||
-                sessionStorage.getItem('UserId') ||
-                sessionStorage.getItem('userId') ||
-                localStorage.getItem('empid') ||
-                localStorage.getItem('empId') ||
-                localStorage.getItem('userId') ||
-                sessionStorage.getItem('loginId') || '';
+    const raw = this.getStorageItem('loginEmpId') ||
+                this.getStorageItem('empid') ||
+                this.getStorageItem('empId') ||
+                this.getStorageItem('UserId') ||
+                this.getStorageItem('userId') ||
+                this.getStorageItem('loginId') || '';
 
     // Sanitize any redundant 'GU-' prefix for pure numerical/guid matching if required
     return raw.trim();
@@ -194,31 +209,27 @@ export class TaskManagerService {
    * Helper to retrieve current user display name
    */
   get currentUserName(): string {
-    return sessionStorage.getItem('empName') ||
-           sessionStorage.getItem('userName') ||
-           sessionStorage.getItem('username') ||
-           sessionStorage.getItem('name') ||
-           localStorage.getItem('userName') ||
-           localStorage.getItem('empName') || 'System User';
+    return this.getStorageItem('empName') ||
+           this.getStorageItem('userName') ||
+           this.getStorageItem('username') ||
+           this.getStorageItem('name') || 'User';
   }
 
   /**
    * Helper to retrieve currently authenticated CompanyId
    */
   get currentCompanyId(): string {
-    return sessionStorage.getItem('companyId') ||
-           localStorage.getItem('companyId') ||
-           sessionStorage.getItem('fk_companyId') ||
-           'GU-1';
+    return this.getStorageItem('companyId') ||
+           this.getStorageItem('companyCode') ||
+           this.getStorageItem('fk_companyId') || '';
   }
 
   /**
    * Helper to retrieve authenticated UserType ('User' vs 'Employee')
    */
   get currentUserType(): string {
-    return sessionStorage.getItem('usertype') ||
-           localStorage.getItem('usertype') ||
-           sessionStorage.getItem('UserType') ||
+    return this.getStorageItem('usertype') ||
+           this.getStorageItem('UserType') ||
            'Employee';
   }
 

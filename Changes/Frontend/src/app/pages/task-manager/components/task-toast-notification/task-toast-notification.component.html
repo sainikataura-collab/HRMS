@@ -1,0 +1,58 @@
+<div class="task-toast-container" *ngIf="activeToasts.length > 0">
+  <div
+    *ngFor="let toast of activeToasts"
+    class="task-toast-card"
+    [class.toast-dismissing]="toast.isDismissing"
+    [class.toast-created]="toast.data.eventType === 'CREATED'"
+    [class.toast-status]="toast.data.eventType === 'STATUS_CHANGED'"
+    [class.toast-urgent]="toast.data.priority === 'URGENT'"
+    (mouseenter)="pauseTimer(toast)"
+    (mouseleave)="resumeTimer(toast)"
+  >
+    <!-- Left Indicator / Icon -->
+    <div class="toast-icon-wrap">
+      <div class="toast-icon-glow"></div>
+      <i [class]="getEventIcon(toast.data)"></i>
+    </div>
+
+    <!-- Content Body -->
+    <div class="toast-body">
+      <div class="toast-header-row">
+        <span class="toast-title">{{ getEventTitle(toast.data) }}</span>
+        <span class="toast-code" *ngIf="toast.data.taskCode">#{{ toast.data.taskCode }}</span>
+      </div>
+      <div class="toast-subject" [title]="toast.data.subject">
+        {{ toast.data.subject }}
+      </div>
+      <div class="toast-meta" *ngIf="toast.data.actorName || toast.data.priority">
+        <span class="toast-badge priority" *ngIf="toast.data.priority">{{ toast.data.priority }}</span>
+        <span class="toast-actor" *ngIf="toast.data.actorName">by {{ toast.data.actorName }}</span>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="toast-actions">
+      <button
+        type="button"
+        class="btn-toast-view"
+        (click)="onViewTicket(toast)"
+        title="Open task detail drawer"
+      >
+        <span>View Ticket</span>
+        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+      </button>
+      <button
+        type="button"
+        class="btn-toast-close"
+        (click)="dismiss(toast)"
+        title="Dismiss notification"
+      >
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <!-- Animated Countdown Progress Bar -->
+    <div class="toast-timer-bar" [class.paused]="toast.isPaused"></div>
+  </div>
+</div>
+

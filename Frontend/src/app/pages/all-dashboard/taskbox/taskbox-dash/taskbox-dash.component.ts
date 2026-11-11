@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TaskManagerComponent } from '../../task-manager/task-manager.component';
+import { TaskManagerComponent } from '../../../task-manager/task-manager.component';
 
 @Component({
   selector: 'app-taskbox-dash',

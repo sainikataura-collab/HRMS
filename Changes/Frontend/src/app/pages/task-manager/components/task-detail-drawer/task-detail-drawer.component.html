@@ -1,0 +1,259 @@
+<div *ngIf="isOpen" class="drawer-backdrop fade show" (click)="onClose()"></div>
+
+<div *ngIf="isOpen" class="drawer-panel fade show" role="dialog" aria-modal="true" tabindex="-1">
+  
+  <!-- Drawer Header -->
+  <div class="drawer-header">
+    <div class="d-flex align-items-center gap-2 flex-wrap">
+      <span class="drawer-task-code" *ngIf="task">{{ task.taskCode }}</span>
+      <button
+        *ngIf="task"
+        type="button"
+        class="btn-copy-code"
+        (click)="copyCode()"
+        title="Copy task code"
+      >
+        <i class="fa-regular fa-copy" *ngIf="!copySuccess"></i>
+        <i class="fa-solid fa-check text-success" *ngIf="copySuccess"></i>
+      </button>
+
+      <span
+        *ngIf="task && task.taskTypeName"
+        class="badge bg-primary-subtle text-primary border border-primary-subtle"
+        style="font-size: 9.5px; padding: 2px 7px;"
+      >
+        {{ task.taskTypeName }}
+      </span>
+
+      <span
+        *ngIf="task"
+        class="badge-status-pill"
+        [ngClass]="'status-' + (task.status | lowercase | slice:0:4)"
+      >
+        {{ task.status }}
+      </span>
+
+      <span
+        *ngIf="task"
+        class="badge-priority-pill"
+        [ngClass]="'priority-' + (task.priority | lowercase)"
+      >
+        {{ task.priority }}
+      </span>
+    </div>
+
+    <button type="button" class="btn-close-drawer" (click)="onClose()" title="Close details">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+  </div>
+
+  <!-- Drawer Body -->
+  <div class="drawer-body">
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="drawer-loading-state">
+      <i class="fa-solid fa-spinner fa-spin text-primary"></i>
+      <span>Loading task details and audit history...</span>
+    </div>
+
+    <!-- Error State / Access Denied -->
+    <div *ngIf="!isLoading && errorMessage" class="alert alert-danger m-3 d-flex align-items-center gap-2">
+      <i class="fa-solid fa-circle-exclamation fs-5"></i>
+      <div>
+        <div class="fw-semibold">Access Restricted</div>
+        <div class="small">{{ errorMessage }}</div>
+      </div>
+    </div>
+
+    <div *ngIf="!isLoading && task" class="drawer-content-flow">
+
+      <!-- Overdue Banner -->
+      <div *ngIf="task.isOverdue" class="overdue-banner mb-3">
+        <i class="fa-solid fa-triangle-exclamation overdue-icon"></i>
+        <div>
+          <strong class="d-block">Task is Overdue by {{ task.overdueHours }} hours!</strong>
+          <span class="small">Deadline was {{ task.deadlineDate | date:'medium' }}</span>
+        </div>
+      </div>
+
+      <!-- Task Title & Description -->
+      <div class="task-headline-box mb-3">
+        <h5 class="task-title">{{ task.subject }}</h5>
+        <p class="task-desc-text" *ngIf="task.description">{{ task.description }}</p>
+        <p class="task-desc-text text-muted fst-italic" *ngIf="!task.description">No detailed description provided.</p>
+      </div>
+
+      <!-- Metadata Bento Grid -->
+      <div class="meta-bento-grid mb-3">
+        
+        <!-- Department -->
+        <div class="meta-item">
+          <span class="meta-label"><i class="fa-regular fa-building me-1"></i>Department</span>
+          <span class="meta-value">{{ task.departmentName || 'General / Unassigned' }}</span>
+        </div>
+
+        <!-- Assigned To -->
+        <div class="meta-item">
+          <span class="meta-label"><i class="fa-solid fa-user-check me-1"></i>Assigned To</span>
+          <span class="meta-value fw-semibold" [class.text-primary]="task.assignedToEmpName">
+            {{ task.assignedToEmpName || 'Unassigned' }}
+          </span>
+        </div>
+
+        <!-- Created By -->
+        <div class="meta-item">
+          <span class="meta-label"><i class="fa-solid fa-user-pen me-1"></i>Created By</span>
+          <span class="meta-value">{{ task.createdByName }}</span>
+        </div>
+
+        <!-- Deadline -->
+        <div class="meta-item">
+          <span class="meta-label"><i class="fa-regular fa-calendar-xmark me-1"></i>Deadline</span>
+          <span class="meta-value" [class.text-danger]="task.isOverdue">
+            {{ task.deadlineDate ? (task.deadlineDate | date:'mediumDate') : 'None specified' }}
+          </span>
+        </div>
+
+        <!-- Recurrence Info -->
+        <div class="meta-item" *ngIf="task.isRecurring">
+          <span class="meta-label"><i class="fa-solid fa-arrows-rotate me-1"></i>Recurrence</span>
+          <span class="meta-value text-purple fw-semibold">
+            {{ task.recurrencePattern }} recurring
+          </span>
+        </div>
+
+        <!-- Created Date -->
+        <div class="meta-item">
+          <span class="meta-label"><i class="fa-regular fa-clock me-1"></i>Created On</span>
+          <span class="meta-value">{{ task.createdAt | date:'short' }}</span>
+        </div>
+
+      </div>
+
+      <!-- Attachment Viewer -->
+      <div *ngIf="task.attachmentFileName" class="attachment-section mb-3">
+        <label class="section-subheading mb-1">Attached Document</label>
+        <div class="attachment-card">
+          <div class="d-flex align-items-center gap-2 text-truncate">
+            <div class="file-icon-box">
+              <i class="fa-solid fa-file-lines text-primary"></i>
+            </div>
+            <span class="file-name text-truncate">{{ task.attachmentFileName }}</span>
+          </div>
+          <a
+            [href]="task.attachmentUrl"
+            target="_blank"
+            class="btn btn-sm btn-outline-primary btn-download"
+            download
+          >
+            <i class="fa-solid fa-arrow-down-to-bracket me-1"></i> View / Download
+          </a>
+        </div>
+      </div>
+
+      <!-- Inline Quick Status Update & Remarks Form -->
+      <div class="status-action-box mb-4">
+        <label class="section-subheading mb-2">
+          <i class="fa-solid fa-pen-to-square text-primary me-1"></i> Quick Status Transition
+        </label>
+        
+        <div class="row g-2 mb-2">
+          <div class="col-md-5">
+            <ng-select
+              class="custom-ng-select"
+              [items]="statusOptions"
+              bindLabel="label"
+              bindValue="id"
+              [clearable]="false"
+              [(ngModel)]="selectedNewStatus"
+              [disabled]="isUpdatingStatus"
+            ></ng-select>
+          </div>
+          <div class="col-md-7">
+            <input
+              type="text"
+              class="form-control form-control-sm remarks-textbox"
+              placeholder="Enter transition remarks..."
+              [(ngModel)]="statusRemarks"
+              [disabled]="isUpdatingStatus"
+              maxlength="500"
+            />
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center">
+          <span *ngIf="errorMessage" class="text-danger small">
+            <i class="fa-solid fa-circle-exclamation me-1"></i>{{ errorMessage }}
+          </span>
+          <span *ngIf="!errorMessage"></span>
+          <button
+            type="button"
+            class="btn btn-primary-action btn-sm"
+            (click)="onUpdateStatus()"
+            [disabled]="isUpdatingStatus"
+          >
+            <i *ngIf="isUpdatingStatus" class="fa-solid fa-spinner fa-spin me-1"></i>
+            <i *ngIf="!isUpdatingStatus" class="fa-solid fa-floppy-disk me-1"></i>
+            Save Status & Remarks
+          </button>
+        </div>
+      </div>
+
+      <!-- Chronological Audit History Timeline -->
+      <div class="history-timeline-section">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <label class="section-subheading mb-0">
+            <i class="fa-solid fa-timeline text-primary me-1"></i> Full Audit History
+          </label>
+          <span class="badge bg-light text-muted border">{{ history.length }} events</span>
+        </div>
+
+        <div *ngIf="!history.length" class="empty-history-text text-muted small fst-italic">
+          No history events logged yet.
+        </div>
+
+        <div class="timeline-list">
+          <div *ngFor="let item of history" class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-card">
+              
+              <div class="d-flex justify-content-between align-items-center mb-1 flex-wrap gap-1">
+                <div class="d-flex align-items-center gap-1">
+                  <span class="action-type-pill" [ngClass]="'action-' + (item.actionType | lowercase)">
+                    {{ item.actionType }}
+                  </span>
+                  <span class="actor-name fw-semibold">by {{ item.actorName }}</span>
+                </div>
+                <span class="time-ago-text text-muted">{{ item.timeAgo }}</span>
+              </div>
+
+              <!-- From / To Status transition -->
+              <div *ngIf="item.fromStatus && item.toStatus" class="history-status-change mb-1">
+                <span class="status-from">{{ item.fromStatus }}</span>
+                <i class="fa-solid fa-arrow-right mx-1 arrow-icon"></i>
+                <span class="status-to">{{ item.toStatus }}</span>
+              </div>
+
+              <!-- Remarks -->
+              <div *ngIf="item.remarks" class="history-remarks-bubble">
+                <i class="fa-solid fa-comment-dots me-1 text-muted"></i>
+                "{{ item.remarks }}"
+              </div>
+
+              <!-- Exact Timestamp -->
+              <span class="exact-time-text text-muted">
+                {{ item.createdAt | date:'medium' }}
+              </span>
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+

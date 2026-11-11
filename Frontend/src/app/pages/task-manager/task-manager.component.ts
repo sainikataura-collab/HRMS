@@ -294,7 +294,14 @@ export class TaskManagerComponent implements OnInit, OnDestroy {
           this.departments = res.departments || [];
           this.employees = (res.employees || []).slice(0, 10);
           this.boardEmployees = [...this.employees];
-          this.taskTypes = res.taskTypes || [];
+          // Deduplicate taskTypes by ID to ensure clean single options
+          const rawTypes = res.taskTypes || [];
+          const seenTypeIds = new Set<number>();
+          this.taskTypes = rawTypes.filter(t => {
+            if (seenTypeIds.has(t.id)) return false;
+            seenTypeIds.add(t.id);
+            return true;
+          });
           this.viewerContext = res.viewerContext || res.data?.viewerContext || null;
           this.isLookupsLoading = false;
         },
@@ -364,7 +371,7 @@ export class TaskManagerComponent implements OnInit, OnDestroy {
     this.hasMoreClosed = true;
     this.hasMoreOnHold = true;
 
-    const filterScope = this.selectedScope === 'RECURRING' ? 'ALL' : (this.selectedScope || 'ALL');
+    const filterScope = this.selectedScope || 'ALL';
     const filter: TaskBoardFilterDto = {
       scope: filterScope,
       departmentId: this.selectedDepartmentId || undefined,
@@ -401,12 +408,16 @@ export class TaskManagerComponent implements OnInit, OnDestroy {
           this.hasMoreOnHold = (res.onHoldTasks || []).length >= this.pageSize;
 
           // Dedicated 4th pane for Recurring Cadences / Automation rules
-          const all: TaskCardDto[] = res.allTasks || [
-            ...(res.openTasks || []),
-            ...(res.closedTasks || []),
-            ...(res.onHoldTasks || [])
-          ];
-          this.recurringTasks = all.filter((t: TaskCardDto) => t.isRecurring);
+          if (res.recurringTasks && res.recurringTasks.length > 0) {
+            this.recurringTasks = res.recurringTasks;
+          } else {
+            const all: TaskCardDto[] = res.allTasks || [
+              ...(res.openTasks || []),
+              ...(res.closedTasks || []),
+              ...(res.onHoldTasks || [])
+            ];
+            this.recurringTasks = all.filter((t: TaskCardDto) => t.isRecurring);
+          }
           this.isLoading = false;
         },
         error: (err) => {

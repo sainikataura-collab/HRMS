@@ -200,6 +200,8 @@ export class SignalRService {
     }
     // Prevent multiple connections
     if (this.hubConnection && this.hubConnection.state === signalR.HubConnectionState.Connected) {
+      console.log('Already connected to SignalR');
+      return Promise.resolve();
       console.log('Already connected to SignalR — ensuring group membership');
       return this.hubConnection.invoke('JoinChat', userId, userRole).catch(() => {});
     }
@@ -242,11 +244,11 @@ export class SignalRService {
         const idsToJoin = new Set<string>();
         if (userId && userId.trim()) idsToJoin.add(userId.trim());
         ['UserId', 'userId', 'empid', 'empId', 'loginEmpId'].forEach(k => {
-          const val = sessionStorage.getItem(k) || localStorage.getItem(k);
+          const val = typeof sessionStorage !== 'undefined' ? (sessionStorage.getItem(k) || localStorage.getItem(k)) : null;
           if (val && val.trim()) idsToJoin.add(val.trim());
         });
 
-        for (const id of idsToJoin) {
+        for (const id of Array.from(idsToJoin)) {
           await this.hubConnection.invoke('JoinChat', id, userRole);
         }
       })

@@ -128,6 +128,7 @@ namespace HRMSWebAPI.Models
         public string? AttachmentPath { get; set; }
         public bool IsRecurring { get; set; }
         public string? RecurrenceType { get; set; } = "NONE";
+        public string? RecurrencePattern { get => RecurrenceType; set => RecurrenceType = value; }
         public int RecurrenceInterval { get; set; } = 1;
         public string? RecurrenceDays { get; set; }
         public int? RecurrenceDayOfMonth { get; set; }
@@ -170,6 +171,7 @@ namespace HRMSWebAPI.Models
         public List<TaskCardDto> ClosedTasks { get; set; } = new();
         public List<TaskCardDto> OnHoldTasks { get; set; } = new();
         public List<TaskCardDto> AllTasks { get; set; } = new();
+        public List<TaskCardDto> RecurringTasks { get; set; } = new();
         public TaskViewerContextDto? ViewerContext { get; set; }
     }
 

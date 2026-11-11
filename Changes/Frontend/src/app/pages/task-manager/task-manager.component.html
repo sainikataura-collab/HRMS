@@ -1,0 +1,1070 @@
+<div class="task-workspace-shell">
+
+  <!-- ========================================================================= -->
+  <!-- 1. UNIFIED WORKSPACE COMMAND DECK & ARCHITECTURAL STATUS PULSE RIBBON     -->
+  <!-- ========================================================================= -->
+  <div class="workspace-command-deck">
+
+    <!-- Upper Tier: Identity, Perspective Switcher, Search & Primary CTA -->
+    <div class="deck-top-bar">
+
+      <!-- Left: Brand Identity + Perspective Tabs -->
+      <div class="deck-left">
+        <div class="brand-identity">
+          <div class="brand-cube">
+            <i class="fa-solid fa-layer-group"></i>
+          </div>
+          <div>
+            <div class="brand-kicker">
+              WORKFLOW &amp; COMPLIANCE ENGINE
+              <span *ngIf="viewerContext?.isHod" class="role-pill hod">HOD</span>
+              <span *ngIf="viewerContext?.isAdmin" class="role-pill admin">ADMIN</span>
+            </div>
+            <h4 class="brand-title">Task Workspace</h4>
+          </div>
+        </div>
+
+        <div class="deck-divider d-none d-xl-block"></div>
+
+        <!-- Integrated Perspective Tabs -->
+        <div class="perspective-tabs">
+          <button *ngFor="let s of visibleScopeOptions" type="button" class="perspective-tab"
+            [class.active]="selectedScope === s.id" (click)="selectScopeChip(s.id)">
+            <i [class]="s.icon"></i>
+            <span>{{ s.label }}</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Right: Spotlight Search, View Mode Toggle, Refresh & + New Task -->
+      <div class="deck-right">
+
+        <!-- Spotlight Search -->
+        <div class="spotlight-search">
+          <i class="fa-solid fa-magnifying-glass search-glyph"></i>
+          <input type="text" class="spotlight-input" placeholder="Search tasks, #code, scope..."
+            [(ngModel)]="searchKeyword" (ngModelChange)="onSearchChange()" />
+          <button *ngIf="searchKeyword" type="button" class="btn-clear-spotlight"
+            (click)="searchKeyword = ''; onSearchChange()">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <!-- Board / List View Switcher -->
+        <div class="view-mode-toggle">
+          <button type="button" class="mode-btn" [class.active]="viewMode === 'KANBAN'" (click)="viewMode = 'KANBAN'"
+            title="Swimlane Board View">
+            <i class="fa-solid fa-table-columns"></i>
+            <span>Board</span>
+          </button>
+          <button type="button" class="mode-btn" [class.active]="viewMode === 'TABLE'" (click)="viewMode = 'TABLE'"
+            title="Structured List View">
+            <i class="fa-solid fa-bars-staggered"></i>
+            <span>List</span>
+          </button>
+        </div>
+
+        <!-- Sync Button -->
+        <button type="button" class="btn-deck-sync" (click)="loadBoard()" [disabled]="isLoading"
+          title="Synchronize Workspace">
+          <i class="fa-solid fa-arrows-rotate" [class.fa-spin]="isLoading"></i>
+        </button>
+
+        <!-- Primary CTA: + New Task -->
+        <button type="button" class="btn-new-task-cta" (click)="onCreateTaskClick()">
+          <i class="fa-solid fa-plus"></i>
+          <span>New Task</span>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Lower Tier: 1-Row Architectural Status Pulse Ribbon (1-Click Filter) -->
+    <div class="status-pulse-ribbon">
+
+      <!-- Pulse 1: All Tasks -->
+      <button type="button" class="pulse-segment" [class.active]="activeFilterCard === 'ALL'"
+        (click)="onSelectKpiCard('ALL')">
+        <div class="pulse-top">
+          <span class="pulse-dot dot-navy"></span>
+          <span class="pulse-label">All Tasks</span>
+        </div>
+        <div class="pulse-bottom">
+          <span class="pulse-count">{{ counts.allTasks }}</span>
+          <span class="pulse-caption">total</span>
+        </div>
+      </button>
+
+      <!-- Pulse 2: Open & Active -->
+      <button type="button" class="pulse-segment" [class.active]="activeFilterCard === 'OPEN'"
+        (click)="onSelectKpiCard('OPEN')">
+        <div class="pulse-top">
+          <span class="pulse-dot dot-blue"></span>
+          <span class="pulse-label">Open &amp; Active</span>
+        </div>
+        <div class="pulse-bottom">
+          <span class="pulse-count text-blue">{{ counts.openTasks }}</span>
+          <span class="pulse-caption">in progress</span>
+        </div>
+      </button>
+
+      <!-- Pulse 3: On Hold -->
+      <button type="button" class="pulse-segment" [class.active]="activeFilterCard === 'ON_HOLD'"
+        (click)="onSelectKpiCard('ON_HOLD')">
+        <div class="pulse-top">
+          <span class="pulse-dot dot-amber"></span>
+          <span class="pulse-label">On Hold</span>
+        </div>
+        <div class="pulse-bottom">
+          <span class="pulse-count text-amber">{{ counts.onHoldTasks }}</span>
+          <span class="pulse-caption">paused</span>
+        </div>
+      </button>
+
+      <!-- Pulse 4: Completed -->
+      <button type="button" class="pulse-segment" [class.active]="activeFilterCard === 'CLOSED'"
+        (click)="onSelectKpiCard('CLOSED')">
+        <div class="pulse-top">
+          <span class="pulse-dot dot-emerald"></span>
+          <span class="pulse-label">Completed</span>
+        </div>
+        <div class="pulse-bottom">
+          <span class="pulse-count text-emerald">{{ counts.closedTasks }}</span>
+          <span class="pulse-caption">resolved</span>
+        </div>
+      </button>
+
+      <!-- Pulse 5: Unassigned -->
+      <button type="button" class="pulse-segment" [class.active]="activeFilterCard === 'UNASSIGNED'"
+        (click)="onSelectKpiCard('UNASSIGNED')">
+        <div class="pulse-top">
+          <span class="pulse-dot dot-violet"></span>
+          <span class="pulse-label">Unassigned</span>
+        </div>
+        <div class="pulse-bottom">
+          <span class="pulse-count text-violet">{{ counts.unassignedTasks }}</span>
+          <span class="pulse-caption">open queue</span>
+        </div>
+      </button>
+
+      <!-- Pulse 6: Overdue SLA -->
+      <button type="button" class="pulse-segment" [class.active]="activeFilterCard === 'OVERDUE'"
+        (click)="onSelectKpiCard('OVERDUE')">
+        <div class="pulse-top">
+          <span class="pulse-dot dot-rose pulse-ring"></span>
+          <span class="pulse-label">Overdue SLA</span>
+        </div>
+        <div class="pulse-bottom">
+          <span class="pulse-count text-rose">{{ counts.overdueTasks }}</span>
+          <span class="pulse-caption">past due</span>
+        </div>
+      </button>
+
+    </div>
+
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 2. FLOATING FILTER DOCK (GENERAL MASTER CATEGORIES + INLINE SELECTORS)    -->
+  <!-- ========================================================================= -->
+  <div class="workspace-filter-dock">
+
+    <!-- Left: General Master Category Pills -->
+    <div class="dock-categories">
+      <button type="button" class="cat-pill" [class.active]="selectedTaskTypeId === null"
+        (click)="selectTaskTypeChip(null)">
+        All Task Types
+      </button>
+
+      <button *ngFor="let t of taskTypes" type="button" class="cat-pill" [class.active]="selectedTaskTypeId === t.id"
+        (click)="selectTaskTypeChip(t.id)">
+        <i [class]="getTaskTypeIcon(t.name)"></i>
+        <span>{{ t.name }}</span>
+      </button>
+    </div>
+
+    <!-- Right: Compact Inline Filter Controls -->
+    <div class="dock-selectors">
+
+      <!-- Department Selector -->
+      <div class="dock-select-item" style="width: 165px;">
+        <ng-select class="dock-ng-select" [items]="departments" bindLabel="name" bindValue="id" [clearable]="true"
+          [(ngModel)]="selectedDepartmentId" (change)="onBoardDepartmentChange()" placeholder="Department: All"
+          [loading]="isLookupsLoading"></ng-select>
+      </div>
+
+      <!-- Assignee Selector (Top 10 + Dynamic Search) -->
+      <div class="dock-select-item" style="width: 185px;">
+        <ng-select class="dock-ng-select" [items]="boardEmployees" bindLabel="name" bindValue="id" [clearable]="true"
+          [(ngModel)]="selectedAssigneeId" (change)="onFilterChange()" (search)="onBoardEmployeeSearch($event)"
+          placeholder="Assignee: Top 10 / Search" [loading]="isLookupsLoading || isSearchingBoardEmployees">
+          <ng-template ng-option-tmp let-item="item">
+            <div class="d-flex justify-content-between align-items-center w-100">
+              <span class="text-truncate">{{ item.name }}</span>
+              <span *ngIf="item.isHod" class="hod-mini-badge">HOD</span>
+            </div>
+          </ng-template>
+        </ng-select>
+      </div>
+
+      <!-- Priority Selector -->
+      <div class="dock-select-item" style="width: 135px;">
+        <ng-select class="dock-ng-select" [items]="priorityOptions" bindLabel="label" bindValue="id" [clearable]="true"
+          [(ngModel)]="selectedPriority" (change)="onFilterChange()" placeholder="Priority: Any"></ng-select>
+      </div>
+
+      <!-- Recurrence Selector -->
+      <div class="dock-select-item" style="width: 145px;">
+        <ng-select class="dock-ng-select" [items]="recurrenceOptions" bindLabel="label" bindValue="id"
+          [clearable]="true" [(ngModel)]="selectedRecurrence" (change)="onFilterChange()"
+          placeholder="Schedule: Any"></ng-select>
+      </div>
+
+      <!-- Clear Filters Button -->
+      <button *ngIf="hasActiveFilters" type="button" class="btn-dock-clear" (click)="resetFilters()"
+        title="Clear all filters">
+        <i class="fa-solid fa-xmark me-1"></i>Clear
+      </button>
+
+    </div>
+
+  </div>
+
+  <!-- Sync Progress Bar -->
+  <div *ngIf="isLoading" class="sync-progress-strip">
+    <div class="sync-bar-inner"></div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 3A. VIEW MODE 1: BESPOKE 4-LANE SWIMLANE BOARD (LINEAR / CLICKUP CRAFT)   -->
+  <!-- ========================================================================= -->
+  <div *ngIf="viewMode === 'KANBAN' && selectedScope !== 'RECURRING'" class="swimlane-board" cdkDropListGroup>
+
+    <!-- ── LANE 1: OPEN & ACTIVE ──────────────────────────────────────────── -->
+    <div class="swimlane lane-open">
+      <div class="swimlane-header">
+        <div class="lane-title-group">
+          <span class="lane-ring ring-open"></span>
+          <span class="lane-name">Open &amp; In Progress</span>
+          <span class="lane-count">{{ openTasks.length }}</span>
+        </div>
+        <button type="button" class="btn-lane-add" (click)="onCreateTaskClick()" title="Create new task">
+          <i class="fa-solid fa-plus"></i>
+        </button>
+      </div>
+
+      <div class="swimlane-track" cdkDropList #openList="cdkDropList" [cdkDropListData]="openTasks"
+        (cdkDropListDropped)="onCardDrop($event, 'OPEN')" (scroll)="onColumnScroll('OPEN', $event)" id="col-OPEN">
+        <div *ngFor="let task of openTasks" class="studio-task-card"
+          [ngClass]="'priority-edge-' + (task.priority | lowercase)" cdkDrag (click)="onTaskClick(task)">
+          <div *cdkDragPlaceholder class="studio-card-placeholder"></div>
+
+          <!-- Drag Floating Preview -->
+          <div *cdkDragPreview class="cdk-drag-preview-card studio-task-card"
+            [ngClass]="'priority-edge-' + (task.priority | lowercase)">
+            <div class="stc-top-row">
+              <div class="stc-left-group">
+                <span class="ticket-id">#{{ task.taskCode }}</span>
+                <span *ngIf="task.taskTypeName" class="stc-category">
+                  <i [class]="getTaskTypeIcon(task.taskTypeName)"></i>
+                  {{ task.taskTypeName }}
+                </span>
+              </div>
+              <span class="stc-priority-pill" [ngClass]="'p-' + (task.priority | lowercase)">
+                {{ task.priority }}
+              </span>
+            </div>
+            <h6 class="stc-title">{{ task.subject }}</h6>
+            <div class="stc-footer">
+              <div class="stc-owner">
+                <div class="owner-avatar" [class.unassigned]="!task.assignedToEmpName">
+                  {{ task.assignedToEmpName ? getInitials(task.assignedToEmpName) : '?' }}
+                </div>
+                <span class="owner-name text-truncate" style="max-width: 130px;">{{ task.assignedToEmpName ||
+                  'Unassigned' }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 1: Left (Code + Category) | Right (Blinking Breach Badge + Priority) -->
+          <div class="stc-top-row">
+            <div class="stc-left-group">
+              <span class="ticket-id" (click)="onTaskClick(task); $event.stopPropagation()">#{{ task.taskCode }}</span>
+              <span *ngIf="task.taskTypeName" class="stc-category">
+                <i [class]="getTaskTypeIcon(task.taskTypeName)"></i>
+                {{ task.taskTypeName }}
+              </span>
+            </div>
+
+            <div class="stc-top-right-meta">
+              <!-- Blinking Deadline Breach Text / Badge -->
+              <span *ngIf="isBreachingToday(task) && !task.isOverdue" class="breach-alert-blinking due-today"
+                title="Deadline arrives today!">
+                <i class="fa-solid fa-triangle-exclamation"></i> Due Today
+              </span>
+              <span *ngIf="task.isOverdue" class="breach-alert-blinking overdue" title="Deadline breached!">
+                <i class="fa-solid fa-bolt"></i> Overdue
+              </span>
+
+              <span *ngIf="task.isRecurring" class="stc-recur-pill" [title]="task.recurrencePattern + ' Recurring'">
+                <i class="fa-solid fa-arrows-rotate"></i>
+              </span>
+              <span class="stc-priority-pill" [ngClass]="'p-' + (task.priority | lowercase)">
+                {{ task.priority }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Row 2: Title / Subject -->
+          <h6 class="stc-title" [title]="task.subject" (click)="onTaskClick(task); $event.stopPropagation()">{{
+            task.subject }}</h6>
+
+          <!-- Row 3: Footer with Owner and Inline Quick Actions -->
+          <div class="stc-footer">
+            <div class="stc-owner">
+              <div class="owner-avatar" [class.unassigned]="!task.assignedToEmpName"
+                [title]="task.assignedToEmpName || 'Unassigned'">
+                {{ task.assignedToEmpName ? getInitials(task.assignedToEmpName) : '?' }}
+              </div>
+              <div class="owner-meta text-truncate">
+                <span class="owner-name text-truncate">{{ task.assignedToEmpName || 'Unassigned' }}</span>
+                <span class="owner-dept text-truncate">{{ task.departmentName || 'General' }}</span>
+              </div>
+            </div>
+
+            <div class="stc-actions" (click)="$event.stopPropagation()">
+              <button type="button" class="card-action-btn hold" (click)="quickTransition(task, 'ON_HOLD', $event)"
+                title="Put on Hold">
+                <i class="fa-solid fa-pause"></i> Hold
+              </button>
+              <button type="button" class="card-action-btn complete" (click)="quickTransition(task, 'CLOSED', $event)"
+                title="Mark Done">
+                <i class="fa-solid fa-check"></i> Done
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Inline Loading Indicator when fetching more tasks -->
+        <div *ngIf="isLoadingMoreOpen" class="column-inline-loader">
+          <i class="fa-solid fa-spinner fa-spin me-1"></i> Loading more tasks...
+        </div>
+
+        <!-- Empty State -->
+        <div *ngIf="openTasks.length === 0 && !isLoading" class="swimlane-empty">
+          <div class="empty-orb">
+            <i class="fa-solid fa-check"></i>
+          </div>
+          <div class="empty-title">Open queue is clear</div>
+          <div class="empty-sub">Create a task or drag an item into this lane</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── LANE 2: ON HOLD / PAUSED ───────────────────────────────────────── -->
+    <div class="swimlane lane-hold">
+      <div class="swimlane-header">
+        <div class="lane-title-group">
+          <span class="lane-ring ring-hold"></span>
+          <span class="lane-name">On Hold &amp; Blocked</span>
+          <span class="lane-count">{{ onHoldTasks.length }}</span>
+        </div>
+      </div>
+
+      <div class="swimlane-track" cdkDropList #onHoldList="cdkDropList" [cdkDropListData]="onHoldTasks"
+        (cdkDropListDropped)="onCardDrop($event, 'ON_HOLD')" (scroll)="onColumnScroll('ON_HOLD', $event)"
+        id="col-ON_HOLD">
+        <div *ngFor="let task of onHoldTasks" class="studio-task-card card-is-hold"
+          [ngClass]="'priority-edge-' + (task.priority | lowercase)" cdkDrag (click)="onTaskClick(task)">
+          <div *cdkDragPlaceholder class="studio-card-placeholder"></div>
+
+          <!-- Drag Floating Preview -->
+          <div *cdkDragPreview class="cdk-drag-preview-card studio-task-card"
+            [ngClass]="'priority-edge-' + (task.priority | lowercase)">
+            <div class="stc-top-row">
+              <div class="stc-left-group">
+                <span class="ticket-id">#{{ task.taskCode }}</span>
+                <span *ngIf="task.taskTypeName" class="stc-category">
+                  <i [class]="getTaskTypeIcon(task.taskTypeName)"></i>
+                  {{ task.taskTypeName }}
+                </span>
+              </div>
+              <span class="stc-hold-pill">
+                <i class="fa-solid fa-pause"></i> Paused
+              </span>
+            </div>
+            <h6 class="stc-title">{{ task.subject }}</h6>
+            <div class="stc-footer">
+              <div class="stc-owner">
+                <div class="owner-avatar" [class.unassigned]="!task.assignedToEmpName">
+                  {{ task.assignedToEmpName ? getInitials(task.assignedToEmpName) : '?' }}
+                </div>
+                <span class="owner-name text-truncate" style="max-width: 130px;">{{ task.assignedToEmpName ||
+                  'Unassigned' }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 1: Left (Code + Category) | Right (Blinking Breach Badge + Paused pill) -->
+          <div class="stc-top-row">
+            <div class="stc-left-group">
+              <span class="ticket-id" (click)="onTaskClick(task); $event.stopPropagation()">#{{ task.taskCode }}</span>
+              <span *ngIf="task.taskTypeName" class="stc-category">
+                <i [class]="getTaskTypeIcon(task.taskTypeName)"></i>
+                {{ task.taskTypeName }}
+              </span>
+            </div>
+
+            <div class="stc-top-right-meta">
+              <!-- Blinking Deadline Breach Text / Badge -->
+              <span *ngIf="isBreachingToday(task) && !task.isOverdue" class="breach-alert-blinking due-today"
+                title="Deadline arrives today!">
+                <i class="fa-solid fa-triangle-exclamation"></i> Due Today
+              </span>
+              <span *ngIf="task.isOverdue" class="breach-alert-blinking overdue" title="Deadline breached!">
+                <i class="fa-solid fa-bolt"></i> Overdue
+              </span>
+
+              <span class="stc-hold-pill">
+                <i class="fa-solid fa-pause"></i> Paused
+              </span>
+            </div>
+          </div>
+
+          <!-- Row 2: Title / Subject -->
+          <h6 class="stc-title" [title]="task.subject" (click)="onTaskClick(task); $event.stopPropagation()">{{
+            task.subject }}</h6>
+
+          <!-- Row 3: Footer with Owner and Resume / Complete Actions -->
+          <div class="stc-footer">
+            <div class="stc-owner">
+              <div class="owner-avatar" [class.unassigned]="!task.assignedToEmpName"
+                [title]="task.assignedToEmpName || 'Unassigned'">
+                {{ task.assignedToEmpName ? getInitials(task.assignedToEmpName) : '?' }}
+              </div>
+              <div class="owner-meta text-truncate">
+                <span class="owner-name text-truncate">{{ task.assignedToEmpName || 'Unassigned' }}</span>
+                <span class="owner-dept text-truncate">{{ task.departmentName || 'General' }}</span>
+              </div>
+            </div>
+
+            <div class="stc-actions" (click)="$event.stopPropagation()">
+              <button type="button" class="card-action-btn resume" (click)="quickTransition(task, 'OPEN', $event)"
+                title="Resume task">
+                <i class="fa-solid fa-play"></i> Open
+              </button>
+              <button type="button" class="card-action-btn complete" (click)="quickTransition(task, 'CLOSED', $event)"
+                title="Mark Done">
+                <i class="fa-solid fa-check"></i> Done
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Inline Loading Indicator when fetching more tasks -->
+        <div *ngIf="isLoadingMoreOnHold" class="column-inline-loader">
+          <i class="fa-solid fa-spinner fa-spin me-1"></i> Loading more tasks...
+        </div>
+
+        <div *ngIf="onHoldTasks.length === 0 && !isLoading" class="swimlane-empty">
+          <div class="empty-orb hold-orb">
+            <i class="fa-regular fa-circle-pause"></i>
+          </div>
+          <div class="empty-title">Nothing on hold</div>
+          <div class="empty-sub">Drop blocked tasks here with a remark</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── LANE 3: COMPLETED & VERIFIED ───────────────────────────────────── -->
+    <div class="swimlane lane-closed">
+      <div class="swimlane-header">
+        <div class="lane-title-group">
+          <span class="lane-ring ring-closed"></span>
+          <span class="lane-name">Completed</span>
+          <span class="lane-count">{{ closedTasks.length }}</span>
+        </div>
+      </div>
+
+      <div class="swimlane-track" cdkDropList #closedList="cdkDropList" [cdkDropListData]="closedTasks"
+        (cdkDropListDropped)="onCardDrop($event, 'CLOSED')" (scroll)="onColumnScroll('CLOSED', $event)" id="col-CLOSED">
+        <div *ngFor="let task of closedTasks" class="studio-task-card card-is-closed" cdkDrag
+          (click)="onTaskClick(task)">
+          <div *cdkDragPlaceholder class="studio-card-placeholder"></div>
+
+          <!-- Drag Floating Preview -->
+          <div *cdkDragPreview class="cdk-drag-preview-card studio-task-card">
+            <div class="stc-top-row">
+              <div class="stc-left-group">
+                <span class="ticket-id">#{{ task.taskCode }}</span>
+                <span *ngIf="task.taskTypeName" class="stc-category">
+                  <i [class]="getTaskTypeIcon(task.taskTypeName)"></i>
+                  {{ task.taskTypeName }}
+                </span>
+              </div>
+              <div class="stc-done-badge">
+                <i class="fa-solid fa-check done-check"></i>
+                <span class="done-label">Done</span>
+              </div>
+            </div>
+            <h6 class="stc-title done-strike">{{ task.subject }}</h6>
+            <div class="stc-footer">
+              <div class="stc-owner">
+                <div class="owner-avatar">
+                  {{ task.assignedToEmpName ? getInitials(task.assignedToEmpName) : '✓' }}
+                </div>
+                <span class="owner-name text-truncate" style="max-width: 130px;">{{ task.assignedToEmpName ||
+                  'Unassigned' }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 1: Left (Code + Category) | Right (Green Stacked Done Badge) -->
+          <div class="stc-top-row">
+            <div class="stc-left-group">
+              <span class="ticket-id" (click)="onTaskClick(task); $event.stopPropagation()">#{{ task.taskCode }}</span>
+              <span *ngIf="task.taskTypeName" class="stc-category">
+                <i [class]="getTaskTypeIcon(task.taskTypeName)"></i>
+                {{ task.taskTypeName }}
+              </span>
+            </div>
+
+            <div class="stc-done-badge">
+              <i class="fa-solid fa-check done-check"></i>
+              <span class="done-label">Done</span>
+            </div>
+          </div>
+
+          <!-- Row 2: Title / Subject with line-through -->
+          <h6 class="stc-title done-strike" [title]="task.subject"
+            (click)="onTaskClick(task); $event.stopPropagation()">
+            {{ task.subject }}
+          </h6>
+
+          <!-- Row 3: Footer with Owner on Left and Reopen Button on Right -->
+          <div class="stc-footer">
+            <div class="stc-owner">
+              <div class="owner-avatar done-avatar">
+                {{ task.assignedToEmpName ? getInitials(task.assignedToEmpName) : '✓' }}
+              </div>
+              <div class="owner-meta text-truncate">
+                <span class="owner-name text-truncate">{{ task.assignedToEmpName || 'Unassigned' }}</span>
+                <span class="owner-dept text-truncate">{{ task.departmentName || 'General' }}</span>
+              </div>
+            </div>
+
+            <div class="stc-actions" (click)="$event.stopPropagation()">
+              <button type="button" class="btn-reopen-card" (click)="quickTransition(task, 'OPEN', $event)"
+                title="Reopen task">
+                <i class="fa-solid fa-rotate-left"></i> Reopen
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Inline Loading Indicator when fetching more tasks -->
+        <div *ngIf="isLoadingMoreClosed" class="column-inline-loader">
+          <i class="fa-solid fa-spinner fa-spin me-1"></i> Loading more tasks...
+        </div>
+
+        <div *ngIf="closedTasks.length === 0 && !isLoading" class="swimlane-empty">
+          <div class="empty-orb closed-orb">
+            <i class="fa-solid fa-check-double"></i>
+          </div>
+          <div class="empty-title">No completed tasks yet</div>
+          <div class="empty-sub">Drag finished tasks here to log closure</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── LANE 4: DEDICATED RECURRING TASKS & AUTOMATIONS PANE ───────────── -->
+    <div class="swimlane lane-recurring">
+      <div class="swimlane-header">
+        <div class="lane-title-group">
+          <span class="lane-ring ring-recurring">
+            <i class="fa-solid fa-arrows-rotate"></i>
+          </span>
+          <span class="lane-name">Recurring Tasks</span>
+          <span class="lane-count count-recurring">{{ recurringTasks.length }}</span>
+        </div>
+        <div class="d-flex align-items-center gap-1.5">
+          <!-- View Switcher (List vs Cards) -->
+          <div class="rec-view-switcher">
+            <button type="button" class="btn-rec-toggle" [class.active]="recurringViewMode === 'LIST'"
+              (click)="recurringViewMode = 'LIST'" title="Compact Structured List View">
+              <i class="fa-solid fa-list-ul"></i>
+            </button>
+            <button type="button" class="btn-rec-toggle" [class.active]="recurringViewMode === 'CARDS'"
+              (click)="recurringViewMode = 'CARDS'" title="Card View">
+              <i class="fa-solid fa-table-cells-large"></i>
+            </button>
+          </div>
+          <button type="button" class="btn-lane-add btn-add-recurring" (click)="onCreateRecurringClick()"
+            title="Create new repeating schedule">
+            <i class="fa-solid fa-plus"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick Filter Bar: Frequency Pills & Search -->
+      <div class="lane-rec-filterbar">
+        <div class="lane-rec-pills">
+          <button *ngFor="let opt of recurringFrequencyOptions" type="button" class="pill-rec-freq"
+            [class.active]="recurringFrequencyFilter === opt.id" (click)="setRecurringFrequency(opt.id)">
+            {{ opt.label }}
+          </button>
+        </div>
+        <div class="lane-rec-search">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" placeholder="Search cadences..." [(ngModel)]="recurringSearchKeyword" />
+          <button *ngIf="recurringSearchKeyword" type="button" class="btn-clear-search"
+            (click)="recurringSearchKeyword = ''">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="swimlane-track recurring-track">
+        <!-- MODE A: Structured List View -->
+        <div *ngIf="recurringViewMode === 'LIST' && filteredRecurringTasks.length > 0" class="rec-list-container">
+          <div *ngFor="let rec of filteredRecurringTasks" class="rec-list-row" (click)="onTaskClick(rec)">
+            <div class="rec-row-header">
+              <span class="rec-row-code">#{{ rec.taskCode }}</span>
+              <span *ngIf="rec.taskTypeName" class="rec-row-type" [ngClass]="'cat-' + (rec.taskTypeName | lowercase)">
+                {{ rec.taskTypeName }}
+              </span>
+              <span class="rec-row-freq" [ngClass]="'freq-' + (rec.recurrencePattern | lowercase)">
+                <i class="fa-solid fa-arrows-rotate"></i> {{ rec.recurrencePattern }}
+              </span>
+            </div>
+
+            <div class="rec-row-subject" [title]="rec.subject">{{ rec.subject }}</div>
+
+            <div class="rec-row-metadata">
+              <div class="rec-meta-chip" *ngIf="rec.nextOccurrenceDate" title="Next Occurrence">
+                <i class="fa-regular fa-calendar-check text-primary"></i>
+                <span>{{ rec.nextOccurrenceDate | date:'dd MMM, HH:mm' }}</span>
+              </div>
+              <div class="rec-meta-chip" title="SLA Turnaround">
+                <i class="fa-regular fa-hourglass-half text-warning"></i>
+                <span>SLA: {{ rec.recurrenceDueOffsetHours ? (rec.recurrenceDueOffsetHours >= 24 ?
+                  ((rec.recurrenceDueOffsetHours / 24) + 'd') : (rec.recurrenceDueOffsetHours + 'h')) : '24h' }}</span>
+              </div>
+              <div class="rec-meta-chip rec-owner-chip" title="Owner">
+                <div class="mini-avatar">{{ rec.assignedToEmpName ? getInitials(rec.assignedToEmpName) : '?' }}</div>
+                <span class="text-truncate">{{ rec.assignedToEmpName || 'Unassigned' }}</span>
+              </div>
+            </div>
+
+            <div class="rec-row-actions" (click)="$event.stopPropagation()">
+              <button type="button" class="btn-rec-action btn-rec-action-edit" (click)="onEditTaskClick(rec, $event)"
+                title="Edit recurring schedule">
+                <i class="fa-solid fa-pen-to-square me-1"></i>Edit
+              </button>
+              <button type="button" class="btn-rec-action btn-rec-action-run" (click)="onRunRecurringNow(rec, $event)"
+                [disabled]="isTriggeringRecurrence" title="Trigger immediate execution">
+                <i class="fa-solid fa-play me-1"></i>Run
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- MODE B: Cards View -->
+        <div *ngIf="recurringViewMode === 'CARDS' && filteredRecurringTasks.length > 0" class="rec-cards-container">
+          <div *ngFor="let rec of filteredRecurringTasks" class="studio-task-card recurring-cadence-card"
+            (click)="onTaskClick(rec)">
+            <!-- Row 1: Ticket + Category + Frequency Badge -->
+            <div class="stc-header">
+              <div class="d-flex align-items-center gap-1.5 flex-wrap">
+                <span class="ticket-id">#{{ rec.taskCode }}</span>
+                <span *ngIf="rec.taskTypeName" class="stc-category" [ngClass]="'cat-' + (rec.taskTypeName | lowercase)">
+                  <i [class]="getTaskTypeIcon(rec.taskTypeName)"></i>
+                  {{ rec.taskTypeName }}
+                </span>
+              </div>
+              <span class="cadence-frequency-pill">
+                <i class="fa-solid fa-arrows-rotate"></i> {{ rec.recurrencePattern }}
+              </span>
+            </div>
+
+            <!-- Title -->
+            <h6 class="stc-title" [title]="rec.subject">{{ rec.subject }}</h6>
+
+            <!-- Cadence Metadata Badges (Next Run + SLA Window + Interval) -->
+            <div class="cadence-meta-grid">
+              <div class="cadence-meta-item" *ngIf="rec.nextOccurrenceDate">
+                <i class="fa-regular fa-calendar-check text-primary"></i>
+                <span class="meta-label">Next:</span>
+                <span class="meta-val">{{ rec.nextOccurrenceDate | date:'dd MMM, HH:mm' }}</span>
+              </div>
+              <div class="cadence-meta-item">
+                <i class="fa-regular fa-hourglass-half text-warning"></i>
+                <span class="meta-label">SLA:</span>
+                <span class="meta-val">
+                  {{ rec.recurrenceDueOffsetHours ? (rec.recurrenceDueOffsetHours >= 24 ? ((rec.recurrenceDueOffsetHours
+                  / 24) + ' Days') : (rec.recurrenceDueOffsetHours + ' Hours')) : '24h' }}
+                </span>
+              </div>
+              <div class="cadence-meta-item" *ngIf="rec.recurrenceEndType">
+                <i class="fa-solid fa-flag-checkered text-secondary"></i>
+                <span class="meta-label">Ends:</span>
+                <span class="meta-val">{{ rec.recurrenceEndType === 'NEVER' ? 'Continuous' : rec.recurrenceEndType
+                  }}</span>
+              </div>
+            </div>
+
+            <!-- Footer: Owner + Run Now CTA -->
+            <div class="stc-footer">
+              <div class="stc-owner">
+                <div class="owner-avatar" [class.unassigned]="!rec.assignedToEmpName">
+                  {{ rec.assignedToEmpName ? getInitials(rec.assignedToEmpName) : '?' }}
+                </div>
+                <div class="owner-meta text-truncate">
+                  <span class="owner-name text-truncate">{{ rec.assignedToEmpName || 'Unassigned' }}</span>
+                  <span class="owner-dept text-truncate">{{ rec.departmentName || 'General' }}</span>
+                </div>
+              </div>
+
+              <div class="stc-right-meta d-flex align-items-center gap-1.5">
+                <button type="button" class="btn-edit-cadence" (click)="onEditTaskClick(rec, $event)"
+                  title="Edit recurring schedule & parameters">
+                  <i class="fa-solid fa-pen-to-square me-1"></i>Edit
+                </button>
+                <button type="button" class="btn-trigger-now" (click)="onRunRecurringNow(rec, $event)"
+                  [disabled]="isTriggeringRecurrence" title="Generate task instance right now">
+                  <i class="fa-solid fa-play me-1"></i>Run Now
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Empty state when no matching recurring tasks -->
+        <div *ngIf="filteredRecurringTasks.length === 0 && !isLoading" class="swimlane-empty empty-recurring-pane">
+          <div class="empty-orb" style="background: #eff6ff; color: #3080e8;">
+            <i class="fa-solid fa-arrows-rotate"></i>
+          </div>
+          <div class="empty-title">No Recurring Tasks Found</div>
+          <div class="empty-sub">
+            {{ recurringTasks.length === 0 ? 'Create repeating routines with automatic SLAs' : 'No schedules match the
+            selected frequency or search term' }}
+          </div>
+          <button *ngIf="recurringTasks.length === 0" type="button" class="btn-create-cadence-pill mt-2"
+            (click)="onCreateRecurringClick()">
+            <i class="fa-solid fa-plus me-1"></i>New Schedule
+          </button>
+          <button *ngIf="recurringTasks.length > 0" type="button" class="btn-create-cadence-pill mt-2"
+            (click)="recurringFrequencyFilter = 'ALL'; recurringSearchKeyword = ''">
+            <i class="fa-solid fa-rotate-left me-1"></i>Reset Filters
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 3D. DEDICATED FULL-WIDTH RECURRING CADENCE STUDIO (SCOPE = RECURRING)    -->
+  <!-- ========================================================================= -->
+  <div *ngIf="selectedScope === 'RECURRING'" class="recurring-studio-surface">
+    <!-- Cadence Dashboard Top KPIs -->
+    <div class="cadence-kpi-banner">
+      <div class="cadence-kpi-card total">
+        <div class="kpi-icon"><i class="fa-solid fa-arrows-rotate"></i></div>
+        <div class="kpi-info">
+          <div class="kpi-value">{{ recurringTasks.length }}</div>
+          <div class="kpi-title">Total Active Cadences</div>
+        </div>
+      </div>
+      <div class="cadence-kpi-card daily">
+        <div class="kpi-icon"><i class="fa-solid fa-calendar-day"></i></div>
+        <div class="kpi-info">
+          <div class="kpi-value">{{ dailyCount }}</div>
+          <div class="kpi-title">Daily Routines</div>
+        </div>
+      </div>
+      <div class="cadence-kpi-card weekly">
+        <div class="kpi-icon"><i class="fa-solid fa-calendar-week"></i></div>
+        <div class="kpi-info">
+          <div class="kpi-value">{{ weeklyCount }}</div>
+          <div class="kpi-title">Weekly Automations</div>
+        </div>
+      </div>
+      <div class="cadence-kpi-card monthly">
+        <div class="kpi-icon"><i class="fa-solid fa-calendar-days"></i></div>
+        <div class="kpi-info">
+          <div class="kpi-value">{{ monthlyCount }}</div>
+          <div class="kpi-title">Monthly Checkpoints</div>
+        </div>
+      </div>
+      <div class="cadence-kpi-card yearly">
+        <div class="kpi-icon"><i class="fa-solid fa-calendar"></i></div>
+        <div class="kpi-info">
+          <div class="kpi-value">{{ yearlyCount }}</div>
+          <div class="kpi-title">Yearly Audits</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filter & Action Control Strip -->
+    <div class="cadence-toolbar">
+      <div class="cadence-freq-tabs">
+        <button *ngFor="let opt of recurringFrequencyOptions" type="button" class="cadence-tab-pill"
+          [class.active]="recurringFrequencyFilter === opt.id" (click)="setRecurringFrequency(opt.id)">
+          {{ opt.label }}
+          <span class="tab-badge" *ngIf="opt.id === 'ALL'">{{ recurringTasks.length }}</span>
+          <span class="tab-badge" *ngIf="opt.id === 'DAILY'">{{ dailyCount }}</span>
+          <span class="tab-badge" *ngIf="opt.id === 'WEEKLY'">{{ weeklyCount }}</span>
+          <span class="tab-badge" *ngIf="opt.id === 'MONTHLY'">{{ monthlyCount }}</span>
+          <span class="tab-badge" *ngIf="opt.id === 'YEARLY'">{{ yearlyCount }}</span>
+        </button>
+      </div>
+
+      <div class="cadence-actions-group">
+        <div class="cadence-search-input">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" placeholder="Search cadences by keyword, ticket, owner..."
+            [(ngModel)]="recurringSearchKeyword" />
+          <button *ngIf="recurringSearchKeyword" type="button" class="btn-clear-search"
+            (click)="recurringSearchKeyword = ''">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <button type="button" class="btn-create-cadence-hero" (click)="onCreateRecurringClick()">
+          <i class="fa-solid fa-plus me-1.5"></i>Create Repeating Schedule
+        </button>
+
+        <button type="button" class="btn-back-board" (click)="setScope('ALL')" title="Return to Kanban Board">
+          <i class="fa-solid fa-table-columns me-1"></i>Board View
+        </button>
+      </div>
+    </div>
+
+    <!-- Full-Width Recurring Cadence Data Table -->
+    <div class="cadence-table-card">
+      <div class="table-responsive">
+        <table class="table cadence-table align-middle mb-0">
+          <thead>
+            <tr>
+              <th style="width: 110px;">TICKET</th>
+              <th style="min-width: 260px;">RECURRING TASK &amp; AUTOMATION PURPOSE</th>
+              <th style="width: 130px;">FREQUENCY</th>
+              <th style="width: 140px;">CATEGORY</th>
+              <th style="width: 150px;">DEPARTMENT</th>
+              <th style="width: 180px;">DEFAULT ASSIGNEE</th>
+              <th style="width: 170px;">NEXT AUTO RUN</th>
+              <th style="width: 120px;">SLA TURNAROUND</th>
+              <th class="text-end" style="width: 170px;">CADENCE ACTIONS</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let rec of filteredRecurringTasks" (click)="onTaskClick(rec)" class="cadence-table-row">
+              <td>
+                <span class="ticket-id">#{{ rec.taskCode }}</span>
+              </td>
+              <td>
+                <div class="fw-bold text-dark fs-13">{{ rec.subject }}</div>
+                <div *ngIf="rec.lastRemarks" class="text-muted text-truncate fs-11">
+                  <i class="fa-regular fa-comment-dots text-primary me-1"></i>{{ rec.lastRemarks }}
+                </div>
+              </td>
+              <td>
+                <span class="cadence-frequency-pill" [ngClass]="'freq-' + (rec.recurrencePattern | lowercase)">
+                  <i class="fa-solid fa-arrows-rotate"></i> {{ rec.recurrencePattern }}
+                </span>
+              </td>
+              <td>
+                <span *ngIf="rec.taskTypeName" class="stc-category" [ngClass]="'cat-' + (rec.taskTypeName | lowercase)">
+                  <i [class]="getTaskTypeIcon(rec.taskTypeName)"></i>
+                  {{ rec.taskTypeName }}
+                </span>
+                <span *ngIf="!rec.taskTypeName" class="text-muted fs-11">General</span>
+              </td>
+              <td>
+                <span class="fw-semibold text-secondary fs-11">{{ rec.departmentName || 'Cross-Dept' }}</span>
+              </td>
+              <td>
+                <div class="d-flex align-items-center gap-2">
+                  <div class="owner-avatar" [class.unassigned]="!rec.assignedToEmpName">
+                    {{ rec.assignedToEmpName ? getInitials(rec.assignedToEmpName) : '?' }}
+                  </div>
+                  <div class="d-flex flex-column text-truncate">
+                    <span class="fw-semibold text-dark fs-12 text-truncate">{{ rec.assignedToEmpName || 'Unassigned'
+                      }}</span>
+                    <span class="text-muted fs-10 text-truncate">{{ rec.departmentName || 'Open Queue' }}</span>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div *ngIf="rec.nextOccurrenceDate" class="next-occurrence-cell">
+                  <i class="fa-regular fa-calendar-check text-primary me-1.5"></i>
+                  <span class="fw-bold text-dark fs-12">{{ rec.nextOccurrenceDate | date:'dd MMM yyyy, HH:mm' }}</span>
+                </div>
+                <span *ngIf="!rec.nextOccurrenceDate" class="text-muted fs-11">—</span>
+              </td>
+              <td>
+                <span class="sla-badge">
+                  <i class="fa-regular fa-hourglass-half text-warning me-1"></i>
+                  {{ rec.recurrenceDueOffsetHours ? (rec.recurrenceDueOffsetHours >= 24 ? ((rec.recurrenceDueOffsetHours
+                  / 24) + ' Days') : (rec.recurrenceDueOffsetHours + ' Hours')) : '24h' }}
+                </span>
+              </td>
+              <td class="text-end" (click)="$event.stopPropagation()">
+                <div class="d-inline-flex gap-1.5">
+                  <button type="button" class="btn-cadence-action btn-cadence-edit"
+                    (click)="onEditTaskClick(rec, $event)" title="Edit Recurring Configuration">
+                    <i class="fa-solid fa-pen-to-square me-1"></i>Edit
+                  </button>
+                  <button type="button" class="btn-cadence-action btn-cadence-run"
+                    (click)="onRunRecurringNow(rec, $event)" [disabled]="isTriggeringRecurrence"
+                    title="Generate Task Instance Immediately">
+                    <i class="fa-solid fa-play me-1"></i>Run Now
+                  </button>
+                </div>
+              </td>
+            </tr>
+
+            <tr *ngIf="filteredRecurringTasks.length === 0 && !isLoading">
+              <td colspan="9" class="text-center py-5">
+                <div class="empty-orb mx-auto mb-2"
+                  style="background: #eff6ff; color: #3080e8; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px;">
+                  <i class="fa-solid fa-arrows-rotate"></i>
+                </div>
+                <div class="fw-bold text-dark fs-14">No recurring cadences found</div>
+                <div class="text-muted fs-12 mt-1">Try adjusting your frequency filter or search query</div>
+                <button type="button" class="btn btn-outline-primary btn-sm mt-3"
+                  (click)="recurringFrequencyFilter = 'ALL'; recurringSearchKeyword = ''">
+                  Reset Filters
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 3B. VIEW MODE 2: AIRTABLE / LINEAR STRUCTURED LIST VIEW                   -->
+  <!-- ========================================================================= -->
+  <div *ngIf="viewMode === 'TABLE'" class="studio-list-surface">
+    <div class="table-responsive">
+      <table class="table studio-list-table align-middle mb-0">
+        <thead>
+          <tr>
+            <th style="width: 105px;">TICKET</th>
+            <th style="min-width: 250px;">TASK &amp; LATEST REMARK</th>
+            <th style="width: 130px;">CATEGORY</th>
+            <th style="width: 145px;">DEPARTMENT</th>
+            <th style="width: 170px;">ASSIGNEE</th>
+            <th style="width: 100px;">PRIORITY</th>
+            <th style="width: 140px;">DUE DATE</th>
+            <th style="width: 105px;">SCHEDULE</th>
+            <th style="width: 100px;">STATUS</th>
+            <th class="text-end" style="width: 155px;">QUICK ACTION</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let task of allFilteredTasks" (click)="onTaskClick(task)">
+            <td>
+              <span class="ticket-id">#{{ task.taskCode }}</span>
+            </td>
+            <td>
+              <div class="fw-bold text-dark" style="font-size: 12px;">{{ task.subject }}</div>
+              <div *ngIf="task.lastRemarks" class="text-muted text-truncate"
+                style="font-size: 10.5px; max-width: 340px;">
+                <i class="fa-regular fa-comment-dots text-primary me-1"></i>{{ task.lastRemarks }}
+              </div>
+            </td>
+            <td>
+              <span *ngIf="task.taskTypeName" class="stc-category" [ngClass]="'cat-' + (task.taskTypeName | lowercase)">
+                <i [class]="getTaskTypeIcon(task.taskTypeName)"></i>
+                {{ task.taskTypeName }}
+              </span>
+              <span *ngIf="!task.taskTypeName" class="text-muted" style="font-size: 10.5px;">General</span>
+            </td>
+            <td>
+              <span class="fw-semibold text-secondary" style="font-size: 11px;">{{ task.departmentName || 'Cross-Dept'
+                }}</span>
+            </td>
+            <td>
+              <div class="d-flex align-items-center gap-2">
+                <div class="owner-avatar" [class.unassigned]="!task.assignedToEmpName">
+                  {{ task.assignedToEmpName ? getInitials(task.assignedToEmpName) : '?' }}
+                </div>
+                <span class="fw-semibold text-dark" style="font-size: 11.5px;">
+                  {{ task.assignedToEmpName || 'Unassigned' }}
+                </span>
+              </div>
+            </td>
+            <td>
+              <span class="stc-priority-pill" [ngClass]="'p-' + (task.priority | lowercase)">
+                {{ task.priority }}
+              </span>
+            </td>
+            <td>
+              <span *ngIf="task.deadlineDate" class="stc-due-pill" [class.is-overdue]="task.isOverdue">
+                {{ task.deadlineDate | date:'dd MMM yyyy' }}
+              </span>
+              <span *ngIf="!task.deadlineDate" class="text-muted" style="font-size: 10.5px;">—</span>
+            </td>
+            <td>
+              <span *ngIf="task.isRecurring" class="stc-recur-pill">
+                <i class="fa-solid fa-arrows-rotate"></i> {{ task.recurrencePattern }}
+              </span>
+              <span *ngIf="!task.isRecurring" class="text-muted" style="font-size: 10.5px;">One-Time</span>
+            </td>
+            <td>
+              <span class="status-pill"
+                [ngClass]="task.status === 'OPEN' ? 's-open' : task.status === 'ON_HOLD' ? 's-hold' : 's-closed'">
+                {{ task.status }}
+              </span>
+            </td>
+            <td class="text-end" (click)="$event.stopPropagation()">
+              <div class="d-inline-flex gap-1">
+                <button *ngIf="task.status !== 'ON_HOLD'" type="button" class="q-btn hold"
+                  (click)="quickTransition(task, 'ON_HOLD', $event)">
+                  Hold
+                </button>
+                <button *ngIf="task.status !== 'CLOSED'" type="button" class="q-btn done"
+                  (click)="quickTransition(task, 'CLOSED', $event)">
+                  Done
+                </button>
+                <button *ngIf="task.status !== 'OPEN'" type="button" class="q-btn resume"
+                  (click)="quickTransition(task, 'OPEN', $event)">
+                  Open
+                </button>
+              </div>
+            </td>
+          </tr>
+
+          <tr *ngIf="allFilteredTasks.length === 0 && !isLoading">
+            <td colspan="10" class="text-center py-5 text-muted">
+              No tasks match your current filters.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<!-- =========================================================================== -->
+<!-- CHILD MODALS & DOSSIER DRAWER                                               -->
+<!-- =========================================================================== -->
+
+<!-- 1. Drag-and-Drop / Quick Status Transition Mandatory Remarks Modal -->
+<app-transition-remarks-modal [isOpen]="isRemarksModalOpen" [task]="pendingTask" [fromStatus]="pendingFromStatus"
+  [toStatus]="pendingToStatus" [isSubmitting]="isUpdatingStatus" (confirmed)="onRemarksConfirmed($event)"
+  (cancelled)="onRemarksCancelled()"></app-transition-remarks-modal>
+
+<!-- 2. Bespoke Task Composer Popup Modal -->
+<app-create-task-modal [isOpen]="isCreateModalOpen" [defaultRecurring]="createModalDefaultRecurring"
+  [editingTask]="editingTask" [departments]="departments" [employees]="employees" [taskTypes]="taskTypes"
+  (taskCreated)="onTaskCreated($event)" (cancelled)="onCreateModalCancelled()"></app-create-task-modal>
+
+<!-- 3. Task Details & Chronological Audit History Dossier -->
+<app-task-detail-drawer [isOpen]="isDetailDrawerOpen" [taskId]="selectedTaskId" (closed)="onDetailDrawerClosed()"
+  (taskUpdated)="onDetailTaskUpdated()"></app-task-detail-drawer>

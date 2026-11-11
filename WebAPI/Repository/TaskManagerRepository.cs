@@ -45,7 +45,7 @@ namespace HRMSWebAPI.Repository
             using var conn = DataBaseFactory.ConnString();
             var parameters = new
             {
-                CompanyId = string.IsNullOrWhiteSpace(companyId) ? "GU-1" : companyId,
+                CompanyId = string.IsNullOrWhiteSpace(companyId) ? null : companyId.Trim(),
                 DeptId = string.IsNullOrWhiteSpace(deptId) ? null : deptId,
                 SearchText = string.IsNullOrWhiteSpace(searchText) ? null : searchText,
                 Top = top > 0 ? top : 20
@@ -102,6 +102,11 @@ namespace HRMSWebAPI.Repository
             if (!multi.IsConsumed)
             {
                 response.ViewerContext = await multi.ReadFirstOrDefaultAsync<TaskViewerContextDto>();
+            }
+
+            if (!multi.IsConsumed)
+            {
+                response.RecurringTasks = (await multi.ReadAsync<TaskCardDto>()).ToList();
             }
 
             return response;
@@ -213,7 +218,7 @@ namespace HRMSWebAPI.Repository
             return (Convert.ToInt32(result.TaskId), Convert.ToString(result.TaskCode) ?? "");
         }
 
-        public async Task<bool> UpdateTaskAsync(int taskId, CreateTaskRequestDto dto)
+        public async Task<bool> UpdateTaskAsync(int taskId, CreateTaskRequestDto dto, string? attachmentName = null, string? attachmentPath = null)
         {
             using var conn = DataBaseFactory.ConnString();
             var parameters = new
@@ -225,6 +230,8 @@ namespace HRMSWebAPI.Repository
                 TargetDeptId = string.IsNullOrWhiteSpace(dto.TargetDeptId) ? null : dto.TargetDeptId,
                 AssignedToEmpId = string.IsNullOrWhiteSpace(dto.AssignedToEmpId) ? null : dto.AssignedToEmpId,
                 DueDate = dto.DueDate,
+                AttachmentName = attachmentName,
+                AttachmentPath = attachmentPath,
                 IsRecurring = dto.IsRecurring,
                 RecurrenceType = dto.RecurrenceType ?? "NONE",
                 RecurrenceInterval = dto.RecurrenceInterval > 0 ? dto.RecurrenceInterval : 1,
@@ -236,9 +243,9 @@ namespace HRMSWebAPI.Repository
                 RecurrenceDueOffsetHours = dto.RecurrenceDueOffsetHours ?? 24,
                 RecurrenceDueOffsetUnit = dto.RecurrenceDueOffsetUnit ?? "DAYS",
                 TaskTypeId = dto.TaskTypeId,
-                TaskTypeName = dto.TaskTypeName ?? "General",
+                TaskTypeName = dto.TaskTypeName,
                 ActionById = dto.ActionById,
-                ActionByName = dto.ActionByName ?? "Admin",
+                ActionByName = dto.ActionByName,
                 UserType = dto.UserType,
                 CompanyId = dto.CompanyId
             };

@@ -58,7 +58,7 @@ export class AppComponent implements OnInit {
       // Login logic
       try {
         const { value: accessToken } = await Preferences.get({ key: 'accessToken' });
-        if (accessToken && !sessionStorage.getItem('accessToken')) {
+        if (typeof sessionStorage !== 'undefined' && accessToken && !sessionStorage.getItem('accessToken')) {
           const keys = ['accessToken', 'refreshToken', 'username', 'UserId', 'Otp', 'usertype'];
           for (const key of keys) {
             const { value } = await Preferences.get({ key });
@@ -151,6 +151,7 @@ export class AppComponent implements OnInit {
   private checkAndReplaceText(element: HTMLElement) {
     // ✅ FIX: Skip already-processed elements to prevent reprocessing
     if (element.dataset['labelReplaced']) return;
+    if (typeof sessionStorage === 'undefined') return;
 
     if (element && element.innerText && element.innerText.trim() === 'Contractor Name') {
       const companyCode = sessionStorage.getItem('companyCode');

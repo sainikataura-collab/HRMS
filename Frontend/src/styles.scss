@@ -11,7 +11,13 @@
 }
 
 body.modal-qr-open .main-content,
-.main-content:has(.qr-modal-backdrop) {
+.main-content:has(.qr-modal-backdrop),
+body.task-drawer-open .main-content,
+body.task-drawer-open .section,
+.main-content:has(.drawer-panel),
+.main-content:has(.drawer-backdrop),
+.main-content:has(.composer-backdrop),
+.main-content:has(.modal-backdrop-custom) {
   z-index: 99999999 !important;
   position: relative !important;
 }
@@ -23,7 +29,19 @@ body.modal-qr-open .main-sidebar,
 .main-wrapper:has(.qr-modal-backdrop) .navbar,
 .main-wrapper:has(.qr-modal-backdrop) .navbar-bg,
 .main-wrapper:has(.qr-modal-backdrop) .main-navbar,
-.main-wrapper:has(.qr-modal-backdrop) .main-sidebar {
+.main-wrapper:has(.qr-modal-backdrop) .main-sidebar,
+body.task-drawer-open .navbar,
+body.task-drawer-open .navbar-bg,
+body.task-drawer-open .main-navbar,
+body.task-drawer-open .main-sidebar,
+.main-wrapper:has(.drawer-panel) .navbar,
+.main-wrapper:has(.drawer-panel) .navbar-bg,
+.main-wrapper:has(.drawer-panel) .main-navbar,
+.main-wrapper:has(.drawer-panel) .main-sidebar,
+.main-wrapper:has(.composer-backdrop) .navbar,
+.main-wrapper:has(.composer-backdrop) .navbar-bg,
+.main-wrapper:has(.composer-backdrop) .main-navbar,
+.main-wrapper:has(.composer-backdrop) .main-sidebar {
   z-index: 10 !important;
 }
 
