@@ -1,0 +1,305 @@
+<!-- ========================================================================= -->
+<!-- PUBLIC WALK-IN CANDIDATE APPLICATION PORTAL (QR SECURED)                  -->
+<!-- ========================================================================= -->
+
+<div class="walkin-apply-container">
+
+  <!-- ── 1. LOADING STATE ───────────────────────────────────────────────────── -->
+  <div class="loading-state-wrapper text-center py-5" *ngIf="isInitializing">
+    <div class="spinner-grow text-primary mb-3" role="status" style="width: 3rem; height: 3rem;"></div>
+    <h5 class="fw-bold text-dark mb-1">Verifying Location QR Code...</h5>
+    <p class="text-muted small">Connecting to secure hiring portal...</p>
+  </div>
+
+  <!-- ── 2. UNAUTHORIZED ACCESS BLOCKED SCREEN ──────────────────────────────── -->
+  <div class="unauthorized-card-wrapper" *ngIf="!isInitializing && !isAuthorized">
+    <div class="unauthorized-card bg-white rounded-4 border shadow-sm p-4 text-center mx-auto" style="max-width: 450px;">
+      <div class="access-denied-icon mb-3">
+        <i class="bi bi-shield-x text-danger" style="font-size: 54px;"></i>
+      </div>
+      <h4 class="fw-bold text-dark mb-2">Access Restricted</h4>
+      <p class="text-muted mb-4" style="font-size: 13px; line-height: 1.5;">
+        {{ authorizationErrorMessage || 'Direct browser access is not allowed. Please scan the official QR code placed at the Hub or Location to submit your walk-in application.' }}
+      </p>
+      
+      <div class="alert alert-warning border-0 rounded-3 text-start mb-4 py-2.5 px-3">
+        <div class="d-flex align-items-center gap-2">
+          <i class="bi bi-qr-code-scan fs-5 text-warning-emphasis"></i>
+          <small class="text-warning-emphasis fw-medium" style="font-size: 11.5px;">
+            QR codes are uniquely signed and encrypted per location to prevent unauthorized submissions.
+          </small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 3. AUTHORIZED WALK-IN APPLICATION PAGE ────────────────────────────── -->
+  <div class="apply-content-wrapper" *ngIf="!isInitializing && isAuthorized">
+
+    <!-- A. SUCCESS CONFIRMATION CARD -->
+    <div class="success-confirmation-card bg-white rounded-4 border shadow-sm p-4 text-center mx-auto" *ngIf="isSubmittedSuccess" style="max-width: 500px;">
+      <div class="success-badge-icon mb-3">
+        <i class="bi bi-check-circle-fill text-success" style="font-size: 58px;"></i>
+      </div>
+      
+      <h3 class="fw-bold text-dark mb-1">Application Submitted!</h3>
+      <p class="text-muted mb-3" style="font-size: 13px;">
+        Your walk-in application has been registered successfully.
+      </p>
+
+      <!-- Application Reference Number Box -->
+      <div class="ref-box rounded-3 p-3 mb-3.5 border" *ngIf="submissionResponse?.applicationRef">
+        <small class="text-muted fw-semibold text-uppercase d-block mb-1" style="font-size: 10.5px; letter-spacing: 0.5px;">
+          Application Reference Number
+        </small>
+        <div class="d-flex align-items-center justify-content-center gap-2">
+          <span class="fs-4 fw-bold font-monospace text-primary tracking-wide">
+            {{ submissionResponse?.applicationRef }}
+          </span>
+        </div>
+      </div>
+
+      <div class="details-summary text-start bg-light-subtle rounded-3 p-3 border mb-4" style="font-size: 12.5px;">
+        <div class="d-flex justify-content-between py-1 border-bottom">
+          <span class="text-muted">Candidate Name:</span>
+          <span class="fw-semibold text-dark">{{ submissionResponse?.candidateName || formCandidateName }}</span>
+        </div>
+        <div class="d-flex justify-content-between py-1 border-bottom">
+          <span class="text-muted">Applying Location:</span>
+          <span class="fw-semibold text-dark">{{ locationName }} ({{ locationCode }})</span>
+        </div>
+        <div class="d-flex justify-content-between py-1 border-bottom">
+          <span class="text-muted">Applied Role:</span>
+          <span class="fw-semibold text-dark">{{ submissionResponse?.jobTitle || 'Walk-In Profile' }}</span>
+        </div>
+        <div class="d-flex justify-content-between py-1">
+          <span class="text-muted">Mobile Number:</span>
+          <span class="fw-semibold text-dark">{{ formMobileNumber }}</span>
+        </div>
+      </div>
+
+      <button type="button" class="btn btn-outline-primary btn-sm px-4 fw-semibold" (click)="resetForm()">
+        <i class="bi bi-plus-circle me-1"></i> Submit Another Application
+      </button>
+    </div>
+
+    <!-- B. APPLICATION FORM (When NOT Submitted) -->
+    <div class="apply-card bg-white rounded-4 border shadow-sm mx-auto overflow-hidden" *ngIf="!isSubmittedSuccess" style="max-width: 540px;">
+      
+      <!-- Hub Header Banner -->
+      <div class="hub-header-banner p-3.5 px-4 text-white">
+        <div class="d-flex align-items-center justify-content-between mb-2.5 flex-wrap gap-2">
+          <div class="d-flex align-items-center gap-2">
+            <img *ngIf="companyLogoUrl" [src]="companyLogoUrl" (error)="onLogoError($event)" alt="Logo" class="rounded bg-white p-1 shadow-sm" style="max-height: 32px; max-width: 90px; object-fit: contain;">
+            <span class="company-name-tag fw-bold text-white text-uppercase" style="font-size: 11px; letter-spacing: 0.5px;">
+              {{ companyName }}
+            </span>
+          </div>
+          <span class="badge bg-success-subtle text-success-emphasis border border-white-50 px-2 py-0.5" style="font-size: 10px;">
+            <i class="bi bi-shield-check me-1"></i> QR Verified
+          </span>
+        </div>
+
+        <h4 class="fw-bold mb-1" style="font-size: 18px;">
+          {{ locationName }}
+        </h4>
+        <div class="d-flex align-items-center gap-2" style="font-size: 12px; opacity: 0.9;">
+          <span><i class="bi bi-geo-alt-fill me-1"></i>{{ state }} ({{ zone }})</span>
+          <span>•</span>
+          <span>Hub Code: {{ locationCode }}</span>
+        </div>
+      </div>
+
+      <!-- Main Form Body -->
+      <div class="p-4">
+
+        <!-- Hub / Location Selection (Shown for general public walk-in when not pre-locked by QR) -->
+        <div class="mb-3" *ngIf="!isLocationLocked && locationsList.length > 0">
+          <label class="form-label-walkin fw-semibold text-dark mb-1.5 d-flex align-items-center justify-content-between">
+            <span>Select Operating Hub / Location <span class="text-danger">*</span></span>
+            <span class="text-muted fw-normal" style="font-size: 11px;">
+              {{ locationsList.length }} Hub{{ locationsList.length > 1 ? 's' : '' }}
+            </span>
+          </label>
+          <div class="input-group">
+            <span class="input-group-text bg-light text-muted border-end-0">
+              <i class="bi bi-geo-alt-fill text-primary"></i>
+            </span>
+            <select class="form-select form-select-sm walkin-input border-start-0" 
+                    [ngModel]="locationId" 
+                    (ngModelChange)="onLocationChange($event)" 
+                    style="height: 38px; font-size: 12.5px;">
+              <option value="">-- All Hubs / Choose Location --</option>
+              <option *ngFor="let loc of locationsList" [value]="loc.locationId">
+                {{ loc.locationName }} {{ loc.state ? '(' + loc.state + ')' : '' }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Section 1: Select Open Job Position (Filtered strictly by Company and Location) -->
+        <div class="mb-3.5">
+          <label class="form-label-walkin fw-semibold text-dark mb-1.5 d-flex align-items-center justify-content-between">
+            <span>Select Position / Open Job <span class="text-danger">*</span></span>
+            <span class="text-muted fw-normal" style="font-size: 11px;" *ngIf="openJobsList.length > 0">
+              {{ openJobsList.length }} Available Role{{ openJobsList.length > 1 ? 's' : '' }}
+            </span>
+          </label>
+          
+          <select class="form-select form-select-sm walkin-input" 
+                  [(ngModel)]="formSelectedJobId" 
+                  (ngModelChange)="onJobSelect($event)" 
+                  style="height: 38px; font-size: 12.5px;">
+            <option value="" disabled [selected]="!formSelectedJobId">-- Select Position / Open Job * --</option>
+            <option *ngFor="let job of openJobsList" [value]="job.jobId">
+              {{ job.jobTitle }} • {{ job.locationName || 'Hub' }} {{ job.department ? '• ' + job.department : '' }} {{ job.openPositions ? '(' + job.openPositions + ' Openings)' : '' }}
+            </option>
+            <option value="WALKIN_GENERAL" *ngIf="openJobsList.length === 0">General Walk-In / Open Position</option>
+          </select>
+          <small class="text-muted mt-0.5 d-block" style="font-size: 10.5px;" *ngIf="openJobsList.length === 0">
+            No active positions listed for this hub currently. Applying under General Walk-In candidate pool.
+          </small>
+        </div>
+
+        <hr class="my-3 opacity-50">
+
+        <!-- Section 2: Four Mandatory Fields -->
+        <div class="form-fields-container">
+
+          <!-- 1. Candidate Full Name -->
+          <div class="mb-3">
+            <label class="form-label-walkin fw-semibold text-dark mb-1">
+              Full Name <span class="text-danger">*</span>
+            </label>
+            <div class="input-group">
+              <span class="input-group-text bg-light text-muted border-end-0">
+                <i class="bi bi-person-fill"></i>
+              </span>
+              <input type="text" 
+                     class="form-control form-control-sm walkin-input border-start-0" 
+                     [(ngModel)]="formCandidateName" 
+                     placeholder="Enter candidate full name as per Aadhaar" 
+                     style="height: 38px; font-size: 12.5px;">
+            </div>
+          </div>
+
+          <!-- 2. Mobile Number -->
+          <div class="mb-3">
+            <label class="form-label-walkin fw-semibold text-dark mb-1">
+              Mobile Number (WhatsApp) <span class="text-danger">*</span>
+            </label>
+            <div class="input-group">
+              <span class="input-group-text bg-light text-muted border-end-0">
+                <i class="bi bi-phone-fill"></i>
+              </span>
+              <span class="input-group-text bg-light text-dark fw-semibold border-start-0 border-end-0" style="font-size: 12.5px;">
+                +91
+              </span>
+              <input type="tel" 
+                     class="form-control form-control-sm walkin-input border-start-0" 
+                     [(ngModel)]="formMobileNumber" 
+                     maxlength="10" 
+                     placeholder="10-digit mobile number" 
+                     style="height: 38px; font-size: 12.5px;">
+            </div>
+            <small class="text-muted mt-0.5 d-block" style="font-size: 10.5px;">
+              We will send interview updates to this mobile number.
+            </small>
+          </div>
+
+          <!-- 3. Aadhaar Card Number (Optional with Real-time Duplicate Check) -->
+          <div class="mb-3">
+            <label class="form-label-walkin fw-semibold text-dark mb-1 d-flex align-items-center justify-content-between">
+              <span>Aadhaar Card Number <span class="text-muted fw-normal" style="font-size: 11px;">(Optional)</span></span>
+              
+              <!-- Validation Badge -->
+              <span *ngIf="isCheckingAadhaar" class="text-primary fw-normal" style="font-size: 11px;">
+                <span class="spinner-border spinner-border-sm me-1" role="status"></span> Checking...
+              </span>
+              <span *ngIf="!isCheckingAadhaar && formAadharNo.length === 12 && aadhaarValidationStatus === 'verified'" class="text-success fw-semibold" style="font-size: 11px;">
+                <i class="bi bi-check-circle-fill me-1"></i> Verified & Clear
+              </span>
+              <span *ngIf="!isCheckingAadhaar && aadhaarValidationStatus === 'blocked'" class="text-danger fw-semibold" style="font-size: 11px;">
+                <i class="bi bi-x-circle-fill me-1"></i> Restricted
+              </span>
+            </label>
+
+            <div class="input-group">
+              <span class="input-group-text bg-light text-muted border-end-0">
+                <i class="bi bi-card-text"></i>
+              </span>
+              <input type="text" 
+                     class="form-control form-control-sm walkin-input border-start-0" 
+                     [ngClass]="{
+                       'is-invalid': aadhaarValidationStatus === 'blocked',
+                       'is-valid': formAadharNo.length === 12 && aadhaarValidationStatus === 'verified'
+                     }"
+                     [(ngModel)]="formAadharNo" 
+                     (ngModelChange)="onAadhaarInput()"
+                     (blur)="validateAadhaarStatus()"
+                     maxlength="12" 
+                     placeholder="12-digit Aadhaar number (optional)" 
+                     style="height: 38px; font-size: 12.5px; letter-spacing: 0.5px;">
+            </div>
+
+            <!-- Aadhaar Blocked Error Banner -->
+            <div class="alert alert-danger p-2.5 rounded-2 mt-2 mb-0 d-flex align-items-start gap-2" *ngIf="aadhaarValidationStatus === 'blocked'">
+              <i class="bi bi-exclamation-triangle-fill fs-5 mt-0.5 text-danger"></i>
+              <div>
+                <strong class="d-block text-danger" style="font-size: 11.5px;">Duplicate Application Alert:</strong>
+                <p class="mb-0 text-danger-emphasis" style="font-size: 11px; line-height: 1.4;">
+                  {{ aadhaarErrorMessage }}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. Vendor Name Dropdown (Completely Optional) -->
+          <div class="mb-4">
+            <label class="form-label-walkin fw-semibold text-dark mb-1 d-flex align-items-center justify-content-between">
+              <span>Sourcing Vendor Name <span class="text-muted fw-normal" style="font-size: 11px;">(Optional)</span></span>
+              <span class="text-muted fw-normal" style="font-size: 11px;" *ngIf="vendorList.length > 0">
+                {{ vendorList.length }} Empanelled Vendor{{ vendorList.length > 1 ? 's' : '' }}
+              </span>
+            </label>
+            <div class="input-group">
+              <span class="input-group-text bg-light text-muted border-end-0">
+                <i class="bi bi-building"></i>
+              </span>
+              <select class="form-select form-select-sm walkin-input border-start-0" [(ngModel)]="formSelectedVendorId" style="height: 38px; font-size: 12.5px;">
+                <option value="">-- Direct Walk-In / Self Applied (No Vendor) --</option>
+                <option *ngFor="let vendor of vendorList" [value]="vendor.vendorId">
+                  {{ vendor.vendorName }} {{ (vendor.vendorCode && vendor.vendorCode !== 'DIRECT') ? '(' + vendor.vendorCode + ')' : '' }}
+                </option>
+              </select>
+            </div>
+            <small class="text-muted mt-0.5 d-block" style="font-size: 10.5px;">
+              If referred by a staffing vendor, select from the list. Otherwise leave as Direct Walk-In.
+            </small>
+          </div>
+
+        </div>
+
+        <!-- Submit Button Strip -->
+        <button type="button" 
+                class="btn btn-primary w-100 fw-bold py-2.5 d-flex align-items-center justify-content-center gap-2 rounded-3 shadow-sm btn-submit-walkin" 
+                [disabled]="!isFormValid || isSubmitting"
+                (click)="submitApplication()">
+          <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm" role="status"></span>
+          <i *ngIf="!isSubmitting" class="bi bi-send-check-fill"></i>
+          <span>{{ isSubmitting ? 'Registering Application...' : 'Submit Walk-In Application' }}</span>
+        </button>
+
+        <div class="text-center mt-3">
+          <small class="text-muted" style="font-size: 10.5px;">
+            <i class="bi bi-lock-fill text-success me-1"></i> Data encrypted & securely saved in HRMS Recruitment Master.
+          </small>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

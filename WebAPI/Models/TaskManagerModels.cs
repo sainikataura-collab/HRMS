@@ -126,6 +126,8 @@ namespace HRMSWebAPI.Models
         public DateTime DueDate { get; set; }
         public string? AttachmentName { get; set; }
         public string? AttachmentPath { get; set; }
+        public string? AttachmentUrl { get => AttachmentPath; set => AttachmentPath = value; }
+        public string? AttachmentFileName { get => AttachmentName; set => AttachmentName = value; }
         public bool IsRecurring { get; set; }
         public string? RecurrenceType { get; set; } = "NONE";
         public string? RecurrencePattern { get => RecurrenceType; set => RecurrenceType = value; }

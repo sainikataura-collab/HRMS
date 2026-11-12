@@ -1,4 +1,4 @@
-﻿-- ======================================================================================
+-- ======================================================================================
 -- OBJECT: dbo.fn_HR_Task_VisibleTasks
 -- TYPE: SQL_INLINE_TABLE_VALUED_FUNCTION
 -- EXTRACTED LIVE FROM DATABASE: HRBook
@@ -15,8 +15,10 @@ GO
 -- --------------------------------------------------------------------------------------
 -- 2. INLINE TABLE-VALUED FUNCTION: dbo.fn_HR_Task_VisibleTasks
 -- Single source of truth for task visibility across Admin, HOD, Manager, and Employee.
+-- Ensures Admins see all company tasks (including unassigned tasks with no department),
+-- and creators always see their own created tasks.
 -- --------------------------------------------------------------------------------------
-CREATE   FUNCTION dbo.fn_HR_Task_VisibleTasks
+CREATE OR ALTER FUNCTION dbo.fn_HR_Task_VisibleTasks
 (
     @ViewerId  VARCHAR(50),
     @UserType  VARCHAR(20),
@@ -59,8 +61,10 @@ RETURN
         CASE 
             WHEN v.IsAdmin = 1 THEN 'ADMIN'
             WHEN (v.EmpId IS NOT NULL AND t.CreatedByEmpId = v.EmpId COLLATE DATABASE_DEFAULT)
-              OR (v.UserId IS NOT NULL AND t.CreatedByUserId = v.UserId COLLATE DATABASE_DEFAULT) THEN 'CREATOR'
-            WHEN (v.EmpId IS NOT NULL AND t.AssignedToEmpId = v.EmpId COLLATE DATABASE_DEFAULT) THEN 'ASSIGNEE'
+              OR (v.UserId IS NOT NULL AND t.CreatedByUserId = v.UserId COLLATE DATABASE_DEFAULT)
+              OR (@ViewerId IS NOT NULL AND (t.CreatedByUserId = @ViewerId COLLATE DATABASE_DEFAULT OR t.CreatedByEmpId = @ViewerId COLLATE DATABASE_DEFAULT)) THEN 'CREATOR'
+            WHEN (v.EmpId IS NOT NULL AND t.AssignedToEmpId = v.EmpId COLLATE DATABASE_DEFAULT)
+              OR (@ViewerId IS NOT NULL AND t.AssignedToEmpId = @ViewerId COLLATE DATABASE_DEFAULT) THEN 'ASSIGNEE'
             WHEN EXISTS (SELECT 1 FROM HodDepts hd WHERE t.TargetDeptId = hd.DeptId COLLATE DATABASE_DEFAULT) THEN 'HOD_TARGET'
             WHEN EXISTS (SELECT 1 FROM HodDepts hd WHERE t.CreatorDeptId = hd.DeptId COLLATE DATABASE_DEFAULT) THEN 'HOD_CREATOR_DEPT'
             WHEN EXISTS (SELECT 1 FROM DeptEmployees de WHERE t.AssignedToEmpId = de.EmpId COLLATE DATABASE_DEFAULT) THEN 'HOD_ASSIGNEE_DEPT'
@@ -82,23 +86,25 @@ RETURN
     WHERE t.IsActive = 1
       AND (@CompanyId IS NULL OR t.CompanyId = @CompanyId COLLATE DATABASE_DEFAULT)
       AND (
-          -- Rule 1: Admin sees ALL company tasks
+          -- Rule 1: Admin sees ALL company tasks (including unassigned tasks with no department)
           v.IsAdmin = 1
 
           -- Rule 2: Tasks created by viewer
           OR (v.EmpId IS NOT NULL AND t.CreatedByEmpId = v.EmpId COLLATE DATABASE_DEFAULT)
           OR (v.UserId IS NOT NULL AND t.CreatedByUserId = v.UserId COLLATE DATABASE_DEFAULT)
+          OR (@ViewerId IS NOT NULL AND (t.CreatedByUserId = @ViewerId COLLATE DATABASE_DEFAULT OR t.CreatedByEmpId = @ViewerId COLLATE DATABASE_DEFAULT))
 
           -- Rule 3: Tasks assigned directly to viewer
           OR (v.EmpId IS NOT NULL AND t.AssignedToEmpId = v.EmpId COLLATE DATABASE_DEFAULT)
+          OR (@ViewerId IS NOT NULL AND t.AssignedToEmpId = @ViewerId COLLATE DATABASE_DEFAULT)
 
-          -- Rule 4: HOD Department visibility (Target Dept, Creator Dept, or Assigned to/Created by Dept member)
+          -- Rule 4: HOD Department visibility
           OR EXISTS (SELECT 1 FROM HodDepts hd WHERE t.TargetDeptId = hd.DeptId COLLATE DATABASE_DEFAULT)
           OR EXISTS (SELECT 1 FROM HodDepts hd WHERE t.CreatorDeptId = hd.DeptId COLLATE DATABASE_DEFAULT)
           OR EXISTS (SELECT 1 FROM DeptEmployees de WHERE t.AssignedToEmpId = de.EmpId COLLATE DATABASE_DEFAULT)
           OR EXISTS (SELECT 1 FROM DeptEmployees de WHERE t.CreatedByEmpId = de.EmpId COLLATE DATABASE_DEFAULT)
 
-          -- Rule 5: Reporting Manager visibility over direct reports' tasks
+          -- Rule 5: Reporting Manager visibility over direct reports
           OR EXISTS (SELECT 1 FROM DirectReports dr WHERE t.AssignedToEmpId = dr.EmpId COLLATE DATABASE_DEFAULT)
       )
 );

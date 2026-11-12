@@ -1,4 +1,4 @@
-﻿-- ======================================================================================
+-- ======================================================================================
 -- OBJECT: dbo.usp_HR_Task_Create
 -- TYPE: SQL_STORED_PROCEDURE
 -- EXTRACTED LIVE FROM DATABASE: HRBook
@@ -91,12 +91,12 @@ BEGIN
             SET @TargetDeptId = @CreatorDeptId;
     END
 
-    -- 2. Resolve Task Type Name from General Master (CodeTypeId = 24)
+    -- 2. Resolve Task Type Name from General Master (CodeTypeId = 25)
     IF @TaskTypeId IS NOT NULL AND (@ResolvedTaskType IS NULL OR @ResolvedTaskType = '')
     BEGIN
         SELECT TOP 1 @ResolvedTaskType = Name
         FROM dbo.LSP_Master_General
-        WHERE CodeTypeId = 24 AND CodeId = @TaskTypeId;
+        WHERE CodeTypeId = 25 AND CodeId = @TaskTypeId;
     END
     IF @ResolvedTaskType IS NULL OR @ResolvedTaskType = '' SET @ResolvedTaskType = 'General';
 

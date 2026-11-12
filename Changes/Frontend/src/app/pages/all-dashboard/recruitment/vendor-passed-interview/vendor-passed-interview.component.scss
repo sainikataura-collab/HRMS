@@ -1,0 +1,718 @@
+:host {
+  display: block;
+  font-family: 'Work Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  position: relative;
+  z-index: 1050;
+}
+
+.vendor-passed-interview-container {
+  padding-top: 0 !important;
+}
+
+// ── Button Styling (No Black Hover) ─────────────────────────────────────────
+.btn-neutral-action {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border: 1px solid #cbd5e1 !important;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 14px;
+  border-radius: 6px;
+  transition: all 0.15s ease-in-out;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  i {
+    color: #0f172a !important;
+    transition: color 0.15s ease-in-out;
+  }
+
+  &:hover {
+    background-color: #f1f5f9 !important;
+    border-color: #94a3b8 !important;
+    color: #0051d5 !important;
+
+    i {
+      color: #0051d5 !important;
+    }
+  }
+
+  &:active, &:focus {
+    background-color: #e2e8f0 !important;
+    border-color: #0051d5 !important;
+    color: #0051d5 !important;
+    box-shadow: none !important;
+
+    i {
+      color: #0051d5 !important;
+    }
+  }
+}
+
+// ── Compact Back Button with Right Separation ──────────────────────────────
+.btn-back-custom {
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+  padding: 4px 14px 4px 10px !important;
+  margin-right: 18px !important; // Add padding/margin on right side
+  margin-left: 0 !important;
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 6px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  height: 28px !important; // Compact small height
+  line-height: 1 !important;
+  transition: all 0.15s ease-in-out;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+
+  i {
+    font-size: 10.5px;
+    color: #475569 !important;
+    transition: transform 0.15s ease-in-out, color 0.15s ease-in-out;
+  }
+
+  &:hover {
+    background-color: #f1f5f9 !important;
+    border-color: #0051d5 !important;
+    color: #0051d5 !important;
+
+    i {
+      color: #0051d5 !important;
+      transform: translateX(-2px);
+    }
+  }
+
+  &:active, &:focus {
+    background-color: #e2e8f0 !important;
+    border-color: #0051d5 !important;
+    color: #0051d5 !important;
+    box-shadow: none !important;
+  }
+}
+
+// ── Tab Buttons ─────────────────────────────────────────────────────────────
+.tab-btn {
+  font-size: 11.5px;
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-weight: 600;
+  border: 1px solid #cbd5e1;
+  background-color: #ffffff;
+  color: #334155;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease-in-out;
+  outline: none;
+  user-select: none;
+
+  * {
+    pointer-events: none;
+  }
+
+  i {
+    color: #475569;
+    transition: color 0.15s ease-in-out;
+  }
+
+  &:hover {
+    background-color: #f1f5f9;
+    border-color: #94a3b8;
+    color: #0f172a;
+
+    i {
+      color: #0f172a;
+    }
+  }
+
+  &.active {
+    background-color: #3080e8 !important;
+    border-color: #3080e8 !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 6px #acb5f6;
+
+    i {
+      color: #ffffff !important;
+    }
+
+    &:hover {
+      background-color: #0045b5 !important;
+      border-color: #0045b5 !important;
+    }
+  }
+}
+
+// ── Stat Icon Circle ────────────────────────────────────────────────────────
+.stat-icon-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  flex-shrink: 0;
+}
+
+// ── High Contrast Typography (Recoloring Silver/Faint Text) ───────────────
+.text-muted {
+  color: #475569 !important;
+}
+
+.text-secondary {
+  color: #334155 !important;
+}
+
+.prefill-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #334155 !important;
+  letter-spacing: 0.4px;
+  display: block;
+}
+
+.form-hint {
+  font-size: 10.5px;
+  color: #475569 !important;
+  font-weight: 500;
+  display: block;
+  margin-top: 3px;
+}
+
+.candidate-name-col {
+  width: 140px !important;
+  max-width: 145px !important;
+}
+
+.sr-no-col {
+  width: 36px !important;
+  min-width: 36px !important;
+  max-width: 40px !important;
+  text-align: center !important;
+  padding-left: 4px !important;
+  padding-right: 4px !important;
+}
+
+// ── Typography & Cell Sizing ───────────────────────────────────────────────
+.mono-val {
+  font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
+  color: #0f172a !important;
+  font-weight: 600 !important;
+  font-size: 11.5px !important;
+  letter-spacing: 0.5px;
+}
+
+.field-contrast {
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
+  background-color: #ffffff !important;
+  font-size: 12px;
+
+  &::placeholder {
+    color: #64748b !important;
+    font-weight: 400 !important;
+    opacity: 1 !important;
+  }
+
+  &:focus {
+    color: #0f172a !important;
+    border-color: #0051d5 !important;
+    box-shadow: 0 0 0 0.15rem rgba(0, 81, 213, 0.18) !important;
+  }
+}
+
+// ── Table Details ─────────────────────────────────────────────────────────
+thead th {
+  font-size: 10.5px !important;
+  letter-spacing: 0.3px;
+  color: #0f172a !important;
+  font-weight: 700 !important;
+  text-transform: uppercase;
+  padding: 8px 8px !important;
+  white-space: nowrap;
+}
+
+td {
+  font-size: 11px !important;
+  color: #0f172a !important;
+  padding: 7px 8px !important;
+}
+
+// ── Spin Animation ────────────────────────────────────────────────────────
+.spin-anim {
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+// ── Modal Backdrop (Document Preview) ─────────────────────────────────────
+.modal-backdrop-custom {
+  position: fixed !important;
+  top: 75px !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 40px !important;
+  width: 100vw !important;
+  height: calc(100vh - 115px) !important;
+  background-color: rgba(15, 23, 42, 0.72) !important;
+  backdrop-filter: blur(4px) !important;
+  z-index: 999999 !important;
+  padding: 10px 16px !important;
+  box-sizing: border-box !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.modal-dialog-custom {
+  margin: auto !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  width: 94% !important;
+  max-width: 960px !important;
+  background: #ffffff !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3) !important;
+  position: relative !important;
+}
+
+// ── Mobile App Candidate Cards ─────────────────────────────────────────────
+.mob-passed-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 12px 14px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+
+  &:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+  }
+
+  &:active {
+    background: #f1f5f9;
+    transform: scale(0.99);
+  }
+}
+
+.mob-passed-job-chip {
+  background: #eff6ff;
+  border-radius: 8px;
+  padding: 5px 10px;
+  font-size: 11.5px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.mob-subtabs-bar {
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+// ── Mobile Dossier Redesign & Section Popups ────────────────────────────────
+.mob-dossier-wrapper {
+  padding-bottom: 135px !important; /* 38px footer + 60px pinned bar + 37px scroll clearance */
+}
+
+.mob-passed-header {
+  .mob-back-btn {
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #334155;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+
+    &:active {
+      background: #e2e8f0;
+    }
+  }
+}
+
+.mob-cand-hero-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 12px 14px;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.05);
+}
+
+.mob-cand-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #0051d5, #2563eb);
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-right: 12px;
+  box-shadow: 0 2px 6px rgba(0, 81, 213, 0.2);
+}
+
+.mob-readiness-bar {
+  .progress {
+    height: 5px;
+    background-color: #f1f5f9;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+}
+
+.mob-section-tabs-bar {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.mob-tab-chip {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 20px;
+  padding: 6px 12px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #1e293b;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  transition: all 0.15s ease-in-out;
+
+  &:active {
+    background: #eff6ff;
+    border-color: #0051d5;
+    color: #0051d5;
+    transform: scale(0.97);
+  }
+
+  .mob-tab-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+  }
+}
+
+.mob-section-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 13px 14px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+
+  &:active {
+    background: #f8fafc;
+    border-color: #0051d5;
+    transform: scale(0.99);
+  }
+}
+
+.mob-section-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13.5px;
+  flex-shrink: 0;
+}
+
+.mob-card-snippet {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 6px 10px;
+  margin-bottom: 8px;
+}
+
+.mob-snippet-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #64748b;
+  letter-spacing: 0.3px;
+}
+
+.mob-snippet-val {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.mob-card-footer-cta {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #0051d5;
+}
+
+.mob-bottom-pinned-bar {
+  position: fixed;
+  bottom: 38px !important; /* Sits precisely above the 38px copyright footer */
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  border-top: 1px solid #e2e8f0;
+  padding: 10px 14px calc(10px + env(safe-area-inset-bottom, 0px));
+  z-index: 1035; /* Above portal footer z-index 1030 */
+  box-shadow: 0 -4px 16px rgba(15, 23, 42, 0.12);
+}
+
+// ── Mobile Popup Modals (Section Sheets) ──────────────────────────────────
+.mob-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  bottom: 38px !important; /* Sits strictly above the 38px copyright footer */
+  height: calc(100vh - 38px) !important;
+  height: calc(100dvh - 38px) !important;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(3px);
+  z-index: 99999;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 10px 10px 14px; /* 14px clean cushion above the footer */
+  box-sizing: border-box;
+}
+
+.mob-modal-sheet {
+  background: #ffffff;
+  border-radius: 18px;
+  width: 100%;
+  max-width: 520px;
+  max-height: calc(85dvh - 45px);
+  max-height: calc(85vh - 45px);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  box-shadow: 0 -10px 40px rgba(15, 23, 42, 0.25);
+  animation: mobSlideUp 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+  box-sizing: border-box;
+  margin-bottom: 2px;
+}
+
+@keyframes mobSlideUp {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+.mob-modal-header {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 13px 16px 11px;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #0f172a;
+  background: #ffffff;
+}
+
+.mob-modal-close {
+  background: #f1f5f9;
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  font-size: 13px;
+  color: #64748b;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mob-modal-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.mob-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.mob-field-row {
+  display: flex;
+  gap: 10px;
+}
+
+.mob-field-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #334155;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.mob-field-input {
+  width: 100%;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 9px 11px;
+  font-size: 13px;
+  font-family: 'Work Sans', sans-serif;
+  font-weight: 500;
+  color: #0f172a;
+  background: #f8fafc;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.15s;
+
+  &:focus {
+    border-color: #0051d5;
+    background: #fff;
+  }
+
+  &::placeholder {
+    color: #94a3b8;
+    font-weight: 400;
+  }
+}
+
+.mob-modal-footer {
+  flex-shrink: 0;
+  display: flex;
+  gap: 10px;
+  padding: 12px 16px 14px;
+  border-top: 1px solid #e2e8f0;
+  background: #ffffff;
+}
+
+.mob-cancel-btn {
+  flex: 1;
+  height: 40px;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #334155;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mob-save-btn {
+  flex: 2;
+  height: 40px;
+  background: #0051d5;
+  border: none;
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+
+  &:disabled { opacity: 0.7; }
+}
+
+// ── Desktop Dossier Action Footer ──────────────────────────────────────────
+// Using custom class instead of Bootstrap's .card-footer because global
+// style.css overrides .card .card-footer { border: none; background: transparent; }
+.dossier-action-footer {
+  background: #ffffff;
+  border-top: 1px solid #e2e8f0;
+  padding: 12px 16px;
+  border-radius: 0 0 12px 12px;
+  flex-wrap: wrap;
+  gap: 10px;
+
+  @media (max-width: 575.98px) {
+    flex-direction: column;
+
+    .btn-back-custom,
+    .dossier-save-btn {
+      width: 100%;
+    }
+  }
+}
+
+.dossier-save-btn {
+  background-color: #3080e8 !important;
+  color: #ffffff !important;
+  border: 1px solid #3080e8;
+  border-radius: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 8px 22px;
+  box-shadow: 0 2px 6px #acb5f6;
+  cursor: pointer;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease;
+  white-space: nowrap;
+
+  &:hover:not(:disabled) {
+    background-color: #2b2b41 !important;
+    border-color: #2b2b41 !important;
+    box-shadow: 0 4px 12px rgba(43, 43, 65, 0.35);
+  }
+
+  &:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+  }
+}
+

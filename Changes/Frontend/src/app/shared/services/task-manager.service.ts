@@ -45,6 +45,8 @@ export interface TaskCardDto {
   hasAttachments: boolean;
   attachmentUrl?: string;
   attachmentFileName?: string;
+  attachmentPath?: string;
+  attachmentName?: string;
   createdAt: string;
   updatedAt?: string;
   lastRemarks?: string;
@@ -365,6 +367,18 @@ export class TaskManagerService {
     formData.append('file', file, file.name);
     return this.http.post<{ fileName: string; fileUrl: string }>(`${this.baseUrl}/TaskManager/upload-attachment`, formData, {
       headers: this.getHeaders()
+    });
+  }
+
+  /**
+   * Downloads task attachment as a Blob via WebAPI using environment baseUrl (No hardcoded URLs).
+   */
+  downloadTaskAttachment(filePathOrName: string): Observable<Blob> {
+    const rawFileName = filePathOrName.split('/').pop()?.split('\\').pop() || filePathOrName;
+    const url = `${this.baseUrl}/TaskManager/attachment/${encodeURIComponent(rawFileName)}`;
+    return this.http.get(url, {
+      headers: this.getHeaders(),
+      responseType: 'blob'
     });
   }
 

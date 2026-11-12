@@ -137,12 +137,18 @@ namespace HRMSWebAPI.Repository
                 PageSize = filter.PageSize > 0 ? filter.PageSize : 10
             };
 
-            var tasks = await conn.QueryAsync<TaskCardDto>(
+            using var multi = await conn.QueryMultipleAsync(
                 "dbo.usp_HR_Task_GetBoard",
                 parameters,
                 commandType: CommandType.StoredProcedure);
 
-            return tasks.ToList();
+            // Skip Result Set 1 (Counts)
+            await multi.ReadFirstOrDefaultAsync();
+
+            // Result Set 2 (Task Records for target column / page)
+            var tasks = (await multi.ReadAsync<TaskCardDto>()).ToList();
+
+            return tasks;
         }
 
         public async Task<TaskDetailResponseDto?> GetTaskByIdWithHistoryAsync(int taskId, string? viewerId = null, string? userType = null, string? companyId = null)

@@ -1,0 +1,449 @@
+<div class="row position-relative">
+  <!-- Left Side: Main Form Content -->
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="card">
+
+      <div class="card-header bg-primary py-1">
+        <div class="row w-100">
+          <div class="col-sm-12 col-md-6 col-lg-6 d-flex align-items-center">
+            <h4 class="mb-0 text-white">{{ isEditMode ? 'Edit Vendor Details ' : 'Add New Vendor ' }}</h4>
+          </div>
+          <div class="col-sm-12 col-md-6 col-lg-6 d-flex align-items-center justify-content-md-end">
+            <button class="btn btnheader bg-white text-primary" type="button"
+              routerLink="/dash/vendor_management/vendor_managementdashboard/vendor_master_lite_list">
+              Back
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-body mt-4">
+
+        <!-- Step Indicator (Circle & Line Stepper matching ERP Standard) -->
+        <div class="step-indicator mb-4 px-3">
+          <!-- Step 1: Vendor Details -->
+          <div class="step" [ngClass]="{'active-step': activeTab === 1, 'completed-step': activeTab > 1}">
+            <div class="step-circle" (click)="switchTab(1)">1</div>
+            <div class="step-label small"><span class="small fw-semibold">Vendor Details</span></div>
+            <div class="step-line"></div>
+          </div>
+
+          <!-- Step 2: Document Upload -->
+          <div class="step" [ngClass]="{'active-step': activeTab === 2, 'completed-step': activeTab > 2}">
+            <div class="step-circle" (click)="switchTab(2)">2</div>
+            <div class="step-label small"><span class="small fw-semibold">Document Upload</span></div>
+          </div>
+        </div>
+
+        <!-- TAB 1: VENDOR DETAILS -->
+        <div *ngIf="activeTab === 1">
+          <div class="bg-primary rounded-1 page-seperator mb-3">
+            <p class="p-1 text-white ms-4 mb-0">Vendor Details</p>
+          </div>
+
+          <form [formGroup]="vendorForm" (ngSubmit)="saveVendorDetails()">
+            <div class="row mb-3">
+              <div class="col-md-4 mb-3">
+                <label class="form-label">Vendor Name <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" formControlName="vendor_Name" placeholder="Enter full name"
+                  [ngClass]="{'is-invalid': submitted && vendorForm.get('vendor_Name')?.invalid}">
+                <div class="invalid-feedback" *ngIf="submitted && vendorForm.get('vendor_Name')?.hasError('required')">
+                  Vendor Name is required</div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label class="form-label">Contact No <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" formControlName="vendor_ContactNo"
+                  placeholder="10-digit mobile number"
+                  [ngClass]="{'is-invalid': submitted && vendorForm.get('vendor_ContactNo')?.invalid}">
+                <div class="invalid-feedback"
+                  *ngIf="submitted && vendorForm.get('vendor_ContactNo')?.hasError('required')">Contact No is required
+                </div>
+                <div class="invalid-feedback"
+                  *ngIf="submitted && vendorForm.get('vendor_ContactNo')?.hasError('pattern')">Enter valid 10-digit
+                  number</div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label class="form-label">Registration Date <span class="text-danger">*</span></label>
+                <input type="date" class="form-control" formControlName="vendor_RegistrationDate"
+                  [ngClass]="{'is-invalid': submitted && vendorForm.get('vendor_RegistrationDate')?.invalid}">
+                <div class="invalid-feedback"
+                  *ngIf="submitted && vendorForm.get('vendor_RegistrationDate')?.hasError('required')">Registration Date
+                  is required</div>
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-md-3 mb-3">
+                <label class="form-label">Contract Start Date</label>
+                <input type="date" class="form-control" formControlName="vendor_ContractStartDate">
+              </div>
+              <div class="col-md-3 mb-3">
+                <label class="form-label">Contract End Date</label>
+                <input type="date" class="form-control" formControlName="vendor_ContractEndDate">
+              </div>
+              <div class="col-md-3 mb-3">
+                <label class="form-label">Services</label>
+                <ng-select [items]="servicesList" bindLabel="name" bindValue="value" [multiple]="true"
+                  [closeOnSelect]="false" formControlName="vendor_Services" placeholder="--Select --"
+                  class="w-100" (clear)="clearServices()">
+                  <ng-template ng-multi-label-tmp>
+                    <span>{{ getServicesDisplayText() || '--Select --' }}</span>
+                  </ng-template>
+
+                  <ng-template ng-option-tmp let-item="item" let-index="index">
+                    <div *ngIf="item.value === '__select_all__'" class="d-flex align-items-center w-100"
+                      (click)="$event.stopPropagation(); toggleSelectAllServices()">
+                      <input type="checkbox" (change)="toggleSelectAllServices($event)"
+                        (click)="$event.stopPropagation()"
+                        [checked]="isAllServicesSelected()"
+                        class="form-check-input fs-6 mx-1" />
+                      <strong>Select All</strong>
+                    </div>
+                    <div *ngIf="item.value !== '__select_all__'" class="d-flex align-items-center w-100"
+                      (click)="$event.stopPropagation(); toggleService(item.value)">
+                      <input type="checkbox" [checked]="selectedServices.includes(item.value)"
+                        (change)="toggleService(item.value)"
+                        (click)="$event.stopPropagation()"
+                        class="form-check-input fs-6 mx-1" />
+                      <span>{{ item.name }}</span>
+                    </div>
+                  </ng-template>
+                </ng-select>
+              </div>
+              <div class="col-md-3 mb-3">
+                <label class="form-label">Location</label>
+                <ng-select [items]="locationList" bindLabel="name" bindValue="value" formControlName="vendor_Location"
+                  [multiple]="true" placeholder="Select Location(s)"></ng-select>
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Email ID(s)</label>
+                <input type="text" class="form-control" formControlName="emailID" placeholder="vendor@example.com, hr@example.com">
+                <small class="text-muted">Enter single or multiple email addresses separated by commas.</small>
+              </div>
+              <div class="col-md-6 mb-3 d-flex align-items-center">
+                <div class="form-check mt-3">
+                  <input class="form-check-input" type="checkbox" id="showDetailsOnSlalrySlip" formControlName="showDetailsOnSlalrySlip">
+                  <label class="form-check-label ms-2 fw-semibold" for="showDetailsOnSlalrySlip">
+                    Show Details On Salary Slip
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Address Section -->
+            <div class="row mb-3 gx-4">
+              <!-- Left Column: Current Address -->
+              <div class="col-sm-12 col-md-6 col-lg-6 border-end pe-md-4">
+                <div class="d-flex align-items-center mb-3">
+                  <span class="text-primary fw-bold small text-uppercase d-flex align-items-center">
+                    <i class="bi bi-geo-alt me-1"></i>Current Address
+                  </span>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Address <span class="text-danger">*</span></label>
+                  <textarea class="form-control" formControlName="vendor_Address" rows="2"
+                    [ngClass]="{'is-invalid': submitted && vendorForm.get('vendor_Address')?.invalid}"></textarea>
+                  <div class="invalid-feedback"
+                    *ngIf="submitted && vendorForm.get('vendor_Address')?.hasError('required')">Current Address is
+                    required</div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label">State <span class="text-danger">*</span></label>
+                    <ng-select [items]="stateList" bindLabel="name" bindValue="value" formControlName="vendor_FKStateId"
+                      (change)="onStateChange($event?.value, false)"
+                      [ngClass]="{'is-invalid': submitted && vendorForm.get('vendor_FKStateId')?.invalid}"></ng-select>
+                    <div class="invalid-feedback d-block"
+                      *ngIf="submitted && vendorForm.get('vendor_FKStateId')?.hasError('required')">State is required
+                    </div>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label">City <span class="text-danger">*</span></label>
+                    <ng-select [items]="cityList" bindLabel="name" bindValue="value" formControlName="vendor_FKCityId"
+                      [ngClass]="{'is-invalid': submitted && vendorForm.get('vendor_FKCityId')?.invalid}"></ng-select>
+                    <div class="invalid-feedback d-block"
+                      *ngIf="submitted && vendorForm.get('vendor_FKCityId')?.hasError('required')">City is required
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Right Column: Permanent Address -->
+              <div class="col-sm-12 col-md-6 col-lg-6 ps-md-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <span class="text-primary fw-bold small text-uppercase d-flex align-items-center">
+                    <i class="bi bi-geo-alt me-1"></i>Permanent Address
+                  </span>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="sameAddress" (change)="copyAddress($event)">
+                    <label class="form-check-label small" for="sameAddress">Same as Current Address</label>
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Address <span class="text-danger">*</span></label>
+                  <textarea class="form-control" formControlName="vendor_PermanentAddress" rows="2"
+                    [ngClass]="{'is-invalid': submitted && vendorForm.get('vendor_PermanentAddress')?.invalid}"></textarea>
+                  <div class="invalid-feedback"
+                    *ngIf="submitted && vendorForm.get('vendor_PermanentAddress')?.hasError('required')">Permanent
+                    Address is required</div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label">State <span class="text-danger">*</span></label>
+                    <ng-select [items]="permStateList" bindLabel="name" bindValue="value"
+                      formControlName="vendor_FKPermStateId" (change)="onStateChange($event?.value, true)"
+                      [ngClass]="{'is-invalid': submitted && vendorForm.get('vendor_FKPermStateId')?.invalid}"></ng-select>
+                    <div class="invalid-feedback d-block"
+                      *ngIf="submitted && vendorForm.get('vendor_FKPermStateId')?.hasError('required')">State is
+                      required</div>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label">City <span class="text-danger">*</span></label>
+                    <ng-select [items]="permCityList" bindLabel="name" bindValue="value"
+                      formControlName="vendor_FKPermCityId"
+                      [ngClass]="{'is-invalid': submitted && vendorForm.get('vendor_FKPermCityId')?.invalid}"></ng-select>
+                    <div class="invalid-feedback d-block"
+                      *ngIf="submitted && vendorForm.get('vendor_FKPermCityId')?.hasError('required')">City is required
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bank & Identity Details -->
+            <div class="bg-primary rounded-1 page-seperator mb-3 mt-4">
+              <p class="p-1 text-white ms-4 mb-0">Bank & Identity Details <span
+                  class="fw-normal small">(Optional)</span></p>
+            </div>
+            <div class="row mb-3">
+              <div class="col-md-4 mb-3">
+                <label class="form-label">Bank Name</label>
+                <ng-select [items]="bankList" bindLabel="name" bindValue="value"
+                  formControlName="vendor_FKBankId"></ng-select>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label class="form-label">Account No</label>
+                <input type="text" class="form-control" formControlName="vendor_AccountNo"
+                  [ngClass]="{'is-invalid': vendorForm.get('vendor_AccountNo')?.invalid}">
+                <div class="invalid-feedback" *ngIf="vendorForm.get('vendor_AccountNo')?.hasError('pattern')">Enter
+                  valid Account No (9-18 digits)</div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label class="form-label">IFSC Code</label>
+                <input type="text" class="form-control" formControlName="vendor_IFSCCode"
+                  style="text-transform: uppercase;"
+                  [ngClass]="{'is-invalid': vendorForm.get('vendor_IFSCCode')?.invalid}">
+                <div class="invalid-feedback" *ngIf="vendorForm.get('vendor_IFSCCode')?.hasError('pattern')">Enter valid
+                  IFSC Code (e.g., SBIN0123456)</div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label class="form-label">PAN Number</label>
+                <input type="text" class="form-control" formControlName="vendor_PanNo"
+                  style="text-transform: uppercase;"
+                  [ngClass]="{'is-invalid': vendorForm.get('vendor_PanNo')?.invalid}">
+                <div class="invalid-feedback" *ngIf="vendorForm.get('vendor_PanNo')?.hasError('pattern')">Enter valid
+                  PAN Number (e.g., ABCDE1234F)</div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label class="form-label">Aadhar Number</label>
+                <input type="text" class="form-control" formControlName="vendor_AaddharNo"
+                  [ngClass]="{'is-invalid': vendorForm.get('vendor_AaddharNo')?.invalid}">
+                <div class="invalid-feedback" *ngIf="vendorForm.get('vendor_AaddharNo')?.hasError('pattern')">Enter
+                  valid 12-digit Aadhar Number</div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label class="form-label">GST Number</label>
+                <input type="text" class="form-control" formControlName="vendor_GSTNo"
+                  style="text-transform: uppercase;"
+                  [ngClass]="{'is-invalid': vendorForm.get('vendor_GSTNo')?.invalid}">
+                <div class="invalid-feedback" *ngIf="vendorForm.get('vendor_GSTNo')?.hasError('pattern')">Enter valid
+                  GST Number</div>
+              </div>
+            </div>
+
+            <!-- Service Configuration -->
+            <div class="bg-primary rounded-1 page-seperator mb-3 mt-4">
+              <p class="p-1 text-white ms-4 mb-0">Service Details</p>
+            </div>
+            <div class="row mb-3">
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Service Type</label>
+                <ng-select [items]="serviceTypeList" bindLabel="name" bindValue="value"
+                  formControlName="vendor_ServiceType" placeholder="-- Select Service Type --"></ng-select>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">
+                  {{ vendorForm.get('vendor_ServiceType')?.value === 'Percentage of CTC (%)' ? 'Service Percentage (%)' : (vendorForm.get('vendor_ServiceType')?.value === 'Fixed Amount' ? 'Fixed Service Amount (₹)' : 'Service Value') }}
+                </label>
+                <input type="number" step="0.01" class="form-control" formControlName="vendor_ServiceTax"
+                  [placeholder]="vendorForm.get('vendor_ServiceType')?.value === 'Percentage of CTC (%)' ? 'Enter percentage (e.g. 10)' : (vendorForm.get('vendor_ServiceType')?.value === 'Fixed Amount' ? 'Enter fixed amount (e.g. 5000)' : 'Enter value')">
+              </div>
+            </div>
+
+            <!-- Tax Details -->
+            <div class="bg-primary rounded-1 page-seperator mb-3 mt-4">
+              <p class="p-1 text-white ms-4 mb-0">Tax Configuration</p>
+            </div>
+            <div class="row mb-3">
+              <div class="col-md-6 mb-3 d-flex gap-3 align-items-center">
+                <div class="form-check mt-2">
+                  <input class="form-check-input" type="checkbox" formControlName="vendor_IsGSTApplicable"
+                    id="gstCheck">
+                  <label class="form-check-label fw-bold" for="gstCheck">Is GST Applicable?</label>
+                </div>
+                <div class="flex-grow-1" *ngIf="vendorForm.get('vendor_IsGSTApplicable')?.value">
+                  <input type="number" class="form-control" formControlName="vendor_GSTRate" placeholder="GST %">
+                </div>
+              </div>
+              <div class="col-md-6 mb-3 d-flex gap-3 align-items-center">
+                <div class="form-check mt-2">
+                  <input class="form-check-input" type="checkbox" formControlName="vendor_IsTDSApplicable"
+                    id="tdsCheck">
+                  <label class="form-check-label fw-bold" for="tdsCheck">Is TDS Applicable?</label>
+                </div>
+                <div class="flex-grow-1" *ngIf="vendorForm.get('vendor_IsTDSApplicable')?.value">
+                  <input type="number" class="form-control" formControlName="vendor_TaxTDSRate" placeholder="TDS %">
+                </div>
+              </div>
+            </div>
+
+            <div class="text-end border-top pt-3">
+              <button type="submit" class="btn btn-primary px-4" [disabled]="isSaving">
+                <span *ngIf="isSaving" class="spinner-border spinner-border-sm me-2"></span>
+                {{ isSaving ? 'Saving...' : 'Save & Next' }} <i class="bi bi-arrow-right ms-1" *ngIf="!isSaving"></i>
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- TAB 2: DOCUMENT UPLOAD -->
+        <div *ngIf="activeTab === 2">
+          <div class="bg-primary rounded-1 page-seperator mb-3">
+            <p class="p-1 text-white ms-4 mb-0">Upload Vendor Documents</p>
+          </div>
+          <div class="row justify-content-center">
+            <div class="col-md-10">
+
+              <div class="card border mb-4 shadow-sm">
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <label class="form-label fw-bold">Document Type <span class="text-danger">*</span></label>
+                      <ng-select [items]="vendorDocumentTypeList" bindLabel="name" bindValue="value"
+                        [(ngModel)]="selectedDocTypeCodeId" placeholder="-- Select Document Type --">
+                      </ng-select>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="drop-zone d-flex flex-column justify-content-center align-items-center" (dragover)="onDragOver($event)" (drop)="onDropFiles($event)"
+                        (click)="fileInput.click()">
+                        <div class="d-flex align-items-center mb-1">
+                          <i class="bi bi-cloud-arrow-up fs-4 me-2"></i>
+                          <p class="mb-0 fs-6">Drag & drop files here or click to browse</p>
+                        </div>
+                        <p class="text-muted small mb-0">Supports PDF, JPG, PNG, DOCX (Max 5MB per file)</p>
+                        <input #fileInput type="file" multiple hidden (change)="onFilesSelected($event)">
+                      </div>
+                    </div>
+                  </div>
+
+
+
+                  <!-- Selected Files Preview -->
+                  <div class="mt-4" *ngIf="selectedFiles.length > 0">
+                    <small class="mb-3 fw-bold">Files ready to upload ({{ selectedFiles.length }})</small>
+                    <ul class="list-group mb-3">
+                      <li class="list-group-item d-flex justify-content-between align-items-center"
+                        *ngFor="let f of selectedFiles; let i=index">
+                        <div class="d-flex align-items-center">
+                          <i class="bi bi-file-earmark-text text-primary me-2 fs-5"></i>
+                          <span>{{ f.name }} <small class="text-muted ms-2">({{(f.size/1024).toFixed(1)}}
+                              KB)</small></span>
+                        </div>
+                        <button class="btn btn-sm btn-outline-danger" (click)="removeSelectedFile(i)">
+                          <i class="bi bi-x-lg"></i>
+                        </button>
+                      </li>
+                    </ul>
+
+                    <div class="text-end">
+                      <button class="btn btn-success px-4" (click)="uploadAllFiles()"
+                        [disabled]="!selectedDocTypeCodeId || isUploading">
+                        <span *ngIf="isUploading" class="spinner-border spinner-border-sm me-2"></span>
+                        <i class="bi bi-upload me-1" *ngIf="!isUploading"></i> Upload Documents
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Uploaded Documents Table -->
+              <div class="bg-primary rounded-1 page-seperator mb-3 mt-5">
+                <p class="p-1 text-white ms-4 mb-0">Uploaded Documents</p>
+              </div>
+              <div class="table-responsive">
+                <table class="table table-bordered table-hover align-middle">
+                  <thead class="table-light">
+                    <tr>
+                      <th width="5%">Sr.No.</th>
+                      <th width="20%">Document Type</th>
+                      <th width="35%">File Name</th>
+                      <th width="15%">Size</th>
+                      <th width="15%">Date</th>
+                      <th width="10%" class="text-center">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngIf="uploadedDocuments.length === 0">
+                      <td colspan="6" class="text-center py-4 text-muted">No documents uploaded yet.</td>
+                    </tr>
+                    <tr *ngFor="let doc of uploadedDocuments; let i=index">
+                      <td>{{ i + 1 }}</td>
+                      <td><span class="badge bg-primary bg-opacity-10 text-white">{{ doc.docTypeName }}</span></td>
+                      <td>{{ doc.originalFileName }}</td>
+                      <td>{{ (doc.fileSize/1024).toFixed(1) }} KB</td>
+                      <td>{{ doc.uploadedDate | date:'dd-MMM-yyyy' }}</td>
+                      <td class="text-center">
+                        <button class="btn btn-sm btn-outline-primary me-2" (click)="viewDocument(doc)" title="View">
+                          <i class="bi bi-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" (click)="deleteDocument(doc.pk_docId)"
+                          title="Delete">
+                          <i class="bi bi-trash"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- View Document Modal -->
+<div class="modal fade my-5 my-lg-3" id="viewDocumentModal" tabindex="-1" aria-labelledby="viewDocumentModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white py-2">
+        <h5 class="modal-title" id="viewDocumentModalLabel">View Document</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-0" style="height: 80vh;">
+        <iframe *ngIf="selectedDocument?.fileUrl" [src]="selectedDocument.fileUrl" class="w-100 h-100 border-0">
+        </iframe>
+        <div *ngIf="!selectedDocument?.fileUrl" class="d-flex justify-content-center align-items-center h-100">
+          <p class="text-muted">Loading document...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

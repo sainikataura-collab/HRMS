@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
@@ -16,7 +16,7 @@ import {
   templateUrl: './task-detail-drawer.component.html',
   styleUrls: ['./task-detail-drawer.component.scss']
 })
-export class TaskDetailDrawerComponent implements OnChanges, OnDestroy {
+export class TaskDetailDrawerComponent implements OnInit, OnChanges, OnDestroy {
   @Input() isOpen = false;
   @Input() taskId: number | null = null;
 
@@ -39,7 +39,15 @@ export class TaskDetailDrawerComponent implements OnChanges, OnDestroy {
     { id: 'ON HOLD', label: 'ON HOLD' }
   ];
 
-  constructor(public taskManagerService: TaskManagerService) {}
+  constructor(private el: ElementRef, public taskManagerService: TaskManagerService) {}
+
+  ngOnInit(): void {
+    // Append host directly to document.body to escape any parent stacking contexts (.section, .main-content)
+    // without altering global application stylesheets.
+    if (typeof document !== 'undefined' && document.body) {
+      document.body.appendChild(this.el.nativeElement);
+    }
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['isOpen']) {
@@ -133,7 +141,9 @@ export class TaskDetailDrawerComponent implements OnChanges, OnDestroy {
   }
 
   onClose(): void {
-    document.body.classList.remove('task-drawer-open');
+    if (typeof document !== 'undefined') {
+      document.body.classList.remove('task-drawer-open');
+    }
     this.task = null;
     this.history = [];
     this.errorMessage = '';
@@ -141,8 +151,55 @@ export class TaskDetailDrawerComponent implements OnChanges, OnDestroy {
     this.closed.emit();
   }
 
+  isDownloadingAttachment = false;
+
+  hasAttachment(): boolean {
+    if (!this.task) return false;
+    const t = this.task as any;
+    return !!(t.attachmentFileName || t.attachmentName || t.attachmentUrl || t.attachmentPath || t.hasAttachments);
+  }
+
+  getAttachmentName(): string {
+    if (!this.task) return 'Attachment';
+    const t = this.task as any;
+    return t.attachmentFileName || t.attachmentName || 'Attachment';
+  }
+
+  downloadAttachment(): void {
+    if (!this.task) return;
+    const t = this.task as any;
+    const path = t.attachmentUrl || t.attachmentPath || t.attachmentFileName || t.attachmentName;
+    if (!path) return;
+
+    this.isDownloadingAttachment = true;
+    this.taskManagerService.downloadTaskAttachment(path).subscribe({
+      next: (blob: Blob) => {
+        const downloadName = this.getAttachmentName();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = downloadName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+        this.isDownloadingAttachment = false;
+      },
+      error: (err) => {
+        console.error('Failed to download attachment', err);
+        this.errorMessage = 'Could not download attachment from server.';
+        this.isDownloadingAttachment = false;
+      }
+    });
+  }
+
   ngOnDestroy(): void {
-    document.body.classList.remove('task-drawer-open');
+    if (typeof document !== 'undefined') {
+      document.body.classList.remove('task-drawer-open');
+      if (this.el?.nativeElement && this.el.nativeElement.parentNode === document.body) {
+        document.body.removeChild(this.el.nativeElement);
+      }
+    }
   }
 }
 

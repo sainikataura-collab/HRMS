@@ -1,0 +1,440 @@
+// ============================================================================
+// CJ DARCL Recruitment Architecture: Step 2 Manpower Requisition Wizard
+// Strictly Component-Scoped Styles (Global styles.scss untouched)
+// ============================================================================
+
+.ats-wizard-page {
+  font-family: "Work Sans", sans-serif !important;
+  background-color: #f6f8fa !important;
+  padding: 0.6rem 0.85rem;
+  font-size: 11.5px !important;
+
+  .header-strip {
+    border-color: #e2e8f0 !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+
+    .page-title {
+      font-size: 13px;
+    }
+
+    .btn-back {
+      width: 24px;
+      height: 24px;
+      background-color: #f1f5f9;
+      font-size: 11px;
+      transition: all 0.15s;
+      &:hover {
+        background-color: #e2e8f0;
+      }
+    }
+  }
+
+  // Primary Corporate Action Button (#3080e8)
+  .btn-primary-action {
+    font-size: 11.5px !important;
+    padding: 3px 12px !important;
+    background-color: #3080e8 !important;
+    border: 1px solid #3080e8 !important;
+    color: #ffffff !important;
+    border-radius: 4px !important;
+    box-shadow: 0 2px 6px #acb5f6 !important;
+    transition: all 0.15s ease-in-out;
+    &:hover {
+      background-color: #2b2b41 !important;
+      border-color: #2b2b41 !important;
+      color: #ffffff !important;
+    }
+  }
+
+  .badge-chip {
+    font-size: 9.5px;
+    font-weight: 600;
+    padding: 1px 6px;
+    border-radius: 3px;
+  }
+
+  // Stepper Strip with Bold Directional Arrows (2 Steps)
+  .stepper-strip {
+    border-color: #e2e8f0 !important;
+
+    .step-col {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      z-index: 2;
+
+      .step-icon {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 10px;
+        background-color: #e2e8f0;
+        color: #475569;
+        border: 1px solid #cbd5e1;
+        transition: all 0.15s;
+      }
+
+      .step-info {
+        .step-main {
+          display: block;
+          font-size: 11px;
+          font-weight: 600;
+          color: #475569;
+          line-height: 1.1;
+        }
+        .step-sub {
+          font-size: 9.5px;
+          color: #94a3b8;
+        }
+      }
+
+      &:hover {
+        .step-info .step-main {
+          color: #3080e8;
+        }
+      }
+
+      &.active {
+        .step-icon {
+          background-color: #3080e8 !important;
+          color: #ffffff !important;
+          border-color: #3080e8 !important;
+        }
+        .step-info .step-main {
+          color: #3080e8;
+          font-weight: 700;
+        }
+      }
+
+      &.done {
+        .step-icon {
+          background-color: #3080e8 !important;
+          color: #ffffff !important;
+          border-color: #3080e8 !important;
+        }
+      }
+    }
+
+    // Bold Arrow Box Between Steps
+    .step-arrow-box {
+      display: flex;
+      align-items: center;
+      flex-grow: 1;
+      margin: 0 0.85rem;
+
+      .arrow-track {
+        height: 2px;
+        flex-grow: 1;
+        background-color: #cbd5e1;
+        transition: background-color 0.2s;
+        &.active {
+          background-color: #3080e8;
+        }
+      }
+
+      .arrow-head {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background-color: #cbd5e1;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        margin-left: -2px;
+        transition: background-color 0.2s;
+        &.active {
+          background-color: #3080e8;
+        }
+      }
+
+      &:hover {
+        .arrow-track, .arrow-head {
+          background-color: #3080e8;
+        }
+      }
+    }
+  }
+
+  // Bento Box Design
+  .bento-box {
+    border-color: #e2e8f0 !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+
+    .bento-box-header {
+      background-color: #f8fafc !important;
+      border-bottom: 1px solid #e2e8f0 !important;
+
+      .badge-mandatory {
+        font-size: 9.5px;
+        color: #dc2626;
+        font-weight: 600;
+      }
+    }
+  }
+
+  // Form Fields - Clean Compact Proportions
+  .form-label-mini {
+    display: block;
+    font-size: 10.5px;
+    font-weight: 600;
+    color: #475569 !important;
+    margin-bottom: 0.15rem;
+  }
+
+  .form-control-sm,
+  .form-select-sm {
+    height: 28px !important;
+    background-color: #ffffff !important;
+    color: #0f172a !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 4px !important;
+    font-size: 11px !important;
+    font-weight: 500 !important;
+
+    &:focus {
+      background-color: #ffffff !important;
+      color: #0f172a !important;
+      border-color: #0051d5 !important;
+      box-shadow: 0 0 0 2px rgba(0, 81, 213, 0.15) !important;
+      outline: none !important;
+    }
+  }
+
+  .input-group-sm {
+    display: flex !important;
+    align-items: stretch !important;
+
+    .input-group-text {
+      background-color: #f1f5f9 !important;
+      color: #475569 !important;
+      border-color: #cbd5e1 !important;
+      font-size: 10px !important;
+      padding: 0 8px !important;
+      height: 28px !important;
+      min-height: 28px !important;
+      max-height: 28px !important;
+      line-height: 26px !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      box-sizing: border-box !important;
+    }
+
+    .form-control {
+      height: 28px !important;
+      min-height: 28px !important;
+      max-height: 28px !important;
+      font-size: 11px !important;
+      padding: 0 8px !important;
+      line-height: 26px !important;
+      box-sizing: border-box !important;
+    }
+  }
+
+  textarea.form-control {
+    height: auto !important;
+    padding: 0.3rem 0.45rem !important;
+    font-size: 11px !important;
+  }
+
+  // Segmented Buttons for Type of Hiring
+  .btn-group {
+    display: flex !important;
+    width: 100% !important;
+
+    .btn-outline-primary {
+      flex: 1 1 50% !important;
+      width: 50% !important;
+      height: 28px !important;
+      padding: 0 8px !important;
+      font-size: 11px !important;
+      white-space: nowrap !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      border-color: #cbd5e1 !important;
+      color: #475569 !important;
+      background-color: #ffffff !important;
+      transition: all 0.15s ease-in-out;
+
+      &:hover {
+        background-color: #eff6ff !important;
+        color: #3080e8 !important;
+        border-color: #bfdbfe !important;
+      }
+
+      &.active {
+        background-color: #3080e8 !important;
+        border-color: #3080e8 !important;
+        color: #ffffff !important;
+      }
+    }
+  }
+
+  .avatar-mini {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    font-weight: 700;
+  }
+
+  .pick-card {
+    background-color: #ffffff;
+    transition: all 0.15s;
+    &:hover {
+      border-color: #3080e8 !important;
+    }
+  }
+
+  // Live Tag Pills in Live Preview Hero
+  .live-tag {
+    font-size: 9.5px;
+    background-color: rgba(255, 255, 255, 0.15);
+    color: #ffffff !important;
+    padding: 2px 7px;
+    border-radius: 3px;
+    font-weight: 600;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .cursor-pointer {
+    cursor: pointer;
+  }
+}
+
+
+// ── Universal ATS Dropdown Standard (Matches Other Pages / Employee Master) ──
+::ng-deep .custom-ng-select {
+  font-family: "Work Sans", sans-serif !important;
+  font-size: 11px !important;
+
+  .ng-select-container {
+    min-height: 28px !important;
+    height: 28px !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 4px !important;
+    background-color: #ffffff !important;
+    padding: 0 6px !important;
+    font-size: 11px !important;
+    color: #1e293b !important;
+    box-shadow: none !important;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+
+    &:hover {
+      border-color: #94a3b8 !important;
+    }
+  }
+
+  &.ng-select-opened > .ng-select-container {
+    border-color: #3080e8 !important;
+    box-shadow: 0 0 0 2px rgba(48, 128, 232, 0.12) !important;
+  }
+
+  &.ng-select-focused:not(.ng-select-opened) > .ng-select-container {
+    border-color: #3080e8 !important;
+  }
+
+  .ng-value-container {
+    padding: 0 !important;
+    align-items: center !important;
+
+    .ng-placeholder {
+      color: #94a3b8 !important;
+      font-size: 11px !important;
+      line-height: 26px !important;
+      top: 0 !important;
+    }
+
+    .ng-value {
+      font-size: 11px !important;
+      color: #0f172a !important;
+      line-height: 26px !important;
+    }
+
+    .ng-input {
+      top: 0 !important;
+      padding-top: 0 !important;
+      padding-bottom: 0 !important;
+      > input {
+        font-size: 11px !important;
+        font-family: "Work Sans", sans-serif !important;
+      }
+    }
+  }
+
+  .ng-arrow-wrapper {
+    width: 18px !important;
+    padding-right: 2px !important;
+    .ng-arrow {
+      border-color: #64748b transparent transparent !important;
+      border-width: 4px 4px 0 !important;
+    }
+  }
+
+  .ng-clear-wrapper {
+    font-size: 13px !important;
+    color: #94a3b8 !important;
+    padding-right: 4px !important;
+    &:hover {
+      color: #ef4444 !important;
+    }
+  }
+
+  .ng-dropdown-panel {
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 4px !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08) !important;
+    font-size: 11px !important;
+    background: #ffffff !important;
+    z-index: 1050 !important;
+
+    .ng-dropdown-panel-items {
+      max-height: 220px !important;
+
+      .ng-option {
+        padding: 5px 8px !important;
+        font-size: 11px !important;
+        color: #1e293b !important;
+        line-height: 1.3 !important;
+
+        .ng-option-label,
+        span {
+          color: #1e293b !important;
+          font-size: 11px !important;
+        }
+
+        &.ng-option-highlighted {
+          background-color: #eff6ff !important;
+          color: #3080e8 !important;
+
+          .ng-option-label,
+          span {
+            color: #3080e8 !important;
+          }
+        }
+
+        &.ng-option-selected {
+          background-color: #dbeafe !important;
+          color: #3080e8 !important;
+          font-weight: 600 !important;
+
+          .ng-option-label,
+          span {
+            color: #3080e8 !important;
+            font-weight: 600 !important;
+          }
+        }
+      }
+    }
+  }
+}

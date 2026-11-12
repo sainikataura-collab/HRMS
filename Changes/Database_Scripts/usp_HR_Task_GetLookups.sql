@@ -1,4 +1,4 @@
-﻿-- ======================================================================================
+-- ======================================================================================
 -- OBJECT: dbo.usp_HR_Task_GetLookups
 -- TYPE: SQL_STORED_PROCEDURE
 -- EXTRACTED LIVE FROM DATABASE: HRBook
@@ -136,7 +136,7 @@ BEGIN
                 END, g.EntryDate DESC
             ) AS rn
         FROM dbo.LSP_Master_General g
-        WHERE g.CodeTypeId = 24
+        WHERE g.CodeTypeId = 25
           AND g.IsActive = 1
           AND (
               @ResolvedCompanyId IS NULL

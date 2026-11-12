@@ -713,6 +713,48 @@ namespace HRMSWebAPI.Controllers
             }
         }
 
+        [HttpGet("attachment/{fileName}")]
+        [HttpGet("download-attachment")]
+        public async Task<IActionResult> GetTaskAttachment(string? fileName = null, [FromQuery] string? path = null)
+        {
+            var rawInput = !string.IsNullOrWhiteSpace(fileName) ? fileName : path;
+            if (string.IsNullOrWhiteSpace(rawInput))
+                return BadRequest(new { isSuccess = false, message = "File name or path parameter is required." });
+
+            var cleanFileName = Path.GetFileName(rawInput.Trim().Replace('\\', '/'));
+            var uploadsDir = Path.Combine(Directory.GetCurrentDirectory(), "Uploads", "Tasks");
+            var fullPath = Path.Combine(uploadsDir, cleanFileName);
+
+            if (!System.IO.File.Exists(fullPath))
+            {
+                return NotFound(new { isSuccess = false, message = "Attachment file not found on server." });
+            }
+
+            var memory = new MemoryStream();
+            using (var stream = new FileStream(fullPath, FileMode.Open, FileAccess.Read))
+            {
+                await stream.CopyToAsync(memory);
+            }
+            memory.Position = 0;
+
+            var ext = Path.GetExtension(cleanFileName).ToLowerInvariant();
+            var mimeType = ext switch
+            {
+                ".pdf" => "application/pdf",
+                ".jpg" or ".jpeg" => "image/jpeg",
+                ".png" => "image/png",
+                ".gif" => "image/gif",
+                ".doc" => "application/msword",
+                ".docx" => "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                ".xls" => "application/vnd.ms-excel",
+                ".xlsx" => "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                ".txt" => "text/plain",
+                _ => "application/octet-stream"
+            };
+
+            return File(memory, mimeType, cleanFileName);
+        }
+
         [HttpPost("process-recurring")]
         public async Task<IActionResult> ProcessRecurring([FromBody] ProcessRecurringRequestDto? req = null)
         {

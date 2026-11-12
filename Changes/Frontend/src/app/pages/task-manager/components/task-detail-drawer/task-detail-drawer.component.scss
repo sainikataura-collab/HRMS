@@ -1,7 +1,12 @@
 :host {
   display: block;
-  position: relative;
-  z-index: 99999999 !important;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  z-index: 100050 !important;
+  pointer-events: none;
 }
 
 .drawer-backdrop {
@@ -12,9 +17,10 @@
   height: 100vh;
   background-color: rgba(15, 23, 42, 0.55);
   backdrop-filter: blur(3px);
-  z-index: 99999990 !important;
+  z-index: 100050 !important;
   display: block !important;
   opacity: 1 !important;
+  pointer-events: auto;
 }
 
 .drawer-panel {
@@ -26,7 +32,7 @@
   height: 100vh;
   background: #ffffff;
   box-shadow: -8px 0 32px rgba(15, 23, 42, 0.22);
-  z-index: 99999999 !important;
+  z-index: 100060 !important;
   display: flex !important;
   flex-direction: column;
   opacity: 1 !important;
@@ -34,6 +40,7 @@
   font-family: "Work Sans", sans-serif !important;
   animation: slideInRight 0.22s cubic-bezier(0.16, 1, 0.3, 1);
   border-left: 1px solid #cbd5e1;
+  pointer-events: auto;
 }
 
 @keyframes slideInRight {

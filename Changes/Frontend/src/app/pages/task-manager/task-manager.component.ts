@@ -218,7 +218,7 @@ export class TaskManagerComponent implements OnInit, OnDestroy {
     private toastService: TaskToastService,
     private signalRService: TaskSignalRService,
     private route: ActivatedRoute
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.loadLookups();

@@ -1,0 +1,1306 @@
+// ── Typography ─────────────────────────────────────────────────────────────
+.small {
+  font-size: 12px;
+}
+
+// ── App-First Layout System ───────────────────────────────────────────────
+.app-header-section {
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+
+  .app-brand-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: #eff6ff;
+    color: #0051d5;
+    border: 1px solid #dbeafe;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .app-title {
+    font-size: 15px;
+    letter-spacing: -0.2px;
+    color: #0f172a;
+    line-height: 1.2;
+  }
+
+  .app-subtitle {
+    font-size: 11px;
+    color: #64748b;
+  }
+
+  .app-partner-select {
+    min-width: 180px;
+    max-width: 260px;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #0f172a;
+  }
+
+  .app-refresh-btn {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+  }
+}
+
+// ── Portal Tab Buttons (Vibrant blue on hover instead of dull grey) ─────────
+.tab-btn {
+  font-size: 11.5px !important;
+  font-weight: 600 !important;
+  border-radius: 4px !important;
+  transition: all 0.18s ease-in-out !important;
+
+  &.btn-outline-secondary {
+    background-color: #ffffff !important;
+    border-color: #cbd5e1 !important;
+    color: #334155 !important;
+
+    &:hover,
+    &:focus {
+      background-color: #3080e8 !important;
+      border-color: #3080e8 !important;
+      color: #ffffff !important;
+      box-shadow: 0 2px 6px rgba(48, 128, 232, 0.25) !important;
+
+      i {
+        color: #ffffff !important;
+      }
+      .badge {
+        background-color: #ffffff !important;
+        color: #3080e8 !important;
+      }
+    }
+  }
+
+  &.btn-primary {
+    background-color: #3080e8 !important;
+    border-color: #3080e8 !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 6px rgba(48, 128, 232, 0.2) !important;
+  }
+}
+
+// ── 1. 2x2 Metric Cards Grid (App Screen Spec) ────────────────────────────
+.app-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+
+  @media (min-width: 768px) {
+    gap: 12px;
+  }
+}
+
+.app-metric-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 10px 12px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  user-select: none;
+
+  &.border-start-primary {
+    border-left: 3.5px solid #0051d5 !important;
+  }
+  &.border-start-info {
+    border-left: 3.5px solid #0284c7 !important;
+  }
+  &.border-start-warning {
+    border-left: 3.5px solid #d97706 !important;
+  }
+  &.border-start-success {
+    border-left: 3.5px solid #16a34a !important;
+  }
+
+  &.clickable-card {
+    cursor: pointer;
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(22, 163, 74, 0.12);
+      border-color: #86efac;
+    }
+  }
+
+  .metric-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2px;
+  }
+
+  .metric-count {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    line-height: 1.1;
+  }
+
+  .metric-icon-box {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+
+  .metric-label {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-top: 2px;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .metric-sub {
+    font-size: 9.5px;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 1px;
+  }
+}
+
+// ── 2. Two App Buttons Grid ───────────────────────────────────────────────
+.app-buttons-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+
+  @media (min-width: 768px) {
+    gap: 12px;
+  }
+}
+
+.app-nav-btn {
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 12.5px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease-in-out;
+  border: 1.5px solid transparent;
+  width: 100%;
+  white-space: nowrap;
+
+  &.active-jobs-btn {
+    background-color: #3080e8;
+    color: #ffffff !important;
+    border-color: #3080e8;
+    box-shadow: 0 2px 6px #acb5f6;
+
+    &:hover {
+      background-color: #2b2b41;
+      border-color: #2b2b41;
+    }
+  }
+
+  &.active-passed-btn {
+    background-color: #16a34a;
+    color: #ffffff !important;
+    border-color: #16a34a;
+    box-shadow: 0 3px 8px rgba(22, 163, 74, 0.25);
+
+    &:hover {
+      background-color: #15803d;
+    }
+  }
+
+  &.inactive-app-btn {
+    background-color: #ffffff;
+    color: #334155 !important;
+    border-color: #cbd5e1;
+
+    &:hover {
+      background-color: #f8fafc;
+      color: #0051d5 !important;
+      border-color: #93c5fd;
+    }
+  }
+
+  .app-count-badge {
+    font-size: 11px;
+    padding: 2.5px 8px;
+    border-radius: 20px;
+    font-weight: 700;
+
+    &.badge-on-active {
+      background-color: #ffffff;
+      color: #0051d5;
+    }
+    &.badge-on-inactive {
+      background-color: #f1f5f9;
+      color: #334155;
+      border: 1px solid #cbd5e1;
+    }
+  }
+}
+
+// ── 3. Jobs Filter Strip ──────────────────────────────────────────────────
+.app-filter-strip {
+  background: #ffffff;
+  padding: 8px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+
+// ── 4. Phone-Friendly Small Job Cards ─────────────────────────────────────
+.app-jobs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.app-job-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 12px 14px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+
+  &:hover {
+    border-color: #93c5fd;
+    box-shadow: 0 4px 14px rgba(0, 81, 213, 0.08);
+    transform: translateY(-1px);
+  }
+
+  .job-card-top-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+
+  .mrf-badge {
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    color: #0051d5;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    padding: 3px 8px;
+  }
+
+  .sourced-badge {
+    font-size: 10.5px;
+    font-weight: 600;
+    padding: 3px 8px;
+  }
+
+  .job-card-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #0f172a;
+    letter-spacing: -0.2px;
+    line-height: 1.3;
+  }
+
+  .job-card-meta-chips {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+
+    .meta-chip {
+      font-size: 11px;
+      color: #475569;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      padding: 2.5px 8px;
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+      max-width: 100%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  .job-card-actions-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding-top: 10px;
+    border-top: 1px solid #f1f5f9;
+    margin-top: 6px;
+
+    .btn-see-details {
+      font-size: 11.5px;
+      font-weight: 600;
+      color: #334155;
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 5px 12px;
+      display: inline-flex;
+      align-items: center;
+      transition: all 0.15s ease;
+
+      &:hover {
+        background: #eff6ff;
+        color: #0051d5;
+        border-color: #93c5fd;
+      }
+    }
+
+    .btn-add-candidate {
+      font-size: 11.5px;
+      font-weight: 600;
+      background: #3080e8;
+      color: #ffffff;
+      border: 1px solid #3080e8;
+      border-radius: 6px;
+      padding: 5px 14px;
+      display: inline-flex;
+      align-items: center;
+      box-shadow: 0 2px 6px #acb5f6;
+      transition: all 0.15s ease;
+
+      &:hover {
+        background: #2b2b41;
+        border-color: #2b2b41;
+      }
+    }
+  }
+}
+
+// ── 5. Candidate Cards List (Phone-Friendly) ──────────────────────────────
+.app-cands-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.app-cand-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 12px 14px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+  &:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+    transform: translateY(-1px);
+  }
+}
+
+// ── Stat Card Styles ────────────────────────────────────────────────────────
+.stat-card-item {
+  border-radius: 6px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+}
+
+// ── Stat Card Icon Box ────────────────────────────────────────────────────
+.icon-box {
+  font-size: 16px;
+  min-width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  border-radius: 4px;
+}
+
+// ── Tab Buttons (Matching admin_leave) ────────────────────────────────────
+.tab-btn {
+  font-size: 11px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  transition: all 0.2s ease;
+
+  &.btn-primary {
+    font-weight: 600;
+  }
+  &.btn-outline-secondary:hover {
+    background-color: #e9ecef;
+    color: #495057;
+  }
+}
+
+// ── Table Headers & Cells (Standard 11px Portal Hierarchy) ────────────────
+thead.table-light th {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: #6c757d;
+  border-bottom: 2px solid #dee2e6;
+  white-space: nowrap;
+}
+
+td {
+  font-size: 11px !important;
+  white-space: nowrap;
+  vertical-align: middle !important;
+}
+
+// ── Row Hover ─────────────────────────────────────────────────────────────
+.table-hover tbody tr:hover {
+  background-color: #f0f7ff !important;
+}
+
+// ── Badges ────────────────────────────────────────────────────────────────
+.badge {
+  font-size: 10px;
+}
+
+// ── Quick Action Button Hover ─────────────────────────────────────────────
+.btn-outline-primary:hover,
+.btn-outline-success:hover,
+.btn-outline-secondary:hover,
+.btn-outline-warning:hover {
+  color: white;
+}
+
+// ── Spin Animation for Refresh ────────────────────────────────────────────
+.spin-anim {
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+:host {
+  display: block;
+  position: relative;
+  z-index: 1050;
+}
+
+// ── Modal Backdrop & Dialog (Enterprise ATS Standard) ────────────────────
+.modal-backdrop-custom {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background: rgba(15, 23, 42, 0.65) !important;
+  backdrop-filter: blur(4px) !important;
+  display: flex !important;
+  align-items: flex-start !important; /* 🔥 Never center vertically: prevents top/bottom cutting */
+  justify-content: center !important;
+  padding: 85px 24px 45px 95px !important; /* Clears fixed navbar (75px) and fixed sidebar (65-80px) */
+
+  @media (max-width: 768px) {
+    padding: 75px 12px 25px 12px !important;
+  }
+  box-sizing: border-box !important;
+  margin: 0 !important;
+
+  .modal-dialog-custom {
+    width: 100%;
+    max-width: 690px;
+    max-height: calc(100vh - 140px) !important;
+    margin: 0 auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #cbd5e1;
+    box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.35), 0 0 0 1px rgba(15, 23, 42, 0.05);
+    overflow: hidden !important;
+    animation: modalSlideUp 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+}
+
+@keyframes modalSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modal-header-hero {
+  flex-shrink: 0 !important;
+  padding: 13px 20px;
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+
+  .job-icon-box {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: #eff6ff;
+    color: #0051d5;
+    border: 1px solid #dbeafe;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .mrf-pill {
+    background: #0051d5;
+    color: #ffffff;
+    font-size: 10.5px;
+    font-weight: 700;
+    padding: 2.5px 9px;
+    border-radius: 6px;
+    letter-spacing: 0.3px;
+  }
+
+  .pulse-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: #16a34a;
+    display: inline-block;
+  }
+
+  .job-hero-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: #0f172a;
+    letter-spacing: -0.2px;
+  }
+
+  .job-hero-meta {
+    .meta-dot {
+      color: #cbd5e1;
+      font-size: 10px;
+    }
+  }
+
+  .btn-modal-close {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+    color: #64748b;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s ease-in-out;
+    padding: 0;
+    flex-shrink: 0;
+
+    &:hover {
+      background: #f1f5f9;
+      color: #0f172a;
+      border-color: #cbd5e1;
+    }
+  }
+}
+
+.modal-body-scrollable {
+  padding: 14px 18px;
+  overflow-y: auto !important;
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  max-height: calc(100vh - 250px) !important;
+  background: #ffffff;
+}
+
+// ── Metric Cards Strip ────────────────────────────────────────────────────
+.metric-card {
+  padding: 8px 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  .metric-label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: #64748b;
+    text-transform: uppercase;
+  }
+
+  .metric-icon-small {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10.5px;
+
+    &.bg-blue-subtle { background: #eff6ff; color: #0051d5; }
+    &.bg-slate-subtle { background: #f1f5f9; color: #475569; }
+    &.bg-emerald-subtle { background: #ecfdf5; color: #16a34a; }
+    &.bg-amber-subtle { background: #fffbeb; color: #d97706; }
+  }
+
+  .metric-val {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #0f172a;
+    line-height: 1.2;
+
+    .metric-unit {
+      font-size: 10.5px;
+      font-weight: 600;
+      color: #64748b;
+    }
+  }
+}
+
+// ── Specifications Card ────────────────────────────────────────────────────
+.specs-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+
+  .specs-card-header {
+    padding: 7px 14px;
+    font-size: 10.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: #475569;
+    border-bottom: 1px solid #e2e8f0;
+    background: #f1f5f9;
+  }
+
+  .specs-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    padding: 6px 10px;
+
+    @media (max-width: 576px) {
+      grid-template-columns: 1fr;
+    }
+
+    .spec-item {
+      padding: 6px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+
+      .spec-label {
+        font-size: 10px;
+        color: #64748b;
+        font-weight: 500;
+      }
+
+      .spec-value {
+        font-size: 12px;
+        font-weight: 600;
+        color: #0f172a;
+      }
+    }
+  }
+}
+
+// ── Pipeline Stats Card ────────────────────────────────────────────────────
+.pipeline-stats-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 10px 14px;
+
+  .stat-pill {
+    padding: 8px 6px;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+    text-align: center;
+  }
+}
+
+// ── Job Description Section ────────────────────────────────────────────────
+.jd-section {
+  .jd-content-box {
+    padding: 10px 14px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 11.5px;
+    line-height: 1.5;
+    color: #334155;
+    max-height: 100px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+  }
+}
+
+// ── Modal Footer ───────────────────────────────────────────────────────────
+.modal-footer-custom {
+  flex-shrink: 0 !important;
+  padding: 10px 20px;
+  background: #ffffff;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .btn-primary-action {
+    background-color: #3080e8;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 6px;
+    padding: 6px 18px;
+    border: 1px solid #3080e8;
+    box-shadow: 0 2px 6px #acb5f6;
+    transition: all 0.15s ease-in-out;
+    display: inline-flex;
+    align-items: center;
+
+    &:hover {
+      background-color: #2b2b41 !important;
+      border-color: #2b2b41 !important;
+      color: #ffffff !important;
+      box-shadow: 0 4px 10px rgba(0, 81, 213, 0.35);
+    }
+  }
+}
+
+// ── High-Contrast Data Display & Inputs (No Fading Out) ───────────────────
+.mono-val {
+  font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
+  color: #0f172a !important;
+  font-weight: 600 !important;
+  font-size: 11.5px !important;
+  letter-spacing: 0.5px;
+}
+
+.mono-input {
+  font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
+  color: #0f172a !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.5px;
+  background-color: #ffffff !important;
+}
+
+.field-contrast {
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
+
+  &::placeholder {
+    color: #94a3b8 !important;
+    font-weight: 400 !important;
+    opacity: 1 !important;
+  }
+
+  &:focus {
+    color: #0f172a !important;
+    border-color: #0051d5 !important;
+    box-shadow: 0 0 0 0.15rem rgba(0, 81, 213, 0.2) !important;
+  }
+}
+
+// ── Button Styling (No Black Hover) ─────────────────────────────────────────
+.btn-neutral-action {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border: 1px solid #cbd5e1 !important;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 14px;
+  border-radius: 6px;
+  transition: all 0.15s ease-in-out;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  i {
+    color: #0f172a !important;
+    transition: color 0.15s ease-in-out;
+  }
+
+  &:hover {
+    background-color: #f1f5f9 !important;
+    border-color: #94a3b8 !important;
+    color: #0051d5 !important;
+
+    i {
+      color: #0051d5 !important;
+    }
+  }
+
+  &:active, &:focus {
+    background-color: #e2e8f0 !important;
+    border-color: #0051d5 !important;
+    color: #0051d5 !important;
+    box-shadow: none !important;
+
+    i {
+      color: #0051d5 !important;
+    }
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// MOBILE-ONLY FIXES (< 768px) — desktop layout is 100% untouched
+// ══════════════════════════════════════════════════════════════════════════════
+@media (max-width: 767.98px) {
+
+  // ── 0. Global — zero horizontal overflow everywhere ───────────────────────
+  :host {
+    display: block;
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  .container-fluid {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+    overflow-x: hidden !important;
+  }
+
+  section {
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+
+  // ── 1. Stat cards — ultra compact 2×2 ────────────────────────────────────
+  .row.row-cols-2 {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+
+    > .col {
+      padding: 3px 4px !important;
+    }
+  }
+
+  .card.border-start {
+    padding: 7px 8px !important;
+    border-radius: 6px !important;
+
+    // flex row inside the card
+    .d-flex.align-items-center {
+      gap: 6px !important;
+    }
+
+    .icon-box {
+      width: 24px !important;
+      height: 24px !important;
+      min-width: 24px !important;
+      font-size: 11px !important;
+      padding: 0 !important;
+      border-radius: 4px !important;
+    }
+
+    p.small {
+      font-size: 10px !important;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 80px;
+      margin-bottom: 0 !important;
+    }
+
+    .fw-bold {
+      font-size: 15px !important;
+      line-height: 1.1;
+      display: block;
+    }
+
+    // Hide sub-label (saves ~14px height per card)
+    .d-block.text-muted,
+    .d-block.text-success {
+      display: none !important;
+    }
+  }
+
+  // ── 2. Tighter row gap on stat grid ──────────────────────────────────────
+  .g-3.mb-3 {
+    --bs-gutter-x: 0.4rem;
+    --bs-gutter-y: 0.4rem;
+    margin-bottom: 6px !important;
+  }
+
+  // ── 3. Main card — no overflow ───────────────────────────────────────────
+  .card.rounded-3 {
+    border-radius: 8px !important;
+    overflow: hidden;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .card-body {
+    overflow-x: hidden;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  // ── 4. Card header — both tab buttons side-by-side, search below ──────────
+  .card-header {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 6px !important;
+    padding: 7px 8px !important;
+    overflow: hidden !important;
+    width: 100%;
+
+    // ── Tab buttons row
+    > .d-flex:first-child {
+      display: flex !important;
+      flex-wrap: nowrap !important;
+      width: 100% !important;
+      gap: 5px !important;
+      overflow: hidden;
+
+      button.tab-btn {
+        flex: 1 1 0 !important;
+        min-width: 0 !important;
+        max-width: 50% !important;
+        font-size: 9.5px !important;
+        padding: 5px 3px !important;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        text-align: center;
+        line-height: 1.3;
+        border-radius: 20px !important;
+
+        // hide icon on mobile to save space
+        i.fa-solid {
+          display: none !important;
+        }
+
+        .badge {
+          font-size: 9px !important;
+          padding: 2px 5px !important;
+          margin-left: 2px !important;
+        }
+      }
+    }
+
+    // ── Search / filter row
+    > .d-flex:last-child {
+      display: flex !important;
+      flex-wrap: nowrap !important;
+      width: 100% !important;
+      gap: 5px !important;
+      overflow: hidden;
+
+      select.form-select {
+        flex: 1 1 0 !important;
+        min-width: 0 !important;
+        width: 0 !important;
+        font-size: 11px !important;
+      }
+
+      input.form-control {
+        flex: 2 1 0 !important;
+        min-width: 0 !important;
+        width: 0 !important;
+        font-size: 11px !important;
+      }
+    }
+  }
+
+  // ── 5. Mobile Job Cards — compact ────────────────────────────────────────
+  .app-jobs-list {
+    display: flex !important;
+    flex-direction: column;
+    gap: 8px !important;
+    padding: 8px !important;
+    overflow: hidden;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .app-job-card {
+    padding: 9px 10px !important;
+    border-radius: 8px !important;
+    max-width: 100%;
+    overflow: hidden;
+    box-sizing: border-box;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06) !important;
+
+    .job-card-top-row {
+      flex-wrap: nowrap;
+      overflow: hidden;
+      margin-bottom: 4px !important;
+
+      .mrf-badge {
+        font-size: 9.5px !important;
+        padding: 2px 7px !important;
+        max-width: 110px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        flex-shrink: 0;
+      }
+
+      .sourced-badge {
+        font-size: 9px !important;
+        padding: 2px 6px !important;
+        flex-shrink: 0;
+      }
+    }
+
+    .job-card-title {
+      font-size: 12px !important;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+      margin-bottom: 4px !important;
+    }
+
+    .job-card-meta-chips {
+      gap: 3px !important;
+      overflow: hidden;
+
+      .meta-chip {
+        font-size: 9.5px !important;
+        padding: 2px 6px !important;
+        max-width: 110px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+
+    .job-card-actions-row {
+      gap: 5px !important;
+      padding-top: 6px !important;
+      margin-top: 4px !important;
+      overflow: hidden;
+
+      .btn-see-details,
+      .btn-add-candidate {
+        flex: 1 1 0 !important;
+        min-width: 0 !important;
+        justify-content: center;
+        font-size: 10.5px !important;
+        padding: 5px 6px !important;
+        white-space: nowrap;
+        overflow: hidden;
+        border-radius: 6px !important;
+      }
+    }
+  }
+
+  // ── 6. py-2 container — tighter on mobile ────────────────────────────────
+  .container-fluid.py-2 {
+    padding-top: 6px !important;
+    padding-bottom: 6px !important;
+  }
+}
+
+// ── Job Filter & Sort Modal ────────────────────────────────────────────────
+.filter-modal-backdrop {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+  background: rgba(15, 23, 42, 0.65) !important;
+  backdrop-filter: blur(3px) !important;
+  z-index: 100000 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 20px !important;
+  box-sizing: border-box !important;
+}
+
+.filter-modal-sheet {
+  background: #ffffff;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 375px;
+  box-shadow: 0 20px 45px -12px rgba(15, 23, 42, 0.25), 0 0 0 1px rgba(15, 23, 42, 0.08);
+  animation: filterModalPop 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+  box-sizing: border-box;
+  margin: auto;
+}
+
+@keyframes filterModalPop {
+  from { transform: scale(0.96) translateY(8px); opacity: 0; }
+  to { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+.filter-header-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: #eff6ff;
+  color: #0051d5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  flex-shrink: 0;
+  margin-right: 10px;
+}
+
+.modal-close-btn {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  font-size: 11px;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: #e2e8f0;
+    color: #0f172a;
+  }
+}
+
+.filter-group-container {
+  border: 1px solid #e2e8f0;
+  border-radius: 9px;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.filter-row-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 13px;
+  background: #ffffff;
+  border-bottom: 1px solid #f1f5f9;
+  cursor: pointer;
+  transition: background 0.12s ease;
+  user-select: none;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background: #f8fafc;
+  }
+
+  &.is-selected {
+    background: #eff6ff;
+
+    .item-icon-box {
+      background: #0051d5;
+      color: #ffffff;
+    }
+
+    .item-title {
+      color: #0051d5;
+      font-weight: 700;
+    }
+
+    .item-check-icon {
+      color: #0051d5;
+      opacity: 1;
+    }
+  }
+
+  .item-icon-box {
+    width: 30px;
+    height: 30px;
+    border-radius: 6px;
+    background: #f1f5f9;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    flex-shrink: 0;
+    margin-right: 12px;
+    transition: all 0.12s ease;
+  }
+
+  .item-title {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #0f172a;
+    line-height: 1.25;
+    font-family: 'Work Sans', sans-serif;
+  }
+
+  .item-desc {
+    font-size: 10.5px;
+    color: #64748b;
+    line-height: 1.25;
+    margin-top: 1px;
+    font-family: 'Work Sans', sans-serif;
+  }
+
+  .item-count-badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 6px;
+    background: #f1f5f9;
+    color: #475569;
+    border: 1px solid #e2e8f0;
+    font-family: 'Work Sans', sans-serif;
+    min-width: 20px;
+    text-align: center;
+  }
+
+  .item-check-icon {
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    color: #94a3b8;
+    opacity: 0.2;
+    transition: all 0.12s ease;
+  }
+}
+
+
+

@@ -131,23 +131,26 @@
       </div>
 
       <!-- Attachment Viewer -->
-      <div *ngIf="task.attachmentFileName" class="attachment-section mb-3">
+      <div *ngIf="hasAttachment()" class="attachment-section mb-3">
         <label class="section-subheading mb-1">Attached Document</label>
         <div class="attachment-card">
           <div class="d-flex align-items-center gap-2 text-truncate">
             <div class="file-icon-box">
               <i class="fa-solid fa-file-lines text-primary"></i>
             </div>
-            <span class="file-name text-truncate">{{ task.attachmentFileName }}</span>
+            <span class="file-name text-truncate">{{ getAttachmentName() }}</span>
           </div>
-          <a
-            [href]="task.attachmentUrl"
-            target="_blank"
+          <button
+            type="button"
             class="btn btn-sm btn-outline-primary btn-download"
-            download
+            (click)="downloadAttachment()"
+            [disabled]="isDownloadingAttachment"
+            title="Download document"
           >
-            <i class="fa-solid fa-arrow-down-to-bracket me-1"></i> View / Download
-          </a>
+            <i class="fa-solid fa-spinner fa-spin me-1" *ngIf="isDownloadingAttachment"></i>
+            <i class="fa-solid fa-arrow-down-to-bracket me-1" *ngIf="!isDownloadingAttachment"></i>
+            {{ isDownloadingAttachment ? 'Downloading...' : 'View / Download' }}
+          </button>
         </div>
       </div>
 
